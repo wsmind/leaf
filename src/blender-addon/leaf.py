@@ -9,6 +9,9 @@ bl_info = {
 class LeafRenderEngine(bpy.types.RenderEngine):
     bl_idname = "leaf_renderer"
     bl_label = "Leaf"
+    
+    def __init__(self):
+        print("constructed")
 
     # viewport render
     def view_update(self, context):

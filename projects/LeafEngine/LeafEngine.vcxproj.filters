@@ -6,4 +6,7 @@
   <ItemGroup>
     <ClInclude Include="..\..\src\engine\Renderer.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\src\blender-addon\leaf.py" />
+  </ItemGroup>
 </Project>

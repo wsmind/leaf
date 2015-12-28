@@ -74,24 +74,36 @@
     <OutDir>$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\bin\</OutDir>
     <IntDir>$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\obj\$(ProjectName)\</IntDir>
     <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)..\src</IncludePath>
+    <CustomBuildAfterTargets>
+    </CustomBuildAfterTargets>
+    <PostBuildEventUseInBuild>false</PostBuildEventUseInBuild>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\bin\</OutDir>
     <IntDir>$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\obj\$(ProjectName)\</IntDir>
     <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)..\src</IncludePath>
+    <CustomBuildAfterTargets>
+    </CustomBuildAfterTargets>
+    <PostBuildEventUseInBuild>false</PostBuildEventUseInBuild>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\bin\</OutDir>
     <IntDir>$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\obj\$(ProjectName)\</IntDir>
     <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)..\src</IncludePath>
+    <CustomBuildAfterTargets>
+    </CustomBuildAfterTargets>
+    <PostBuildEventUseInBuild>false</PostBuildEventUseInBuild>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\bin\</OutDir>
     <IntDir>$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\obj\$(ProjectName)\</IntDir>
     <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)..\src</IncludePath>
+    <CustomBuildAfterTargets>
+    </CustomBuildAfterTargets>
+    <PostBuildEventUseInBuild>false</PostBuildEventUseInBuild>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -105,6 +117,29 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <CustomBuildStep>
+      <Command>MKDIR "%APPDATA%\Blender Foundation\Blender\2.73\scripts\addons"
+COPY "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\bin\LeafEngine.dll" "%APPDATA%\Blender Foundation\Blender\2.73\scripts\addons"
+COPY "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\bin\LeafRunner.exe" "%APPDATA%\Blender Foundation\Blender\2.73\scripts\addons"
+COPY "$(SolutionDir)..\src\blender-addon\leaf.py" "%APPDATA%\Blender Foundation\Blender\2.73\scripts\addons"
+
+</Command>
+      <Message>
+      </Message>
+      <Inputs>
+      </Inputs>
+      <Outputs>nonexstentfile-intentionaly.cpp;%(Outputs)</Outputs>
+    </CustomBuildStep>
+    <PostBuildEvent>
+      <Command>MKDIR "%APPDATA%\Blender Foundation\Blender\2.73\scripts\addons"
+COPY "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\bin\LeafEngine.dll" "%APPDATA%\Blender Foundation\Blender\2.73\scripts\addons"
+COPY "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\bin\LeafRunner.exe" "%APPDATA%\Blender Foundation\Blender\2.73\scripts\addons"
+COPY "$(SolutionDir)..\src\blender-addon\leaf.py" "%APPDATA%\Blender Foundation\Blender\2.73\scripts\addons"
+</Command>
+    </PostBuildEvent>
+    <PostBuildEvent>
+      <Message>Copying to Blender addon directory...</Message>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -118,6 +153,29 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <CustomBuildStep>
+      <Command>MKDIR "%APPDATA%\Blender Foundation\Blender\2.73\scripts\addons"
+COPY "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\bin\LeafEngine.dll" "%APPDATA%\Blender Foundation\Blender\2.73\scripts\addons"
+COPY "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\bin\LeafRunner.exe" "%APPDATA%\Blender Foundation\Blender\2.73\scripts\addons"
+COPY "$(SolutionDir)..\src\blender-addon\leaf.py" "%APPDATA%\Blender Foundation\Blender\2.73\scripts\addons"
+
+</Command>
+      <Message>
+      </Message>
+      <Inputs>
+      </Inputs>
+      <Outputs>nonexstentfile-intentionaly.cpp;%(Outputs)</Outputs>
+    </CustomBuildStep>
+    <PostBuildEvent>
+      <Command>MKDIR "%APPDATA%\Blender Foundation\Blender\2.73\scripts\addons"
+COPY "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\bin\LeafEngine.dll" "%APPDATA%\Blender Foundation\Blender\2.73\scripts\addons"
+COPY "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\bin\LeafRunner.exe" "%APPDATA%\Blender Foundation\Blender\2.73\scripts\addons"
+COPY "$(SolutionDir)..\src\blender-addon\leaf.py" "%APPDATA%\Blender Foundation\Blender\2.73\scripts\addons"
+</Command>
+    </PostBuildEvent>
+    <PostBuildEvent>
+      <Message>Copying to Blender addon directory...</Message>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -135,6 +193,29 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <CustomBuildStep>
+      <Command>MKDIR "%APPDATA%\Blender Foundation\Blender\2.73\scripts\addons"
+COPY "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\bin\LeafEngine.dll" "%APPDATA%\Blender Foundation\Blender\2.73\scripts\addons"
+COPY "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\bin\LeafRunner.exe" "%APPDATA%\Blender Foundation\Blender\2.73\scripts\addons"
+COPY "$(SolutionDir)..\src\blender-addon\leaf.py" "%APPDATA%\Blender Foundation\Blender\2.73\scripts\addons"
+
+</Command>
+      <Message>
+      </Message>
+      <Inputs>
+      </Inputs>
+      <Outputs>nonexstentfile-intentionaly.cpp;%(Outputs)</Outputs>
+    </CustomBuildStep>
+    <PostBuildEvent>
+      <Command>MKDIR "%APPDATA%\Blender Foundation\Blender\2.73\scripts\addons"
+COPY "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\bin\LeafEngine.dll" "%APPDATA%\Blender Foundation\Blender\2.73\scripts\addons"
+COPY "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\bin\LeafRunner.exe" "%APPDATA%\Blender Foundation\Blender\2.73\scripts\addons"
+COPY "$(SolutionDir)..\src\blender-addon\leaf.py" "%APPDATA%\Blender Foundation\Blender\2.73\scripts\addons"
+</Command>
+    </PostBuildEvent>
+    <PostBuildEvent>
+      <Message>Copying to Blender addon directory...</Message>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -152,6 +233,29 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <CustomBuildStep>
+      <Command>MKDIR "%APPDATA%\Blender Foundation\Blender\2.73\scripts\addons"
+COPY "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\bin\LeafEngine.dll" "%APPDATA%\Blender Foundation\Blender\2.73\scripts\addons"
+COPY "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\bin\LeafRunner.exe" "%APPDATA%\Blender Foundation\Blender\2.73\scripts\addons"
+COPY "$(SolutionDir)..\src\blender-addon\leaf.py" "%APPDATA%\Blender Foundation\Blender\2.73\scripts\addons"
+
+</Command>
+      <Message>
+      </Message>
+      <Inputs>
+      </Inputs>
+      <Outputs>nonexstentfile-intentionaly.cpp;%(Outputs)</Outputs>
+    </CustomBuildStep>
+    <PostBuildEvent>
+      <Command>MKDIR "%APPDATA%\Blender Foundation\Blender\2.73\scripts\addons"
+COPY "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\bin\LeafEngine.dll" "%APPDATA%\Blender Foundation\Blender\2.73\scripts\addons"
+COPY "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\bin\LeafRunner.exe" "%APPDATA%\Blender Foundation\Blender\2.73\scripts\addons"
+COPY "$(SolutionDir)..\src\blender-addon\leaf.py" "%APPDATA%\Blender Foundation\Blender\2.73\scripts\addons"
+</Command>
+    </PostBuildEvent>
+    <PostBuildEvent>
+      <Message>Copying to Blender addon directory...</Message>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\runner\runner.cpp" />
