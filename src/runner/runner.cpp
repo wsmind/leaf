@@ -6,7 +6,7 @@ int main()
 
     while (1)
     {
-        leaf_render();
+        leaf_render(1280, 720);
     }
 
     leaf_shutdown();

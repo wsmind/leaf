@@ -31,7 +31,7 @@ class LeafRenderEngine(bpy.types.RenderEngine):
         print(context.space_data, context.region_data)
 
         global engine
-        engine.dll.leaf_render_blender_viewport()
+        engine.dll.leaf_render_blender_viewport(context.region.width, context.region.height)
 
         # bgl.glClearColor(1.0, 1.0, 0.0, 1.0)
         # bgl.glClear(bgl.GL_COLOR_BUFFER_BIT)

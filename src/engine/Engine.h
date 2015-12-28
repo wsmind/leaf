@@ -11,17 +11,21 @@ class Engine
         Engine();
         ~Engine();
 
-        void render();
-        void renderBlenderViewport();
+        void render(int width, int height);
+        void renderBlenderViewport(int width, int height);
 
     private:
         static Engine *instance;
 
         int width;
         int height;
+        bool capture;
+
         HWND hwnd;
 
         IDXGISwapChain *swapChain;
+        ID3D11Texture2D *backBuffer;
+        ID3D11Texture2D *captureBuffer;
         ID3D11RenderTargetView *renderTarget;
 
         ID3D11Device *device;

@@ -20,13 +20,17 @@ struct SceneState
     float _padding[3];
 };
 
-#define CHECK_HRESULT(hr) \
-    if (hr != S_OK) \
-    { \
-        _com_error err(hr); \
-        printf("Error: %s\n", err.ErrorMessage()); \
-        assert(hr == S_OK); \
-    }
+#ifdef _DEBUG
+    #define CHECK_HRESULT(hr) \
+        if (hr != S_OK) \
+        { \
+            _com_error err(hr); \
+            printf("Error: %s\n", err.ErrorMessage()); \
+            assert(hr == S_OK); \
+        }
+#else
+    #define CHECK_HRESULT(hr)
+#endif
 
 Engine::Engine()
 {
@@ -34,7 +38,9 @@ Engine::Engine()
 
     this->width = 1280;
     this->height = 720;
-    this->hwnd = CreateWindow("static", "Leaf", WS_POPUP | WS_VISIBLE, 0, 0, this->width, this->height, NULL, NULL, NULL, 0);
+    this->capture = true;
+
+    this->hwnd = CreateWindow("static", "Leaf", WS_POPUP | (this->capture ? 0 : WS_VISIBLE), 0, 0, this->width, this->height, NULL, NULL, NULL, 0);
 
     DXGI_SWAP_CHAIN_DESC swapChainDesc;
     ZeroMemory(&swapChainDesc, sizeof(swapChainDesc));
@@ -65,7 +71,6 @@ Engine::Engine()
     HRESULT res = D3D11CreateDeviceAndSwapChain(NULL, D3D_DRIVER_TYPE_HARDWARE, NULL, flags, NULL, 0, D3D11_SDK_VERSION, &swapChainDesc, &swapChain, &device, NULL, &context);
     CHECK_HRESULT(res);
 
-    ID3D11Texture2D *backBuffer;
     res = swapChain->GetBuffer(0, __uuidof(backBuffer), (void **)&backBuffer);
     CHECK_HRESULT(res);
 
@@ -74,14 +79,17 @@ Engine::Engine()
 
     context->OMSetRenderTargets(1, &renderTarget, NULL);
 
-    D3D11_VIEWPORT viewport;
-    viewport.Width = (float)this->width;
-    viewport.Height = (float)this->height;
-    viewport.MinDepth = 0.0f;
-    viewport.MaxDepth = 1.0f;
-    viewport.TopLeftX = 0;
-    viewport.TopLeftY = 0;
-    context->RSSetViewports(1, &viewport);
+    if (this->capture)
+    {
+        D3D11_TEXTURE2D_DESC captureBufferDesc;
+        this->backBuffer->GetDesc(&captureBufferDesc);
+        captureBufferDesc.BindFlags = 0;
+        captureBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
+        captureBufferDesc.Usage = D3D11_USAGE_STAGING;
+
+        res = device->CreateTexture2D(&captureBufferDesc, NULL, &this->captureBuffer);
+        CHECK_HRESULT(res);
+    }
 
     res = device->CreateVertexShader(plopVS, sizeof(plopVS), NULL, &vs);
     CHECK_HRESULT(res);
@@ -140,9 +148,18 @@ Engine::~Engine()
     DestroyWindow(this->hwnd);
 }
 
-void Engine::render()
+void Engine::render(int width, int height)
 {
     float time = (float)(timeGetTime() - startTime) * 0.001f * 140.0f / 60.0f;
+
+    D3D11_VIEWPORT viewport;
+    viewport.Width = (float)width;
+    viewport.Height = (float)height;
+    viewport.MinDepth = 0.0f;
+    viewport.MaxDepth = 1.0f;
+    viewport.TopLeftX = 0;
+    viewport.TopLeftY = 0;
+    context->RSSetViewports(1, &viewport);
 
     float clearColor[] = { 1.0f, 1.0f, 0.0f, 1.0f };
     context->ClearRenderTargetView(renderTarget, clearColor);
@@ -167,12 +184,27 @@ void Engine::render()
     context->Draw(4, 0);
 
     swapChain->Present(0, 0);
+
+    if (this->capture)
+        context->CopyResource(this->captureBuffer, this->backBuffer);
 }
 
-void Engine::renderBlenderViewport()
+void Engine::renderBlenderViewport(int width, int height)
 {
-    this->render();
+    assert(this->capture);
+
+    this->render(width, height);
 
     glClearColor(1.0f, 1.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
+
+    D3D11_MAPPED_SUBRESOURCE mappedBackbuffer;
+    HRESULT res = this->context->Map(this->captureBuffer, 0, D3D11_MAP_READ, 0, &mappedBackbuffer);
+    CHECK_HRESULT(res);
+
+    glRasterPos2i(0, height);
+    glPixelZoom(1, -1);
+    glDrawPixels(this->width, this->height, GL_RGBA, GL_UNSIGNED_BYTE, mappedBackbuffer.pData);
+
+    this->context->Unmap(this->backBuffer, 0);
 }

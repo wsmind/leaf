@@ -9,5 +9,5 @@
 LEAFENGINE_API void leaf_initialize();
 LEAFENGINE_API void leaf_shutdown();
 
-LEAFENGINE_API void leaf_render();
-LEAFENGINE_API void leaf_render_blender_viewport();
+LEAFENGINE_API void leaf_render(int width, int height);
+LEAFENGINE_API void leaf_render_blender_viewport(int width, int height);
