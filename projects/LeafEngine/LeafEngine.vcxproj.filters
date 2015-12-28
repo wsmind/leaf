@@ -2,11 +2,13 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="..\..\src\engine\Renderer.cpp" />
+    <ClCompile Include="..\..\src\engine\api.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\engine\Renderer.h" />
+    <ClInclude Include="..\..\src\engine\api.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\src\blender-addon\leaf.py" />
+    <AppxManifest Include="..\..\src\blender-addon\leaf.py" />
   </ItemGroup>
 </Project>

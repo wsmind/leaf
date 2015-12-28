@@ -158,9 +158,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\src\engine\api.cpp" />
     <ClCompile Include="..\..\src\engine\Renderer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\src\engine\api.h" />
     <ClInclude Include="..\..\src\engine\Renderer.h" />
   </ItemGroup>
   <ItemGroup>
