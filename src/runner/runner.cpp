@@ -2,7 +2,7 @@
 
 int main()
 {
-    leaf_initialize();
+    leaf_initialize(1280, 720, false);
 
     while (1)
     {

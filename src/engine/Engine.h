@@ -8,8 +8,8 @@
 class Engine
 {
     public:
-        Engine();
-        ~Engine();
+        void initialize(int backbufferWidth, int backbufferHeight, bool capture);
+        void shutdown();
 
         void render(int width, int height);
         void renderBlenderViewport(int width, int height);
@@ -17,8 +17,8 @@ class Engine
     private:
         static Engine *instance;
 
-        int width;
-        int height;
+        int backbufferWidth;
+        int backbufferHeight;
         bool capture;
 
         HWND hwnd;

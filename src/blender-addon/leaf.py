@@ -78,7 +78,10 @@ def register():
     global engine
     engine = EngineWrapper()
     engine.load()
-    engine.dll.leaf_initialize()
+
+    # these dimensions define the maximum viewport size, actual viewports can be smaller
+    # and will use only a subregion of it
+    engine.dll.leaf_initialize(1920, 1080, True)
 
     bpy.utils.register_module(__name__)
 

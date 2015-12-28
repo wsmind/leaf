@@ -1,13 +1,15 @@
 #include <engine/api.h>
 #include <engine/Engine.h>
 
-LEAFENGINE_API void leaf_initialize()
+LEAFENGINE_API void leaf_initialize(int backbufferWidth, int backbufferHeight, bool capture)
 {
     Engine::create();
+    Engine::getInstance()->initialize(backbufferWidth, backbufferHeight, capture);
 }
 
 LEAFENGINE_API void leaf_shutdown()
 {
+    Engine::getInstance()->shutdown();
     Engine::destroy();
 }
 

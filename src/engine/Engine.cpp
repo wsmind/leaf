@@ -32,23 +32,23 @@ struct SceneState
     #define CHECK_HRESULT(hr)
 #endif
 
-Engine::Engine()
+void Engine::initialize(int backbufferWidth, int backbufferHeight, bool capture)
 {
     printf("LeafEngine started\n");
 
-    this->width = 1280;
-    this->height = 720;
-    this->capture = true;
+    this->backbufferWidth = backbufferWidth;
+    this->backbufferHeight = backbufferHeight;
+    this->capture = capture;
 
-    this->hwnd = CreateWindow("static", "Leaf", WS_POPUP | (this->capture ? 0 : WS_VISIBLE), 0, 0, this->width, this->height, NULL, NULL, NULL, 0);
+    this->hwnd = CreateWindow("static", "Leaf", WS_POPUP | (this->capture ? 0 : WS_VISIBLE), 0, 0, this->backbufferWidth, this->backbufferHeight, NULL, NULL, NULL, 0);
 
     DXGI_SWAP_CHAIN_DESC swapChainDesc;
     ZeroMemory(&swapChainDesc, sizeof(swapChainDesc));
 
     //set buffer dimensions and format
     swapChainDesc.BufferCount = 2;
-    swapChainDesc.BufferDesc.Width = this->width;
-    swapChainDesc.BufferDesc.Height = this->height;
+    swapChainDesc.BufferDesc.Width = this->backbufferWidth;
+    swapChainDesc.BufferDesc.Height = this->backbufferHeight;
     swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
     swapChainDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 
@@ -141,7 +141,7 @@ Engine::Engine()
     startTime = timeGetTime();
 }
 
-Engine::~Engine()
+void Engine::shutdown()
 {
     printf("LeafEngine stopped\n");
 
@@ -198,13 +198,14 @@ void Engine::renderBlenderViewport(int width, int height)
     glClearColor(1.0f, 1.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
-    D3D11_MAPPED_SUBRESOURCE mappedBackbuffer;
-    HRESULT res = this->context->Map(this->captureBuffer, 0, D3D11_MAP_READ, 0, &mappedBackbuffer);
+    D3D11_MAPPED_SUBRESOURCE mappedCaptureBuffer;
+    HRESULT res = this->context->Map(this->captureBuffer, 0, D3D11_MAP_READ, 0, &mappedCaptureBuffer);
     CHECK_HRESULT(res);
 
+    // direct copy from D3D mapped memory to GL backbuffer :)
     glRasterPos2i(0, height);
     glPixelZoom(1, -1);
-    glDrawPixels(this->width, this->height, GL_RGBA, GL_UNSIGNED_BYTE, mappedBackbuffer.pData);
+    glDrawPixels(this->backbufferWidth, this->backbufferHeight, GL_RGBA, GL_UNSIGNED_BYTE, mappedCaptureBuffer.pData);
 
     this->context->Unmap(this->backBuffer, 0);
 }
