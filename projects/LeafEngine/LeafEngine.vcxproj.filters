@@ -4,14 +4,29 @@
     <ClCompile Include="..\..\src\engine\Renderer.cpp" />
     <ClCompile Include="..\..\src\engine\api.cpp" />
     <ClCompile Include="..\..\src\engine\Engine.cpp" />
-    <ClCompile Include="..\..\src\engine\initializers.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\engine\Renderer.h" />
     <ClInclude Include="..\..\src\engine\api.h" />
     <ClInclude Include="..\..\src\engine\Engine.h" />
+    <ClInclude Include="..\..\src\engine\shaders\shared.h">
+      <Filter>shaders</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="..\..\src\blender-addon\leaf.py" />
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="..\..\src\engine\shaders\plop.vs.hlsl">
+      <Filter>shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\src\engine\shaders\plop.ps.hlsl">
+      <Filter>shaders</Filter>
+    </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="shaders">
+      <UniqueIdentifier>{03d0b7eb-fedd-41ff-97c7-c5fdb14a8527}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
 </Project>

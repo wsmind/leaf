@@ -6,4 +6,8 @@
 #define LEAFENGINE_API extern "C" __declspec(dllimport)
 #endif
 
-LEAFENGINE_API void render_blender_viewport();
+LEAFENGINE_API void leaf_initialize();
+LEAFENGINE_API void leaf_shutdown();
+
+LEAFENGINE_API void leaf_render();
+LEAFENGINE_API void leaf_render_blender_viewport();
