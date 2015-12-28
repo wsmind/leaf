@@ -1,9 +1,7 @@
 #include <engine/api.h>
-#include <engine/Renderer.h>
+#include <engine/Engine.h>
 
-LEAFENGINE_API void plop()
+LEAFENGINE_API void render_blender_viewport()
 {
-    Renderer *r = new Renderer;
-    r->render(nullptr);
-    delete r;
+    Engine::getInstance()->renderBlenderViewport();
 }

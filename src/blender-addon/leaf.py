@@ -31,7 +31,7 @@ class LeafRenderEngine(bpy.types.RenderEngine):
         print(context.space_data, context.region_data)
 
         global engine
-        engine.dll.plop()
+        engine.dll.render_blender_viewport()
 
         # bgl.glClearColor(1.0, 1.0, 0.0, 1.0)
         # bgl.glClear(bgl.GL_COLOR_BUFFER_BIT)
@@ -68,7 +68,7 @@ class EngineWrapper:
         self.dll = ctypes.CDLL(self.loaded_dll_name)
 
         # api
-        self.dll.plop.restype = None
+        self.dll.render_blender_viewport.restype = None
 
     def unload(self):
         _ctypes.FreeLibrary(self.dll._handle)

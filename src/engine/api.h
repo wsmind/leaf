@@ -6,4 +6,4 @@
 #define LEAFENGINE_API extern "C" __declspec(dllimport)
 #endif
 
-LEAFENGINE_API void plop();
+LEAFENGINE_API void render_blender_viewport();
