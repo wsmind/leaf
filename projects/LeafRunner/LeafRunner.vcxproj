@@ -72,7 +72,6 @@
     <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)..\src</IncludePath>
     <CustomBuildAfterTargets>
     </CustomBuildAfterTargets>
-    <PostBuildEventUseInBuild>false</PostBuildEventUseInBuild>
     <LibraryPath>$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(NETFXKitsDir)Lib\um\x86;$(OutDir)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -82,7 +81,6 @@
     <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)..\src</IncludePath>
     <CustomBuildAfterTargets>
     </CustomBuildAfterTargets>
-    <PostBuildEventUseInBuild>false</PostBuildEventUseInBuild>
     <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);$(NETFXKitsDir)Lib\um\x64;$(OutDir)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -92,7 +90,6 @@
     <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)..\src</IncludePath>
     <CustomBuildAfterTargets>
     </CustomBuildAfterTargets>
-    <PostBuildEventUseInBuild>false</PostBuildEventUseInBuild>
     <LibraryPath>$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(NETFXKitsDir)Lib\um\x86;$(OutDir)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -102,7 +99,6 @@
     <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)..\src</IncludePath>
     <CustomBuildAfterTargets>
     </CustomBuildAfterTargets>
-    <PostBuildEventUseInBuild>false</PostBuildEventUseInBuild>
     <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);$(NETFXKitsDir)Lib\um\x64;$(OutDir)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -119,27 +115,29 @@
       <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;LeafEngine.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <CustomBuildStep>
-      <Command>MKDIR "%APPDATA%\Blender Foundation\Blender\2.73\scripts\addons"
-COPY "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\bin\LeafEngine.dll" "%APPDATA%\Blender Foundation\Blender\2.73\scripts\addons"
-COPY "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\bin\LeafRunner.exe" "%APPDATA%\Blender Foundation\Blender\2.73\scripts\addons"
-COPY "$(SolutionDir)..\src\blender-addon\leaf.py" "%APPDATA%\Blender Foundation\Blender\2.73\scripts\addons"
+      <Command>REM Copy binaries and python to dist/ folder
+MKDIR "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf"
+COPY "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\bin\LeafEngine.dll" "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf"
+COPY "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\bin\LeafRunner.exe" "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf"
+COPY "$(SolutionDir)..\src\blender-addon\leaf\*.py" "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf"
 
+REM Deploy dist/ to blender addons (2.73 assumed)
+MKDIR "%APPDATA%\Blender Foundation\Blender\2.73\scripts\addons\leaf"
+COPY "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf\*.*" "%APPDATA%\Blender Foundation\Blender\2.73\scripts\addons\leaf"
 </Command>
       <Message>
       </Message>
       <Inputs>
       </Inputs>
-      <Outputs>nonexstentfile-intentionaly.cpp;%(Outputs)</Outputs>
+      <Outputs>nonexistentfile-intentionally.cpp;%(Outputs)</Outputs>
     </CustomBuildStep>
     <PostBuildEvent>
-      <Command>MKDIR "%APPDATA%\Blender Foundation\Blender\2.73\scripts\addons"
-COPY "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\bin\LeafEngine.dll" "%APPDATA%\Blender Foundation\Blender\2.73\scripts\addons"
-COPY "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\bin\LeafRunner.exe" "%APPDATA%\Blender Foundation\Blender\2.73\scripts\addons"
-COPY "$(SolutionDir)..\src\blender-addon\leaf.py" "%APPDATA%\Blender Foundation\Blender\2.73\scripts\addons"
-</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
     <PostBuildEvent>
-      <Message>Copying to Blender addon directory...</Message>
+      <Message>
+      </Message>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -156,27 +154,29 @@ COPY "$(SolutionDir)..\src\blender-addon\leaf.py" "%APPDATA%\Blender Foundation\
       <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;LeafEngine.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <CustomBuildStep>
-      <Command>MKDIR "%APPDATA%\Blender Foundation\Blender\2.73\scripts\addons"
-COPY "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\bin\LeafEngine.dll" "%APPDATA%\Blender Foundation\Blender\2.73\scripts\addons"
-COPY "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\bin\LeafRunner.exe" "%APPDATA%\Blender Foundation\Blender\2.73\scripts\addons"
-COPY "$(SolutionDir)..\src\blender-addon\leaf.py" "%APPDATA%\Blender Foundation\Blender\2.73\scripts\addons"
+      <Command>REM Copy binaries and python to dist/ folder
+MKDIR "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf"
+COPY "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\bin\LeafEngine.dll" "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf"
+COPY "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\bin\LeafRunner.exe" "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf"
+COPY "$(SolutionDir)..\src\blender-addon\leaf\*.py" "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf"
 
+REM Deploy dist/ to blender addons (2.73 assumed)
+MKDIR "%APPDATA%\Blender Foundation\Blender\2.73\scripts\addons\leaf"
+COPY "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf\*.*" "%APPDATA%\Blender Foundation\Blender\2.73\scripts\addons\leaf"
 </Command>
       <Message>
       </Message>
       <Inputs>
       </Inputs>
-      <Outputs>nonexstentfile-intentionaly.cpp;%(Outputs)</Outputs>
+      <Outputs>nonexistentfile-intentionally.cpp;%(Outputs)</Outputs>
     </CustomBuildStep>
     <PostBuildEvent>
-      <Command>MKDIR "%APPDATA%\Blender Foundation\Blender\2.73\scripts\addons"
-COPY "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\bin\LeafEngine.dll" "%APPDATA%\Blender Foundation\Blender\2.73\scripts\addons"
-COPY "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\bin\LeafRunner.exe" "%APPDATA%\Blender Foundation\Blender\2.73\scripts\addons"
-COPY "$(SolutionDir)..\src\blender-addon\leaf.py" "%APPDATA%\Blender Foundation\Blender\2.73\scripts\addons"
-</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
     <PostBuildEvent>
-      <Message>Copying to Blender addon directory...</Message>
+      <Message>
+      </Message>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -197,27 +197,29 @@ COPY "$(SolutionDir)..\src\blender-addon\leaf.py" "%APPDATA%\Blender Foundation\
       <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;LeafEngine.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <CustomBuildStep>
-      <Command>MKDIR "%APPDATA%\Blender Foundation\Blender\2.73\scripts\addons"
-COPY "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\bin\LeafEngine.dll" "%APPDATA%\Blender Foundation\Blender\2.73\scripts\addons"
-COPY "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\bin\LeafRunner.exe" "%APPDATA%\Blender Foundation\Blender\2.73\scripts\addons"
-COPY "$(SolutionDir)..\src\blender-addon\leaf.py" "%APPDATA%\Blender Foundation\Blender\2.73\scripts\addons"
+      <Command>REM Copy binaries and python to dist/ folder
+MKDIR "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf"
+COPY "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\bin\LeafEngine.dll" "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf"
+COPY "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\bin\LeafRunner.exe" "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf"
+COPY "$(SolutionDir)..\src\blender-addon\leaf\*.py" "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf"
 
+REM Deploy dist/ to blender addons (2.73 assumed)
+MKDIR "%APPDATA%\Blender Foundation\Blender\2.73\scripts\addons\leaf"
+COPY "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf\*.*" "%APPDATA%\Blender Foundation\Blender\2.73\scripts\addons\leaf"
 </Command>
       <Message>
       </Message>
       <Inputs>
       </Inputs>
-      <Outputs>nonexstentfile-intentionaly.cpp;%(Outputs)</Outputs>
+      <Outputs>nonexistentfile-intentionally.cpp;%(Outputs)</Outputs>
     </CustomBuildStep>
     <PostBuildEvent>
-      <Command>MKDIR "%APPDATA%\Blender Foundation\Blender\2.73\scripts\addons"
-COPY "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\bin\LeafEngine.dll" "%APPDATA%\Blender Foundation\Blender\2.73\scripts\addons"
-COPY "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\bin\LeafRunner.exe" "%APPDATA%\Blender Foundation\Blender\2.73\scripts\addons"
-COPY "$(SolutionDir)..\src\blender-addon\leaf.py" "%APPDATA%\Blender Foundation\Blender\2.73\scripts\addons"
-</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
     <PostBuildEvent>
-      <Message>Copying to Blender addon directory...</Message>
+      <Message>
+      </Message>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -238,27 +240,29 @@ COPY "$(SolutionDir)..\src\blender-addon\leaf.py" "%APPDATA%\Blender Foundation\
       <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;LeafEngine.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <CustomBuildStep>
-      <Command>MKDIR "%APPDATA%\Blender Foundation\Blender\2.73\scripts\addons"
-COPY "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\bin\LeafEngine.dll" "%APPDATA%\Blender Foundation\Blender\2.73\scripts\addons"
-COPY "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\bin\LeafRunner.exe" "%APPDATA%\Blender Foundation\Blender\2.73\scripts\addons"
-COPY "$(SolutionDir)..\src\blender-addon\leaf.py" "%APPDATA%\Blender Foundation\Blender\2.73\scripts\addons"
+      <Command>REM Copy binaries and python to dist/ folder
+MKDIR "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf"
+COPY "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\bin\LeafEngine.dll" "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf"
+COPY "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\bin\LeafRunner.exe" "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf"
+COPY "$(SolutionDir)..\src\blender-addon\leaf\*.py" "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf"
 
+REM Deploy dist/ to blender addons (2.73 assumed)
+MKDIR "%APPDATA%\Blender Foundation\Blender\2.73\scripts\addons\leaf"
+COPY "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf\*.*" "%APPDATA%\Blender Foundation\Blender\2.73\scripts\addons\leaf"
 </Command>
       <Message>
       </Message>
       <Inputs>
       </Inputs>
-      <Outputs>nonexstentfile-intentionaly.cpp;%(Outputs)</Outputs>
+      <Outputs>nonexistentfile-intentionally.cpp;%(Outputs)</Outputs>
     </CustomBuildStep>
     <PostBuildEvent>
-      <Command>MKDIR "%APPDATA%\Blender Foundation\Blender\2.73\scripts\addons"
-COPY "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\bin\LeafEngine.dll" "%APPDATA%\Blender Foundation\Blender\2.73\scripts\addons"
-COPY "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\bin\LeafRunner.exe" "%APPDATA%\Blender Foundation\Blender\2.73\scripts\addons"
-COPY "$(SolutionDir)..\src\blender-addon\leaf.py" "%APPDATA%\Blender Foundation\Blender\2.73\scripts\addons"
-</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
     <PostBuildEvent>
-      <Message>Copying to Blender addon directory...</Message>
+      <Message>
+      </Message>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>

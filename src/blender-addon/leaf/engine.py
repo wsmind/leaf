@@ -4,12 +4,6 @@ import _ctypes
 import os
 import shutil
 
-bl_info = {
-    "name": "Leaf",
-    "category": "Render",
-    "author": "wsmind"
-}
-
 engine = None
 
 class LeafRenderEngine(bpy.types.RenderEngine):
@@ -69,7 +63,7 @@ def register():
     # and will use only a subregion of it
     engine.dll.leaf_initialize(1920, 1080, True)
 
-    bpy.utils.register_module(__name__)
+    bpy.utils.register_class(LeafRenderEngine)
 
     # declare compatibility of this render engine with the material panel
     from bl_ui import properties_material
@@ -78,7 +72,7 @@ def register():
     del properties_material
 
 def unregister():
-    bpy.utils.unregister_module(__name__)
+    bpy.utils.unregister_class(LeafRenderEngine)
 
     global engine
     engine.dll.leaf_shutdown()

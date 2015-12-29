@@ -14,9 +14,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <AppxManifest Include="..\..\src\blender-addon\leaf.py" />
-  </ItemGroup>
-  <ItemGroup>
     <FxCompile Include="..\..\src\engine\shaders\plop.vs.hlsl">
       <Filter>shaders</Filter>
     </FxCompile>
@@ -28,5 +25,16 @@
     <Filter Include="shaders">
       <UniqueIdentifier>{03d0b7eb-fedd-41ff-97c7-c5fdb14a8527}</UniqueIdentifier>
     </Filter>
+    <Filter Include="blender-addon">
+      <UniqueIdentifier>{841e16fa-304c-4e34-a9fe-7435ea03131c}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\src\blender-addon\leaf\__init__.py">
+      <Filter>blender-addon</Filter>
+    </None>
+    <None Include="..\..\src\blender-addon\leaf\engine.py">
+      <Filter>blender-addon</Filter>
+    </None>
   </ItemGroup>
 </Project>
