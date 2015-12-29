@@ -168,7 +168,8 @@ void Engine::render(int width, int height)
     context->PSSetShader(ps, NULL, 0);
 
     D3D11_MAPPED_SUBRESOURCE mappedResource;
-    context->Map(cb, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+    HRESULT res = context->Map(cb, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+    CHECK_HRESULT(res);
     SceneState *sceneState = (SceneState *)mappedResource.pData;
     sceneState->time = time;
     context->Unmap(cb, 0);
@@ -207,5 +208,5 @@ void Engine::renderBlenderViewport(int width, int height)
     glPixelZoom(1, -1);
     glDrawPixels(this->backbufferWidth, this->backbufferHeight, GL_RGBA, GL_UNSIGNED_BYTE, mappedCaptureBuffer.pData);
 
-    this->context->Unmap(this->backBuffer, 0);
+    this->context->Unmap(this->captureBuffer, 0);
 }
