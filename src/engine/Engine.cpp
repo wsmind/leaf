@@ -125,7 +125,7 @@ void Engine::initialize(int backbufferWidth, int backbufferHeight, bool capture)
     vertexData.SysMemSlicePitch = 0;
 
     res = device->CreateBuffer(&vbDesc, &vertexData, &vb);
-    CHECK_HRESULT(res)
+    CHECK_HRESULT(res);
 
     D3D11_BUFFER_DESC cbDesc;
     cbDesc.Usage = D3D11_USAGE_DYNAMIC;
