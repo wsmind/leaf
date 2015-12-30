@@ -4,6 +4,14 @@ bl_info = {
     "author": "wsmind"
 }
 
+if "bpy" in locals():
+    import imp
+    imp.reload(material)
+    imp.reload(render)
+else:
+    from . import material
+    from . import render
+
 import bpy
 import ctypes
 import _ctypes
@@ -60,9 +68,6 @@ class EngineWrapper:
         # remove the temp dll
         os.remove(self.loaded_dll_name)
 
-from . import properties
-from . import ui
-
 def register():
     global engine
     engine = EngineWrapper()
@@ -73,13 +78,9 @@ def register():
     engine.dll.leaf_initialize(1920, 1080, True)
 
     bpy.utils.register_module(__name__)
-    properties.register()
-    ui.register()
 
 def unregister():
     bpy.utils.unregister_module(__name__)
-    properties.unregister()
-    ui.unregister()
 
     global engine
     engine.dll.leaf_shutdown()

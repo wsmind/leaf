@@ -33,10 +33,10 @@
     <None Include="..\..\src\blender-addon\leaf\__init__.py">
       <Filter>blender-addon</Filter>
     </None>
-    <None Include="..\..\src\blender-addon\leaf\ui.py">
+    <None Include="..\..\src\blender-addon\leaf\material.py">
       <Filter>blender-addon</Filter>
     </None>
-    <None Include="..\..\src\blender-addon\leaf\properties.py">
+    <None Include="..\..\src\blender-addon\leaf\render.py">
       <Filter>blender-addon</Filter>
     </None>
   </ItemGroup>

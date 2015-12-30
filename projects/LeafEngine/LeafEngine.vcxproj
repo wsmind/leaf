@@ -219,8 +219,8 @@
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\src\blender-addon\leaf\properties.py" />
-    <None Include="..\..\src\blender-addon\leaf\ui.py" />
+    <None Include="..\..\src\blender-addon\leaf\render.py" />
+    <None Include="..\..\src\blender-addon\leaf\material.py" />
     <None Include="..\..\src\blender-addon\leaf\__init__.py" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
