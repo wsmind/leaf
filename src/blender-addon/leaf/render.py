@@ -15,18 +15,45 @@ class LEAF_OT_export(Operator):
 
     def execute(self, context):
         rd = context.scene.render
-        
+        lrd = context.scene.leaf
+
         os.makedirs(rd.filepath, exist_ok=True)
 
         script_dir = os.path.dirname(__file__)
 
-        runtime_files = ["LeafEngine.dll", "LeafRunner.exe"]
-        for f in runtime_files:
-            source = os.path.join(script_dir, f)
-            destination = os.path.join(rd.filepath, f)
-            shutil.copy(source, destination)
+        try:
+            runtime_files = ["LeafEngine.dll", "LeafRunner.exe"]
+            for f in runtime_files:
+                source = os.path.join(script_dir, f)
+                destination = os.path.join(rd.filepath, f)
+                shutil.copy(source, destination)
+
+            if lrd.run_after_export:
+                import subprocess
+                engineExe = os.path.join(rd.filepath, "LeafRunner.exe")
+                subprocess.Popen([engineExe], cwd=rd.filepath)
+        except PermissionError:
+            self.report({"ERROR"}, "Failed to copy engine files. Make sure the demo is not running while exporting.")
 
         return {"FINISHED"}
+
+class LeafRenderSettings(bpy.types.PropertyGroup):
+    @classmethod
+    def register(cls):
+        bpy.types.Scene.leaf = PointerProperty(
+            name="Leaf Render Settings",
+            description="Leaf render settings",
+            type=cls,
+        )
+        cls.run_after_export = BoolProperty(
+            name="Run after export",
+            description="Start the exported demo when export finishes",
+            default=True,
+        )
+
+    @classmethod
+    def unregister(cls):
+        del bpy.types.Scene.leaf
 
 class LeafRenderButtonsPanel():
     bl_space_type = "PROPERTIES"
@@ -45,6 +72,10 @@ class LeafRender_PT_export(LeafRenderButtonsPanel, Panel):
     def draw(self, context):
         layout = self.layout
         rd = context.scene.render
+        lrd = context.scene.leaf
 
         layout.prop(rd, "filepath", text="")
-        layout.operator("leaf.export", icon='FILE_TICK')
+
+        row = layout.row(align=True)
+        row.operator("leaf.export", text="Export", icon='FILE_TICK')
+        row.prop(lrd, "run_after_export", text="Start Demo")
