@@ -219,6 +219,7 @@
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\src\blender-addon\leaf\properties.py" />
     <None Include="..\..\src\blender-addon\leaf\ui.py" />
     <None Include="..\..\src\blender-addon\leaf\__init__.py" />
   </ItemGroup>

@@ -117,6 +117,7 @@
     <CustomBuildStep>
       <Command>REM Copy binaries and python to dist/ folder
 MKDIR "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf"
+DEL /Q "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf\*.*"
 COPY "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\bin\LeafEngine.dll" "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf"
 COPY "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\bin\LeafRunner.exe" "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf"
 COPY "$(SolutionDir)..\src\blender-addon\leaf\*.py" "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf"
@@ -156,6 +157,7 @@ COPY "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf\*.*" "
     <CustomBuildStep>
       <Command>REM Copy binaries and python to dist/ folder
 MKDIR "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf"
+DEL /Q "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf\*.*"
 COPY "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\bin\LeafEngine.dll" "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf"
 COPY "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\bin\LeafRunner.exe" "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf"
 COPY "$(SolutionDir)..\src\blender-addon\leaf\*.py" "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf"
@@ -199,6 +201,7 @@ COPY "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf\*.*" "
     <CustomBuildStep>
       <Command>REM Copy binaries and python to dist/ folder
 MKDIR "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf"
+DEL /Q "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf\*.*"
 COPY "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\bin\LeafEngine.dll" "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf"
 COPY "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\bin\LeafRunner.exe" "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf"
 COPY "$(SolutionDir)..\src\blender-addon\leaf\*.py" "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf"
@@ -242,6 +245,7 @@ COPY "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf\*.*" "
     <CustomBuildStep>
       <Command>REM Copy binaries and python to dist/ folder
 MKDIR "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf"
+DEL /Q "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf\*.*"
 COPY "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\bin\LeafEngine.dll" "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf"
 COPY "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\bin\LeafRunner.exe" "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf"
 COPY "$(SolutionDir)..\src\blender-addon\leaf\*.py" "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf"

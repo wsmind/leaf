@@ -36,5 +36,8 @@
     <None Include="..\..\src\blender-addon\leaf\ui.py">
       <Filter>blender-addon</Filter>
     </None>
+    <None Include="..\..\src\blender-addon\leaf\properties.py">
+      <Filter>blender-addon</Filter>
+    </None>
   </ItemGroup>
 </Project>

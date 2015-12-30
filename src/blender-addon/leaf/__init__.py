@@ -60,6 +60,7 @@ class EngineWrapper:
         # remove the temp dll
         os.remove(self.loaded_dll_name)
 
+from . import properties
 from . import ui
 
 def register():
@@ -72,10 +73,12 @@ def register():
     engine.dll.leaf_initialize(1920, 1080, True)
 
     bpy.utils.register_module(__name__)
+    properties.register()
     ui.register()
 
 def unregister():
     bpy.utils.unregister_module(__name__)
+    properties.unregister()
     ui.unregister()
 
     global engine
