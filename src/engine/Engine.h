@@ -5,6 +5,8 @@
 #include <windows.h>
 #include <d3d11.h>
 
+class Mesh;
+
 class Engine
 {
     public:
@@ -32,7 +34,7 @@ class Engine
         ID3D11PixelShader *ps;
         ID3D11InputLayout *inputLayout;
 
-        ID3D11Buffer *vb;
+        Mesh *mesh;
         ID3D11Buffer *cb;
 
         DWORD startTime;

@@ -1,3 +1,3 @@
 #include <engine/ResourceManager.h>
 
-#include <cstdio>
+ResourceManager *ResourceManager::instance = nullptr;

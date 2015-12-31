@@ -157,9 +157,14 @@
     <ClCompile Include="..\..\src\engine\api.cpp" />
     <ClCompile Include="..\..\src\engine\Device.cpp" />
     <ClCompile Include="..\..\src\engine\Engine.cpp" />
+    <ClCompile Include="..\..\src\engine\Material.cpp" />
     <ClCompile Include="..\..\src\engine\Mesh.cpp" />
     <ClCompile Include="..\..\src\engine\Renderer.cpp" />
     <ClCompile Include="..\..\src\engine\ResourceManager.cpp" />
+    <ClInclude Include="..\..\src\engine\Material.h" />
+    <ClInclude Include="..\..\src\engine\ResourceManager.inline.h">
+      <FileType>CppCode</FileType>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\engine\api.h" />

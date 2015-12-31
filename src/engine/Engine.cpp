@@ -3,13 +3,14 @@
 #include <cstdio>
 
 #include <windows.h>
-#include <comdef.h>
 #include <mmsystem.h>
 
 #include <d3d11.h>
 #include <gl/GL.h>
 
 #include <engine/Device.h>
+#include <engine/Mesh.h>
+#include <engine/ResourceManager.h>
 
 #include <shaders/plop.vs.hlsl.h>
 #include <shaders/plop.ps.hlsl.h>
@@ -22,21 +23,11 @@ struct SceneState
     float _padding[3];
 };
 
-#ifdef _DEBUG
-    #define CHECK_HRESULT(hr) \
-        if (hr != S_OK) \
-        { \
-            _com_error err(hr); \
-            printf("Error: %s\n", err.ErrorMessage()); \
-            assert(hr == S_OK); \
-        }
-#else
-    #define CHECK_HRESULT(hr)
-#endif
-
 void Engine::initialize(int backbufferWidth, int backbufferHeight, bool capture)
 {
     printf("LeafEngine started\n");
+
+    ResourceManager::create();
 
     this->backbufferWidth = backbufferWidth;
     this->backbufferHeight = backbufferHeight;
@@ -106,29 +97,6 @@ void Engine::initialize(int backbufferWidth, int backbufferHeight, bool capture)
     res = Device::device->CreatePixelShader(plopPS, sizeof(plopPS), NULL, &ps);
     CHECK_HRESULT(res);
 
-    float vertices[] = {
-        -1.0f, -1.0f,
-        -1.0f, 1.0f,
-        1.0f, -1.0f,
-        1.0f, 1.0f
-    };
-
-    D3D11_BUFFER_DESC vbDesc;
-    vbDesc.Usage = D3D11_USAGE_IMMUTABLE;
-    vbDesc.ByteWidth = sizeof(vertices);
-    vbDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-    vbDesc.StructureByteStride = 0;
-    vbDesc.MiscFlags = 0;
-    vbDesc.CPUAccessFlags = 0;
-
-    D3D11_SUBRESOURCE_DATA vertexData;
-    vertexData.pSysMem = vertices;
-    vertexData.SysMemPitch = 0;
-    vertexData.SysMemSlicePitch = 0;
-
-    res = Device::device->CreateBuffer(&vbDesc, &vertexData, &vb);
-    CHECK_HRESULT(res);
-
     D3D11_BUFFER_DESC cbDesc;
     cbDesc.Usage = D3D11_USAGE_DYNAMIC;
     cbDesc.ByteWidth = sizeof(SceneState);
@@ -141,13 +109,19 @@ void Engine::initialize(int backbufferWidth, int backbufferHeight, bool capture)
     CHECK_HRESULT(res);
 
     startTime = timeGetTime();
+
+    this->mesh = ResourceManager::getInstance()->requestResource<Mesh>("plop");
 }
 
 void Engine::shutdown()
 {
     printf("LeafEngine stopped\n");
 
+    ResourceManager::getInstance()->releaseResource(this->mesh);
+
     DestroyWindow(this->hwnd);
+
+    ResourceManager::destroy();
 }
 
 void Engine::render(int width, int height)
@@ -179,10 +153,7 @@ void Engine::render(int width, int height)
 
     Device::context->IASetInputLayout(inputLayout);
 
-    UINT stride = sizeof(float) * 2;
-    UINT offset = 0;
-    Device::context->IASetVertexBuffers(0, 1, &vb, &stride, &offset);
-    Device::context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
+    this->mesh->bind();
 
     Device::context->Draw(4, 0);
 
