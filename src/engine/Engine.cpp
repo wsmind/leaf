@@ -9,6 +9,8 @@
 #include <d3d11.h>
 #include <gl/GL.h>
 
+#include <engine/Device.h>
+
 #include <shaders/plop.vs.hlsl.h>
 #include <shaders/plop.ps.hlsl.h>
 
@@ -68,16 +70,16 @@ void Engine::initialize(int backbufferWidth, int backbufferHeight, bool capture)
     #ifdef _DEBUG
         flags |= D3D11_CREATE_DEVICE_DEBUG;
     #endif
-    HRESULT res = D3D11CreateDeviceAndSwapChain(NULL, D3D_DRIVER_TYPE_HARDWARE, NULL, flags, NULL, 0, D3D11_SDK_VERSION, &swapChainDesc, &swapChain, &device, NULL, &context);
+    HRESULT res = D3D11CreateDeviceAndSwapChain(NULL, D3D_DRIVER_TYPE_HARDWARE, NULL, flags, NULL, 0, D3D11_SDK_VERSION, &swapChainDesc, &swapChain, &Device::device, NULL, &Device::context);
     CHECK_HRESULT(res);
 
     res = swapChain->GetBuffer(0, __uuidof(backBuffer), (void **)&backBuffer);
     CHECK_HRESULT(res);
 
-    res = device->CreateRenderTargetView(backBuffer, NULL, &renderTarget);
+    res = Device::device->CreateRenderTargetView(backBuffer, NULL, &renderTarget);
     CHECK_HRESULT(res);
 
-    context->OMSetRenderTargets(1, &renderTarget, NULL);
+    Device::context->OMSetRenderTargets(1, &renderTarget, NULL);
 
     if (this->capture)
     {
@@ -87,21 +89,21 @@ void Engine::initialize(int backbufferWidth, int backbufferHeight, bool capture)
         captureBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
         captureBufferDesc.Usage = D3D11_USAGE_STAGING;
 
-        res = device->CreateTexture2D(&captureBufferDesc, NULL, &this->captureBuffer);
+        res = Device::device->CreateTexture2D(&captureBufferDesc, NULL, &this->captureBuffer);
         CHECK_HRESULT(res);
     }
 
-    res = device->CreateVertexShader(plopVS, sizeof(plopVS), NULL, &vs);
+    res = Device::device->CreateVertexShader(plopVS, sizeof(plopVS), NULL, &vs);
     CHECK_HRESULT(res);
 
     D3D11_INPUT_ELEMENT_DESC layout[] =
     {
         { "POSITION", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 }
     };
-    res = device->CreateInputLayout(layout, 1, plopVS, sizeof(plopVS), &inputLayout);
+    res = Device::device->CreateInputLayout(layout, 1, plopVS, sizeof(plopVS), &inputLayout);
     CHECK_HRESULT(res);
 
-    res = device->CreatePixelShader(plopPS, sizeof(plopPS), NULL, &ps);
+    res = Device::device->CreatePixelShader(plopPS, sizeof(plopPS), NULL, &ps);
     CHECK_HRESULT(res);
 
     float vertices[] = {
@@ -124,7 +126,7 @@ void Engine::initialize(int backbufferWidth, int backbufferHeight, bool capture)
     vertexData.SysMemPitch = 0;
     vertexData.SysMemSlicePitch = 0;
 
-    res = device->CreateBuffer(&vbDesc, &vertexData, &vb);
+    res = Device::device->CreateBuffer(&vbDesc, &vertexData, &vb);
     CHECK_HRESULT(res);
 
     D3D11_BUFFER_DESC cbDesc;
@@ -135,7 +137,7 @@ void Engine::initialize(int backbufferWidth, int backbufferHeight, bool capture)
     cbDesc.MiscFlags = 0;
     cbDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 
-    res = device->CreateBuffer(&cbDesc, NULL, &cb);
+    res = Device::device->CreateBuffer(&cbDesc, NULL, &cb);
     CHECK_HRESULT(res);
 
     startTime = timeGetTime();
@@ -159,35 +161,35 @@ void Engine::render(int width, int height)
     viewport.MaxDepth = 1.0f;
     viewport.TopLeftX = 0;
     viewport.TopLeftY = 0;
-    context->RSSetViewports(1, &viewport);
+    Device::context->RSSetViewports(1, &viewport);
 
     float clearColor[] = { 1.0f, 1.0f, 0.0f, 1.0f };
-    context->ClearRenderTargetView(renderTarget, clearColor);
+    Device::context->ClearRenderTargetView(renderTarget, clearColor);
 
-    context->VSSetShader(vs, NULL, 0);
-    context->PSSetShader(ps, NULL, 0);
+    Device::context->VSSetShader(vs, NULL, 0);
+    Device::context->PSSetShader(ps, NULL, 0);
 
     D3D11_MAPPED_SUBRESOURCE mappedResource;
-    HRESULT res = context->Map(cb, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+    HRESULT res = Device::context->Map(cb, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
     CHECK_HRESULT(res);
     SceneState *sceneState = (SceneState *)mappedResource.pData;
     sceneState->time = time;
-    context->Unmap(cb, 0);
-    context->PSSetConstantBuffers(0, 1, &cb);
+    Device::context->Unmap(cb, 0);
+    Device::context->PSSetConstantBuffers(0, 1, &cb);
 
-    context->IASetInputLayout(inputLayout);
+    Device::context->IASetInputLayout(inputLayout);
 
     UINT stride = sizeof(float) * 2;
     UINT offset = 0;
-    context->IASetVertexBuffers(0, 1, &vb, &stride, &offset);
-    context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
+    Device::context->IASetVertexBuffers(0, 1, &vb, &stride, &offset);
+    Device::context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
 
-    context->Draw(4, 0);
+    Device::context->Draw(4, 0);
 
     swapChain->Present(0, 0);
 
     if (this->capture)
-        context->CopyResource(this->captureBuffer, this->backBuffer);
+        Device::context->CopyResource(this->captureBuffer, this->backBuffer);
 }
 
 void Engine::renderBlenderViewport(int width, int height)
@@ -200,7 +202,7 @@ void Engine::renderBlenderViewport(int width, int height)
     glClear(GL_COLOR_BUFFER_BIT);
 
     D3D11_MAPPED_SUBRESOURCE mappedCaptureBuffer;
-    HRESULT res = this->context->Map(this->captureBuffer, 0, D3D11_MAP_READ, 0, &mappedCaptureBuffer);
+    HRESULT res = Device::context->Map(this->captureBuffer, 0, D3D11_MAP_READ, 0, &mappedCaptureBuffer);
     CHECK_HRESULT(res);
 
     // direct copy from D3D mapped memory to GL backbuffer :)
@@ -208,5 +210,5 @@ void Engine::renderBlenderViewport(int width, int height)
     glPixelZoom(1, -1);
     glDrawPixels(this->backbufferWidth, this->backbufferHeight, GL_RGBA, GL_UNSIGNED_BYTE, mappedCaptureBuffer.pData);
 
-    this->context->Unmap(this->captureBuffer, 0);
+    Device::context->Unmap(this->captureBuffer, 0);
 }

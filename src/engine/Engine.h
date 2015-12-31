@@ -28,9 +28,6 @@ class Engine
         ID3D11Texture2D *captureBuffer;
         ID3D11RenderTargetView *renderTarget;
 
-        ID3D11Device *device;
-        ID3D11DeviceContext *context;
-
         ID3D11VertexShader *vs;
         ID3D11PixelShader *ps;
         ID3D11InputLayout *inputLayout;
