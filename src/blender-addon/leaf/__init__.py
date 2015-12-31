@@ -6,9 +6,11 @@ bl_info = {
 
 if "bpy" in locals():
     import imp
+    imp.reload(export)
     imp.reload(material)
     imp.reload(render)
 else:
+    from . import export
     from . import material
     from . import render
 
@@ -17,6 +19,7 @@ import ctypes
 import _ctypes
 import os
 import shutil
+import json
 
 engine = None
 
@@ -27,15 +30,8 @@ class LeafRenderEngine(bpy.types.RenderEngine):
     # viewport render
     def view_update(self, context):
         print("view_update")
-
-        if bpy.data.objects.is_updated:
-            for obj in bpy.data.objects:
-                if obj.is_updated:
-                    print("updated: " + obj.name)
-
-        for mtl in bpy.data.materials:
-            if mtl.is_updated:
-                print("updated: " + mtl.name)
+        data = export.export_data()
+        print(json.dumps(data))
 
     def view_draw(self, context):
         print("view_render!")
