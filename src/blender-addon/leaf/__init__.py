@@ -31,7 +31,11 @@ class LeafRenderEngine(bpy.types.RenderEngine):
     def view_update(self, context):
         print("view_update")
         data = export.export_data()
-        print(json.dumps(data))
+        data_string = json.dumps(data)
+        print(data_string)
+
+        global engine
+        engine.dll.leaf_load_data(data_string.encode('utf-8'))
 
     def view_draw(self, context):
         print("view_render!")

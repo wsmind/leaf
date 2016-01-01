@@ -1,5 +1,10 @@
 #include <engine/api.h>
+
+#include <cassert>
+#include <cstdio>
+
 #include <engine/Engine.h>
+#include <engine/cJSON/cJSON.h>
 
 LEAFENGINE_API void leaf_initialize(int backbufferWidth, int backbufferHeight, bool capture)
 {
@@ -11,6 +16,14 @@ LEAFENGINE_API void leaf_shutdown()
 {
     Engine::getInstance()->shutdown();
     Engine::destroy();
+}
+
+LEAFENGINE_API void leaf_load_data(const char *data)
+{
+    cJSON *json = cJSON_Parse(data);
+    assert(json);
+    Engine::getInstance()->loadData(json);
+    cJSON_Delete(json);
 }
 
 LEAFENGINE_API void leaf_render(int width, int height)

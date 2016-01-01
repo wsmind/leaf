@@ -9,6 +9,7 @@
 #include <gl/GL.h>
 
 #include <engine/Device.h>
+#include <engine/Material.h>
 #include <engine/Mesh.h>
 #include <engine/ResourceManager.h>
 
@@ -122,6 +123,19 @@ void Engine::shutdown()
     DestroyWindow(this->hwnd);
 
     ResourceManager::destroy();
+}
+
+void Engine::loadData(cJSON *json)
+{
+    cJSON *materials = cJSON_GetObjectItem(json, "materials");
+    cJSON *material = materials->child;
+    while (material)
+    {
+        std::string name = material->string;
+        ResourceManager::getInstance()->updateResourceData<Material>(name, material);
+        
+        material = material->next;
+    }
 }
 
 void Engine::render(int width, int height)

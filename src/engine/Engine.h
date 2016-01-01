@@ -5,6 +5,8 @@
 #include <windows.h>
 #include <d3d11.h>
 
+struct cJSON;
+
 class Mesh;
 
 class Engine
@@ -12,6 +14,8 @@ class Engine
     public:
         void initialize(int backbufferWidth, int backbufferHeight, bool capture);
         void shutdown();
+
+        void loadData(cJSON *json);
 
         void render(int width, int height);
         void renderBlenderViewport(int width, int height);

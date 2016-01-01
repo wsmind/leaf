@@ -11,7 +11,7 @@ void ResourceManager::updateResourceData(const std::string &name, const cJSON *d
     ResourceDescriptor &descriptor = findDescriptor<ResourceType>(name);
 
     if (descriptor.data != nullptr)
-        cJSON_Free(descriptor.data);
+        cJSON_Delete(descriptor.data);
 
     descriptor.data = cJSON_Duplicate(data, 1);
 

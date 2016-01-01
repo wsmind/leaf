@@ -140,7 +140,7 @@ static int update(printbuffer *p)
 	char *str;
 	if (!p || !p->buffer) return 0;
 	str=p->buffer+p->offset;
-	return p->offset+strlen(str);
+	return p->offset+(int)strlen(str);
 }
 
 /* Render the number nicely from the given item into a string. */
@@ -256,7 +256,7 @@ static char *print_string_ptr(const char *str,printbuffer *p)
 	for (ptr=str;*ptr;ptr++) flag|=((*ptr>0 && *ptr<32)||(*ptr=='\"')||(*ptr=='\\'))?1:0;
 	if (!flag)
 	{
-		len=ptr-str;
+		len=(int)(ptr-str);
 		if (p) out=ensure(p,len+3);
 		else		out=(char*)cJSON_malloc(len+3);
 		if (!out) return 0;
@@ -478,7 +478,7 @@ static char *print_array(cJSON *item,int depth,int fmt,printbuffer *p)
 		{
 			ret=print_value(child,depth+1,fmt,0);
 			entries[i++]=ret;
-			if (ret) len+=strlen(ret)+2+(fmt?1:0); else fail=1;
+			if (ret) len+=(int)strlen(ret)+2+(fmt?1:0); else fail=1;
 			child=child->next;
 		}
 		
@@ -621,7 +621,7 @@ static char *print_object(cJSON *item,int depth,int fmt,printbuffer *p)
 		{
 			names[i]=str=print_string_ptr(child->string,0);
 			entries[i++]=ret=print_value(child,depth,fmt,0);
-			if (str && ret) len+=strlen(ret)+strlen(str)+2+(fmt?2+depth:0); else fail=1;
+			if (str && ret) len+=(int)strlen(ret)+(int)strlen(str)+2+(fmt?2+depth:0); else fail=1;
 			child=child->next;
 		}
 		
@@ -705,7 +705,7 @@ cJSON *cJSON_CreateDoubleArray(const double *numbers,int count)	{int i;cJSON *n=
 cJSON *cJSON_CreateStringArray(const char **strings,int count)	{int i;cJSON *n=0,*p=0,*a=cJSON_CreateArray();for(i=0;a && i<count;i++){n=cJSON_CreateString(strings[i]);if(!i)a->child=n;else suffix_object(p,n);p=n;}return a;}
 
 /* Duplication */
-cJSON *cJSON_Duplicate(cJSON *item,int recurse)
+cJSON *cJSON_Duplicate(const cJSON *item,int recurse)
 {
 	cJSON *newitem,*cptr,*nptr=0,*newchild;
 	/* Bail on bad ptr */

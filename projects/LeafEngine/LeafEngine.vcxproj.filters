@@ -6,9 +6,11 @@
     <ClCompile Include="..\..\src\engine\Engine.cpp" />
     <ClCompile Include="..\..\src\engine\Mesh.cpp" />
     <ClCompile Include="..\..\src\engine\Device.cpp" />
-    <ClCompile Include="..\..\src\engine\ResourceManager.inline.h" />
     <ClCompile Include="..\..\src\engine\ResourceManager.cpp" />
     <ClCompile Include="..\..\src\engine\Material.cpp" />
+    <ClCompile Include="..\..\src\engine\cJSON\cJSON.c">
+      <Filter>cJSON</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\engine\Renderer.h" />
@@ -22,6 +24,10 @@
     <ClInclude Include="..\..\src\engine\Device.h" />
     <ClInclude Include="..\..\src\engine\Mesh.h" />
     <ClInclude Include="..\..\src\engine\Material.h" />
+    <ClInclude Include="..\..\src\engine\ResourceManager.inline.h" />
+    <ClInclude Include="..\..\src\engine\cJSON\cJSON.h">
+      <Filter>cJSON</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\..\src\engine\shaders\plop.vs.hlsl">
@@ -37,6 +43,9 @@
     </Filter>
     <Filter Include="blender-addon">
       <UniqueIdentifier>{841e16fa-304c-4e34-a9fe-7435ea03131c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="cJSON">
+      <UniqueIdentifier>{475ef57d-2dad-44f9-a439-6ba115a64e87}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

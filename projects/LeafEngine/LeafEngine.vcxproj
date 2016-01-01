@@ -95,7 +95,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;LEAFENGINE_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;LEAFENGINE_EXPORTS;WIN32_LEAN_AND_MEAN;WIN32_EXTRA_LEAN;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -109,7 +109,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>_DEBUG;_WINDOWS;_USRDLL;LEAFENGINE_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_WINDOWS;_USRDLL;LEAFENGINE_EXPORTS;WIN32_LEAN_AND_MEAN;WIN32_EXTRA_LEAN;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -125,7 +125,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;LEAFENGINE_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;LEAFENGINE_EXPORTS;WIN32_LEAN_AND_MEAN;WIN32_EXTRA_LEAN;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -143,7 +143,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>NDEBUG;_WINDOWS;_USRDLL;LEAFENGINE_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;_WINDOWS;_USRDLL;LEAFENGINE_EXPORTS;WIN32_LEAN_AND_MEAN;WIN32_EXTRA_LEAN;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -155,12 +155,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\engine\api.cpp" />
+    <ClCompile Include="..\..\src\engine\cJSON\cJSON.c" />
     <ClCompile Include="..\..\src\engine\Device.cpp" />
     <ClCompile Include="..\..\src\engine\Engine.cpp" />
     <ClCompile Include="..\..\src\engine\Material.cpp" />
     <ClCompile Include="..\..\src\engine\Mesh.cpp" />
     <ClCompile Include="..\..\src\engine\Renderer.cpp" />
     <ClCompile Include="..\..\src\engine\ResourceManager.cpp" />
+    <ClInclude Include="..\..\src\engine\cJSON\cJSON.h" />
     <ClInclude Include="..\..\src\engine\Material.h" />
     <ClInclude Include="..\..\src\engine\ResourceManager.inline.h">
       <FileType>CppCode</FileType>
