@@ -90,9 +90,11 @@ void Engine::initialize(int backbufferWidth, int backbufferHeight, bool capture)
 
     D3D11_INPUT_ELEMENT_DESC layout[] =
     {
-        { "POSITION", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 }
+        { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+        { "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+        { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 24, D3D11_INPUT_PER_VERTEX_DATA, 0 }
     };
-    res = Device::device->CreateInputLayout(layout, 1, plopVS, sizeof(plopVS), &inputLayout);
+    res = Device::device->CreateInputLayout(layout, 3, plopVS, sizeof(plopVS), &inputLayout);
     CHECK_HRESULT(res);
 
     res = Device::device->CreatePixelShader(plopPS, sizeof(plopPS), NULL, &ps);
@@ -169,7 +171,7 @@ void Engine::render(int width, int height)
 
     this->mesh->bind();
 
-    Device::context->Draw(4, 0);
+    Device::context->Draw(this->mesh->getVertexCount(), 0);
 
     swapChain->Present(0, 0);
 

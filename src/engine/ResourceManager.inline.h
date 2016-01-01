@@ -68,7 +68,10 @@ ResourceManager::ResourceDescriptor &ResourceManager::findDescriptor(const std::
 
     // if it's a new descriptor, we also need to instanciate the actual resource object
     if (descriptor.resource == nullptr)
+    {
         descriptor.resource = new ResourceType;
+        descriptor.data = cJSON_Parse(ResourceType::defaultResourceData.c_str());
+    }
 
     return descriptor;
 }
