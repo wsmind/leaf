@@ -13,6 +13,8 @@
 #include <engine/Mesh.h>
 #include <engine/ResourceManager.h>
 
+#include <shaders/basic.vs.hlsl.h>
+#include <shaders/basic.ps.hlsl.h>
 #include <shaders/plop.vs.hlsl.h>
 #include <shaders/plop.ps.hlsl.h>
 
@@ -85,7 +87,7 @@ void Engine::initialize(int backbufferWidth, int backbufferHeight, bool capture)
         CHECK_HRESULT(res);
     }
 
-    res = Device::device->CreateVertexShader(plopVS, sizeof(plopVS), NULL, &vs);
+    res = Device::device->CreateVertexShader(basicVS, sizeof(basicVS), NULL, &vs);
     CHECK_HRESULT(res);
 
     D3D11_INPUT_ELEMENT_DESC layout[] =
@@ -94,10 +96,10 @@ void Engine::initialize(int backbufferWidth, int backbufferHeight, bool capture)
         { "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
         { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 24, D3D11_INPUT_PER_VERTEX_DATA, 0 }
     };
-    res = Device::device->CreateInputLayout(layout, 3, plopVS, sizeof(plopVS), &inputLayout);
+    res = Device::device->CreateInputLayout(layout, 3, basicVS, sizeof(basicVS), &inputLayout);
     CHECK_HRESULT(res);
 
-    res = Device::device->CreatePixelShader(plopPS, sizeof(plopPS), NULL, &ps);
+    res = Device::device->CreatePixelShader(basicPS, sizeof(basicPS), NULL, &ps);
     CHECK_HRESULT(res);
 
     D3D11_BUFFER_DESC cbDesc;
@@ -113,7 +115,7 @@ void Engine::initialize(int backbufferWidth, int backbufferHeight, bool capture)
 
     startTime = timeGetTime();
 
-    this->mesh = ResourceManager::getInstance()->requestResource<Mesh>("plop");
+    this->mesh = ResourceManager::getInstance()->requestResource<Mesh>("Cube");
 }
 
 void Engine::shutdown()
@@ -130,13 +132,29 @@ void Engine::shutdown()
 void Engine::loadData(cJSON *json)
 {
     cJSON *materials = cJSON_GetObjectItem(json, "materials");
-    cJSON *material = materials->child;
-    while (material)
+    if (materials)
     {
-        std::string name = material->string;
-        ResourceManager::getInstance()->updateResourceData<Material>(name, material);
-        
-        material = material->next;
+        cJSON *material = materials->child;
+        while (material)
+        {
+            std::string name = material->string;
+            ResourceManager::getInstance()->updateResourceData<Material>(name, material);
+
+            material = material->next;
+        }
+    }
+
+    cJSON *meshes = cJSON_GetObjectItem(json, "meshes");
+    if (meshes)
+    {
+        cJSON *mesh = meshes->child;
+        while (mesh)
+        {
+            std::string name = mesh->string;
+            ResourceManager::getInstance()->updateResourceData<Mesh>(name, mesh);
+
+            mesh = mesh->next;
+        }
     }
 }
 
@@ -165,6 +183,7 @@ void Engine::render(int width, int height)
     SceneState *sceneState = (SceneState *)mappedResource.pData;
     sceneState->time = time;
     Device::context->Unmap(cb, 0);
+    Device::context->VSSetConstantBuffers(0, 1, &cb);
     Device::context->PSSetConstantBuffers(0, 1, &cb);
 
     Device::context->IASetInputLayout(inputLayout);

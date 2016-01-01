@@ -14,7 +14,7 @@ PS_INPUT main(VS_INPUT input)
 	output.pos = float4(input.pos.xy, 0.0, 1.0);
 
 	input.pos.x *= 16.0 / 9.0;
-	output.coord = input.pos;
+	output.coord = input.pos.xy;
 
 	return output;
 }

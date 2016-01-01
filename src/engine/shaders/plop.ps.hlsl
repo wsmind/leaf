@@ -5,11 +5,6 @@ struct PS_OUTPUT
 	float4 color: SV_TARGET;
 };
 
-cbuffer SceneState: register(b0)
-{
-	float time;
-};
-
 float map(float3 pos)
 {
 	return pos.y + sin(pos.x * 0.5) + sin(pos.z * 0.5);
