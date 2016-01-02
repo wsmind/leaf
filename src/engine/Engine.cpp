@@ -30,6 +30,9 @@ void Engine::shutdown()
 {
     printf("LeafEngine stopped\n");
 
+    delete this->renderer;
+    this->renderer = nullptr;
+
     DestroyWindow(this->hwnd);
 
     ResourceManager::destroy();
