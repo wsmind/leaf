@@ -19,10 +19,9 @@ BASIC_PS_INPUT main(VS_INPUT input)
 	BASIC_PS_INPUT output;
 
     input.pos.xz = rotate(input.pos.xz, time * 0.1);
+    input.pos.x *= 9.0 / 16.0;
     input.pos.z += 3.0;
-	output.position = float4(input.pos, input.pos.z);
-
-	input.pos.x *= 16.0 / 9.0;
+    output.position = float4(input.pos.xy / input.pos.z, input.pos.z / 10.0, 1.0);
 
 	output.normal = input.normal;
     output.uv = input.uv;

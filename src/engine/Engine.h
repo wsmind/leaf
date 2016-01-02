@@ -31,8 +31,10 @@ class Engine
 
         IDXGISwapChain *swapChain;
         ID3D11Texture2D *backBuffer;
+        ID3D11Texture2D *depthBuffer;
         ID3D11Texture2D *captureBuffer;
         ID3D11RenderTargetView *renderTarget;
+        ID3D11DepthStencilView *depthTarget;
 
         ID3D11VertexShader *vs;
         ID3D11PixelShader *ps;

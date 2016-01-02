@@ -67,13 +67,46 @@ void Engine::initialize(int backbufferWidth, int backbufferHeight, bool capture)
     HRESULT res = D3D11CreateDeviceAndSwapChain(NULL, D3D_DRIVER_TYPE_HARDWARE, NULL, flags, NULL, 0, D3D11_SDK_VERSION, &swapChainDesc, &swapChain, &Device::device, NULL, &Device::context);
     CHECK_HRESULT(res);
 
-    res = swapChain->GetBuffer(0, __uuidof(backBuffer), (void **)&backBuffer);
+    res = swapChain->GetBuffer(0, __uuidof(this->backBuffer), (void **)&this->backBuffer);
     CHECK_HRESULT(res);
 
-    res = Device::device->CreateRenderTargetView(backBuffer, NULL, &renderTarget);
+    res = Device::device->CreateRenderTargetView(this->backBuffer, NULL, &this->renderTarget);
     CHECK_HRESULT(res);
 
-    Device::context->OMSetRenderTargets(1, &renderTarget, NULL);
+    D3D11_TEXTURE2D_DESC depthBufferDesc;
+    ZeroMemory(&depthBufferDesc, sizeof(depthBufferDesc));
+    depthBufferDesc.Width = this->backbufferWidth;
+    depthBufferDesc.Height = this->backbufferHeight;
+    depthBufferDesc.MipLevels = 1;
+    depthBufferDesc.ArraySize = 1;
+    depthBufferDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+    depthBufferDesc.SampleDesc.Count = 1;
+    depthBufferDesc.SampleDesc.Quality = 0;
+    depthBufferDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+
+    res = Device::device->CreateTexture2D(&depthBufferDesc, NULL, &this->depthBuffer);
+    CHECK_HRESULT(res);
+
+    D3D11_DEPTH_STENCIL_VIEW_DESC depthTargetDesc;
+    ZeroMemory(&depthTargetDesc, sizeof(depthTargetDesc));
+    depthTargetDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+    depthTargetDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+    depthTargetDesc.Texture2D.MipSlice = 0;
+
+    res = Device::device->CreateDepthStencilView(depthBuffer, &depthTargetDesc, &this->depthTarget);
+    CHECK_HRESULT(res);
+
+    Device::context->OMSetRenderTargets(1, &this->renderTarget, this->depthTarget);
+
+    D3D11_DEPTH_STENCIL_DESC depthStateDesc;
+    ZeroMemory(&depthStateDesc, sizeof(depthStateDesc));
+    depthStateDesc.DepthEnable = TRUE;
+    depthStateDesc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
+    depthStateDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+
+    ID3D11DepthStencilState *depthState;
+    Device::device->CreateDepthStencilState(&depthStateDesc, &depthState);
+    Device::context->OMSetDepthStencilState(depthState, 0);
 
     if (this->capture)
     {
@@ -172,7 +205,8 @@ void Engine::render(int width, int height)
     Device::context->RSSetViewports(1, &viewport);
 
     float clearColor[] = { 1.0f, 1.0f, 0.0f, 1.0f };
-    Device::context->ClearRenderTargetView(renderTarget, clearColor);
+    Device::context->ClearRenderTargetView(this->renderTarget, clearColor);
+    Device::context->ClearDepthStencilView(this->depthTarget, D3D11_CLEAR_DEPTH, 1.0f, 0);
 
     Device::context->VSSetShader(vs, NULL, 0);
     Device::context->PSSetShader(ps, NULL, 0);
