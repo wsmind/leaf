@@ -31,6 +31,7 @@ def export_mesh(sourceMesh):
     # always apply an edge split modifier, to get proper normals on sharp edges
     obj = bpy.data.objects.new("__temp_obj_for_mesh_export", sourceMesh)
     obj.modifiers.new(name="edge_split", type="EDGE_SPLIT")
+    obj.modifiers["edge_split"].use_edge_angle = False
     mesh = obj.to_mesh(scene=bpy.context.scene, apply_modifiers=True, settings="PREVIEW", calc_tessface=True)
 
     vertices = []
