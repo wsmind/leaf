@@ -43,7 +43,6 @@ def export_mesh(mesh):
         if len(face.vertices) == 4:
             elements = (0, 1, 2, 2, 3, 0)
 
-        print("texFace: ", texFace)
         for e in elements:
             vertex = mesh.vertices[face.vertices[e]]
             uv = texFace.uv[e] if texFace else (0.0, 0.0)

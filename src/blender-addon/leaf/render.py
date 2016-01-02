@@ -1,5 +1,6 @@
 import os
 import shutil
+import json
 
 import bpy
 from bpy.types import Panel, Menu, Operator
@@ -19,8 +20,15 @@ class LEAF_OT_export(Operator):
 
         os.makedirs(rd.filepath, exist_ok=True)
 
-        script_dir = os.path.dirname(__file__)
+        # export data
+        from . import export
+        data = export.export_data()
+        data_string = json.dumps(data)
+        with open(os.path.join(rd.filepath, "data.json"), "wb") as f:
+            f.write(data_string.encode('utf-8'))
 
+        # copy engine files in the output folder
+        script_dir = os.path.dirname(__file__)
         try:
             runtime_files = ["LeafEngine.dll", "LeafRunner.exe"]
             for f in runtime_files:
@@ -28,6 +36,7 @@ class LEAF_OT_export(Operator):
                 destination = os.path.join(rd.filepath, f)
                 shutil.copy(source, destination)
 
+            # run if selected
             if lrd.run_after_export:
                 import subprocess
                 engineExe = os.path.join(rd.filepath, "LeafRunner.exe")
