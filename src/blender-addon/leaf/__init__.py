@@ -42,8 +42,28 @@ class LeafRenderEngine(bpy.types.RenderEngine):
         print(context.region.x, context.region.y, context.region.width, context.region.height)
         print(context.space_data, context.region_data)
 
+        vm = context.region_data.view_matrix.copy()
+        vm.transpose()
+        print(vm)
+        view_matrix = (ctypes.c_float * 16)(
+            vm[0][0], vm[0][1], vm[0][2], vm[0][3],
+            vm[1][0], vm[1][1], vm[1][2], vm[1][3],
+            vm[2][0], vm[2][1], vm[2][2], vm[2][3],
+            vm[3][0], vm[3][1], vm[3][2], vm[3][3]
+        )
+
+        pm = context.region_data.perspective_matrix.copy()
+        pm.transpose()
+        print(pm)
+        projection_matrix = (ctypes.c_float * 16)(
+            pm[0][0], pm[0][1], pm[0][2], pm[0][3],
+            pm[1][0], pm[1][1], pm[1][2], pm[1][3],
+            pm[2][0], pm[2][1], pm[2][2], pm[2][3],
+            pm[3][0], pm[3][1], pm[3][2], pm[3][3]
+        )
+
         global engine
-        engine.dll.leaf_render_blender_viewport(context.region.width, context.region.height)
+        engine.dll.leaf_render_blender_viewport(context.region.width, context.region.height, view_matrix, projection_matrix)
 
 class EngineWrapper:
     def __init__(self):

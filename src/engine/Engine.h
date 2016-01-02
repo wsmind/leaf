@@ -5,6 +5,8 @@
 #include <windows.h>
 #include <d3d11.h>
 
+#include <engine/glm/glm.hpp>
+
 struct cJSON;
 
 class Mesh;
@@ -17,8 +19,8 @@ class Engine
 
         void loadData(cJSON *json);
 
-        void render(int width, int height);
-        void renderBlenderViewport(int width, int height);
+        void render(int width, int height, const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix);
+        void renderBlenderViewport(int width, int height, const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix);
 
     private:
         static Engine *instance;

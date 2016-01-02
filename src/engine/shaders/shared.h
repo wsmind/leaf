@@ -13,5 +13,7 @@ struct BASIC_PS_INPUT
 
 cbuffer SceneState : register(b0)
 {
+    float4x4 viewMatrix;
+    float4x4 projectionMatrix;
     float time;
 };

@@ -20,11 +20,16 @@
 
 Engine *Engine::instance = nullptr;
 
+#pragma pack(push)
+#pragma pack(16)
 struct SceneState
 {
+    glm::mat4 viewMatrix;
+    glm::mat4 projectionMatrix;
     float time;
     float _padding[3];
 };
+#pragma pack(pop)
 
 void Engine::initialize(int backbufferWidth, int backbufferHeight, bool capture)
 {
@@ -107,6 +112,22 @@ void Engine::initialize(int backbufferWidth, int backbufferHeight, bool capture)
     ID3D11DepthStencilState *depthState;
     Device::device->CreateDepthStencilState(&depthStateDesc, &depthState);
     Device::context->OMSetDepthStencilState(depthState, 0);
+
+    D3D11_RASTERIZER_DESC rasterizerDesc;
+    rasterizerDesc.FillMode = D3D11_FILL_SOLID;
+    rasterizerDesc.CullMode = D3D11_CULL_BACK;
+    rasterizerDesc.FrontCounterClockwise = TRUE;
+    rasterizerDesc.DepthBias = D3D11_DEFAULT_DEPTH_BIAS;
+    rasterizerDesc.DepthBiasClamp = D3D11_DEFAULT_DEPTH_BIAS_CLAMP;
+    rasterizerDesc.SlopeScaledDepthBias = D3D11_DEFAULT_SLOPE_SCALED_DEPTH_BIAS;
+    rasterizerDesc.DepthClipEnable = TRUE;
+    rasterizerDesc.ScissorEnable = FALSE;
+    rasterizerDesc.MultisampleEnable = FALSE;
+    rasterizerDesc.AntialiasedLineEnable = FALSE;
+
+    ID3D11RasterizerState *rasterizerState;
+    Device::device->CreateRasterizerState(&rasterizerDesc, &rasterizerState);
+    Device::context->RSSetState(rasterizerState);
 
     if (this->capture)
     {
@@ -191,7 +212,7 @@ void Engine::loadData(cJSON *json)
     }
 }
 
-void Engine::render(int width, int height)
+void Engine::render(int width, int height, const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix)
 {
     float time = (float)(timeGetTime() - startTime) * 0.001f * 140.0f / 60.0f;
 
@@ -215,6 +236,8 @@ void Engine::render(int width, int height)
     HRESULT res = Device::context->Map(cb, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
     CHECK_HRESULT(res);
     SceneState *sceneState = (SceneState *)mappedResource.pData;
+    sceneState->viewMatrix = viewMatrix;
+    sceneState->projectionMatrix = projectionMatrix;
     sceneState->time = time;
     Device::context->Unmap(cb, 0);
     Device::context->VSSetConstantBuffers(0, 1, &cb);
@@ -232,11 +255,11 @@ void Engine::render(int width, int height)
         Device::context->CopyResource(this->captureBuffer, this->backBuffer);
 }
 
-void Engine::renderBlenderViewport(int width, int height)
+void Engine::renderBlenderViewport(int width, int height, const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix)
 {
     assert(this->capture);
 
-    this->render(width, height);
+    this->render(width, height, viewMatrix, projectionMatrix);
 
     glClearColor(1.0f, 1.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
