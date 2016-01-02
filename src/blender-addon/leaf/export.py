@@ -4,18 +4,18 @@ def export_data(updated_only=False):
     data = {}
 
     data["objects"] = {}
-    for obj in bpy.data.objects:
+    for obj in list(bpy.data.objects):
         if obj.is_updated or not updated_only:
             print("exporting object: " + obj.name)
 
     data["materials"] = {}
-    for mtl in bpy.data.materials:
+    for mtl in list(bpy.data.materials):
         if mtl.is_updated or not updated_only:
             print("exporting material: " + mtl.name)
             data["materials"][mtl.name] = export_material(mtl)
 
     data["meshes"] = {}
-    for mesh in bpy.data.meshes:
+    for mesh in list(bpy.data.meshes):
         if mesh.is_updated or not updated_only:
             print("exporting mesh: " + mesh.name)
             data["meshes"][mesh.name] = export_mesh(mesh)
@@ -27,8 +27,11 @@ def export_material(mtl):
         "diffuse": [mtl.diffuse_color.r, mtl.diffuse_color.g, mtl.diffuse_color.b]
     }
 
-def export_mesh(mesh):
-    mesh.update(calc_tessface=True)
+def export_mesh(sourceMesh):
+    # always apply an edge split modifier, to get proper normals on sharp edges
+    obj = bpy.data.objects.new("__temp_obj_for_mesh_export", sourceMesh)
+    obj.modifiers.new(name="edge_split", type="EDGE_SPLIT")
+    mesh = obj.to_mesh(scene=bpy.context.scene, apply_modifiers=True, settings="PREVIEW", calc_tessface=True)
 
     vertices = []
     vertexCount = 0
@@ -56,6 +59,9 @@ def export_mesh(mesh):
             vertices.append(uv[0])
             vertices.append(uv[1])
             vertexCount += 1
+
+    bpy.data.objects.remove(obj)
+    bpy.data.meshes.remove(mesh)
 
     return {
         "vertices": vertices,
