@@ -36,6 +36,9 @@ class ResourceManager
             int users; // refcount, in blender terms
         };
 
+        ResourceManager();
+        ~ResourceManager();
+
         // if not found, creates a new one
         template <class ResourceType>
         ResourceDescriptor &findDescriptor(const std::string &name);
