@@ -33,16 +33,6 @@ LEAFENGINE_API void leaf_render(int width, int height)
 
 LEAFENGINE_API void leaf_render_blender_viewport(int width, int height, float view_matrix[], float projection_matrix[])
 {
-    printf("view: ");
-    for (int i = 0; i < 16; i++)
-        printf(" %f", view_matrix[i]);
-    printf("\n");
-
-    printf("proj: ");
-    for (int i = 0; i < 16; i++)
-        printf(" %f", projection_matrix[i]);
-    printf("\n");
-
     glm::mat4 viewMatrix(
         view_matrix[0], view_matrix[1], view_matrix[2], view_matrix[3],
         view_matrix[4], view_matrix[5], view_matrix[6], view_matrix[7],

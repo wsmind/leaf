@@ -30,11 +30,11 @@ class LeafRenderEngine(bpy.types.RenderEngine):
     # viewport render
     def view_update(self, context):
         print("view_update")
-        data = export.export_data()
-        data_string = json.dumps(data)
-        #print(data_string)
 
         global engine
+        data = export.export_data(not engine.full_data_send)
+        engine.full_data_send = False
+        data_string = json.dumps(data)
         engine.dll.leaf_load_data(data_string.encode('utf-8'))
 
     def view_draw(self, context):
@@ -44,7 +44,6 @@ class LeafRenderEngine(bpy.types.RenderEngine):
 
         vm = context.region_data.view_matrix.copy()
         vm.transpose()
-        print(vm)
         view_matrix = (ctypes.c_float * 16)(
             vm[0][0], vm[0][1], vm[0][2], vm[0][3],
             vm[1][0], vm[1][1], vm[1][2], vm[1][3],
@@ -54,7 +53,6 @@ class LeafRenderEngine(bpy.types.RenderEngine):
 
         pm = context.region_data.perspective_matrix.copy()
         pm.transpose()
-        print(pm)
         projection_matrix = (ctypes.c_float * 16)(
             pm[0][0], pm[0][1], pm[0][2], pm[0][3],
             pm[1][0], pm[1][1], pm[1][2], pm[1][3],
@@ -96,6 +94,9 @@ def register():
     # these dimensions define the maximum viewport size, actual viewports can be smaller
     # and will use only a subregion of it
     engine.dll.leaf_initialize(1920, 1080, True)
+    
+    # tag everything for reupload in engine
+    engine.full_data_send = True
 
     bpy.utils.register_module(__name__)
 
