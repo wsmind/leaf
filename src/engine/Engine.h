@@ -3,13 +3,11 @@
 #include <cassert>
 
 #include <windows.h>
-#include <d3d11.h>
 
 #include <engine/glm/glm.hpp>
 
 struct cJSON;
-
-class Mesh;
+class Renderer;
 
 class Engine
 {
@@ -25,28 +23,10 @@ class Engine
     private:
         static Engine *instance;
 
-        int backbufferWidth;
-        int backbufferHeight;
-        bool capture;
-
         HWND hwnd;
-
-        IDXGISwapChain *swapChain;
-        ID3D11Texture2D *backBuffer;
-        ID3D11Texture2D *depthBuffer;
-        ID3D11Texture2D *captureBuffer;
-        ID3D11RenderTargetView *renderTarget;
-        ID3D11DepthStencilView *depthTarget;
-
-        ID3D11VertexShader *vs;
-        ID3D11PixelShader *ps;
-        ID3D11InputLayout *inputLayout;
-
-        Mesh *mesh;
-        ID3D11Buffer *cb;
-
         DWORD startTime;
 
+        Renderer *renderer;
 public:
         // singleton implementation
         static void create() { assert(!Engine::instance); Engine::instance = new Engine; }

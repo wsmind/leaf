@@ -11,7 +11,7 @@ struct BASIC_PS_INPUT
     float2 uv: TEXCOORD;
 };
 
-cbuffer SceneState : register(b0)
+cbuffer SceneState: register(b0)
 {
     float4x4 viewMatrix;
     float4x4 projectionMatrix;
