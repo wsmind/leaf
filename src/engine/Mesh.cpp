@@ -1,15 +1,20 @@
 #include <engine/Mesh.h>
 
 #include <cassert>
+
+#include <engine/Material.h>
 #include <engine/ResourceManager.h>
 
 const std::string Mesh::resourceClassName = "Mesh";
-const std::string Mesh::defaultResourceData = "{\"vertices\": [-1, -1, 0, 0, 0, 1, 0, 0, -1, 1, 0, 0, 0, 1, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1], \"vertexCount\": 3}";
+const std::string Mesh::defaultResourceData = "{\"vertices\": [-1, -1, 0, 0, 0, 1, 0, 0, -1, 1, 0, 0, 0, 1, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1], \"vertexCount\": 3, \"material\": \"default\"}";
 
 void Mesh::load(const cJSON *json)
 {
     cJSON *jsonVertices = cJSON_GetObjectItem(json, "vertices");
     this->vertexCount = cJSON_GetObjectItem(json, "vertexCount")->valueint;
+
+    std::string materialName = cJSON_GetObjectItem(json, "material")->valuestring;
+    this->material = ResourceManager::getInstance()->requestResource<Material>(materialName);
 
     int arraySize = cJSON_GetArraySize(jsonVertices);
     float *vertices = new float[arraySize];
@@ -48,6 +53,8 @@ void Mesh::unload()
     this->vertexBuffer = nullptr;
 
     this->vertexCount = 0;
+
+    ResourceManager::getInstance()->releaseResource(this->material);
 }
 
 void Mesh::bind() const
@@ -58,9 +65,4 @@ void Mesh::bind() const
     UINT offset = 0;
     Device::context->IASetVertexBuffers(0, 1, &this->vertexBuffer, &stride, &offset);
     Device::context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-}
-
-int Mesh::getVertexCount() const
-{
-    return this->vertexCount;
 }

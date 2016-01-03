@@ -1,6 +1,7 @@
 #include <engine/Scene.h>
 
 #include <cassert>
+#include <engine/RenderList.h>
 #include <engine/ResourceManager.h>
 
 const std::string Scene::resourceClassName = "Scene";
@@ -38,4 +39,16 @@ void Scene::unload()
         ResourceManager::getInstance()->releaseResource(instance.mesh);
     });
     this->instances.clear();
+}
+
+void Scene::fillRenderList(RenderList *renderList) const
+{
+    std::for_each(this->instances.begin(), this->instances.end(), [&](const MeshInstance &instance)
+    {
+        RenderList::Job job;
+        job.mesh = instance.mesh;
+        job.transform = instance.transform;
+        job.material = instance.mesh->getMaterial();
+        renderList->addJob(job);
+    });
 }

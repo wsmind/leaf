@@ -6,6 +6,7 @@
 #include <engine/glm/glm.hpp>
 
 class Mesh;
+class RenderList;
 class Scene;
 
 class Renderer
@@ -33,6 +34,9 @@ class Renderer
         ID3D11PixelShader *ps;
         ID3D11InputLayout *inputLayout;
 
-        Mesh *mesh;
-        ID3D11Buffer *cb;
+        ID3D11Buffer *cbScene;
+        ID3D11Buffer *cbMaterial;
+        ID3D11Buffer *cbInstance;
+
+        RenderList *renderList;
 };

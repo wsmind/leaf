@@ -95,5 +95,6 @@ def export_mesh(sourceMesh):
 
     return {
         "vertices": vertices,
-        "vertexCount": vertexCount
+        "vertexCount": vertexCount,
+        "material": sourceMesh.materials[0].name
     }

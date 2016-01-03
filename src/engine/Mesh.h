@@ -5,6 +5,8 @@
 #include <engine/Device.h>
 #include <engine/Resource.h>
 
+class Material;
+
 class Mesh: public Resource
 {
     public:
@@ -18,9 +20,14 @@ class Mesh: public Resource
         virtual void unload() override;
 
         void bind() const;
-        int getVertexCount() const;
+
+        int getVertexCount() const { return this->vertexCount; }
+        Material *getMaterial() const { return this->material; }
 
     private:
         ID3D11Buffer *vertexBuffer;
         int vertexCount;
+
+        // assume one material per mesh; submeshes may be implemented later
+        Material *material;
 };

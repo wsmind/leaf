@@ -14,6 +14,7 @@ class Material: public Resource
         struct MaterialData
         {
             glm::vec3 diffuse;
+            float _padding[1];
         };
         #pragma pack(pop)
 

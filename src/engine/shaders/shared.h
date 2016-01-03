@@ -11,9 +11,20 @@ struct BASIC_PS_INPUT
     float2 uv: TEXCOORD;
 };
 
-cbuffer SceneState: register(b0)
+cbuffer SceneData: register(b0)
 {
     float4x4 viewMatrix;
     float4x4 projectionMatrix;
     float time;
+};
+
+cbuffer MaterialData: register(b1)
+{
+    float3 diffuse;
+};
+
+cbuffer InstanceData: register(b2)
+{
+    float4x4 modelMatrix;
+    float4x4 normalMatrix;
 };

@@ -8,6 +8,8 @@
 #include <engine/Mesh.h>
 #include <engine/Resource.h>
 
+class RenderList;
+
 class Scene: public Resource
 {
     public:
@@ -16,6 +18,8 @@ class Scene: public Resource
 
         virtual void load(const cJSON *json) override;
         virtual void unload() override;
+
+        void fillRenderList(RenderList *renderList) const;
 
     private:
         struct MeshInstance

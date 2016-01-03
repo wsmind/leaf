@@ -87,11 +87,11 @@ void Engine::loadData(cJSON *json)
 void Engine::render(int width, int height, const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix)
 {
     float time = (float)(timeGetTime() - startTime) * 0.001f * 140.0f / 60.0f;
-    this->renderer->render(nullptr, width, height, viewMatrix, projectionMatrix, time);
+    this->renderer->render(this->scene, width, height, viewMatrix, projectionMatrix, time);
 }
 
 void Engine::renderBlenderViewport(int width, int height, const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix)
 {
     float time = (float)(timeGetTime() - startTime) * 0.001f * 140.0f / 60.0f;
-    this->renderer->renderBlenderViewport(nullptr, width, height, viewMatrix, projectionMatrix, time);
+    this->renderer->renderBlenderViewport(this->scene, width, height, viewMatrix, projectionMatrix, time);
 }

@@ -7,11 +7,14 @@
 #include <d3d11.h>
 
 #include <engine/glm/glm.hpp>
+#include <engine/glm/gtc/matrix_inverse.hpp>
 
 #include <engine/Device.h>
 #include <engine/Material.h>
 #include <engine/Mesh.h>
+#include <engine/RenderList.h>
 #include <engine/ResourceManager.h>
+#include <engine/Scene.h>
 
 #include <shaders/basic.vs.hlsl.h>
 #include <shaders/basic.ps.hlsl.h>
@@ -27,11 +30,21 @@ struct SceneState
 };
 #pragma pack(pop)
 
+#pragma pack(push)
+#pragma pack(16)
+struct InstanceData
+{
+    glm::mat4 modelMatrix;
+    glm::mat4 normalMatrix;
+};
+#pragma pack(pop)
+
 Renderer::Renderer(HWND hwnd, int backbufferWidth, int backbufferHeight, bool capture)
 {
     this->backbufferWidth = backbufferWidth;
     this->backbufferHeight = backbufferHeight;
     this->capture = capture;
+    this->renderList = new RenderList;
 
     DXGI_SWAP_CHAIN_DESC swapChainDesc;
     ZeroMemory(&swapChainDesc, sizeof(swapChainDesc));
@@ -148,27 +161,35 @@ Renderer::Renderer(HWND hwnd, int backbufferWidth, int backbufferHeight, bool ca
 
     D3D11_BUFFER_DESC cbDesc;
     cbDesc.Usage = D3D11_USAGE_DYNAMIC;
-    cbDesc.ByteWidth = sizeof(SceneState);
     cbDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
     cbDesc.StructureByteStride = 0;
     cbDesc.MiscFlags = 0;
     cbDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 
-    res = Device::device->CreateBuffer(&cbDesc, NULL, &cb);
+    cbDesc.ByteWidth = sizeof(SceneState);
+    res = Device::device->CreateBuffer(&cbDesc, NULL, &this->cbScene);
     CHECK_HRESULT(res);
 
-    this->mesh = ResourceManager::getInstance()->requestResource<Mesh>("Cube");
+    cbDesc.ByteWidth = sizeof(Material::MaterialData);
+    res = Device::device->CreateBuffer(&cbDesc, NULL, &this->cbMaterial);
+    CHECK_HRESULT(res);
+
+    cbDesc.ByteWidth = sizeof(InstanceData);
+    res = Device::device->CreateBuffer(&cbDesc, NULL, &this->cbInstance);
+    CHECK_HRESULT(res);
+
+    ID3D11Buffer *allConstantBuffers[] = { this->cbScene, this->cbMaterial, this->cbInstance };
+    Device::context->VSSetConstantBuffers(0, 3, allConstantBuffers);
+    Device::context->PSSetConstantBuffers(0, 3, allConstantBuffers);
 }
 
 Renderer::~Renderer()
 {
-    ResourceManager::getInstance()->releaseResource(this->mesh);
+    delete this->renderList;
 }
 
 void Renderer::render(const Scene *scene, int width, int height, const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix, float time)
 {
-    printf("rendering!\n");
-
     D3D11_VIEWPORT viewport;
     viewport.Width = (float)width;
     viewport.Height = (float)height;
@@ -186,21 +207,51 @@ void Renderer::render(const Scene *scene, int width, int height, const glm::mat4
     Device::context->PSSetShader(ps, NULL, 0);
 
     D3D11_MAPPED_SUBRESOURCE mappedResource;
-    HRESULT res = Device::context->Map(cb, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+    HRESULT res = Device::context->Map(this->cbScene, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
     CHECK_HRESULT(res);
     SceneState *sceneState = (SceneState *)mappedResource.pData;
     sceneState->viewMatrix = viewMatrix;
     sceneState->projectionMatrix = projectionMatrix;
     sceneState->time = time;
-    Device::context->Unmap(cb, 0);
-    Device::context->VSSetConstantBuffers(0, 1, &cb);
-    Device::context->PSSetConstantBuffers(0, 1, &cb);
+    Device::context->Unmap(this->cbScene, 0);
 
     Device::context->IASetInputLayout(inputLayout);
 
-    this->mesh->bind();
+    this->renderList->clear();
+    scene->fillRenderList(this->renderList);
+    this->renderList->sort();
 
-    Device::context->Draw(this->mesh->getVertexCount(), 0);
+    const std::vector<RenderList::Job> &jobs = this->renderList->getJobs();
+
+    Material *currentMaterial = nullptr;
+    Mesh * currentMesh = nullptr;
+    std::for_each(jobs.begin(), jobs.end(), [&](const RenderList::Job &job)
+    {
+        if (currentMaterial != job.material)
+        {
+            currentMaterial = job.material;
+
+            HRESULT res = Device::context->Map(this->cbMaterial, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+            CHECK_HRESULT(res);
+            memcpy(mappedResource.pData, &currentMaterial->getMaterialData(), sizeof(Material::MaterialData));
+            Device::context->Unmap(this->cbMaterial, 0);
+        }
+
+        if (currentMesh != job.mesh)
+        {
+            currentMesh = job.mesh;
+            currentMesh->bind();
+        }
+
+        HRESULT res = Device::context->Map(this->cbInstance, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+        CHECK_HRESULT(res);
+        InstanceData *instanceData = (InstanceData *)mappedResource.pData;
+        instanceData->modelMatrix = job.transform;
+        instanceData->normalMatrix = glm::inverseTranspose(job.transform);
+        Device::context->Unmap(this->cbInstance, 0);
+
+        Device::context->Draw(currentMesh->getVertexCount(), 0);
+    });
 
     swapChain->Present(0, 0);
 

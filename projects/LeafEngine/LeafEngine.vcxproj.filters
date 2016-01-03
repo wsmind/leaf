@@ -12,6 +12,7 @@
       <Filter>cJSON</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\engine\Scene.cpp" />
+    <ClCompile Include="..\..\src\engine\RenderList.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\engine\Renderer.h" />
@@ -30,6 +31,7 @@
       <Filter>cJSON</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\engine\Scene.h" />
+    <ClInclude Include="..\..\src\engine\RenderList.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\..\src\engine\shaders\plop.vs.hlsl">
