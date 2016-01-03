@@ -1,12 +1,17 @@
 import bpy
+import ctypes
 
 def export_data(updated_only=False):
     data = {}
 
-    data["objects"] = {}
-    for obj in list(bpy.data.objects):
-        if obj.is_updated or not updated_only:
-            print("exporting object: " + obj.name)
+    data["scenes"] = {}
+    for scene in list(bpy.data.scenes):
+        #if scene.is_updated or not updated_only:
+        if True:
+            print("exporting scene: " + scene.name)
+            data["scenes"][scene.name] = export_scene(scene)
+            import json
+            print(json.dumps(data["scenes"][scene.name]))
 
     data["materials"] = {}
     for mtl in list(bpy.data.materials):
@@ -21,6 +26,30 @@ def export_data(updated_only=False):
             data["meshes"][mesh.name] = export_mesh(mesh)
 
     return data
+
+def export_scene(scene):
+    return {
+        "meshes": [export_mesh_instance(obj) for obj in scene.objects if obj.type == "MESH"],
+        "lights": [export_light(obj) for obj in scene.objects if obj.type == "LAMP"]
+    }
+
+def export_mesh_instance(obj):
+    wm = obj.matrix_world.copy()
+    wm.transpose()
+    world_matrix = [
+        wm[0][0], wm[0][1], wm[0][2], wm[0][3],
+        wm[1][0], wm[1][1], wm[1][2], wm[1][3],
+        wm[2][0], wm[2][1], wm[2][2], wm[2][3],
+        wm[3][0], wm[3][1], wm[3][2], wm[3][3]
+    ]
+
+    return {
+        "transform": world_matrix,
+        "mesh": obj.data.name
+    }
+
+def export_light(obj):
+    return {}
 
 def export_material(mtl):
     return {

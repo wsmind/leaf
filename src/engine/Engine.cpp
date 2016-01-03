@@ -9,6 +9,7 @@
 #include <engine/Mesh.h>
 #include <engine/Renderer.h>
 #include <engine/ResourceManager.h>
+#include <engine/Scene.h>
 
 Engine *Engine::instance = nullptr;
 
@@ -22,6 +23,7 @@ void Engine::initialize(int backbufferWidth, int backbufferHeight, bool capture)
     this->hwnd = CreateWindow("static", "Leaf", WS_POPUP | (capture ? 0 : WS_VISIBLE), 0, 0, backbufferWidth, backbufferHeight, NULL, NULL, NULL, 0);
 
     this->renderer = new Renderer(hwnd, backbufferWidth, backbufferHeight, capture);
+    this->scene = ResourceManager::getInstance()->requestResource<Scene>("Scene");
 
     startTime = timeGetTime();
 }
@@ -29,6 +31,8 @@ void Engine::initialize(int backbufferWidth, int backbufferHeight, bool capture)
 void Engine::shutdown()
 {
     printf("LeafEngine stopped\n");
+
+    ResourceManager::getInstance()->releaseResource(this->scene);
 
     delete this->renderer;
     this->renderer = nullptr;
@@ -40,6 +44,19 @@ void Engine::shutdown()
 
 void Engine::loadData(cJSON *json)
 {
+    cJSON *scenes = cJSON_GetObjectItem(json, "scenes");
+    if (scenes)
+    {
+        cJSON *scene = scenes->child;
+        while (scene)
+        {
+            std::string name = scene->string;
+            ResourceManager::getInstance()->updateResourceData<Scene>(name, scene);
+
+            scene = scene->next;
+        }
+    }
+
     cJSON *materials = cJSON_GetObjectItem(json, "materials");
     if (materials)
     {

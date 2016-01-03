@@ -8,6 +8,7 @@
 
 struct cJSON;
 class Renderer;
+class Scene;
 
 class Engine
 {
@@ -27,6 +28,8 @@ class Engine
         DWORD startTime;
 
         Renderer *renderer;
+        Scene *scene;
+
 public:
         // singleton implementation
         static void create() { assert(!Engine::instance); Engine::instance = new Engine; }

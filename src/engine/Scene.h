@@ -1,26 +1,27 @@
 #pragma once
 
 #include <string>
+#include <vector>
 
-#include <engine/Device.h>
+#include <engine/glm/glm.hpp>
+
+#include <engine/Mesh.h>
 #include <engine/Resource.h>
 
-class Mesh: public Resource
+class Scene: public Resource
 {
     public:
         static const std::string resourceClassName;
         static const std::string defaultResourceData;
 
-        Mesh(): vertexBuffer(nullptr), vertexCount(0) {}
-        virtual ~Mesh() {}
-
         virtual void load(const cJSON *json) override;
         virtual void unload() override;
 
-        void bind() const;
-        int getVertexCount() const;
-
     private:
-        ID3D11Buffer *vertexBuffer;
-        int vertexCount;
+        struct MeshInstance
+        {
+            Mesh *mesh;
+            glm::mat4 transform;
+        };
+        std::vector<MeshInstance> instances;
 };
