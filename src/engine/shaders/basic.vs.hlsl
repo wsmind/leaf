@@ -30,7 +30,8 @@ BASIC_PS_INPUT main(VS_INPUT input)
     output.position /= output.position.w;
     output.position.z = output.position.z * 0.5 + 0.5;
 
-	output.normal = input.normal;
+    output.worldPosition = pos.xyz;
+    output.normal = mul((float3x3)modelMatrix, input.normal);
     output.uv = input.uv;
 
 	return output;

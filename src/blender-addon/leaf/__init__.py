@@ -29,8 +29,6 @@ class LeafRenderEngine(bpy.types.RenderEngine):
 
     # viewport render
     def view_update(self, context):
-        print("view_update")
-
         global engine
         data = export.export_data(not engine.full_data_send)
         engine.full_data_send = False
@@ -38,10 +36,6 @@ class LeafRenderEngine(bpy.types.RenderEngine):
         engine.dll.leaf_load_data(data_string.encode('utf-8'))
 
     def view_draw(self, context):
-        print("view_render!")
-        print(context.region.x, context.region.y, context.region.width, context.region.height)
-        print(context.space_data, context.region_data)
-
         vm = context.region_data.view_matrix.copy()
         vm.transpose()
         view_matrix = (ctypes.c_float * 16)(

@@ -35,7 +35,8 @@ struct SceneState
 struct InstanceData
 {
     glm::mat4 modelMatrix;
-    glm::mat4 normalMatrix;
+    glm::mat3 normalMatrix;
+    float _padding[3];
 };
 #pragma pack(pop)
 
@@ -247,7 +248,7 @@ void Renderer::render(const Scene *scene, int width, int height, const glm::mat4
         CHECK_HRESULT(res);
         InstanceData *instanceData = (InstanceData *)mappedResource.pData;
         instanceData->modelMatrix = job.transform;
-        instanceData->normalMatrix = glm::inverseTranspose(job.transform);
+        instanceData->normalMatrix = glm::mat3(glm::inverseTranspose(job.transform));
         Device::context->Unmap(this->cbInstance, 0);
 
         Device::context->Draw(currentMesh->getVertexCount(), 0);

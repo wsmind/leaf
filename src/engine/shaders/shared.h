@@ -7,6 +7,7 @@ struct PS_INPUT
 struct BASIC_PS_INPUT
 {
 	float4 position: SV_POSITION;
+    float3 worldPosition: POSITION0;
 	float3 normal: NORMAL;
     float2 uv: TEXCOORD;
 };
@@ -26,5 +27,4 @@ cbuffer MaterialData: register(b1)
 cbuffer InstanceData: register(b2)
 {
     float4x4 modelMatrix;
-    float4x4 normalMatrix;
 };

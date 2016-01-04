@@ -10,8 +10,8 @@ def export_data(updated_only=False):
         if True:
             print("exporting scene: " + scene.name)
             data["scenes"][scene.name] = export_scene(scene)
-            import json
-            print(json.dumps(data["scenes"][scene.name]))
+            #import json
+            #print(json.dumps(data["scenes"][scene.name]))
 
     data["materials"] = {}
     for mtl in list(bpy.data.materials):
@@ -96,5 +96,5 @@ def export_mesh(sourceMesh):
     return {
         "vertices": vertices,
         "vertexCount": vertexCount,
-        "material": sourceMesh.materials[0].name
+        "material": sourceMesh.materials[0].name if (len(sourceMesh.materials) > 0 and sourceMesh.materials[0]) else "default"
     }
