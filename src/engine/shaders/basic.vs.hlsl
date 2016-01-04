@@ -23,8 +23,8 @@ BASIC_PS_INPUT main(VS_INPUT input)
     //input.pos.z -= 4.0;
 
     float4 pos = mul(modelMatrix, float4(input.pos, 1.0));
-    pos = mul(viewMatrix, pos);
-    output.position = mul(projectionMatrix, float4(input.pos, 1.0));
+    //pos = mul(viewMatrix, pos);
+    output.position = mul(projectionMatrix, pos);
 
     // hack; GL to DX clip space
     output.position /= output.position.w;
