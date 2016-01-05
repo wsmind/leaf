@@ -23,7 +23,9 @@ cbuffer SceneData: register(b0)
 
 cbuffer MaterialData: register(b1)
 {
-    float3 diffuse;
+    float3 albedo; // already divided by Pi
+    float metalness;
+    float roughness;
 };
 
 cbuffer InstanceData: register(b2)

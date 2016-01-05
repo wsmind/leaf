@@ -5,6 +5,11 @@ struct PS_OUTPUT
 	float4 color: SV_TARGET;
 };
 
+float g1v(float dotNV, float k)
+{
+    return 1.0 / (dotNV * (1.0 - k) + 1.0);
+}
+
 PS_OUTPUT main(BASIC_PS_INPUT input)
 {
 	PS_OUTPUT output;
@@ -14,10 +19,42 @@ PS_OUTPUT main(BASIC_PS_INPUT input)
     const float3 normal = normalize(input.normal);
     const float3 h = normalize(eye + light);
 
-    float d = saturate(dot(normal, light));
+    /*float d = saturate(dot(normal, light));
     float s = saturate(pow(dot(normal, h), 80.0));
+    float3 blinn_phong = diffuse * d + s;*/
 
-	output.color = float4(diffuse * d + s, 1.0);
+    // blend between dielectric and metal
+    const float f0 = 0.03;
+    float3 specularColor = lerp(float3(1.0, 1.0, 1.0), albedo, metalness);
+    float3 finalAlbedo = albedo * (1.0 - metalness);
+
+    // precompute all cosines
+    float dotLH = saturate(dot(light, h));
+    float dotNH = saturate(dot(normal, h));
+    float dotNL = saturate(dot(normal, light));
+    float dotNV = saturate(dot(normal, eye));
+
+    // simple lambert for diffuse
+    float3 diffuse = dotNL * finalAlbedo;
+
+    // schlick fresnel approximation
+    float fresnel = f0 + (1.0 - f0) * pow(1.0 - dotNV, 5.0);
+
+    float alpha = roughness * roughness;
+    float alphaSquared = alpha * alpha;
+
+    // GGX normal distribution
+    float denominator = dotNH * dotNH * (alphaSquared - 1.0) + 1.0;
+    float normalDistribution = alphaSquared / (3.141592 * denominator * denominator);
+
+    // schlick approximation for geometry factor
+    float k = alpha * 0.5;
+    float geometryFactor = g1v(dotNL, k) * g1v(dotNV, k);
+
+    // cook-torrance microfacet model
+    float3 specular = specularColor * dotNL * fresnel * normalDistribution * geometryFactor;
+
+	output.color = float4((diffuse + specular) * 10.0, 1.0);
 
 	return output;
 }

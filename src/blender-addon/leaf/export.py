@@ -52,8 +52,11 @@ def export_light(obj):
     return {}
 
 def export_material(mtl):
+    lmtl = mtl.leaf
     return {
-        "diffuse": [mtl.diffuse_color.r, mtl.diffuse_color.g, mtl.diffuse_color.b]
+        "albedo": [mtl.diffuse_color.r, mtl.diffuse_color.g, mtl.diffuse_color.b],
+        "metalness": lmtl.metalness,
+        "roughness": lmtl.roughness
     }
 
 def export_mesh(sourceMesh):

@@ -38,7 +38,6 @@ class LeafRenderEngine(bpy.types.RenderEngine):
     def view_draw(self, context):
         vm = context.region_data.view_matrix.copy()
         vm.transpose()
-        print(vm)
         view_matrix = (ctypes.c_float * 16)(
             vm[0][0], vm[0][1], vm[0][2], vm[0][3],
             vm[1][0], vm[1][1], vm[1][2], vm[1][3],
