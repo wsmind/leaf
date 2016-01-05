@@ -38,6 +38,7 @@ class LeafRenderEngine(bpy.types.RenderEngine):
     def view_draw(self, context):
         vm = context.region_data.view_matrix.copy()
         vm.transpose()
+        print(vm)
         view_matrix = (ctypes.c_float * 16)(
             vm[0][0], vm[0][1], vm[0][2], vm[0][3],
             vm[1][0], vm[1][1], vm[1][2], vm[1][3],
@@ -45,7 +46,7 @@ class LeafRenderEngine(bpy.types.RenderEngine):
             vm[3][0], vm[3][1], vm[3][2], vm[3][3]
         )
 
-        pm = context.region_data.perspective_matrix.copy()
+        pm = context.region_data.window_matrix.copy()
         pm.transpose()
         projection_matrix = (ctypes.c_float * 16)(
             pm[0][0], pm[0][1], pm[0][2], pm[0][3],

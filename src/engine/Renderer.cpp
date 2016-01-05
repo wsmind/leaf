@@ -266,7 +266,7 @@ void Renderer::renderBlenderViewport(const Scene *scene, int width, int height, 
 
     this->render(scene, width, height, viewMatrix, projectionMatrix, time);
 
-    glClearColor(1.0f, 1.0f, 0.0f, 1.0f);
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
     D3D11_MAPPED_SUBRESOURCE mappedCaptureBuffer;
@@ -274,9 +274,9 @@ void Renderer::renderBlenderViewport(const Scene *scene, int width, int height, 
     CHECK_HRESULT(res);
 
     // direct copy from D3D mapped memory to GL backbuffer :)
-    glRasterPos2i(0, height);
+    glRasterPos2i(0, height - 1);
     glPixelZoom(1, -1);
-    glDrawPixels(this->backbufferWidth, this->backbufferHeight, GL_RGBA, GL_UNSIGNED_BYTE, mappedCaptureBuffer.pData);
+    glDrawPixels(this->backbufferWidth, this->backbufferHeight - 1, GL_RGBA, GL_UNSIGNED_BYTE, mappedCaptureBuffer.pData);
 
     Device::context->Unmap(this->captureBuffer, 0);
 }
