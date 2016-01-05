@@ -31,6 +31,7 @@ BASIC_PS_INPUT main(VS_INPUT input)
     output.position.z = output.position.z * 0.5 + 0.5;
 
     output.worldPosition = worldPosition.xyz;
+    output.eye = cameraPosition - worldPosition.xyz;
     output.normal = mul((float3x3)modelMatrix, input.normal);
     output.uv = input.uv;
 

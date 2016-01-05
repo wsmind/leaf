@@ -10,11 +10,14 @@ PS_OUTPUT main(BASIC_PS_INPUT input)
 	PS_OUTPUT output;
 
     const float3 light = normalize(float3(1.0, 1.0, 1.0));
+    const float3 eye = normalize(input.eye);
+    const float3 normal = normalize(input.normal);
+    const float3 h = normalize(eye + light);
 
-    float3 normal = normalize(input.normal);
     float d = saturate(dot(normal, light));
+    float s = saturate(pow(dot(normal, h), 80.0));
 
-	output.color = float4(diffuse * d, 1.0);
+	output.color = float4(diffuse * d + s, 1.0);
 
 	return output;
 }

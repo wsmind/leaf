@@ -25,8 +25,8 @@ struct SceneState
 {
     glm::mat4 viewMatrix;
     glm::mat4 projectionMatrix;
+    glm::vec3 cameraPosition;
     float time;
-    float _padding[3];
 };
 #pragma pack(pop)
 
@@ -213,6 +213,8 @@ void Renderer::render(const Scene *scene, int width, int height, const glm::mat4
     SceneState *sceneState = (SceneState *)mappedResource.pData;
     sceneState->viewMatrix = viewMatrix;
     sceneState->projectionMatrix = projectionMatrix;
+    glm::mat4 viewMatrixInverse = glm::inverse(viewMatrix);
+    sceneState->cameraPosition = glm::vec3(viewMatrixInverse[3][0], viewMatrixInverse[3][1], viewMatrixInverse[3][2]);
     sceneState->time = time;
     Device::context->Unmap(this->cbScene, 0);
 

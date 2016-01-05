@@ -8,7 +8,8 @@ struct BASIC_PS_INPUT
 {
 	float4 position: SV_POSITION;
     float3 worldPosition: POSITION0;
-	float3 normal: NORMAL;
+    float3 eye: POSITION1;
+    float3 normal: NORMAL;
     float2 uv: TEXCOORD;
 };
 
@@ -16,6 +17,7 @@ cbuffer SceneData: register(b0)
 {
     float4x4 viewMatrix;
     float4x4 projectionMatrix;
+    float3 cameraPosition;
     float time;
 };
 
