@@ -53,7 +53,12 @@ PS_OUTPUT main(BASIC_PS_INPUT input)
     // cook-torrance microfacet model
     float3 specular = fresnel * normalDistribution * visibility;
 
-	output.color = float4(diffuse + specular, 1.0);
+    float3 color = diffuse + specular;
+
+    // gamma correction
+    color = sqrt(color);
+
+	output.color = float4(color, 1.0);
 
 	return output;
 }
