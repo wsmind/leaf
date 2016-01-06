@@ -24,8 +24,7 @@ PS_OUTPUT main(BASIC_PS_INPUT input)
     float3 blinn_phong = diffuse * d + s;*/
 
     // blend between dielectric and metal
-    const float f0 = 0.03;
-    float3 specularColor = lerp(float3(1.0, 1.0, 1.0), albedo, metalness);
+    float3 specularColor = metalness * lerp(metalness.xxx, albedo, metalness);
     float3 finalAlbedo = albedo * (1.0 - metalness);
 
     // precompute all cosines
@@ -38,7 +37,7 @@ PS_OUTPUT main(BASIC_PS_INPUT input)
     float3 diffuse = dotNL * finalAlbedo;
 
     // schlick fresnel approximation
-    float fresnel = f0 + (1.0 - f0) * pow(1.0 - dotNV, 5.0);
+    float3 fresnel = specularColor + (1.0 - specularColor) * pow(1.0 - dotNV, 5.0);
 
     float alpha = roughness * roughness;
     float alphaSquared = alpha * alpha;
@@ -49,12 +48,12 @@ PS_OUTPUT main(BASIC_PS_INPUT input)
 
     // schlick approximation for geometry factor
     float k = alpha * 0.5;
-    float geometryFactor = g1v(dotNL, k) * g1v(dotNV, k);
+    float visibility = g1v(dotNL, k) * g1v(dotNV, k);
 
     // cook-torrance microfacet model
-    float3 specular = specularColor * dotNL * fresnel * normalDistribution * geometryFactor;
+    float3 specular = fresnel * normalDistribution * visibility;
 
-	output.color = float4((diffuse + specular) * 10.0, 1.0);
+	output.color = float4(diffuse + specular, 1.0);
 
 	return output;
 }

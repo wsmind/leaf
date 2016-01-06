@@ -11,9 +11,6 @@ void Material::load(const cJSON *json)
     this->data.albedo = glm::vec3(cJSON_GetArrayItem(diffuse, 0)->valuedouble, cJSON_GetArrayItem(diffuse, 1)->valuedouble, cJSON_GetArrayItem(diffuse, 2)->valuedouble);
     this->data.metalness = (float)cJSON_GetObjectItem(json, "metalness")->valuedouble;
     this->data.roughness = (float)cJSON_GetObjectItem(json, "roughness")->valuedouble;
-
-    // normalize diffuse BRDF
-    this->data.albedo /= 3.1415926535f;
 }
 
 void Material::unload()
