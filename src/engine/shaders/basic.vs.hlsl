@@ -27,8 +27,7 @@ BASIC_PS_INPUT main(VS_INPUT input)
     output.position = mul(projectionMatrix, viewPosition);
 
     // hack; GL to DX clip space
-    output.position /= output.position.w;
-    output.position.z = output.position.z * 0.5 + 0.5;
+    output.position.z = (output.position.z + output.position.w) * 0.5;
 
     output.worldPosition = worldPosition.xyz;
     output.eye = cameraPosition - worldPosition.xyz;
