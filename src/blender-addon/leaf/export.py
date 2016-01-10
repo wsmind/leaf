@@ -28,6 +28,15 @@ def export_data(updated_only=False):
             import json
             print(json.dumps(data["textures"][tex.name]))
 
+    data["images"] = {}
+    for img in list(bpy.data.images):
+        if img.is_updated or not updated_only:
+        #if True:
+            print("exporting image: " + img.name)
+            data["images"][img.name] = export_image(img)
+            #import json
+            #print(json.dumps(data["images"][img.name]))
+
     data["meshes"] = {}
     for mesh in list(bpy.data.meshes):
         if mesh.is_updated or not updated_only:
@@ -77,6 +86,15 @@ def export_texture(tex):
         output["image"] = tex.image.name if tex.image else "__default"
 
     return output
+
+def export_image(img):
+    return {
+        "width": img.size[0],
+        "height": img.size[1],
+        "channels": img.channels,
+        "float": img.is_float,
+        "pixels": [pixel for pixel in img.pixels]
+    }
 
 def export_mesh(sourceMesh):
     # always apply an edge split modifier, to get proper normals on sharp edges
