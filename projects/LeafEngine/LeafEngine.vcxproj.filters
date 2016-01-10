@@ -13,6 +13,8 @@
     </ClCompile>
     <ClCompile Include="..\..\src\engine\Scene.cpp" />
     <ClCompile Include="..\..\src\engine\RenderList.cpp" />
+    <ClCompile Include="..\..\src\engine\Texture.cpp" />
+    <ClCompile Include="..\..\src\engine\Image.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\engine\Renderer.h" />
@@ -32,6 +34,8 @@
     </ClInclude>
     <ClInclude Include="..\..\src\engine\Scene.h" />
     <ClInclude Include="..\..\src\engine\RenderList.h" />
+    <ClInclude Include="..\..\src\engine\Texture.h" />
+    <ClInclude Include="..\..\src\engine\Image.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\..\src\engine\shaders\plop.vs.hlsl">
