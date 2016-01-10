@@ -15,7 +15,7 @@ PS_OUTPUT main(BASIC_PS_INPUT input)
 	PS_OUTPUT output;
 
     const float3 light = normalize(float3(1.0, 1.0, 1.0));
-    const float3 eye = normalize(input.eye);
+    const float3 eye = normalize(cameraPosition - input.worldPosition);
     const float3 normal = normalize(input.normal);
     const float3 h = normalize(eye + light);
 
