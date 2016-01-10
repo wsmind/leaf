@@ -19,6 +19,15 @@ def export_data(updated_only=False):
             print("exporting material: " + mtl.name)
             data["materials"][mtl.name] = export_material(mtl)
 
+    data["textures"] = {}
+    for tex in list(bpy.data.textures):
+        #if tex.is_updated or not updated_only:
+        if True:
+            print("exporting texture: " + tex.name)
+            data["textures"][tex.name] = export_texture(tex)
+            import json
+            print(json.dumps(data["textures"][tex.name]))
+
     data["meshes"] = {}
     for mesh in list(bpy.data.meshes):
         if mesh.is_updated or not updated_only:
@@ -58,6 +67,16 @@ def export_material(mtl):
         "metalness": lmtl.metalness,
         "roughness": lmtl.roughness
     }
+
+def export_texture(tex):
+    output = {
+        "type": tex.type
+    }
+
+    if tex.type == "IMAGE":
+        output["image"] = tex.image.name if tex.image else "__default"
+
+    return output
 
 def export_mesh(sourceMesh):
     # always apply an edge split modifier, to get proper normals on sharp edges
@@ -99,5 +118,5 @@ def export_mesh(sourceMesh):
     return {
         "vertices": vertices,
         "vertexCount": vertexCount,
-        "material": sourceMesh.materials[0].name if (len(sourceMesh.materials) > 0 and sourceMesh.materials[0]) else "default"
+        "material": sourceMesh.materials[0].name if (len(sourceMesh.materials) > 0 and sourceMesh.materials[0]) else "__default"
     }

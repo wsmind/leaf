@@ -80,6 +80,11 @@ class EngineWrapper:
         # remove the temp dll
         os.remove(self.loaded_dll_name)
 
+compatible_panels = [
+    bpy.types.TEXTURE_PT_context_texture,
+    bpy.types.TEXTURE_PT_image
+]
+
 def register():
     global engine
     engine = EngineWrapper()
@@ -94,7 +99,13 @@ def register():
 
     bpy.utils.register_module(__name__)
 
+    for panel in compatible_panels:
+        panel.COMPAT_ENGINES.add("LEAF");
+
 def unregister():
+    for panel in compatible_panels:
+        panel.COMPAT_ENGINES.remove("LEAF");
+
     bpy.utils.unregister_module(__name__)
 
     global engine
