@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cassert>
+#include <string>
 
 #include <windows.h>
 
@@ -17,6 +18,7 @@ class Engine
         void shutdown();
 
         void loadData(cJSON *json);
+        void registerBlob(const std::string &name, const void *buffer);
 
         void render(int width, int height, const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix);
         void renderBlenderViewport(int width, int height, const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix);

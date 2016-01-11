@@ -112,6 +112,11 @@ void Engine::loadData(cJSON *json)
     }
 }
 
+void Engine::registerBlob(const std::string &name, const void *buffer)
+{
+    ResourceManager::getInstance()->registerBlob(name, buffer);
+}
+
 void Engine::render(int width, int height, const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix)
 {
     float time = (float)(timeGetTime() - startTime) * 0.001f * 140.0f / 60.0f;

@@ -3,6 +3,7 @@ import ctypes
 
 def export_data(updated_only=False):
     data = {}
+    blobs = {}
 
     data["scenes"] = {}
     for scene in list(bpy.data.scenes):
@@ -25,17 +26,15 @@ def export_data(updated_only=False):
         if True:
             print("exporting texture: " + tex.name)
             data["textures"][tex.name] = export_texture(tex)
-            import json
-            print(json.dumps(data["textures"][tex.name]))
 
     data["images"] = {}
     for img in list(bpy.data.images):
         if img.is_updated or not updated_only:
         #if True:
             print("exporting image: " + img.name)
-            data["images"][img.name] = export_image(img)
-            #import json
-            #print(json.dumps(data["images"][img.name]))
+            data["images"][img.name] = export_image(img, blobs)
+            import json
+            print(json.dumps(data["images"][img.name]))
 
     data["meshes"] = {}
     for mesh in list(bpy.data.meshes):
@@ -43,7 +42,7 @@ def export_data(updated_only=False):
             print("exporting mesh: " + mesh.name)
             data["meshes"][mesh.name] = export_mesh(mesh)
 
-    return data
+    return data, blobs
 
 def export_scene(scene):
     return {
@@ -81,7 +80,7 @@ def export_texture(tex):
     # filter out unsupported types
     if tex.type not in ["IMAGE"]:
         return {
-            "type": "image",
+            "type": "IMAGE",
             "image": "__default"
         }
 
@@ -94,13 +93,29 @@ def export_texture(tex):
 
     return output
 
-def export_image(img):
+def export_image(img, blobs):
+    blob_name = "image_" + img.name
+
+    pixel_data = None
+    if img.is_float:
+        pixel_data = ctypes.c_float * (img.size[0] * img.size[1] * img.channels)(img.pixels)
+    else:
+        #pixel_data = ctypes.c_uint8 * (img.size[0] * img.size[1] * img.channels)([int(c * 255.0) for c in img.pixels])
+        pixel_data = (ctypes.c_uint8 * (img.size[0] * img.size[1] * img.channels))()
+        i = 0
+        for component in img.pixels:
+            pixel_data[i] = int(component * 255.0)
+            i += 1
+
+    blobs[blob_name] = pixel_data
+
     return {
         "width": img.size[0],
         "height": img.size[1],
         "channels": img.channels,
         "float": img.is_float,
-        "pixels": [pixel for pixel in img.pixels]
+        "pixels": blob_name
+#        "pixels": [pixel for pixel in img.pixels]
     }
 
 def export_mesh(sourceMesh):

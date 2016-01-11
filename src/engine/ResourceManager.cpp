@@ -18,3 +18,19 @@ ResourceManager::~ResourceManager()
         cJSON_Delete(descriptor.data);
     });
 }
+
+void ResourceManager::registerBlob(const std::string &name, const void *buffer)
+{
+    printf("got blob %s at %p\n", name.c_str(), buffer);
+    this->blobs[name] = buffer;
+}
+
+const void *ResourceManager::getBlob(const std::string &name) const
+{
+    BlobMap::const_iterator it = this->blobs.find(name);
+
+    if (it == this->blobs.end())
+        return nullptr;
+
+    return it->second;
+}

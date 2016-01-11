@@ -30,8 +30,15 @@ class LeafRenderEngine(bpy.types.RenderEngine):
     # viewport render
     def view_update(self, context):
         global engine
-        data = export.export_data(not engine.full_data_send)
+        data, blobs = export.export_data(not engine.full_data_send)
         engine.full_data_send = False
+
+        for name, buffer in blobs.items():
+            print("registering blob " + name)
+            engine.dll.leaf_register_blob(name.encode('utf-8'), buffer)
+
+        engine.blobs.update(blobs)
+
         data_string = json.dumps(data)
         engine.dll.leaf_load_data(data_string.encode('utf-8'))
 
@@ -66,6 +73,8 @@ class EngineWrapper:
         self.dll_name = os.path.join(self.script_dir, "LeafEngine.dll")
         self.loaded_dll_name = os.path.join(self.script_dir, "LeafEngine-Loaded.dll")
 
+        self.blobs = {}
+
     def load(self):
         # copy the dll, to allow how reload after rebuild
         shutil.copy(self.dll_name, self.loaded_dll_name)
@@ -79,6 +88,9 @@ class EngineWrapper:
 
         # remove the temp dll
         os.remove(self.loaded_dll_name)
+
+        # unload all blobs stored on python side
+        self.blobs = {}
 
 compatible_panels = [
     bpy.types.TEXTURE_PT_context_texture,

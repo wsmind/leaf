@@ -26,6 +26,11 @@ LEAFENGINE_API void leaf_load_data(const char *data)
     cJSON_Delete(json);
 }
 
+LEAFENGINE_API void leaf_register_blob(const char *name, const void *buffer)
+{
+    Engine::getInstance()->registerBlob(name, buffer);
+}
+
 LEAFENGINE_API void leaf_render(int width, int height)
 {
     Engine::getInstance()->render(width, height, glm::mat4(), glm::mat4());

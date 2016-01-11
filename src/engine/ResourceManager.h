@@ -20,6 +20,10 @@ class ResourceManager
 
         inline void releaseResource(Resource *resource);
 
+        // data store for big datasets (mesh data, image data, etc.)
+        void registerBlob(const std::string &name, const void *buffer);
+        const void *getBlob(const std::string &name) const;
+
     private:
         static ResourceManager *instance;
 
@@ -45,6 +49,9 @@ class ResourceManager
 
         typedef std::map<std::string, ResourceDescriptor> DescriptorMap;
         DescriptorMap descriptors;
+
+        typedef std::map<std::string, const void *> BlobMap;
+        BlobMap blobs;
 
     public:
         // singleton implementation

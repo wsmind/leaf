@@ -3,7 +3,7 @@
 #include <engine/ResourceManager.h>
 
 const std::string Image::resourceClassName = "Image";
-const std::string Image::defaultResourceData = "{\"width\": 1, \"height\": 1, \"channels\": 4, \"float\": false, \"pixels\": [1.0, 0.0, 1.0, 0.0]}";
+const std::string Image::defaultResourceData = "{\"width\": 1, \"height\": 1, \"channels\": 4, \"float\": false, \"pixels\": \"null\"}";
 
 void Image::load(const cJSON *json)
 {
@@ -11,6 +11,7 @@ void Image::load(const cJSON *json)
     int height = cJSON_GetObjectItem(json, "height")->valueint;
     int channels = cJSON_GetObjectItem(json, "channels")->valueint;
     bool useFloat = (cJSON_GetObjectItem(json, "float")->valueint != 0) ? true : false;
+    std::string blobName = cJSON_GetObjectItem(json, "pixels")->valuestring;
 
     assert(channels == 4);
 
@@ -19,9 +20,17 @@ void Image::load(const cJSON *json)
     int valueSize = useFloat ? sizeof(float) : sizeof(unsigned char);
     int bufferSize = elementCount * valueSize;
 
-    void *buffer = malloc(bufferSize);
+    const void *blob = ResourceManager::getInstance()->getBlob(blobName);
+    printf("Loading image blob at %p\n", blob);
 
-    cJSON *pixels = cJSON_GetObjectItem(json, "pixels");
+    const void *buffer = blob;
+    if (!blob)
+    {
+        buffer = malloc(bufferSize);
+        memset((void *)buffer, 0, bufferSize);
+    }
+
+    /*cJSON *pixels = cJSON_GetObjectItem(json, "pixels");
     cJSON *element = pixels->child;
 
     int elementCountCheck = 0;
@@ -46,7 +55,7 @@ void Image::load(const cJSON *json)
         }
     }
 
-    assert(elementCount == elementCountCheck);
+    assert(elementCount == elementCountCheck);*/
     
     D3D11_TEXTURE2D_DESC textureDesc;
     textureDesc.Width = width;
@@ -69,7 +78,8 @@ void Image::load(const cJSON *json)
     HRESULT res = Device::device->CreateTexture2D(&textureDesc, &textureData, &this->texture);
     CHECK_HRESULT(res);
 
-    free(buffer);
+    if (!blob)
+        free((void *)buffer);
 
     res = Device::device->CreateShaderResourceView(this->texture, NULL, &this->srv);
     CHECK_HRESULT(res);
