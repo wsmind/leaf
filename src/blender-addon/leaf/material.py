@@ -20,12 +20,14 @@ class LeafMaterialSettings(bpy.types.PropertyGroup):
             description="0: dielectric, 1: metal",
             min=0.0, max=1.0,
             default=0.0,
+            subtype="FACTOR"
         )
         cls.roughness = FloatProperty(
             name="Roughness",
             description="0: smooth, 1: rough",
             min=0.0, max=1.0,
             default=0.5,
+            subtype="FACTOR"
         )
 
     @classmethod
