@@ -119,6 +119,8 @@ void Engine::registerBlob(const std::string &name, const void *buffer)
 
 void Engine::render(int width, int height, const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix)
 {
+    ResourceManager::getInstance()->update();
+
     float time = (float)(timeGetTime() - startTime) * 0.001f * 140.0f / 60.0f;
     this->renderer->render(this->scene, width, height, viewMatrix, projectionMatrix, time);
 }

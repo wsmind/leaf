@@ -34,3 +34,22 @@ const void *ResourceManager::getBlob(const std::string &name) const
 
     return it->second;
 }
+
+void ResourceManager::update()
+{
+    for (auto it: this->descriptors)
+    {
+        ResourceDescriptor &descriptor = it.second;
+        if (descriptor.pendingUnload)
+        {
+            descriptor.ttl--;
+
+            // when the number of frames has passed, actually unload the resource
+            if (descriptor.ttl == 0)
+            {
+                descriptor.resource->unload();
+                descriptor.pendingUnload = false;
+            }
+        }
+    }
+}

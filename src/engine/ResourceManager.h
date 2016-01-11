@@ -24,6 +24,8 @@ class ResourceManager
         void registerBlob(const std::string &name, const void *buffer);
         const void *getBlob(const std::string &name) const;
 
+        void update();
+
     private:
         static ResourceManager *instance;
 
@@ -33,11 +35,18 @@ class ResourceManager
                 : resource(nullptr)
                 , data(nullptr)
                 , users(0)
+                , pendingUnload(false)
+                , ttl(0)
             {}
 
             Resource *resource;
             cJSON *data;
             int users; // refcount, in blender terms
+
+            // resources are not unloaded right away, to avoid fast unload/load cycles
+            // ttl is the number of frames left before the actual unload
+            bool pendingUnload;
+            int ttl;
         };
 
         ResourceManager();

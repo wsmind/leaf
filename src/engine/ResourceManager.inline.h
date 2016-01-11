@@ -16,7 +16,7 @@ void ResourceManager::updateResourceData(const std::string &name, const cJSON *d
     descriptor.data = cJSON_Duplicate(data, 1);
 
     // reload if necessary
-    if (descriptor.users > 0)
+    if ((descriptor.users > 0) || descriptor.pendingUnload)
     {
         Resource *resource = descriptor.resource;
         cJSON *newData = descriptor.data;
@@ -34,7 +34,9 @@ ResourceType *ResourceManager::requestResource(const std::string &name)
     descriptor.users++;
 
     // load if needed
-    if (descriptor.users == 1)
+    if (descriptor.pendingUnload)
+        descriptor.pendingUnload = false;
+    else if (descriptor.users == 1)
         resource->load(descriptor.data);
 
     return resource;
@@ -54,7 +56,10 @@ void ResourceManager::releaseResource(Resource *resource)
 
     // unload if needed
     if (descriptor.users == 0)
-        descriptor.resource->unload();
+    {
+        descriptor.pendingUnload = true;
+        descriptor.ttl = 20; // keep it around for 20 frames
+    }
 }
 
 template <class ResourceType>
