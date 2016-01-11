@@ -16,8 +16,9 @@ class Image: public Resource
         virtual void load(const cJSON *json) override;
         virtual void unload() override;
 
-        const ID3D11Texture2D *getTexture() const { return this->texture; }
+        ID3D11ShaderResourceView *getSRV() const { return this->srv; }
 
     private:
         ID3D11Texture2D *texture;
+        ID3D11ShaderResourceView *srv;
 };

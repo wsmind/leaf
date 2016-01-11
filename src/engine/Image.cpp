@@ -16,7 +16,7 @@ void Image::load(const cJSON *json)
 
     int pixelCount = width * height;
     int elementCount = pixelCount * channels;
-    int valueSize = useFloat ? sizeof(float) : sizeof(char);
+    int valueSize = useFloat ? sizeof(float) : sizeof(unsigned char);
     int bufferSize = elementCount * valueSize;
 
     void *buffer = malloc(bufferSize);
@@ -24,12 +24,14 @@ void Image::load(const cJSON *json)
     cJSON *pixels = cJSON_GetObjectItem(json, "pixels");
     cJSON *element = pixels->child;
 
+    int elementCountCheck = 0;
     if (useFloat)
     {
         float *floatBuffer = (float *)buffer;
         while (element)
         {
             *floatBuffer++ = (float)element->valuedouble;
+            elementCountCheck++;
             element = element->next;
         }
     }
@@ -38,17 +40,20 @@ void Image::load(const cJSON *json)
         unsigned char *byteBuffer = (unsigned char *)buffer;
         while (element)
         {
-            *byteBuffer++ = (unsigned char)element->valueint;
+            *byteBuffer++ = (unsigned char)(element->valuedouble * 255.0);
+            elementCountCheck++;
             element = element->next;
         }
     }
+
+    assert(elementCount == elementCountCheck);
     
     D3D11_TEXTURE2D_DESC textureDesc;
     textureDesc.Width = width;
     textureDesc.Height = height;
-    textureDesc.MipLevels = 0;
+    textureDesc.MipLevels = 1;
     textureDesc.ArraySize = 1;
-    textureDesc.Format = useFloat ? DXGI_FORMAT_R32G32B32A32_FLOAT : DXGI_FORMAT_R8G8B8A8_UINT;
+    textureDesc.Format = useFloat ? DXGI_FORMAT_R32G32B32A32_FLOAT : DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
     textureDesc.SampleDesc.Count = 1;
     textureDesc.SampleDesc.Quality = 0;
     textureDesc.Usage = D3D11_USAGE_IMMUTABLE;
@@ -58,17 +63,23 @@ void Image::load(const cJSON *json)
 
     D3D11_SUBRESOURCE_DATA textureData;
     textureData.pSysMem = buffer;
-    textureData.SysMemPitch = 0;
+    textureData.SysMemPitch = width * channels * valueSize;
     textureData.SysMemSlicePitch = 0;
 
     HRESULT res = Device::device->CreateTexture2D(&textureDesc, &textureData, &this->texture);
     CHECK_HRESULT(res);
 
     free(buffer);
+
+    res = Device::device->CreateShaderResourceView(this->texture, NULL, &this->srv);
+    CHECK_HRESULT(res);
 }
 
 void Image::unload()
 {
     this->texture->Release();
     this->texture = nullptr;
+
+    this->srv->Release();
+    this->srv = nullptr;
 }

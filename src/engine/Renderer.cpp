@@ -238,6 +238,8 @@ void Renderer::render(const Scene *scene, int width, int height, const glm::mat4
             CHECK_HRESULT(res);
             memcpy(mappedResource.pData, &currentMaterial->getMaterialData(), sizeof(Material::MaterialData));
             Device::context->Unmap(this->cbMaterial, 0);
+
+            currentMaterial->bindTextures();
         }
 
         if (currentMesh != job.mesh)

@@ -5,11 +5,13 @@
 #include <windows.h>
 #include <mmsystem.h>
 
+#include <engine/Image.h>
 #include <engine/Material.h>
 #include <engine/Mesh.h>
 #include <engine/Renderer.h>
 #include <engine/ResourceManager.h>
 #include <engine/Scene.h>
+#include <engine/Texture.h>
 
 Engine *Engine::instance = nullptr;
 
@@ -44,16 +46,29 @@ void Engine::shutdown()
 
 void Engine::loadData(cJSON *json)
 {
-    cJSON *scenes = cJSON_GetObjectItem(json, "scenes");
-    if (scenes)
+    cJSON *images = cJSON_GetObjectItem(json, "images");
+    if (images)
     {
-        cJSON *scene = scenes->child;
-        while (scene)
+        cJSON *image = images->child;
+        while (image)
         {
-            std::string name = scene->string;
-            ResourceManager::getInstance()->updateResourceData<Scene>(name, scene);
+            std::string name = image->string;
+            ResourceManager::getInstance()->updateResourceData<Image>(name, image);
 
-            scene = scene->next;
+            image = image->next;
+        }
+    }
+
+    cJSON *textures = cJSON_GetObjectItem(json, "textures");
+    if (textures)
+    {
+        cJSON *texture = textures->child;
+        while (texture)
+        {
+            std::string name = texture->string;
+            ResourceManager::getInstance()->updateResourceData<Texture>(name, texture);
+
+            texture = texture->next;
         }
     }
 
@@ -80,6 +95,19 @@ void Engine::loadData(cJSON *json)
             ResourceManager::getInstance()->updateResourceData<Mesh>(name, mesh);
 
             mesh = mesh->next;
+        }
+    }
+
+    cJSON *scenes = cJSON_GetObjectItem(json, "scenes");
+    if (scenes)
+    {
+        cJSON *scene = scenes->child;
+        while (scene)
+        {
+            std::string name = scene->string;
+            ResourceManager::getInstance()->updateResourceData<Scene>(name, scene);
+
+            scene = scene->next;
         }
     }
 }

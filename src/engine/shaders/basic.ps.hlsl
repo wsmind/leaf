@@ -1,5 +1,8 @@
 #include "shared.h"
 
+Texture2D<float4> albedoTexture: register(t0);
+SamplerState albedoSampler: register(s0);
+
 struct PS_OUTPUT
 {
 	float4 color: SV_TARGET;
@@ -22,6 +25,8 @@ PS_OUTPUT main(BASIC_PS_INPUT input)
     /*float d = saturate(dot(normal, light));
     float s = saturate(pow(dot(normal, h), 80.0));
     float3 blinn_phong = diffuse * d + s;*/
+
+    float3 albedo = albedoTexture.Sample(albedoSampler, input.uv).rgb;
 
     // blend between dielectric and metal
     float3 specularColor = metalness * lerp(metalness.xxx, albedo, metalness);

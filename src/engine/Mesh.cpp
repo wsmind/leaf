@@ -6,7 +6,7 @@
 #include <engine/ResourceManager.h>
 
 const std::string Mesh::resourceClassName = "Mesh";
-const std::string Mesh::defaultResourceData = "{\"vertices\": [-1, -1, 0, 0, 0, 1, 0, 0, -1, 1, 0, 0, 0, 1, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1], \"vertexCount\": 3, \"material\": \"default\"}";
+const std::string Mesh::defaultResourceData = "{\"vertices\": [-1, -1, 0, 0, 0, 1, 0, 0, -1, 1, 0, 0, 0, 1, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1], \"vertexCount\": 3, \"material\": \"__default\"}";
 
 void Mesh::load(const cJSON *json)
 {

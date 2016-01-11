@@ -78,6 +78,13 @@ def export_material(mtl):
     }
 
 def export_texture(tex):
+    # filter out unsupported types
+    if tex.type not in ["IMAGE"]:
+        return {
+            "type": "image",
+            "image": "__default"
+        }
+
     output = {
         "type": tex.type
     }

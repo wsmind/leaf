@@ -22,7 +22,7 @@ cbuffer SceneData: register(b0)
 
 cbuffer MaterialData: register(b1)
 {
-    float3 albedo; // already divided by Pi
+    float3 albedo2;
     float metalness;
     float roughness;
 };

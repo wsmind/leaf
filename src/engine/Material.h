@@ -5,6 +5,8 @@
 
 #include <engine/Resource.h>
 
+class Texture;
+
 class Material: public Resource
 {
     public:
@@ -28,6 +30,10 @@ class Material: public Resource
 
         const MaterialData &getMaterialData() const { return this->data; }
 
+        void bindTextures() const;
+
     private:
         MaterialData data;
+
+        Texture *tex;
 };
