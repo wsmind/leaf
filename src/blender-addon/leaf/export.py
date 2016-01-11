@@ -22,19 +22,17 @@ def export_data(updated_only=False):
 
     data["textures"] = {}
     for tex in list(bpy.data.textures):
-        #if tex.is_updated or not updated_only:
-        if True:
+        if tex.is_updated or not updated_only:
             print("exporting texture: " + tex.name)
             data["textures"][tex.name] = export_texture(tex)
 
     data["images"] = {}
     for img in list(bpy.data.images):
         if img.is_updated or not updated_only:
-        #if True:
             print("exporting image: " + img.name)
             data["images"][img.name] = export_image(img, blobs)
-            import json
-            print(json.dumps(data["images"][img.name]))
+            #import json
+            #print(json.dumps(data["images"][img.name]))
 
     data["meshes"] = {}
     for mesh in list(bpy.data.meshes):
@@ -98,12 +96,12 @@ def export_image(img, blobs):
 
     pixel_data = None
     if img.is_float:
-        pixel_data = ctypes.c_float * (img.size[0] * img.size[1] * img.channels)(img.pixels)
+        pass
     else:
-        #pixel_data = ctypes.c_uint8 * (img.size[0] * img.size[1] * img.channels)([int(c * 255.0) for c in img.pixels])
         pixel_data = (ctypes.c_uint8 * (img.size[0] * img.size[1] * img.channels))()
         i = 0
-        for component in img.pixels:
+        tmp = img.pixels[:]
+        for component in tmp:
             pixel_data[i] = int(component * 255.0)
             i += 1
 
@@ -115,7 +113,6 @@ def export_image(img, blobs):
         "channels": img.channels,
         "float": img.is_float,
         "pixels": blob_name
-#        "pixels": [pixel for pixel in img.pixels]
     }
 
 def export_mesh(sourceMesh):
