@@ -97,7 +97,12 @@ def export_image(img, blobs):
 
     pixel_data = None
     if img.is_float:
-        pass
+        pixel_data = (ctypes.c_float * (img.size[0] * img.size[1] * img.channels))()
+        i = 0
+        tmp = img.pixels[:]
+        for component in tmp:
+            pixel_data[i] = component
+            i += 1
     else:
         pixel_data = (ctypes.c_uint8 * (img.size[0] * img.size[1] * img.channels))()
         i = 0
