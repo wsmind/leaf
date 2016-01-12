@@ -281,6 +281,7 @@ void Renderer::renderBlenderViewport(const Scene *scene, int width, int height, 
     glRasterPos2i(0, height - 1);
     glPixelZoom(1, -1);
     glDrawPixels(this->backbufferWidth, this->backbufferHeight - 1, GL_RGBA, GL_UNSIGNED_BYTE, mappedCaptureBuffer.pData);
+    glPixelZoom(1, 1);
 
     Device::context->Unmap(this->captureBuffer, 0);
 }
