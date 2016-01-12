@@ -5,7 +5,7 @@
 #include <engine/Texture.h>
 
 const std::string Material::resourceClassName = "Material";
-const std::string Material::defaultResourceData = "{\"albedo\": [1.0, 0.0, 1.0], \"metalness\": 0.5, \"roughness\": 0.5}";
+const std::string Material::defaultResourceData = "{\"albedo\": [1.0, 0.0, 1.0], \"metalness\": 0.5, \"roughness\": 0.5, \"albedoTexture\": \"__default\"}";
 
 void Material::load(const cJSON *json)
 {
