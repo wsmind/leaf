@@ -36,13 +36,12 @@ class LeafTexture_UL_slots(UIList):
         ma = data
         tex = item.texture if item else None
         slot_names = ["Albedo", "Normal Map", "Metalness", "Roughness"]
-        if index >= len(slot_names):
-            return
+        title = slot_names[index] if index < len(slot_names) else "<unused>"
 
         if tex:
-            layout.prop(tex, "name", text=slot_names[index], emboss=False, icon_value=icon)
+            layout.prop(tex, "name", text=title, emboss=False, icon_value=icon)
         else:
-            layout.label(text="", icon_value=icon)
+            layout.label(text=title, icon_value=icon)
         if tex and isinstance(item, bpy.types.MaterialTextureSlot):
             layout.prop(ma, "use_textures", text="", index=index)
 
@@ -56,7 +55,6 @@ class LeafTexture_PT_context(LeafTextureButtonsPanel, Panel):
 
     def draw(self, context):
         layout = self.layout
-        layout.label(text="plop")
 
         mat = context.material
         tex = context.texture
