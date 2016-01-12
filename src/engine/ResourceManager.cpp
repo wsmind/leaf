@@ -8,15 +8,34 @@ ResourceManager::ResourceManager()
 
 ResourceManager::~ResourceManager()
 {
-    // destroy all the resource objects and data
-    std::for_each(this->descriptors.begin(), this->descriptors.end(), [](DescriptorMap::value_type &tuple)
+    // force unload of pending resources
+    int pendingCount = 0;
+    do
     {
-        ResourceDescriptor &descriptor = tuple.second;
+        pendingCount = 0;
+
+        for (auto &it: this->descriptors)
+        {
+            ResourceDescriptor &descriptor = it.second;
+            if (descriptor.pendingUnload)
+            {
+                descriptor.resource->unload();
+                descriptor.pendingUnload = false;
+
+                pendingCount++;
+            }
+        }
+    } while (pendingCount > 0);
+
+    // destroy all the resource objects and data
+    for (auto &it: this->descriptors)
+    {
+        ResourceDescriptor &descriptor = it.second;
 
         assert(descriptor.users == 0);
         delete descriptor.resource;
         cJSON_Delete(descriptor.data);
-    });
+    }
 }
 
 void ResourceManager::registerBlob(const std::string &name, const void *buffer)
@@ -37,7 +56,7 @@ const void *ResourceManager::getBlob(const std::string &name) const
 
 void ResourceManager::update()
 {
-    for (auto it: this->descriptors)
+    for (auto &it: this->descriptors)
     {
         ResourceDescriptor &descriptor = it.second;
         if (descriptor.pendingUnload)

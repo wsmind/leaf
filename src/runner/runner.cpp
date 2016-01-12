@@ -36,6 +36,7 @@ int main()
     while (1)
     {
         leaf_render(1280, 720);
+        //break;
     }
 
     leaf_shutdown();
