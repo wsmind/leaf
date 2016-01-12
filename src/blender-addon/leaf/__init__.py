@@ -9,10 +9,12 @@ if "bpy" in locals():
     imp.reload(export)
     imp.reload(material)
     imp.reload(render)
+    imp.reload(texture)
 else:
     from . import export
     from . import material
     from . import render
+    from . import texture
 
 import bpy
 import ctypes
@@ -93,7 +95,6 @@ class EngineWrapper:
         self.blobs = {}
 
 compatible_panels = [
-    bpy.types.TEXTURE_PT_context_texture,
     bpy.types.TEXTURE_PT_image
 ]
 

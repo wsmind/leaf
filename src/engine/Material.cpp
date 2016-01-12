@@ -14,18 +14,18 @@ void Material::load(const cJSON *json)
     this->data.metalness = (float)cJSON_GetObjectItem(json, "metalness")->valuedouble;
     this->data.roughness = (float)cJSON_GetObjectItem(json, "roughness")->valuedouble;
 
-    this->tex = ResourceManager::getInstance()->requestResource<Texture>("Tex");
+    this->albedoTexture = ResourceManager::getInstance()->requestResource<Texture>(cJSON_GetObjectItem(json, "albedoTexture")->valuestring);
 }
 
 void Material::unload()
 {
-    ResourceManager::getInstance()->releaseResource(this->tex);
+    ResourceManager::getInstance()->releaseResource(this->albedoTexture);
 }
 
 void Material::bindTextures() const
 {
-    ID3D11SamplerState *sampler = this->tex->getSamplerState();
-    ID3D11ShaderResourceView *srv = this->tex->getSRV();
+    ID3D11SamplerState *sampler = this->albedoTexture->getSamplerState();
+    ID3D11ShaderResourceView *srv = this->albedoTexture->getSRV();
 
     Device::context->PSSetSamplers(0, 1, &sampler);
     Device::context->PSSetShaderResources(0, 1, &srv);

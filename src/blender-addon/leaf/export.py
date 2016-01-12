@@ -70,6 +70,7 @@ def export_material(mtl):
     lmtl = mtl.leaf
     return {
         "albedo": [mtl.diffuse_color.r, mtl.diffuse_color.g, mtl.diffuse_color.b],
+        "albedoTexture": mtl.texture_slots[0].name if mtl.texture_slots[0] else "__default",
         "metalness": lmtl.metalness,
         "roughness": lmtl.roughness
     }

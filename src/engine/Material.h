@@ -35,5 +35,5 @@ class Material: public Resource
     private:
         MaterialData data;
 
-        Texture *tex;
+        Texture *albedoTexture;
 };

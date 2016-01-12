@@ -75,7 +75,7 @@
     <None Include="..\..\src\blender-addon\leaf\export.py">
       <Filter>blender-addon</Filter>
     </None>
-    <None Include="..\..\src\blender-addon\leaf\texure.py">
+    <None Include="..\..\src\blender-addon\leaf\texture.py">
       <Filter>blender-addon</Filter>
     </None>
   </ItemGroup>
