@@ -22,9 +22,10 @@ cbuffer SceneData: register(b0)
 
 cbuffer MaterialData: register(b1)
 {
+    // UNUSED (textures are used instead)
     float3 albedo2;
-    float metalness;
-    float roughness;
+    float metalness2;
+    float roughness2;
 };
 
 cbuffer InstanceData: register(b2)

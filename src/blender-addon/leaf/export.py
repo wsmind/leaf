@@ -15,10 +15,12 @@ def export_data(updated_only=False):
             #print(json.dumps(data["scenes"][scene.name]))
 
     data["materials"] = {}
+    generated_textures = {}
+    generated_images = {}
     for mtl in list(bpy.data.materials):
         if mtl.is_updated or not updated_only:
             print("exporting material: " + mtl.name)
-            data["materials"][mtl.name] = export_material(mtl)
+            data["materials"][mtl.name] = export_material(mtl, blobs, generated_textures, generated_images)
 
     data["textures"] = {}
     for tex in list(bpy.data.textures):
@@ -39,6 +41,9 @@ def export_data(updated_only=False):
         if mesh.is_updated or not updated_only:
             print("exporting mesh: " + mesh.name)
             data["meshes"][mesh.name] = export_mesh(mesh)
+
+    data["textures"].update(generated_textures)
+    data["images"].update(generated_images)
 
     return data, blobs
 
@@ -66,16 +71,94 @@ def export_mesh_instance(obj):
 def export_light(obj):
     return {}
 
-def export_material(mtl):
+def export_material(mtl, blobs, generated_textures, generated_images):
+
+    def make_albedo_texture(color):
+        name = "__generated_albedo_" + mtl.name
+
+        generated_textures[name] = {
+            "type": "IMAGE",
+            "image": name
+        }
+
+        generated_images[name] = {
+            "width": 1,
+            "height": 1,
+            "channels": 4,
+            "float": False,
+            "pixels": name
+        }
+
+        blobs[name] = (ctypes.c_uint8 * 4)(int(color.r * 255.0), int(color.g * 255.0), int(color.b * 255.0), 0)
+
+        return name
+
+    def make_default_normal_map():
+        name = "__generated_normal_map"
+
+        generated_textures[name] = {
+            "type": "IMAGE",
+            "image": name
+        }
+
+        generated_images[name] = {
+            "width": 1,
+            "height": 1,
+            "channels": 4,
+            "float": False,
+            "pixels": name
+        }
+
+        blobs[name] = (ctypes.c_uint8 * 4)(128, 128, 255, 0)
+
+        return name
+
+    def make_metalness_texture(metalness):
+        name = "__generated_metalness_" + mtl.name
+
+        generated_textures[name] = {
+            "type": "IMAGE",
+            "image": name
+        }
+
+        generated_images[name] = {
+            "width": 1,
+            "height": 1,
+            "channels": 4,
+            "float": False,
+            "pixels": name
+        }
+
+        blobs[name] = (ctypes.c_uint8 * 4)(int(metalness * 255.0), 0, 0, 0)
+
+        return name
+
+    def make_roughness_texture(roughness):
+        name = "__generated_roughness_" + mtl.name
+
+        generated_textures[name] = {
+            "type": "IMAGE",
+            "image": name
+        }
+
+        generated_images[name] = {
+            "width": 1,
+            "height": 1,
+            "channels": 4,
+            "float": False,
+            "pixels": name
+        }
+
+        blobs[name] = (ctypes.c_uint8 * 4)(int(roughness * 255.0), 0, 0, 0)
+
+        return name
+
     lmtl = mtl.leaf
     return {
-        "albedo": [mtl.diffuse_color.r, mtl.diffuse_color.g, mtl.diffuse_color.b],
-        "metalness": lmtl.metalness,
-        "roughness": lmtl.roughness,
-        "albedoTexture": mtl.texture_slots[0].name if mtl.texture_slots[0] else "__default",
-        "normalTexture": mtl.texture_slots[1].name if mtl.texture_slots[1] else "__default",
-        "metalnessTexture": mtl.texture_slots[2].name if mtl.texture_slots[2] else "__default",
-        "roughnessTexture": mtl.texture_slots[3].name if mtl.texture_slots[3] else "__default"
+        "albedoTexture": mtl.texture_slots[0].name if mtl.texture_slots[0] and mtl.texture_slots[0].use else make_albedo_texture(mtl.diffuse_color),
+        "normalTexture": mtl.texture_slots[1].name if mtl.texture_slots[1] and mtl.texture_slots[1].use else make_default_normal_map(),
+        "metalnessTexture": mtl.texture_slots[2].name if mtl.texture_slots[2] and mtl.texture_slots[2].use else make_metalness_texture(lmtl.metalness),
+        "roughnessTexture": mtl.texture_slots[3].name if mtl.texture_slots[3] and mtl.texture_slots[3].use else make_roughness_texture(lmtl.roughness)
     }
 
 def export_texture(tex):

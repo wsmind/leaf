@@ -55,6 +55,8 @@ PS_OUTPUT main(BASIC_PS_INPUT input)
     float3 pertubatedNormal = mul(tangentNormal, TBN);
 
     float3 albedo = albedoTexture.Sample(albedoSampler, input.uv).rgb;
+    float metalness = metalnessTexture.Sample(metalnessSampler, input.uv).r;
+    float roughness = roughnessTexture.Sample(roughnessSampler, input.uv).r;
 
     // blend between dielectric and metal
     float3 specularColor = metalness * lerp(metalness.xxx, albedo, metalness);
