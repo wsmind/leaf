@@ -36,4 +36,7 @@ class Material: public Resource
         MaterialData data;
 
         Texture *albedoTexture;
+        Texture *normalTexture;
+        Texture *metalnessTexture;
+        Texture *roughnessTexture;
 };
