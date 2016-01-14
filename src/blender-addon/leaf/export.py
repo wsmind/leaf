@@ -229,7 +229,7 @@ def export_mesh(sourceMesh):
 
         for e in elements:
             vertex = mesh.vertices[face.vertices[e]]
-            uv = texFace.uv[e] if texFace else (0.0, 0.0)
+            uv = texFace.uv[e] if texFace else (vertex.co.x, vertex.co.y + vertex.co.z)
 
             vertices.append(vertex.co.x)
             vertices.append(vertex.co.y)
