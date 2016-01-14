@@ -27,6 +27,10 @@ class LEAF_OT_export(Operator):
         with open(os.path.join(rd.filepath, "data.json"), "wb") as f:
             f.write(data_string.encode('utf-8'))
 
+        for name, blob in blobs.items():
+            with open(os.path.join(rd.filepath, name + ".bin"), "wb") as f:
+                f.write(blob)
+
         # copy engine files in the output folder
         script_dir = os.path.dirname(__file__)
         try:
