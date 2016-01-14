@@ -72,11 +72,14 @@ int main()
     std::string data = loadFile("data.json");
     leaf_load_data(data.c_str());
 
+    ShowCursor(FALSE);
+
     while (!GetAsyncKeyState(VK_ESCAPE))
     {
         leaf_render(1280, 720);
-        //break;
     }
+
+    ShowCursor(TRUE);
 
     leaf_shutdown();
 

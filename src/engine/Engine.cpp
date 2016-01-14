@@ -119,6 +119,14 @@ void Engine::registerBlob(const std::string &name, const void *buffer)
 
 void Engine::render(int width, int height, const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix)
 {
+    // process window events to avoid the window turning unresponsive
+    MSG msg;
+    while (PeekMessage(&msg, this->hwnd, 0, 0, PM_REMOVE))
+    {
+        TranslateMessage(&msg);
+        DispatchMessage(&msg);
+    }
+
     ResourceManager::getInstance()->update();
 
     float time = (float)(timeGetTime() - startTime) * 0.001f * 140.0f / 60.0f;
