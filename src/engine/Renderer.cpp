@@ -18,6 +18,8 @@
 
 #include <shaders/basic.vs.hlsl.h>
 #include <shaders/basic.ps.hlsl.h>
+#include <shaders/plop.vs.hlsl.h>
+#include <shaders/plop.ps.hlsl.h>
 
 #pragma pack(push)
 #pragma pack(16)
@@ -145,8 +147,11 @@ Renderer::Renderer(HWND hwnd, int backbufferWidth, int backbufferHeight, bool ca
         CHECK_HRESULT(res);
     }
 
-    res = Device::device->CreateVertexShader(basicVS, sizeof(basicVS), NULL, &vs);
-    CHECK_HRESULT(res);
+    res = Device::device->CreateVertexShader(basicVS, sizeof(basicVS), NULL, &basicVertexShader); CHECK_HRESULT(res);
+    res = Device::device->CreateVertexShader(plopVS, sizeof(plopVS), NULL, &plopVertexShader); CHECK_HRESULT(res);
+
+    res = Device::device->CreatePixelShader(basicPS, sizeof(basicPS), NULL, &basicPixelShader); CHECK_HRESULT(res);
+    res = Device::device->CreatePixelShader(plopPS, sizeof(plopPS), NULL, &plopPixelShader); CHECK_HRESULT(res);
 
     D3D11_INPUT_ELEMENT_DESC layout[] =
     {
@@ -155,9 +160,6 @@ Renderer::Renderer(HWND hwnd, int backbufferWidth, int backbufferHeight, bool ca
         { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 24, D3D11_INPUT_PER_VERTEX_DATA, 0 }
     };
     res = Device::device->CreateInputLayout(layout, 3, basicVS, sizeof(basicVS), &inputLayout);
-    CHECK_HRESULT(res);
-
-    res = Device::device->CreatePixelShader(basicPS, sizeof(basicPS), NULL, &ps);
     CHECK_HRESULT(res);
 
     D3D11_BUFFER_DESC cbDesc;
@@ -182,10 +184,17 @@ Renderer::Renderer(HWND hwnd, int backbufferWidth, int backbufferHeight, bool ca
     ID3D11Buffer *allConstantBuffers[] = { this->cbScene, this->cbMaterial, this->cbInstance };
     Device::context->VSSetConstantBuffers(0, 3, allConstantBuffers);
     Device::context->PSSetConstantBuffers(0, 3, allConstantBuffers);
+
+    // built-in rendering resources
+    ResourceManager::getInstance()->updateResourceData<Mesh>("__fullscreenQuad", cJSON_Parse("{\"vertices\": [-1, -1, 0, 0, 0, 1, 0, 0, 1, 1, 0, 0, 0, 1, 0, 1, -1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, -1, -1, 0, 0, 0, 1, 1, 0, 1, -1, 0, 0, 0, 1, 0, 0], \"vertexCount\": 6, \"material\": \"__default\"}"));
+
+    this->fullscreenQuad = ResourceManager::getInstance()->requestResource<Mesh>("__fullscreenQuad");
 }
 
 Renderer::~Renderer()
 {
+    ResourceManager::getInstance()->releaseResource(this->fullscreenQuad);
+
     delete this->renderList;
 }
 
@@ -204,8 +213,8 @@ void Renderer::render(const Scene *scene, int width, int height, const glm::mat4
     Device::context->ClearRenderTargetView(this->renderTarget, clearColor);
     Device::context->ClearDepthStencilView(this->depthTarget, D3D11_CLEAR_DEPTH, 1.0f, 0);
 
-    Device::context->VSSetShader(vs, NULL, 0);
-    Device::context->PSSetShader(ps, NULL, 0);
+    Device::context->VSSetShader(basicVertexShader, NULL, 0);
+    Device::context->PSSetShader(basicPixelShader, NULL, 0);
 
     D3D11_MAPPED_SUBRESOURCE mappedResource;
     HRESULT res = Device::context->Map(this->cbScene, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
@@ -228,7 +237,7 @@ void Renderer::render(const Scene *scene, int width, int height, const glm::mat4
 
     Material *currentMaterial = nullptr;
     Mesh * currentMesh = nullptr;
-    std::for_each(jobs.begin(), jobs.end(), [&](const RenderList::Job &job)
+    for (const auto &job: jobs)
     {
         if (currentMaterial != job.material)
         {
@@ -256,7 +265,13 @@ void Renderer::render(const Scene *scene, int width, int height, const glm::mat4
         Device::context->Unmap(this->cbInstance, 0);
 
         Device::context->Draw(currentMesh->getVertexCount(), 0);
-    });
+    }
+
+    // background pass
+    Device::context->VSSetShader(plopVertexShader, NULL, 0);
+    Device::context->PSSetShader(plopPixelShader, NULL, 0);
+    this->fullscreenQuad->bind();
+    Device::context->Draw(this->fullscreenQuad->getVertexCount(), 0);
 
     swapChain->Present(0, 0);
 

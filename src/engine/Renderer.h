@@ -30,8 +30,12 @@ class Renderer
         ID3D11RenderTargetView *renderTarget;
         ID3D11DepthStencilView *depthTarget;
 
-        ID3D11VertexShader *vs;
-        ID3D11PixelShader *ps;
+        ID3D11VertexShader *basicVertexShader;
+        ID3D11VertexShader *plopVertexShader;
+
+        ID3D11PixelShader *basicPixelShader;
+        ID3D11PixelShader *plopPixelShader;
+
         ID3D11InputLayout *inputLayout;
 
         ID3D11Buffer *cbScene;
@@ -39,4 +43,6 @@ class Renderer
         ID3D11Buffer *cbInstance;
 
         RenderList *renderList;
+
+        Mesh *fullscreenQuad;
 };
