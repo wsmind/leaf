@@ -30,9 +30,11 @@ class Renderer
         ID3D11RenderTargetView *renderTarget;
         ID3D11DepthStencilView *depthTarget;
 
+        ID3D11VertexShader *backgroundVertexShader;
         ID3D11VertexShader *basicVertexShader;
         ID3D11VertexShader *plopVertexShader;
 
+        ID3D11PixelShader *backgroundPixelShader;
         ID3D11PixelShader *basicPixelShader;
         ID3D11PixelShader *plopPixelShader;
 

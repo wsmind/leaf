@@ -16,6 +16,8 @@
 #include <engine/ResourceManager.h>
 #include <engine/Scene.h>
 
+#include <shaders/background.vs.hlsl.h>
+#include <shaders/background.ps.hlsl.h>
 #include <shaders/basic.vs.hlsl.h>
 #include <shaders/basic.ps.hlsl.h>
 #include <shaders/plop.vs.hlsl.h>
@@ -26,7 +28,10 @@
 struct SceneState
 {
     glm::mat4 viewMatrix;
+    glm::mat4 viewMatrixInverse;
     glm::mat4 projectionMatrix;
+    glm::mat4 projectionMatrixInverse;
+    glm::mat4 viewProjectionInverseMatrix;
     glm::vec3 cameraPosition;
     float time;
 };
@@ -147,9 +152,11 @@ Renderer::Renderer(HWND hwnd, int backbufferWidth, int backbufferHeight, bool ca
         CHECK_HRESULT(res);
     }
 
+    res = Device::device->CreateVertexShader(backgroundVS, sizeof(backgroundVS), NULL, &backgroundVertexShader); CHECK_HRESULT(res);
     res = Device::device->CreateVertexShader(basicVS, sizeof(basicVS), NULL, &basicVertexShader); CHECK_HRESULT(res);
     res = Device::device->CreateVertexShader(plopVS, sizeof(plopVS), NULL, &plopVertexShader); CHECK_HRESULT(res);
 
+    res = Device::device->CreatePixelShader(backgroundPS, sizeof(backgroundPS), NULL, &backgroundPixelShader); CHECK_HRESULT(res);
     res = Device::device->CreatePixelShader(basicPS, sizeof(basicPS), NULL, &basicPixelShader); CHECK_HRESULT(res);
     res = Device::device->CreatePixelShader(plopPS, sizeof(plopPS), NULL, &plopPixelShader); CHECK_HRESULT(res);
 
@@ -221,8 +228,11 @@ void Renderer::render(const Scene *scene, int width, int height, const glm::mat4
     CHECK_HRESULT(res);
     SceneState *sceneState = (SceneState *)mappedResource.pData;
     sceneState->viewMatrix = viewMatrix;
-    sceneState->projectionMatrix = projectionMatrix;
     glm::mat4 viewMatrixInverse = glm::inverse(viewMatrix);
+    sceneState->viewMatrixInverse = viewMatrixInverse;
+    sceneState->projectionMatrix = projectionMatrix;
+    sceneState->projectionMatrixInverse = glm::inverse(projectionMatrix);
+    sceneState->viewProjectionInverseMatrix = glm::inverse(projectionMatrix * viewMatrix);
     sceneState->cameraPosition = glm::vec3(viewMatrixInverse[3][0], viewMatrixInverse[3][1], viewMatrixInverse[3][2]);
     sceneState->time = time;
     Device::context->Unmap(this->cbScene, 0);
@@ -268,8 +278,8 @@ void Renderer::render(const Scene *scene, int width, int height, const glm::mat4
     }
 
     // background pass
-    Device::context->VSSetShader(plopVertexShader, NULL, 0);
-    Device::context->PSSetShader(plopPixelShader, NULL, 0);
+    Device::context->VSSetShader(backgroundVertexShader, NULL, 0);
+    Device::context->PSSetShader(backgroundPixelShader, NULL, 0);
     this->fullscreenQuad->bind();
     Device::context->Draw(this->fullscreenQuad->getVertexCount(), 0);
 
