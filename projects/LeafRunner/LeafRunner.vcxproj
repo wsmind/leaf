@@ -122,9 +122,9 @@ COPY "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\bin\LeafEngine.d
 COPY "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\bin\LeafRunner.exe" "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf"
 COPY "$(SolutionDir)..\src\blender-addon\leaf\*.py" "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf"
 
-REM Deploy dist/ to blender addons (2.76 assumed)
-MKDIR "%APPDATA%\Blender Foundation\Blender\2.76\scripts\addons\leaf"
-COPY "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf\*.*" "%APPDATA%\Blender Foundation\Blender\2.76\scripts\addons\leaf"
+REM Deploy dist/ to blender addons (2.77 assumed)
+MKDIR "%APPDATA%\Blender Foundation\Blender\2.77\scripts\addons\leaf"
+COPY "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf\*.*" "%APPDATA%\Blender Foundation\Blender\2.77\scripts\addons\leaf"
 </Command>
       <Message>
       </Message>
@@ -162,9 +162,9 @@ COPY "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\bin\LeafEngine.d
 COPY "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\bin\LeafRunner.exe" "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf"
 COPY "$(SolutionDir)..\src\blender-addon\leaf\*.py" "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf"
 
-REM Deploy dist/ to blender addons (2.76 assumed)
-MKDIR "%APPDATA%\Blender Foundation\Blender\2.76\scripts\addons\leaf"
-COPY "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf\*.*" "%APPDATA%\Blender Foundation\Blender\2.76\scripts\addons\leaf"
+REM Deploy dist/ to blender addons (2.77 assumed)
+MKDIR "%APPDATA%\Blender Foundation\Blender\2.77\scripts\addons\leaf"
+COPY "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf\*.*" "%APPDATA%\Blender Foundation\Blender\2.77\scripts\addons\leaf"
 </Command>
       <Message>
       </Message>
@@ -206,9 +206,9 @@ COPY "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\bin\LeafEngine.d
 COPY "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\bin\LeafRunner.exe" "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf"
 COPY "$(SolutionDir)..\src\blender-addon\leaf\*.py" "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf"
 
-REM Deploy dist/ to blender addons (2.76 assumed)
-MKDIR "%APPDATA%\Blender Foundation\Blender\2.76\scripts\addons\leaf"
-COPY "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf\*.*" "%APPDATA%\Blender Foundation\Blender\2.76\scripts\addons\leaf"
+REM Deploy dist/ to blender addons (2.77 assumed)
+MKDIR "%APPDATA%\Blender Foundation\Blender\2.77\scripts\addons\leaf"
+COPY "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf\*.*" "%APPDATA%\Blender Foundation\Blender\2.77\scripts\addons\leaf"
 </Command>
       <Message>
       </Message>
@@ -250,9 +250,9 @@ COPY "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\bin\LeafEngine.d
 COPY "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\bin\LeafRunner.exe" "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf"
 COPY "$(SolutionDir)..\src\blender-addon\leaf\*.py" "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf"
 
-REM Deploy dist/ to blender addons (2.76 assumed)
-MKDIR "%APPDATA%\Blender Foundation\Blender\2.76\scripts\addons\leaf"
-COPY "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf\*.*" "%APPDATA%\Blender Foundation\Blender\2.76\scripts\addons\leaf"
+REM Deploy dist/ to blender addons (2.77 assumed)
+MKDIR "%APPDATA%\Blender Foundation\Blender\2.77\scripts\addons\leaf"
+COPY "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf\*.*" "%APPDATA%\Blender Foundation\Blender\2.77\scripts\addons\leaf"
 </Command>
       <Message>
       </Message>
