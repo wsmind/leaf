@@ -95,7 +95,8 @@ class EngineWrapper:
         self.blobs = {}
 
 compatible_panels = [
-    bpy.types.TEXTURE_PT_image
+    bpy.types.TEXTURE_PT_image,
+    bpy.types.DATA_PT_context_mesh
 ]
 
 def register():
