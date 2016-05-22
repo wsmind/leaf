@@ -32,10 +32,12 @@ class Renderer
 
         ID3D11VertexShader *backgroundVertexShader;
         ID3D11VertexShader *basicVertexShader;
+        ID3D11VertexShader *gbufferVertexShader;
         ID3D11VertexShader *plopVertexShader;
 
         ID3D11PixelShader *backgroundPixelShader;
         ID3D11PixelShader *basicPixelShader;
+        ID3D11PixelShader *gbufferPixelShader;
         ID3D11PixelShader *plopPixelShader;
 
         ID3D11InputLayout *inputLayout;
@@ -47,4 +49,13 @@ class Renderer
         RenderList *renderList;
 
         Mesh *fullscreenQuad;
+
+        // G-Buffer layout
+        // normal (xyz), metalness (w)
+        // albedo (xyz), roughness (w)
+        static const int GBUFFER_PLANE_COUNT = 2;
+        ID3D11Texture2D *gBuffer[GBUFFER_PLANE_COUNT];
+        ID3D11RenderTargetView *gBufferTargets[GBUFFER_PLANE_COUNT];
+        ID3D11SamplerState *gBufferSamplerStates[GBUFFER_PLANE_COUNT];
+        ID3D11ShaderResourceView *gBufferSRVs[GBUFFER_PLANE_COUNT];
 };

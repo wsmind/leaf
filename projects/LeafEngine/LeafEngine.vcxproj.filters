@@ -56,6 +56,12 @@
     <FxCompile Include="..\..\src\engine\shaders\background.vs.hlsl">
       <Filter>shaders</Filter>
     </FxCompile>
+    <FxCompile Include="..\..\src\engine\shaders\gbuffer.ps.hlsl">
+      <Filter>shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\src\engine\shaders\gbuffer.vs.hlsl">
+      <Filter>shaders</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="shaders">

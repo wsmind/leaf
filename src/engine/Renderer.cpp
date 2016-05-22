@@ -20,6 +20,8 @@
 #include <shaders/background.ps.hlsl.h>
 #include <shaders/basic.vs.hlsl.h>
 #include <shaders/basic.ps.hlsl.h>
+#include <shaders/gbuffer.vs.hlsl.h>
+#include <shaders/gbuffer.ps.hlsl.h>
 #include <shaders/plop.vs.hlsl.h>
 #include <shaders/plop.ps.hlsl.h>
 
@@ -112,8 +114,6 @@ Renderer::Renderer(HWND hwnd, int backbufferWidth, int backbufferHeight, bool ca
     res = Device::device->CreateDepthStencilView(depthBuffer, &depthTargetDesc, &this->depthTarget);
     CHECK_HRESULT(res);
 
-    Device::context->OMSetRenderTargets(1, &this->renderTarget, this->depthTarget);
-
     D3D11_DEPTH_STENCIL_DESC depthStateDesc;
     ZeroMemory(&depthStateDesc, sizeof(depthStateDesc));
     depthStateDesc.DepthEnable = TRUE;
@@ -140,6 +140,42 @@ Renderer::Renderer(HWND hwnd, int backbufferWidth, int backbufferHeight, bool ca
     Device::device->CreateRasterizerState(&rasterizerDesc, &rasterizerState);
     Device::context->RSSetState(rasterizerState);
 
+    for (int i = 0; i < GBUFFER_PLANE_COUNT; i++)
+    {
+        D3D11_TEXTURE2D_DESC gBufferPlaneDesc;
+        ZeroMemory(&gBufferPlaneDesc, sizeof(gBufferPlaneDesc));
+        gBufferPlaneDesc.Width = this->backbufferWidth;
+        gBufferPlaneDesc.Height = this->backbufferHeight;
+        gBufferPlaneDesc.MipLevels = 1;
+        gBufferPlaneDesc.ArraySize = 1;
+        gBufferPlaneDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
+        gBufferPlaneDesc.SampleDesc.Count = 1;
+        gBufferPlaneDesc.SampleDesc.Quality = 0;
+        gBufferPlaneDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET;
+
+        res = Device::device->CreateTexture2D(&gBufferPlaneDesc, NULL, &this->gBuffer[i]);
+        CHECK_HRESULT(res);
+
+        res = Device::device->CreateRenderTargetView(this->gBuffer[i], NULL, &this->gBufferTargets[i]);
+        CHECK_HRESULT(res);
+
+        D3D11_SAMPLER_DESC samplerDesc;
+        ZeroMemory(&samplerDesc, sizeof(samplerDesc));
+        samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
+        samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
+        samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
+        samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
+        samplerDesc.MipLODBias = 0;
+        samplerDesc.MinLOD = 0;
+        samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
+
+        res = Device::device->CreateSamplerState(&samplerDesc, &this->gBufferSamplerStates[i]);
+        CHECK_HRESULT(res);
+
+        res = Device::device->CreateShaderResourceView(this->gBuffer[i], NULL, &this->gBufferSRVs[i]);
+        CHECK_HRESULT(res);
+    }
+
     if (this->capture)
     {
         D3D11_TEXTURE2D_DESC captureBufferDesc;
@@ -154,10 +190,12 @@ Renderer::Renderer(HWND hwnd, int backbufferWidth, int backbufferHeight, bool ca
 
     res = Device::device->CreateVertexShader(backgroundVS, sizeof(backgroundVS), NULL, &backgroundVertexShader); CHECK_HRESULT(res);
     res = Device::device->CreateVertexShader(basicVS, sizeof(basicVS), NULL, &basicVertexShader); CHECK_HRESULT(res);
+    res = Device::device->CreateVertexShader(gbufferVS, sizeof(gbufferVS), NULL, &gbufferVertexShader); CHECK_HRESULT(res);
     res = Device::device->CreateVertexShader(plopVS, sizeof(plopVS), NULL, &plopVertexShader); CHECK_HRESULT(res);
 
     res = Device::device->CreatePixelShader(backgroundPS, sizeof(backgroundPS), NULL, &backgroundPixelShader); CHECK_HRESULT(res);
     res = Device::device->CreatePixelShader(basicPS, sizeof(basicPS), NULL, &basicPixelShader); CHECK_HRESULT(res);
+    res = Device::device->CreatePixelShader(gbufferPS, sizeof(gbufferPS), NULL, &gbufferPixelShader); CHECK_HRESULT(res);
     res = Device::device->CreatePixelShader(plopPS, sizeof(plopPS), NULL, &plopPixelShader); CHECK_HRESULT(res);
 
     D3D11_INPUT_ELEMENT_DESC layout[] =
@@ -203,13 +241,21 @@ Renderer::~Renderer()
     ResourceManager::getInstance()->releaseResource(this->fullscreenQuad);
 
     delete this->renderList;
+
+    for (int i = 0; i < GBUFFER_PLANE_COUNT; i++)
+    {
+        this->gBuffer[i]->Release();
+        this->gBufferTargets[i]->Release();
+        this->gBufferSamplerStates[i]->Release();
+        this->gBufferSRVs[i]->Release();
+    }
 }
 
 void Renderer::render(const Scene *scene, int width, int height, const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix, float time)
 {
     D3D11_VIEWPORT viewport;
-    viewport.Width = (float)width;
-    viewport.Height = (float)height;
+    viewport.Width = (float)this->backbufferWidth;
+    viewport.Height = (float)this->backbufferHeight;
     viewport.MinDepth = 0.0f;
     viewport.MaxDepth = 1.0f;
     viewport.TopLeftX = 0;
@@ -219,9 +265,6 @@ void Renderer::render(const Scene *scene, int width, int height, const glm::mat4
     float clearColor[] = { 1.0f, 1.0f, 0.0f, 1.0f };
     Device::context->ClearRenderTargetView(this->renderTarget, clearColor);
     Device::context->ClearDepthStencilView(this->depthTarget, D3D11_CLEAR_DEPTH, 1.0f, 0);
-
-    Device::context->VSSetShader(basicVertexShader, NULL, 0);
-    Device::context->PSSetShader(basicPixelShader, NULL, 0);
 
     D3D11_MAPPED_SUBRESOURCE mappedResource;
     HRESULT res = Device::context->Map(this->cbScene, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
@@ -242,6 +285,15 @@ void Renderer::render(const Scene *scene, int width, int height, const glm::mat4
     this->renderList->clear();
     scene->fillRenderList(this->renderList);
     this->renderList->sort();
+
+    // G-Buffer pass
+    for (int i = 0; i < GBUFFER_PLANE_COUNT; i++)
+        Device::context->ClearRenderTargetView(this->gBufferTargets[i], clearColor);
+
+    Device::context->OMSetRenderTargets(GBUFFER_PLANE_COUNT, this->gBufferTargets, this->depthTarget);
+
+    Device::context->VSSetShader(gbufferVertexShader, NULL, 0);
+    Device::context->PSSetShader(gbufferPixelShader, NULL, 0);
 
     const std::vector<RenderList::Job> &jobs = this->renderList->getJobs();
 
@@ -276,6 +328,19 @@ void Renderer::render(const Scene *scene, int width, int height, const glm::mat4
 
         Device::context->Draw(currentMesh->getVertexCount(), 0);
     }
+
+    // lighting pass
+    viewport.Width = (float)width;
+    viewport.Height = (float)height;
+    Device::context->RSSetViewports(1, &viewport);
+
+    Device::context->OMSetRenderTargets(1, &this->renderTarget, this->depthTarget);
+    Device::context->VSSetShader(basicVertexShader, NULL, 0);
+    Device::context->PSSetShader(basicPixelShader, NULL, 0);
+    Device::context->PSSetSamplers(0, GBUFFER_PLANE_COUNT, this->gBufferSamplerStates);
+    Device::context->PSSetShaderResources(0, GBUFFER_PLANE_COUNT, this->gBufferSRVs);
+    this->fullscreenQuad->bind();
+    Device::context->Draw(this->fullscreenQuad->getVertexCount(), 0);
 
     // background pass
     Device::context->VSSetShader(backgroundVertexShader, NULL, 0);

@@ -12,6 +12,12 @@ struct BACKGROUND_PS_INPUT
 
 struct BASIC_PS_INPUT
 {
+    float4 position: SV_POSITION;
+    float2 uv: TEXCOORD0;
+};
+
+struct GBUFFER_PS_INPUT
+{
 	float4 position: SV_POSITION;
     float3 worldPosition: POSITION0;
     float3 normal: NORMAL;

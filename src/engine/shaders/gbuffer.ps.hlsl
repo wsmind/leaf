@@ -1,26 +1,33 @@
 #include "shared.h"
 
-Texture2D<float4> gBuffer0Texture: register(t0);
-SamplerState gBuffer0Sampler: register(s0);
+Texture2D<float4> albedoTexture: register(t0);
+SamplerState albedoSampler: register(s0);
 
-Texture2D<float4> gBuffer1Texture: register(t1);
-SamplerState gBuffer1Sampler: register(s1);
+Texture2D<float4> normalTexture: register(t1);
+SamplerState normalSampler: register(s1);
+
+Texture2D<float4> metalnessTexture: register(t2);
+SamplerState metalnessSampler: register(s2);
+
+Texture2D<float4> roughnessTexture: register(t3);
+SamplerState roughnessSampler: register(s3);
 
 struct PS_OUTPUT
 {
-	float4 color: SV_TARGET;
+	float4 gbuffer0: SV_TARGET0;
+	float4 gbuffer1: SV_TARGET1;
 };
 
-/*float g1v(float dotNV, float k)
+float g1v(float dotNV, float k)
 {
     return 1.0 / (dotNV * (1.0 - k) + 1.0);
-}*/
+}
 
-PS_OUTPUT main(BASIC_PS_INPUT input)
+PS_OUTPUT main(GBUFFER_PS_INPUT input)
 {
 	PS_OUTPUT output;
 
-    /*const float3 light = normalize(float3(1.0, 1.0, 1.0));
+    const float3 light = normalize(float3(1.0, 1.0, 1.0));
     const float3 view = cameraPosition - input.worldPosition;
     const float3 eye = normalize(view);
     const float3 normal = normalize(input.normal);
@@ -87,24 +94,8 @@ PS_OUTPUT main(BASIC_PS_INPUT input)
     // gamma correction
     color = sqrt(color);
 
-	output.color = float4(color, 1.0);*/
+	output.gbuffer0 = float4(pertubatedNormal, metalness);
+	output.gbuffer1 = float4(finalAlbedo, roughness);
 
-    float4 g0 = gBuffer0Texture.Sample(gBuffer0Sampler, input.uv);
-    float4 g1 = gBuffer1Texture.Sample(gBuffer1Sampler, input.uv);
-
-    float3 normal = g0.xyz;
-    float metalness = g0.w;
-    float3 albedo = g1.xyz;
-    float roughness = g1.w;
-
-    const float3 light = normalize(float3(1.0, 1.0, 1.0));
-
-    float dotNL = saturate(dot(normal, light));
-
-    // simple lambert for diffuse
-    float3 diffuse = dotNL * albedo;
-
-    output.color = float4(diffuse, 1.0);
-
-    return output;
+	return output;
 }
