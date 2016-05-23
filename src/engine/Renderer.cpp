@@ -266,8 +266,8 @@ Renderer::~Renderer()
 void Renderer::render(const Scene *scene, int width, int height, const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix, float time)
 {
     D3D11_VIEWPORT viewport;
-    viewport.Width = (float)this->backbufferWidth;
-    viewport.Height = (float)this->backbufferHeight;
+    viewport.Width = (float)width;
+    viewport.Height = (float)height;
     viewport.MinDepth = 0.0f;
     viewport.MaxDepth = 1.0f;
     viewport.TopLeftX = 0;
@@ -344,8 +344,8 @@ void Renderer::render(const Scene *scene, int width, int height, const glm::mat4
     }
 
     // lighting pass
-    viewport.Width = (float)width;
-    viewport.Height = (float)height;
+    viewport.Width = (float)this->backbufferWidth;
+    viewport.Height = (float)this->backbufferHeight;
     Device::context->RSSetViewports(1, &viewport);
 
     Device::context->OMSetDepthStencilState(this->lightingDepthState, 0);
@@ -358,6 +358,9 @@ void Renderer::render(const Scene *scene, int width, int height, const glm::mat4
     Device::context->Draw(this->fullscreenQuad->getVertexCount(), 0);
 
     // background pass
+    viewport.Width = (float)width;
+    viewport.Height = (float)height;
+    Device::context->RSSetViewports(1, &viewport);
     Device::context->VSSetShader(backgroundVertexShader, NULL, 0);
     Device::context->PSSetShader(backgroundPixelShader, NULL, 0);
     Device::context->OMSetDepthStencilState(this->backgroundDepthState, 0);
