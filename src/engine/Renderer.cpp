@@ -116,13 +116,21 @@ Renderer::Renderer(HWND hwnd, int backbufferWidth, int backbufferHeight, bool ca
 
     D3D11_DEPTH_STENCIL_DESC depthStateDesc;
     ZeroMemory(&depthStateDesc, sizeof(depthStateDesc));
+
     depthStateDesc.DepthEnable = TRUE;
     depthStateDesc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
     depthStateDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+    Device::device->CreateDepthStencilState(&depthStateDesc, &this->gBufferDepthState);
 
-    ID3D11DepthStencilState *depthState;
-    Device::device->CreateDepthStencilState(&depthStateDesc, &depthState);
-    Device::context->OMSetDepthStencilState(depthState, 0);
+    depthStateDesc.DepthEnable = TRUE;
+    depthStateDesc.DepthFunc = D3D11_COMPARISON_GREATER;
+    depthStateDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
+    Device::device->CreateDepthStencilState(&depthStateDesc, &this->lightingDepthState);
+
+    depthStateDesc.DepthEnable = TRUE;
+    depthStateDesc.DepthFunc = D3D11_COMPARISON_EQUAL;
+    depthStateDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
+    Device::device->CreateDepthStencilState(&depthStateDesc, &this->backgroundDepthState);
 
     D3D11_RASTERIZER_DESC rasterizerDesc;
     rasterizerDesc.FillMode = D3D11_FILL_SOLID;
@@ -249,6 +257,10 @@ Renderer::~Renderer()
         this->gBufferSamplerStates[i]->Release();
         this->gBufferSRVs[i]->Release();
     }
+
+    gBufferDepthState->Release();
+    lightingDepthState->Release();
+    backgroundDepthState->Release();
 }
 
 void Renderer::render(const Scene *scene, int width, int height, const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix, float time)
@@ -295,6 +307,8 @@ void Renderer::render(const Scene *scene, int width, int height, const glm::mat4
     Device::context->VSSetShader(gbufferVertexShader, NULL, 0);
     Device::context->PSSetShader(gbufferPixelShader, NULL, 0);
 
+    Device::context->OMSetDepthStencilState(this->gBufferDepthState, 0);
+
     const std::vector<RenderList::Job> &jobs = this->renderList->getJobs();
 
     Material *currentMaterial = nullptr;
@@ -334,6 +348,7 @@ void Renderer::render(const Scene *scene, int width, int height, const glm::mat4
     viewport.Height = (float)height;
     Device::context->RSSetViewports(1, &viewport);
 
+    Device::context->OMSetDepthStencilState(this->lightingDepthState, 0);
     Device::context->OMSetRenderTargets(1, &this->renderTarget, this->depthTarget);
     Device::context->VSSetShader(basicVertexShader, NULL, 0);
     Device::context->PSSetShader(basicPixelShader, NULL, 0);
@@ -345,6 +360,7 @@ void Renderer::render(const Scene *scene, int width, int height, const glm::mat4
     // background pass
     Device::context->VSSetShader(backgroundVertexShader, NULL, 0);
     Device::context->PSSetShader(backgroundPixelShader, NULL, 0);
+    Device::context->OMSetDepthStencilState(this->backgroundDepthState, 0);
     this->fullscreenQuad->bind();
     Device::context->Draw(this->fullscreenQuad->getVertexCount(), 0);
 

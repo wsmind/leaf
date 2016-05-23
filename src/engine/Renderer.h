@@ -58,4 +58,8 @@ class Renderer
         ID3D11RenderTargetView *gBufferTargets[GBUFFER_PLANE_COUNT];
         ID3D11SamplerState *gBufferSamplerStates[GBUFFER_PLANE_COUNT];
         ID3D11ShaderResourceView *gBufferSRVs[GBUFFER_PLANE_COUNT];
+
+        ID3D11DepthStencilState *gBufferDepthState;
+        ID3D11DepthStencilState *lightingDepthState;
+        ID3D11DepthStencilState *backgroundDepthState;
 };
