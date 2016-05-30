@@ -154,6 +154,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\src\engine\Action.cpp" />
     <ClCompile Include="..\..\src\engine\api.cpp" />
     <ClCompile Include="..\..\src\engine\cJSON\cJSON.c" />
     <ClCompile Include="..\..\src\engine\Device.cpp" />
@@ -166,6 +167,7 @@
     <ClCompile Include="..\..\src\engine\ResourceManager.cpp" />
     <ClCompile Include="..\..\src\engine\Scene.cpp" />
     <ClCompile Include="..\..\src\engine\Texture.cpp" />
+    <ClInclude Include="..\..\src\engine\Action.h" />
     <ClInclude Include="..\..\src\engine\cJSON\cJSON.h" />
     <ClInclude Include="..\..\src\engine\Image.h" />
     <ClInclude Include="..\..\src\engine\Material.h" />
