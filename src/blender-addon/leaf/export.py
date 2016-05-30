@@ -42,6 +42,12 @@ def export_data(updated_only=False):
             print("exporting mesh: " + mesh.name)
             data["meshes"][mesh.name] = export_mesh(mesh)
 
+    data["actions"] = {}
+    for action in list(bpy.data.actions):
+        if action.is_updated or not updated_only:
+            print("exporting action: " + action.name)
+            data["actions"][action.name] = export_action(action)
+
     data["textures"].update(generated_textures)
     data["images"].update(generated_images)
 
@@ -248,4 +254,16 @@ def export_mesh(sourceMesh):
         "vertices": vertices,
         "vertexCount": vertexCount,
         "material": sourceMesh.materials[0].name if (len(sourceMesh.materials) > 0 and sourceMesh.materials[0]) else "__default"
+    }
+
+def export_action(action):
+    return {
+        "fcurves": [export_fcurve(fcurve) for fcurve in action.fcurves],
+    }
+
+def export_fcurve(fcurve):
+    return {
+        "path": fcurve.data_path,
+        "index": fcurve.array_index,
+        "keyframes": [[keyframe.co.x, keyframe.co.y] for keyframe in fcurve.keyframe_points]
     }
