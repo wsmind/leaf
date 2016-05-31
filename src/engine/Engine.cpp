@@ -47,6 +47,19 @@ void Engine::shutdown()
 
 void Engine::loadData(cJSON *json)
 {
+    cJSON *actions = cJSON_GetObjectItem(json, "actions");
+    if (actions)
+    {
+        cJSON *action = actions->child;
+        while (action)
+        {
+            std::string name = action->string;
+            ResourceManager::getInstance()->updateResourceData<Action>(name, action);
+
+            action = action->next;
+        }
+    }
+
     cJSON *images = cJSON_GetObjectItem(json, "images");
     if (images)
     {
@@ -109,19 +122,6 @@ void Engine::loadData(cJSON *json)
             ResourceManager::getInstance()->updateResourceData<Scene>(name, scene);
 
             scene = scene->next;
-        }
-    }
-
-    cJSON *actions = cJSON_GetObjectItem(json, "actions");
-    if (actions)
-    {
-        cJSON *action = actions->child;
-        while (action)
-        {
-            std::string name = action->string;
-            ResourceManager::getInstance()->updateResourceData<Action>(name, action);
-
-            action = action->next;
         }
     }
 }
