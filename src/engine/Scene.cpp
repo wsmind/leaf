@@ -1,6 +1,7 @@
 #include <engine/Scene.h>
 
 #include <cassert>
+#include <engine/AnimationData.h>
 #include <engine/RenderList.h>
 #include <engine/ResourceManager.h>
 
@@ -25,6 +26,10 @@ void Scene::load(const cJSON *json)
             cJSON_GetArrayItem(mat, 12)->valuedouble, cJSON_GetArrayItem(mat, 13)->valuedouble, cJSON_GetArrayItem(mat, 14)->valuedouble, cJSON_GetArrayItem(mat, 15)->valuedouble
         );
 
+        cJSON *animation = cJSON_GetObjectItem(instanceJson, "animation");
+        if (animation)
+            instance.animation = new AnimationData(animation);
+
         this->instances.push_back(instance);
 
         instanceJson = instanceJson->next;
@@ -36,6 +41,7 @@ void Scene::unload()
     std::for_each(this->instances.begin(), this->instances.end(), [](MeshInstance &instance)
     {
         ResourceManager::getInstance()->releaseResource(instance.mesh);
+        delete instance.animation;
     });
     this->instances.clear();
 }

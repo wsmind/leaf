@@ -8,6 +8,7 @@
 #include <engine/Mesh.h>
 #include <engine/Resource.h>
 
+class AnimationData;
 class RenderList;
 
 class Scene: public Resource
@@ -26,6 +27,12 @@ class Scene: public Resource
         {
             Mesh *mesh;
             glm::mat4 transform;
+            AnimationData *animation;
+
+            MeshInstance()
+                : mesh(nullptr)
+                , animation(nullptr)
+            {}
         };
         std::vector<MeshInstance> instances;
 };

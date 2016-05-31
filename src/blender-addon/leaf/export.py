@@ -69,10 +69,15 @@ def export_mesh_instance(obj):
         wm[3][0], wm[3][1], wm[3][2], wm[3][3]
     ]
 
-    return {
+    mesh_instance = {
         "transform": world_matrix,
         "mesh": obj.data.name
     }
+
+    if obj.animation_data:
+        mesh_instance["animation"] = export_animation(obj.animation_data)
+
+    return mesh_instance
 
 def export_light(obj):
     return {}
@@ -266,4 +271,9 @@ def export_fcurve(fcurve):
         "path": fcurve.data_path,
         "index": fcurve.array_index,
         "keyframes": [[keyframe.co.x, keyframe.co.y] for keyframe in fcurve.keyframe_points]
+    }
+
+def export_animation(anim_data):
+    return {
+        "action": anim_data.action.name
     }
