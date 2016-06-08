@@ -5,6 +5,7 @@
 
 #include <engine/glm/glm.hpp>
 
+#include <engine/AnimationPlayer.h>
 #include <engine/Mesh.h>
 #include <engine/Resource.h>
 
@@ -19,6 +20,8 @@ class Scene: public Resource
 
         virtual void load(const cJSON *json) override;
         virtual void unload() override;
+
+        void updateAnimation(float time);
 
         void fillRenderList(RenderList *renderList) const;
 
@@ -35,4 +38,6 @@ class Scene: public Resource
             {}
         };
         std::vector<MeshInstance> instances;
+
+        AnimationPlayer animationPlayer;
 };

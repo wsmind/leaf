@@ -28,7 +28,10 @@ void Scene::load(const cJSON *json)
 
         cJSON *animation = cJSON_GetObjectItem(instanceJson, "animation");
         if (animation)
+        {
             instance.animation = new AnimationData(animation);
+            this->animationPlayer.registerAnimation(instance.animation);
+        }
 
         this->instances.push_back(instance);
 
@@ -38,12 +41,23 @@ void Scene::load(const cJSON *json)
 
 void Scene::unload()
 {
-    std::for_each(this->instances.begin(), this->instances.end(), [](MeshInstance &instance)
+    std::for_each(this->instances.begin(), this->instances.end(), [this](MeshInstance &instance)
     {
         ResourceManager::getInstance()->releaseResource(instance.mesh);
-        delete instance.animation;
+
+        if (instance.animation)
+        {
+            this->animationPlayer.unregisterAnimation(instance.animation);
+            delete instance.animation;
+        }
     });
     this->instances.clear();
+}
+
+void Scene::updateAnimation(float time)
+{
+    this->animationPlayer.animate(time);
+    AnimationPlayer::globalPlayer.animate(time);
 }
 
 void Scene::fillRenderList(RenderList *renderList) const

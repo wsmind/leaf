@@ -17,6 +17,7 @@
     <ClCompile Include="..\..\src\engine\Image.cpp" />
     <ClCompile Include="..\..\src\engine\Action.cpp" />
     <ClCompile Include="..\..\src\engine\AnimationData.cpp" />
+    <ClCompile Include="..\..\src\engine\AnimationPlayer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\engine\Renderer.h" />
@@ -40,6 +41,7 @@
     <ClInclude Include="..\..\src\engine\Image.h" />
     <ClInclude Include="..\..\src\engine\Action.h" />
     <ClInclude Include="..\..\src\engine\AnimationData.h" />
+    <ClInclude Include="..\..\src\engine\AnimationPlayer.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\..\src\engine\shaders\plop.vs.hlsl">

@@ -48,7 +48,7 @@ void *loadBlob(const std::string &filename)
 
 int main()
 {
-    leaf_initialize(1280, 720, false);
+    leaf_initialize(1920, 1080, false);
 
     std::vector<void *> blobs;
     WIN32_FIND_DATA fileInfo;
@@ -76,7 +76,7 @@ int main()
 
     while (!GetAsyncKeyState(VK_ESCAPE))
     {
-        leaf_render(1280, 720);
+        leaf_render(1920, 1080);
     }
 
     ShowCursor(TRUE);

@@ -20,6 +20,8 @@ class Engine
         void loadData(cJSON *json);
         void registerBlob(const std::string &name, const void *buffer);
 
+        void updateAnimation(float time);
+
         void render(int width, int height, const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix);
         void renderBlenderViewport(int width, int height, const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix);
 
@@ -32,7 +34,7 @@ class Engine
         Renderer *renderer;
         Scene *scene;
 
-public:
+    public:
         // singleton implementation
         static void create() { assert(!Engine::instance); Engine::instance = new Engine; }
         static void destroy() { assert(Engine::instance); delete Engine::instance; }
