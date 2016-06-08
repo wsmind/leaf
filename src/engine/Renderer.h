@@ -15,8 +15,8 @@ class Renderer
         Renderer(HWND hwnd, int backbufferWidth, int backbufferHeight, bool capture);
         ~Renderer();
 
-        void render(const Scene *scene, int width, int height, const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix, float time);
-        void renderBlenderViewport(const Scene *scene, int width, int height, const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix, float time);
+        void render(const Scene *scene, int width, int height, const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix);
+        void renderBlenderViewport(const Scene *scene, int width, int height, const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix);
 
     private:
         int backbufferWidth;

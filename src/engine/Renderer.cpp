@@ -35,7 +35,7 @@ struct SceneState
     glm::mat4 projectionMatrixInverse;
     glm::mat4 viewProjectionInverseMatrix;
     glm::vec3 cameraPosition;
-    float time;
+    float _padding;
 };
 #pragma pack(pop)
 
@@ -263,7 +263,7 @@ Renderer::~Renderer()
     backgroundDepthState->Release();
 }
 
-void Renderer::render(const Scene *scene, int width, int height, const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix, float time)
+void Renderer::render(const Scene *scene, int width, int height, const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix)
 {
     D3D11_VIEWPORT viewport;
     viewport.Width = (float)width;
@@ -289,7 +289,6 @@ void Renderer::render(const Scene *scene, int width, int height, const glm::mat4
     sceneState->projectionMatrixInverse = glm::inverse(projectionMatrix);
     sceneState->viewProjectionInverseMatrix = glm::inverse(projectionMatrix * viewMatrix);
     sceneState->cameraPosition = glm::vec3(viewMatrixInverse[3][0], viewMatrixInverse[3][1], viewMatrixInverse[3][2]);
-    sceneState->time = time;
     Device::context->Unmap(this->cbScene, 0);
 
     Device::context->IASetInputLayout(inputLayout);
@@ -373,11 +372,11 @@ void Renderer::render(const Scene *scene, int width, int height, const glm::mat4
         Device::context->CopyResource(this->captureBuffer, this->backBuffer);
 }
 
-void Renderer::renderBlenderViewport(const Scene *scene, int width, int height, const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix, float time)
+void Renderer::renderBlenderViewport(const Scene *scene, int width, int height, const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix)
 {
     assert(this->capture);
 
-    this->render(scene, width, height, viewMatrix, projectionMatrix, time);
+    this->render(scene, width, height, viewMatrix, projectionMatrix);
 
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);

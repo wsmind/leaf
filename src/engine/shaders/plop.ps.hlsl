@@ -14,7 +14,7 @@ PS_OUTPUT main(PS_INPUT input)
 {
 	PS_OUTPUT output;
 
-	float3 pos = float3(sin(time) * 2.0, 10.0, 0.0);
+	float3 pos = float3(0.0, 10.0, 0.0);
 	float3 dir = normalize(float3(input.coord, 1.0));
 	
 	for (int i = 0; i < 64; i++)

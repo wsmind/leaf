@@ -23,6 +23,8 @@ import os
 import shutil
 import json
 
+from bpy.app.handlers import persistent
+
 engine = None
 
 class LeafRenderEngine(bpy.types.RenderEngine):
@@ -111,6 +113,9 @@ def register():
     # tag everything for reupload in engine
     engine.full_data_send = True
 
+    # register callbacks
+    bpy.app.handlers.frame_change_pre.append(frame_change_pre)
+
     bpy.utils.register_module(__name__)
 
     for panel in compatible_panels:
@@ -122,7 +127,15 @@ def unregister():
 
     bpy.utils.unregister_module(__name__)
 
+    # unregister callbacks
+    bpy.app.handlers.frame_change_pre.remove(frame_change_pre)
+
     global engine
     engine.dll.leaf_shutdown()
     engine.unload()
     engine = None
+
+@persistent
+def frame_change_pre(scene):
+    global engine
+    engine.dll.leaf_update_animation(ctypes.c_float(scene.frame_current))

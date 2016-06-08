@@ -29,7 +29,6 @@ class Engine
         static Engine *instance;
 
         HWND hwnd;
-        DWORD startTime;
 
         Renderer *renderer;
         Scene *scene;

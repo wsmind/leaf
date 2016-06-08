@@ -44,7 +44,8 @@ def export_data(updated_only=False):
 
     data["actions"] = {}
     for action in list(bpy.data.actions):
-        if action.is_updated or not updated_only:
+        #if action.is_updated or not updated_only:
+        if True:
             print("exporting action: " + action.name)
             data["actions"][action.name] = export_action(action)
 

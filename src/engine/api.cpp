@@ -32,6 +32,11 @@ LEAFENGINE_API void leaf_register_blob(const char *name, const void *buffer)
     Engine::getInstance()->registerBlob(name, buffer);
 }
 
+LEAFENGINE_API void leaf_update_animation(float time)
+{
+    Engine::getInstance()->updateAnimation(time);
+}
+
 LEAFENGINE_API void leaf_render(int width, int height)
 {
     glm::mat4 viewMatrix = glm::lookAt(glm::vec3(3.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));

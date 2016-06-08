@@ -32,7 +32,6 @@ cbuffer SceneData: register(b0)
     float4x4 projectionMatrixInverse;
     float4x4 viewProjectionInverseMatrix;
     float3 cameraPosition;
-    float time;
 };
 
 cbuffer MaterialData: register(b1)

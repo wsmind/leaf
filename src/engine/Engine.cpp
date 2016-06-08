@@ -27,8 +27,6 @@ void Engine::initialize(int backbufferWidth, int backbufferHeight, bool capture)
 
     this->renderer = new Renderer(hwnd, backbufferWidth, backbufferHeight, capture);
     this->scene = ResourceManager::getInstance()->requestResource<Scene>("Scene");
-
-    startTime = timeGetTime();
 }
 
 void Engine::shutdown()
@@ -133,6 +131,7 @@ void Engine::registerBlob(const std::string &name, const void *buffer)
 
 void Engine::updateAnimation(float time)
 {
+    printf("Engine::updateAnimation %f\n", time);
     this->scene->updateAnimation(time);
 }
 
@@ -148,12 +147,10 @@ void Engine::render(int width, int height, const glm::mat4 &viewMatrix, const gl
 
     ResourceManager::getInstance()->update();
 
-    float time = (float)(timeGetTime() - startTime) * 0.001f * 140.0f / 60.0f;
-    this->renderer->render(this->scene, width, height, viewMatrix, projectionMatrix, time);
+    this->renderer->render(this->scene, width, height, viewMatrix, projectionMatrix);
 }
 
 void Engine::renderBlenderViewport(int width, int height, const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix)
 {
-    float time = (float)(timeGetTime() - startTime) * 0.001f * 140.0f / 60.0f;
-    this->renderer->renderBlenderViewport(this->scene, width, height, viewMatrix, projectionMatrix, time);
+    this->renderer->renderBlenderViewport(this->scene, width, height, viewMatrix, projectionMatrix);
 }
