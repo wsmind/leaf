@@ -1,6 +1,8 @@
 #include <engine/Scene.h>
 
 #include <cassert>
+#include <engine/glm/gtc/matrix_transform.hpp>
+
 #include <engine/AnimationData.h>
 #include <engine/RenderList.h>
 #include <engine/ResourceManager.h>
@@ -17,9 +19,9 @@ void Scene::load(const cJSON *json)
         std::string meshName = cJSON_GetObjectItem(instanceJson, "mesh")->valuestring;
         cJSON *mat = cJSON_GetObjectItem(instanceJson, "transform");
 
-        MeshInstance instance;
-        instance.mesh = ResourceManager::getInstance()->requestResource<Mesh>(meshName);
-        instance.transform = glm::mat4(
+        MeshInstance *instance = new MeshInstance;
+        instance->mesh = ResourceManager::getInstance()->requestResource<Mesh>(meshName);
+        instance->transform = glm::mat4(
             cJSON_GetArrayItem(mat, 0)->valuedouble, cJSON_GetArrayItem(mat, 1)->valuedouble, cJSON_GetArrayItem(mat, 2)->valuedouble, cJSON_GetArrayItem(mat, 3)->valuedouble,
             cJSON_GetArrayItem(mat, 4)->valuedouble, cJSON_GetArrayItem(mat, 5)->valuedouble, cJSON_GetArrayItem(mat, 6)->valuedouble, cJSON_GetArrayItem(mat, 7)->valuedouble,
             cJSON_GetArrayItem(mat, 8)->valuedouble, cJSON_GetArrayItem(mat, 9)->valuedouble, cJSON_GetArrayItem(mat, 10)->valuedouble, cJSON_GetArrayItem(mat, 11)->valuedouble,
@@ -29,8 +31,11 @@ void Scene::load(const cJSON *json)
         cJSON *animation = cJSON_GetObjectItem(instanceJson, "animation");
         if (animation)
         {
-            instance.animation = new AnimationData(animation);
-            this->animationPlayer.registerAnimation(instance.animation);
+            PropertyMapping properties;
+            properties.add("location", (float *)&instance->position);
+
+            instance->animation = new AnimationData(animation, properties);
+            this->animationPlayer.registerAnimation(instance->animation);
         }
 
         this->instances.push_back(instance);
@@ -41,33 +46,35 @@ void Scene::load(const cJSON *json)
 
 void Scene::unload()
 {
-    std::for_each(this->instances.begin(), this->instances.end(), [this](MeshInstance &instance)
+    std::for_each(this->instances.begin(), this->instances.end(), [this](MeshInstance *instance)
     {
-        ResourceManager::getInstance()->releaseResource(instance.mesh);
+        ResourceManager::getInstance()->releaseResource(instance->mesh);
 
-        if (instance.animation)
+        if (instance->animation)
         {
-            this->animationPlayer.unregisterAnimation(instance.animation);
-            delete instance.animation;
+            this->animationPlayer.unregisterAnimation(instance->animation);
+            delete instance->animation;
         }
+
+        delete instance;
     });
     this->instances.clear();
 }
 
 void Scene::updateAnimation(float time)
 {
-    this->animationPlayer.animate(time);
-    AnimationPlayer::globalPlayer.animate(time);
+    this->animationPlayer.update(time);
+    AnimationPlayer::globalPlayer.update(time);
 }
 
 void Scene::fillRenderList(RenderList *renderList) const
 {
-    std::for_each(this->instances.begin(), this->instances.end(), [&](const MeshInstance &instance)
+    std::for_each(this->instances.begin(), this->instances.end(), [&](const MeshInstance *instance)
     {
         RenderList::Job job;
-        job.mesh = instance.mesh;
-        job.transform = instance.transform;
-        job.material = instance.mesh->getMaterial();
+        job.mesh = instance->mesh;
+        job.transform = glm::translate(glm::mat4(), instance->position);
+        job.material = instance->mesh->getMaterial();
         renderList->addJob(job);
     });
 }

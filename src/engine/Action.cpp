@@ -1,5 +1,6 @@
 #include <engine/Action.h>
 
+#include <engine/PropertyMapping.h>
 #include <engine/ResourceManager.h>
 
 const std::string Action::resourceClassName = "Action";
@@ -13,4 +14,12 @@ void Action::load(const cJSON *json)
 
 void Action::unload()
 {
+}
+
+void Action::evaluate(float time, const PropertyMapping *properties) const
+{
+    float *prop = properties->get("location", 2);
+
+    if (prop)
+        *prop = sinf(time * 0.1f);
 }

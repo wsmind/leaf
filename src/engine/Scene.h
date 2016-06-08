@@ -29,6 +29,7 @@ class Scene: public Resource
         struct MeshInstance
         {
             Mesh *mesh;
+            glm::vec3 position;
             glm::mat4 transform;
             AnimationData *animation;
 
@@ -37,7 +38,7 @@ class Scene: public Resource
                 , animation(nullptr)
             {}
         };
-        std::vector<MeshInstance> instances;
+        std::vector<MeshInstance *> instances;
 
         AnimationPlayer animationPlayer;
 };

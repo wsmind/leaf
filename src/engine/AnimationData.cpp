@@ -3,13 +3,21 @@
 #include <engine/Action.h>
 #include <engine/ResourceManager.h>
 
-AnimationData::AnimationData(const cJSON *json)
+AnimationData::AnimationData(const cJSON *json, const PropertyMapping &properties)
 {
     cJSON *actionName = cJSON_GetObjectItem(json, "action");
     this->action = ResourceManager::getInstance()->requestResource<Action>(actionName->valuestring);
+
+    this->properties = properties;
 }
 
 AnimationData::~AnimationData()
 {
     ResourceManager::getInstance()->releaseResource(this->action);
+}
+
+void AnimationData::update(float time)
+{
+    printf("%p AnimationData::update %f\n", this, time);
+    this->action->evaluate(time, &this->properties);
 }

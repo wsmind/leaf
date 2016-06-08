@@ -4,6 +4,8 @@
 
 #include <engine/Resource.h>
 
+class PropertyMapping;
+
 class Action: public Resource
 {
     public:
@@ -12,4 +14,6 @@ class Action: public Resource
 
         virtual void load(const cJSON *json) override;
         virtual void unload() override;
+
+        void evaluate(float time, const PropertyMapping *properties) const;
 };

@@ -131,7 +131,6 @@ void Engine::registerBlob(const std::string &name, const void *buffer)
 
 void Engine::updateAnimation(float time)
 {
-    printf("Engine::updateAnimation %f\n", time);
     this->scene->updateAnimation(time);
 }
 

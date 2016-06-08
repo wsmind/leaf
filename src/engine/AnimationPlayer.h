@@ -12,7 +12,7 @@ class AnimationPlayer
         void registerAnimation(AnimationData *animation);
         void unregisterAnimation(AnimationData *animation);
 
-        void animate(float time);
+        void update(float time);
 
         // Some animations (e.g. material animations) are not attached to a
         // particular scene. In this case, they are stepped directly through the global player.

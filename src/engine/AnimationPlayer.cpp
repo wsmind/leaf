@@ -1,5 +1,7 @@
 #include <engine/AnimationPlayer.h>
 
+#include <engine/AnimationData.h>
+
 AnimationPlayer AnimationPlayer::globalPlayer;
 
 void AnimationPlayer::registerAnimation(AnimationData *animation)
@@ -20,6 +22,10 @@ void AnimationPlayer::unregisterAnimation(AnimationData *animation)
     this->animations.pop_back();
 }
 
-void AnimationPlayer::animate(float time)
+void AnimationPlayer::update(float time)
 {
+    for (auto animation: this->animations)
+    {
+        animation->update(time);
+    }
 }
