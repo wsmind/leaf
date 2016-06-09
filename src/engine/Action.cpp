@@ -1,5 +1,6 @@
 #include <engine/Action.h>
 
+#include <engine/FCurve.h>
 #include <engine/PropertyMapping.h>
 #include <engine/ResourceManager.h>
 
@@ -10,16 +11,28 @@ void Action::load(const cJSON *json)
 {
     cJSON *fcurves = cJSON_GetObjectItem(json, "fcurves");
     printf("Action: loading %d fcurves\n", cJSON_GetArraySize(fcurves));
+
+    cJSON *fcurveData = fcurves->child;
+    while (fcurveData)
+    {
+        this->curves.push_back(new FCurve(fcurveData));
+        fcurveData = fcurveData->next;
+    }
 }
 
 void Action::unload()
 {
+    for (auto curve: this->curves)
+    {
+        delete curve;
+    }
+    this->curves.clear();
 }
 
 void Action::evaluate(float time, const PropertyMapping *properties) const
 {
-    float *prop = properties->get("location", 2);
-
-    if (prop)
-        *prop = sinf(time * 0.1f);
+    for (auto curve: this->curves)
+    {
+        curve->evaluate(time, properties);
+    }
 }

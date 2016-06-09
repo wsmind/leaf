@@ -161,6 +161,7 @@
     <ClCompile Include="..\..\src\engine\cJSON\cJSON.c" />
     <ClCompile Include="..\..\src\engine\Device.cpp" />
     <ClCompile Include="..\..\src\engine\Engine.cpp" />
+    <ClCompile Include="..\..\src\engine\FCurve.cpp" />
     <ClCompile Include="..\..\src\engine\Image.cpp" />
     <ClCompile Include="..\..\src\engine\Material.cpp" />
     <ClCompile Include="..\..\src\engine\Mesh.cpp" />
@@ -174,6 +175,7 @@
     <ClInclude Include="..\..\src\engine\AnimationData.h" />
     <ClInclude Include="..\..\src\engine\AnimationPlayer.h" />
     <ClInclude Include="..\..\src\engine\cJSON\cJSON.h" />
+    <ClInclude Include="..\..\src\engine\FCurve.h" />
     <ClInclude Include="..\..\src\engine\Image.h" />
     <ClInclude Include="..\..\src\engine\Material.h" />
     <ClInclude Include="..\..\src\engine\PropertyMapping.h" />

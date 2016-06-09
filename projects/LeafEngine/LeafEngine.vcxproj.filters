@@ -19,6 +19,7 @@
     <ClCompile Include="..\..\src\engine\AnimationData.cpp" />
     <ClCompile Include="..\..\src\engine\AnimationPlayer.cpp" />
     <ClCompile Include="..\..\src\engine\PropertyMapping.cpp" />
+    <ClCompile Include="..\..\src\engine\FCurve.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\engine\Renderer.h" />
@@ -44,6 +45,7 @@
     <ClInclude Include="..\..\src\engine\AnimationData.h" />
     <ClInclude Include="..\..\src\engine\AnimationPlayer.h" />
     <ClInclude Include="..\..\src\engine\PropertyMapping.h" />
+    <ClInclude Include="..\..\src\engine\FCurve.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\..\src\engine\shaders\plop.vs.hlsl">

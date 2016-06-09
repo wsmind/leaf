@@ -8,10 +8,10 @@ class Action;
 class AnimationData
 {
     public:
-       AnimationData(const cJSON *json, const PropertyMapping &properties);
-       ~AnimationData();
+        AnimationData(const cJSON *json, const PropertyMapping &properties);
+        ~AnimationData();
 
-       void update(float time);
+        void update(float time);
 
     private:
         Action *action;

@@ -18,6 +18,5 @@ AnimationData::~AnimationData()
 
 void AnimationData::update(float time)
 {
-    printf("%p AnimationData::update %f\n", this, time);
     this->action->evaluate(time, &this->properties);
 }

@@ -1,9 +1,11 @@
 #pragma once
 
 #include <string>
+#include <vector>
 
 #include <engine/Resource.h>
 
+class FCurve;
 class PropertyMapping;
 
 class Action: public Resource
@@ -16,4 +18,7 @@ class Action: public Resource
         virtual void unload() override;
 
         void evaluate(float time, const PropertyMapping *properties) const;
+
+    private:
+        std::vector<FCurve *> curves;
 };
