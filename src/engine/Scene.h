@@ -29,8 +29,12 @@ class Scene: public Resource
         struct MeshInstance
         {
             Mesh *mesh;
+
+            // transform
             glm::vec3 position;
-            glm::mat4 transform;
+            glm::vec3 orientation; /// XYZ Euler
+            glm::vec3 scale;
+
             AnimationData *animation;
 
             MeshInstance()

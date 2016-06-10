@@ -17,22 +17,26 @@ void Scene::load(const cJSON *json)
     while (instanceJson)
     {
         std::string meshName = cJSON_GetObjectItem(instanceJson, "mesh")->valuestring;
-        cJSON *mat = cJSON_GetObjectItem(instanceJson, "transform");
 
         MeshInstance *instance = new MeshInstance;
         instance->mesh = ResourceManager::getInstance()->requestResource<Mesh>(meshName);
-        instance->transform = glm::mat4(
-            cJSON_GetArrayItem(mat, 0)->valuedouble, cJSON_GetArrayItem(mat, 1)->valuedouble, cJSON_GetArrayItem(mat, 2)->valuedouble, cJSON_GetArrayItem(mat, 3)->valuedouble,
-            cJSON_GetArrayItem(mat, 4)->valuedouble, cJSON_GetArrayItem(mat, 5)->valuedouble, cJSON_GetArrayItem(mat, 6)->valuedouble, cJSON_GetArrayItem(mat, 7)->valuedouble,
-            cJSON_GetArrayItem(mat, 8)->valuedouble, cJSON_GetArrayItem(mat, 9)->valuedouble, cJSON_GetArrayItem(mat, 10)->valuedouble, cJSON_GetArrayItem(mat, 11)->valuedouble,
-            cJSON_GetArrayItem(mat, 12)->valuedouble, cJSON_GetArrayItem(mat, 13)->valuedouble, cJSON_GetArrayItem(mat, 14)->valuedouble, cJSON_GetArrayItem(mat, 15)->valuedouble
-        );
+
+        cJSON *position = cJSON_GetObjectItem(instanceJson, "position");
+        instance->position = glm::vec3(cJSON_GetArrayItem(position, 0)->valuedouble, cJSON_GetArrayItem(position, 1)->valuedouble, cJSON_GetArrayItem(position, 2)->valuedouble);
+
+        cJSON *orientation = cJSON_GetObjectItem(instanceJson, "orientation");
+        instance->orientation = glm::vec3(cJSON_GetArrayItem(orientation, 0)->valuedouble, cJSON_GetArrayItem(orientation, 1)->valuedouble, cJSON_GetArrayItem(orientation, 2)->valuedouble);
+
+        cJSON *scale = cJSON_GetObjectItem(instanceJson, "scale");
+        instance->scale = glm::vec3(cJSON_GetArrayItem(scale, 0)->valuedouble, cJSON_GetArrayItem(scale, 1)->valuedouble, cJSON_GetArrayItem(scale, 2)->valuedouble);
 
         cJSON *animation = cJSON_GetObjectItem(instanceJson, "animation");
         if (animation)
         {
             PropertyMapping properties;
             properties.add("location", (float *)&instance->position);
+            properties.add("rotation_euler", (float *)&instance->orientation);
+            properties.add("scale", (float *)&instance->scale);
 
             instance->animation = new AnimationData(animation, properties);
             this->animationPlayer.registerAnimation(instance->animation);
@@ -73,7 +77,7 @@ void Scene::fillRenderList(RenderList *renderList) const
     {
         RenderList::Job job;
         job.mesh = instance->mesh;
-        job.transform = glm::translate(glm::mat4(), instance->position);
+        job.transform = glm::translate(glm::scale(glm::mat4(), instance->scale), instance->position);
         job.material = instance->mesh->getMaterial();
         renderList->addJob(job);
     });
