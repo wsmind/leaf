@@ -14,56 +14,25 @@ const std::string Scene::defaultResourceData = "{\"meshes\": [], \"lights\": []}
 void Scene::load(const cJSON *json)
 {
     cJSON *meshesJson = cJSON_GetObjectItem(json, "meshes");
-    cJSON *instanceJson = meshesJson->child;
-    while (instanceJson)
+    cJSON *nodeJson = meshesJson->child;
+    while (nodeJson)
     {
-        std::string meshName = cJSON_GetObjectItem(instanceJson, "data")->valuestring;
+        SceneNode<Mesh> *node = new SceneNode<Mesh>(nodeJson);
+        node->registerAnimation(&this->animationPlayer);
+        this->meshNodes.push_back(node);
 
-        MeshInstance *instance = new MeshInstance;
-        instance->mesh = ResourceManager::getInstance()->requestResource<Mesh>(meshName);
-
-        cJSON *position = cJSON_GetObjectItem(instanceJson, "position");
-        instance->position = glm::vec3(cJSON_GetArrayItem(position, 0)->valuedouble, cJSON_GetArrayItem(position, 1)->valuedouble, cJSON_GetArrayItem(position, 2)->valuedouble);
-
-        cJSON *orientation = cJSON_GetObjectItem(instanceJson, "orientation");
-        instance->orientation = glm::vec3(cJSON_GetArrayItem(orientation, 0)->valuedouble, cJSON_GetArrayItem(orientation, 1)->valuedouble, cJSON_GetArrayItem(orientation, 2)->valuedouble);
-
-        cJSON *scale = cJSON_GetObjectItem(instanceJson, "scale");
-        instance->scale = glm::vec3(cJSON_GetArrayItem(scale, 0)->valuedouble, cJSON_GetArrayItem(scale, 1)->valuedouble, cJSON_GetArrayItem(scale, 2)->valuedouble);
-
-        cJSON *animation = cJSON_GetObjectItem(instanceJson, "animation");
-        if (animation)
-        {
-            PropertyMapping properties;
-            properties.add("location", (float *)&instance->position);
-            properties.add("rotation_euler", (float *)&instance->orientation);
-            properties.add("scale", (float *)&instance->scale);
-
-            instance->animation = new AnimationData(animation, properties);
-            this->animationPlayer.registerAnimation(instance->animation);
-        }
-
-        this->instances.push_back(instance);
-
-        instanceJson = instanceJson->next;
+        nodeJson = nodeJson->next;
     }
 }
 
 void Scene::unload()
 {
-    std::for_each(this->instances.begin(), this->instances.end(), [this](MeshInstance *instance)
+    std::for_each(this->meshNodes.begin(), this->meshNodes.end(), [this](SceneNode<Mesh> *node)
     {
-        ResourceManager::getInstance()->releaseResource(instance->mesh);
-
-        if (instance->animation)
-        {
-            this->animationPlayer.unregisterAnimation(instance->animation);
-            delete instance->animation;
-        }
-
-        delete instance;
+        node->unregisterAnimation(&this->animationPlayer);
+        delete node;
     });
-    this->instances.clear();
+    this->meshNodes.clear();
 }
 
 void Scene::updateAnimation(float time)
@@ -74,14 +43,14 @@ void Scene::updateAnimation(float time)
 
 void Scene::fillRenderList(RenderList *renderList) const
 {
-    std::for_each(this->instances.begin(), this->instances.end(), [&](const MeshInstance *instance)
+    std::for_each(this->meshNodes.begin(), this->meshNodes.end(), [&](const SceneNode<Mesh> *node)
     {
-        glm::mat4 rotation = glm::eulerAngleZ(instance->orientation.z) * glm::eulerAngleY(instance->orientation.y) * glm::eulerAngleX(instance->orientation.x);
+        Mesh *mesh = node->getData();
 
         RenderList::Job job;
-        job.mesh = instance->mesh;
-        job.transform = glm::translate(glm::mat4(), instance->position) * rotation * glm::scale(glm::mat4(), instance->scale);
-        job.material = instance->mesh->getMaterial();
+        job.mesh = mesh;
+        job.transform = node->computeTransformMatrix();
+        job.material = mesh->getMaterial();
         renderList->addJob(job);
     });
 }

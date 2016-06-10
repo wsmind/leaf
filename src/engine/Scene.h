@@ -8,6 +8,7 @@
 #include <engine/AnimationPlayer.h>
 #include <engine/Mesh.h>
 #include <engine/Resource.h>
+#include <engine/SceneNode.h>
 
 class AnimationData;
 class RenderList;
@@ -26,23 +27,7 @@ class Scene: public Resource
         void fillRenderList(RenderList *renderList) const;
 
     private:
-        struct MeshInstance
-        {
-            Mesh *mesh;
-
-            // transform
-            glm::vec3 position;
-            glm::vec3 orientation; /// XYZ Euler
-            glm::vec3 scale;
-
-            AnimationData *animation;
-
-            MeshInstance()
-                : mesh(nullptr)
-                , animation(nullptr)
-            {}
-        };
-        std::vector<MeshInstance *> instances;
+        std::vector<SceneNode<Mesh> *> meshNodes;
 
         AnimationPlayer animationPlayer;
 };

@@ -185,6 +185,7 @@
     <ClInclude Include="..\..\src\engine\ResourceManager.inline.h">
       <FileType>CppCode</FileType>
     </ClInclude>
+    <ClInclude Include="..\..\src\engine\SceneNode.h" />
     <ClInclude Include="..\..\src\engine\Texture.h" />
   </ItemGroup>
   <ItemGroup>

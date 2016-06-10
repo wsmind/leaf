@@ -48,6 +48,7 @@
     <ClInclude Include="..\..\src\engine\PropertyMapping.h" />
     <ClInclude Include="..\..\src\engine\FCurve.h" />
     <ClInclude Include="..\..\src\engine\Camera.h" />
+    <ClInclude Include="..\..\src\engine\SceneNode.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\..\src\engine\shaders\plop.vs.hlsl">
