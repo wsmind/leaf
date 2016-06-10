@@ -40,7 +40,7 @@ void FCurve::evaluate(float time, const PropertyMapping *properties)
     {
         const Keyframe &a = this->keyframes[i];
         const Keyframe &b = this->keyframes[i + 1];
-        float (*interpolator)(const Keyframe &a, const Keyframe &b, float time) = FCurve::interpolators[a.interpolation];
+        KeyframeInterpolator interpolator = FCurve::interpolators[a.interpolation];
         *property = interpolator(a, b, time);
     }
     else
@@ -73,7 +73,7 @@ float FCurve::interpolateBezier(const Keyframe &a, const Keyframe &b, float time
     return uuu * a.co.y + 3.0f * uu * t * a.rightHandle.y + 3.0f * u * tt * b.leftHandle.y + ttt * b.co.y;
 }
 
-float (*FCurve::interpolators[3])(const Keyframe &a, const Keyframe &b, float time) = {
+FCurve::KeyframeInterpolator FCurve::interpolators[3] = {
     FCurve::interpolateConstant,
     FCurve::interpolateLinear,
     FCurve::interpolateBezier
