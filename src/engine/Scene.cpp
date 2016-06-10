@@ -76,9 +76,11 @@ void Scene::fillRenderList(RenderList *renderList) const
 {
     std::for_each(this->instances.begin(), this->instances.end(), [&](const MeshInstance *instance)
     {
+        glm::mat4 rotation = glm::eulerAngleZ(instance->orientation.z) * glm::eulerAngleY(instance->orientation.y) * glm::eulerAngleX(instance->orientation.x);
+
         RenderList::Job job;
         job.mesh = instance->mesh;
-        job.transform = glm::translate(glm::mat4(), instance->position) * glm::eulerAngleXYZ(instance->orientation.x, instance->orientation.y, instance->orientation.z) * glm::scale(glm::mat4(), instance->scale);
+        job.transform = glm::translate(glm::mat4(), instance->position) * rotation * glm::scale(glm::mat4(), instance->scale);
         job.material = instance->mesh->getMaterial();
         renderList->addJob(job);
     });
