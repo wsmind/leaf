@@ -7,8 +7,8 @@ def export_data(updated_only=False):
 
     data["scenes"] = {}
     for scene in list(bpy.data.scenes):
-        if scene.is_updated or not updated_only:
-        #if True:
+        #if scene.is_updated or not updated_only:
+        if True:
             print("exporting scene: " + scene.name)
             data["scenes"][scene.name] = export_scene(scene)
             #import json

@@ -78,7 +78,7 @@ void Scene::fillRenderList(RenderList *renderList) const
     {
         RenderList::Job job;
         job.mesh = instance->mesh;
-        job.transform = glm::translate(glm::eulerAngleXYZ(instance->orientation.x, instance->orientation.y, instance->orientation.z) * glm::scale(glm::mat4(), instance->scale), instance->position);
+        job.transform = glm::translate(glm::mat4(), instance->position) * glm::eulerAngleXYZ(instance->orientation.x, instance->orientation.y, instance->orientation.z) * glm::scale(glm::mat4(), instance->scale);
         job.material = instance->mesh->getMaterial();
         renderList->addJob(job);
     });
