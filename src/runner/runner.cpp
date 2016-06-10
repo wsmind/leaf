@@ -48,7 +48,7 @@ void *loadBlob(const std::string &filename)
 
 int main()
 {
-    leaf_initialize(1920, 1080, false);
+    leaf_initialize(1600, 900, false);
 
     std::vector<void *> blobs;
     WIN32_FIND_DATA fileInfo;
@@ -79,7 +79,7 @@ int main()
     {
         float time = (float)(timeGetTime() - startTime) * 0.001f * 24.0f; // hardcoded 24fps
         leaf_update_animation(time);
-        leaf_render(1920, 1080);
+        leaf_render(1600, 900);
     }
 
     ShowCursor(TRUE);
