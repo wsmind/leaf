@@ -31,22 +31,32 @@ void FCurve::evaluate(float time, const PropertyMapping *properties)
     if (!property)
         return;
     
+    if (this->keyframes.size() == 0)
+        return;
+
+    // time before first keyframe
+    if (time < this->keyframes[0].co.x)
+    {
+        *property = this->keyframes[0].co.y;
+        return;
+    }
+
+    // time after last keyframe
+    if (time >= this->keyframes[this->keyframes.size() - 1].co.x)
+    {
+        *property = this->keyframes[this->keyframes.size() - 1].co.y;
+        return;
+    }
+
     int i = 1;
-    while ((i < this->keyframes.size() - 1) && (time >= this->keyframes[i].co.x))
+    while (time >= this->keyframes[i].co.x)
         i++;
 
     i--;
-    if (i < this->keyframes.size() - 1)
-    {
-        const Keyframe &a = this->keyframes[i];
-        const Keyframe &b = this->keyframes[i + 1];
-        KeyframeInterpolator interpolator = FCurve::interpolators[a.interpolation];
-        *property = interpolator(a, b, time);
-    }
-    else
-    {
-        *property = this->keyframes[i].co.y;
-    }
+    const Keyframe &a = this->keyframes[i];
+    const Keyframe &b = this->keyframes[i + 1];
+    KeyframeInterpolator interpolator = FCurve::interpolators[a.interpolation];
+    *property = interpolator(a, b, time);
 }
 
 float FCurve::interpolateConstant(const Keyframe &a, const Keyframe &b, float time)
