@@ -158,6 +158,7 @@
     <ClCompile Include="..\..\src\engine\AnimationData.cpp" />
     <ClCompile Include="..\..\src\engine\AnimationPlayer.cpp" />
     <ClCompile Include="..\..\src\engine\api.cpp" />
+    <ClCompile Include="..\..\src\engine\Camera.cpp" />
     <ClCompile Include="..\..\src\engine\cJSON\cJSON.c" />
     <ClCompile Include="..\..\src\engine\Device.cpp" />
     <ClCompile Include="..\..\src\engine\Engine.cpp" />
@@ -174,6 +175,7 @@
     <ClInclude Include="..\..\src\engine\Action.h" />
     <ClInclude Include="..\..\src\engine\AnimationData.h" />
     <ClInclude Include="..\..\src\engine\AnimationPlayer.h" />
+    <ClInclude Include="..\..\src\engine\Camera.h" />
     <ClInclude Include="..\..\src\engine\cJSON\cJSON.h" />
     <ClInclude Include="..\..\src\engine\FCurve.h" />
     <ClInclude Include="..\..\src\engine\Image.h" />

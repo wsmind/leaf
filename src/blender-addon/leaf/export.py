@@ -49,6 +49,12 @@ def export_data(updated_only=False):
             print("exporting action: " + action.name)
             data["actions"][action.name] = export_action(action)
 
+    data["cameras"] = {}
+    for camera in list(bpy.data.cameras):
+        if camera.is_updated or not updated_only:
+            print("exporting camera: " + camera.name)
+            data["cameras"][camera.name] = export_camera(camera)
+
     data["textures"].update(generated_textures)
     data["images"].update(generated_images)
 
@@ -56,25 +62,23 @@ def export_data(updated_only=False):
 
 def export_scene(scene):
     return {
-        "meshes": [export_mesh_instance(obj) for obj in scene.objects if obj.type == "MESH"],
-        "lights": [export_light(obj) for obj in scene.objects if obj.type == "LAMP"]
+        "meshes": [export_scene_node(obj) for obj in scene.objects if obj.type == "MESH"],
+        "lights": [export_scene_node(obj) for obj in scene.objects if obj.type == "LAMP"],
+        "cameras": [export_scene_node(obj) for obj in scene.objects if obj.type == "CAMERA"]
     }
 
-def export_mesh_instance(obj):
+def export_scene_node(obj):
     mesh_instance = {
         "position": [obj.location.x, obj.location.y, obj.location.z],
         "orientation": [obj.rotation_euler.x, obj.rotation_euler.y, obj.rotation_euler.z],
         "scale": [obj.scale.x, obj.scale.y, obj.scale.z],
-        "mesh": obj.data.name
+        "data": obj.data.name
     }
 
     if obj.animation_data:
         mesh_instance["animation"] = export_animation(obj.animation_data)
 
     return mesh_instance
-
-def export_light(obj):
-    return {}
 
 def export_material(mtl, blobs, generated_textures, generated_images):
 
@@ -289,3 +293,6 @@ def export_animation(anim_data):
     return {
         "action": anim_data.action.name
     }
+
+def export_camera(camera):
+    return {}

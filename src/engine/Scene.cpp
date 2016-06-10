@@ -17,7 +17,7 @@ void Scene::load(const cJSON *json)
     cJSON *instanceJson = meshesJson->child;
     while (instanceJson)
     {
-        std::string meshName = cJSON_GetObjectItem(instanceJson, "mesh")->valuestring;
+        std::string meshName = cJSON_GetObjectItem(instanceJson, "data")->valuestring;
 
         MeshInstance *instance = new MeshInstance;
         instance->mesh = ResourceManager::getInstance()->requestResource<Mesh>(meshName);

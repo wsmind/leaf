@@ -6,6 +6,7 @@
 #include <mmsystem.h>
 
 #include <engine/Action.h>
+#include <engine/Camera.h>
 #include <engine/Image.h>
 #include <engine/Material.h>
 #include <engine/Mesh.h>
@@ -55,6 +56,19 @@ void Engine::loadData(cJSON *json)
             ResourceManager::getInstance()->updateResourceData<Action>(name, action);
 
             action = action->next;
+        }
+    }
+
+    cJSON *cameras = cJSON_GetObjectItem(json, "cameras");
+    if (cameras)
+    {
+        cJSON *camera = cameras->child;
+        while (camera)
+        {
+            std::string name = camera->string;
+            ResourceManager::getInstance()->updateResourceData<Camera>(name, camera);
+
+            camera = camera->next;
         }
     }
 
