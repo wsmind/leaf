@@ -2,6 +2,7 @@
 
 #include <cassert>
 #include <engine/glm/gtc/matrix_transform.hpp>
+#include <engine/glm/gtx/euler_angles.hpp>
 
 #include <engine/AnimationData.h>
 #include <engine/RenderList.h>
@@ -77,7 +78,7 @@ void Scene::fillRenderList(RenderList *renderList) const
     {
         RenderList::Job job;
         job.mesh = instance->mesh;
-        job.transform = glm::translate(glm::scale(glm::mat4(), instance->scale), instance->position);
+        job.transform = glm::translate(glm::eulerAngleXYZ(instance->orientation.x, instance->orientation.y, instance->orientation.z) * glm::scale(glm::mat4(), instance->scale), instance->position);
         job.material = instance->mesh->getMaterial();
         renderList->addJob(job);
     });
