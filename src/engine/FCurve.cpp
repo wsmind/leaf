@@ -12,8 +12,13 @@ FCurve::FCurve(const cJSON *json)
     while (keyframeData)
     {
         Keyframe key;
-        key.co.x = (float)cJSON_GetArrayItem(keyframeData, 0)->valuedouble;
-        key.co.y = (float)cJSON_GetArrayItem(keyframeData, 1)->valuedouble;
+        key.interpolation = cJSON_GetArrayItem(keyframeData, 0)->valueint;
+        key.co.x = (float)cJSON_GetArrayItem(keyframeData, 1)->valuedouble;
+        key.co.y = (float)cJSON_GetArrayItem(keyframeData, 2)->valuedouble;
+        key.leftHandle.x = (float)cJSON_GetArrayItem(keyframeData, 3)->valuedouble;
+        key.leftHandle.y = (float)cJSON_GetArrayItem(keyframeData, 4)->valuedouble;
+        key.rightHandle.x = (float)cJSON_GetArrayItem(keyframeData, 5)->valuedouble;
+        key.rightHandle.y = (float)cJSON_GetArrayItem(keyframeData, 6)->valuedouble;
         this->keyframes.push_back(key);
 
         keyframeData = keyframeData->next;
@@ -33,12 +38,43 @@ void FCurve::evaluate(float time, const PropertyMapping *properties)
     i--;
     if (i < this->keyframes.size() - 1)
     {
-        // basic lerp
-        float t = (time - this->keyframes[i].co.x) / (this->keyframes[i + 1].co.x - this->keyframes[i].co.x);
-        *property = this->keyframes[i].co.y + (this->keyframes[i + 1].co.y - this->keyframes[i].co.y) * t;
+        const Keyframe &a = this->keyframes[i];
+        const Keyframe &b = this->keyframes[i + 1];
+        float (*interpolator)(const Keyframe &a, const Keyframe &b, float time) = FCurve::interpolators[a.interpolation];
+        *property = interpolator(a, b, time);
     }
     else
     {
         *property = this->keyframes[i].co.y;
     }
 }
+
+float FCurve::interpolateConstant(const Keyframe &a, const Keyframe &b, float time)
+{
+    return a.co.y;
+}
+
+float FCurve::interpolateLinear(const Keyframe &a, const Keyframe &b, float time)
+{
+    // basic lerp
+    float t = (time - a.co.x) / (b.co.x - a.co.x);
+    return a.co.y + (b.co.y - a.co.y) * t;
+}
+
+float FCurve::interpolateBezier(const Keyframe &a, const Keyframe &b, float time)
+{
+    float t = (time - a.co.x) / (b.co.x - a.co.x);
+    float tt = t * t;
+    float ttt = t * tt;
+    float u = 1.0f - t;
+    float uu = u * u;
+    float uuu = u * uu;
+
+    return uuu * a.co.y + 3.0f * uu * t * a.rightHandle.y + 3.0f * u * tt * b.leftHandle.y + ttt * b.co.y;
+}
+
+float (*FCurve::interpolators[3])(const Keyframe &a, const Keyframe &b, float time) = {
+    FCurve::interpolateConstant,
+    FCurve::interpolateLinear,
+    FCurve::interpolateBezier
+};

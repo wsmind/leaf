@@ -271,8 +271,26 @@ def export_fcurve(fcurve):
     return {
         "path": fcurve.data_path,
         "index": fcurve.array_index,
-        "keyframes": [[keyframe.co.x, keyframe.co.y] for keyframe in fcurve.keyframe_points]
+        "keyframes": [export_keyframe(keyframe) for keyframe in fcurve.keyframe_points]
     }
+
+def export_keyframe(keyframe):
+    return [
+        export_interpolation(keyframe.interpolation),
+        keyframe.co.x,
+        keyframe.co.y,
+        keyframe.handle_left.x,
+        keyframe.handle_left.y,
+        keyframe.handle_right.x,
+        keyframe.handle_right.y
+    ]
+
+def export_interpolation(interpolation):
+    # convert interpolation name to function index in FCurve.cpp
+    if interpolation == "CONSTANT": return 0
+    if interpolation == "LINEAR": return 1
+    if interpolation == "BEZIER": return 2
+    return 0
 
 def export_animation(anim_data):
     return {
