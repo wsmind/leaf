@@ -49,6 +49,12 @@ def export_data(updated_only=False):
             print("exporting action: " + action.name)
             data["actions"][action.name] = export_action(action)
 
+    data["lights"] = {}
+    for light in list(bpy.data.lamps):
+        if light.is_updated or not updated_only:
+            print("exporting light: " + light.name)
+            data["lights"][light.name] = export_light(light)
+
     data["cameras"] = {}
     for camera in list(bpy.data.cameras):
         if camera.is_updated or not updated_only:
@@ -293,6 +299,9 @@ def export_animation(anim_data):
     return {
         "action": anim_data.action.name
     }
+
+def export_light(light):
+    return {}
 
 def export_camera(camera):
     return {}
