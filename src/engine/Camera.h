@@ -17,6 +17,7 @@ class Camera: public Resource
             : lens(35.0f)
             , clipStart(0.1f)
             , clipEnd(100.0f)
+            , sensorHeight(32.0f)
         {}
 
         virtual void load(const cJSON *json) override;
@@ -30,4 +31,5 @@ class Camera: public Resource
         float lens; // mm
         float clipStart;
         float clipEnd;
+        float sensorHeight;
 };

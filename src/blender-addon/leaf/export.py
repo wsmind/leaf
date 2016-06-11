@@ -313,7 +313,8 @@ def export_camera(camera):
     data = {
         "lens": camera.lens,
         "clip_start": camera.clip_start,
-        "clip_end": camera.clip_end
+        "clip_end": camera.clip_end,
+        "sensor_height": camera.sensor_height
     }
 
     if camera.animation_data:

@@ -100,6 +100,7 @@ compatible_panels = [
     bpy.types.TEXTURE_PT_image,
     bpy.types.DATA_PT_context_mesh,
     bpy.types.DATA_PT_lens,
+    bpy.types.DATA_PT_camera,
     bpy.types.DATA_PT_camera_safe_areas
 ]
 
