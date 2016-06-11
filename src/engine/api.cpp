@@ -5,7 +5,6 @@
 
 #include <engine/Engine.h>
 #include <engine/cJSON/cJSON.h>
-#include <engine/glm/gtc/matrix_transform.hpp>
 
 LEAFENGINE_API void leaf_initialize(int backbufferWidth, int backbufferHeight, bool capture)
 {
@@ -39,9 +38,7 @@ LEAFENGINE_API void leaf_update_animation(float time)
 
 LEAFENGINE_API void leaf_render(int width, int height)
 {
-    glm::mat4 viewMatrix = glm::lookAt(glm::vec3(3.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-    glm::mat4 projectionMatrix = glm::perspective(1.0f, (float)width / (float)height, 0.1f, 100.0f);
-    Engine::getInstance()->render(width, height, viewMatrix, projectionMatrix);
+    Engine::getInstance()->render(width, height);
 }
 
 LEAFENGINE_API void leaf_render_blender_viewport(int width, int height, float view_matrix[], float projection_matrix[])

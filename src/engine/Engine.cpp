@@ -161,7 +161,7 @@ void Engine::updateAnimation(float time)
     this->scene->updateAnimation(time);
 }
 
-void Engine::render(int width, int height, const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix)
+void Engine::render(int width, int height)
 {
     // process window events to avoid the window turning unresponsive
     MSG msg;
@@ -173,7 +173,7 @@ void Engine::render(int width, int height, const glm::mat4 &viewMatrix, const gl
 
     ResourceManager::getInstance()->update();
 
-    this->renderer->render(this->scene, width, height, viewMatrix, projectionMatrix);
+    this->renderer->render(this->scene, width, height, false, glm::mat4(), glm::mat4());
 }
 
 void Engine::renderBlenderViewport(int width, int height, const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix)

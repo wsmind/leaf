@@ -15,7 +15,7 @@ class Renderer
         Renderer(HWND hwnd, int backbufferWidth, int backbufferHeight, bool capture);
         ~Renderer();
 
-        void render(const Scene *scene, int width, int height, const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix);
+        void render(const Scene *scene, int width, int height, bool overrideCamera, const glm::mat4 &viewMatrixOverride, const glm::mat4 &projectionMatrixOverride);
         void renderBlenderViewport(const Scene *scene, int width, int height, const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix);
 
     private:

@@ -8,6 +8,7 @@
 
 #include <engine/glm/glm.hpp>
 #include <engine/glm/gtc/matrix_inverse.hpp>
+#include <engine/glm/gtc/matrix_transform.hpp>
 
 #include <engine/Device.h>
 #include <engine/Material.h>
@@ -263,7 +264,7 @@ Renderer::~Renderer()
     backgroundDepthState->Release();
 }
 
-void Renderer::render(const Scene *scene, int width, int height, const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix)
+void Renderer::render(const Scene *scene, int width, int height, bool overrideCamera, const glm::mat4 &viewMatrixOverride, const glm::mat4 &projectionMatrixOverride)
 {
     D3D11_VIEWPORT viewport;
     viewport.Width = (float)width;
@@ -277,6 +278,22 @@ void Renderer::render(const Scene *scene, int width, int height, const glm::mat4
     float clearColor[] = { 1.0f, 1.0f, 0.0f, 1.0f };
     Device::context->ClearRenderTargetView(this->renderTarget, clearColor);
     Device::context->ClearDepthStencilView(this->depthTarget, D3D11_CLEAR_DEPTH, 1.0f, 0);
+
+    glm::mat4 viewMatrix;
+    glm::mat4 projectionMatrix;
+
+    if (overrideCamera)
+    {
+        // use the provided camera parameters
+        viewMatrix = viewMatrixOverride;
+        projectionMatrix = projectionMatrixOverride;
+    }
+    else
+    {
+        // get camera from scene
+        viewMatrix = glm::lookAt(glm::vec3(30.0f, 10.0f, 20.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+        projectionMatrix = glm::perspective(1.0f, (float)width / (float)height, 0.1f, 100.0f);
+    }
 
     D3D11_MAPPED_SUBRESOURCE mappedResource;
     HRESULT res = Device::context->Map(this->cbScene, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
@@ -376,7 +393,7 @@ void Renderer::renderBlenderViewport(const Scene *scene, int width, int height, 
 {
     assert(this->capture);
 
-    this->render(scene, width, height, viewMatrix, projectionMatrix);
+    this->render(scene, width, height, true, viewMatrix, projectionMatrix);
 
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
