@@ -5,6 +5,7 @@
 
 #include <engine/Resource.h>
 
+class AnimationData;
 class Texture;
 
 class Material: public Resource
@@ -40,4 +41,6 @@ class Material: public Resource
         Texture *normalTexture;
         Texture *metalnessTexture;
         Texture *roughnessTexture;
+
+        AnimationData *animation = nullptr;
 };

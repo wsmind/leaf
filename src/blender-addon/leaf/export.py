@@ -171,7 +171,7 @@ def export_material(mtl, blobs, generated_textures, generated_images):
         return name
 
     lmtl = mtl.leaf
-    return {
+    data = {
         "albedo": [mtl.diffuse_color.r, mtl.diffuse_color.g, mtl.diffuse_color.b],
         "emit": mtl.emit,
         "albedoTexture": mtl.texture_slots[0].name if mtl.texture_slots[0] and mtl.texture_slots[0].use else make_albedo_texture(mathutils.Color((1.0, 1.0, 1.0))),
@@ -179,6 +179,12 @@ def export_material(mtl, blobs, generated_textures, generated_images):
         "metalnessTexture": mtl.texture_slots[2].name if mtl.texture_slots[2] and mtl.texture_slots[2].use else make_metalness_texture(lmtl.metalness),
         "roughnessTexture": mtl.texture_slots[3].name if mtl.texture_slots[3] and mtl.texture_slots[3].use else make_roughness_texture(lmtl.roughness)
     }
+
+    if mtl.animation_data:
+        data["animation"] = export_animation(mtl.animation_data)
+
+    return data
+
 
 def export_texture(tex):
     # filter out unsupported types

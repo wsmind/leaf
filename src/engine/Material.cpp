@@ -1,6 +1,9 @@
 #include <engine/Material.h>
 
+#include <engine/AnimationData.h>
+#include <engine/AnimationPlayer.h>
 #include <engine/Device.h>
+#include <engine/PropertyMapping.h>
 #include <engine/ResourceManager.h>
 #include <engine/Texture.h>
 
@@ -19,10 +22,28 @@ void Material::load(const cJSON *json)
     this->normalTexture = ResourceManager::getInstance()->requestResource<Texture>(cJSON_GetObjectItem(json, "normalTexture")->valuestring);
     this->metalnessTexture = ResourceManager::getInstance()->requestResource<Texture>(cJSON_GetObjectItem(json, "metalnessTexture")->valuestring);
     this->roughnessTexture = ResourceManager::getInstance()->requestResource<Texture>(cJSON_GetObjectItem(json, "roughnessTexture")->valuestring);
+
+    cJSON *animation = cJSON_GetObjectItem(json, "animation");
+    if (animation)
+    {
+        PropertyMapping properties;
+        properties.add("diffuse_color", (float *)&this->data.albedo);
+        properties.add("emit", &this->data.emit);
+
+        this->animation = new AnimationData(animation, properties);
+        AnimationPlayer::globalPlayer.registerAnimation(this->animation);
+    }
 }
 
 void Material::unload()
 {
+    if (this->animation)
+    {
+        AnimationPlayer::globalPlayer.unregisterAnimation(this->animation);
+        delete this->animation;
+        this->animation = nullptr;
+    }
+
     ResourceManager::getInstance()->releaseResource(this->albedoTexture);
     ResourceManager::getInstance()->releaseResource(this->normalTexture);
     ResourceManager::getInstance()->releaseResource(this->metalnessTexture);
