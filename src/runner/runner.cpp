@@ -69,10 +69,14 @@ int main()
         }
     }
 
+    void *audioBuffer = loadBlob("music.wav");
+
     std::string data = loadFile("data.json");
     leaf_load_data(data.c_str());
 
     ShowCursor(FALSE);
+
+    sndPlaySound((LPCSTR)audioBuffer, SND_ASYNC | SND_MEMORY);
 
     DWORD startTime = timeGetTime();
     while (!GetAsyncKeyState(VK_ESCAPE))
@@ -85,6 +89,8 @@ int main()
     ShowCursor(TRUE);
 
     leaf_shutdown();
+
+    free(audioBuffer);
 
     for (auto buffer: blobs)
     {
