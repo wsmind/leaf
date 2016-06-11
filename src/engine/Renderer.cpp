@@ -8,7 +8,6 @@
 
 #include <engine/glm/glm.hpp>
 #include <engine/glm/gtc/matrix_inverse.hpp>
-#include <engine/glm/gtc/matrix_transform.hpp>
 
 #include <engine/Device.h>
 #include <engine/Material.h>
@@ -291,8 +290,7 @@ void Renderer::render(const Scene *scene, int width, int height, bool overrideCa
     else
     {
         // get camera from scene
-        viewMatrix = glm::lookAt(glm::vec3(30.0f, 10.0f, 20.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-        projectionMatrix = glm::perspective(1.0f, (float)width / (float)height, 0.1f, 100.0f);
+        scene->setupCameraMatrices(viewMatrix, projectionMatrix, (float)width / (float)height);
     }
 
     D3D11_MAPPED_SUBRESOURCE mappedResource;

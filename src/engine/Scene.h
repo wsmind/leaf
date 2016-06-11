@@ -27,6 +27,7 @@ class Scene: public Resource
         void updateAnimation(float time);
 
         void fillRenderList(RenderList *renderList) const;
+        void setupCameraMatrices(glm::mat4 &viewMatrix, glm::mat4 &projectionMatrix, float aspect) const;
 
     private:
         std::vector<SceneNode<Mesh> *> meshNodes;

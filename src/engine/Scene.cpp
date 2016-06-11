@@ -90,3 +90,15 @@ void Scene::fillRenderList(RenderList *renderList) const
         renderList->addJob(job);
     });
 }
+
+void Scene::setupCameraMatrices(glm::mat4 &viewMatrix, glm::mat4 &projectionMatrix, float aspect) const
+{
+    if (this->cameraNodes.size() == 0)
+        return;
+
+    SceneNode<Camera> *node = this->cameraNodes[0];
+    Camera *camera = node->getData();
+
+    viewMatrix = glm::inverse(node->computeTransformMatrix());
+    camera->computeProjectionMatrix(projectionMatrix, aspect);
+}

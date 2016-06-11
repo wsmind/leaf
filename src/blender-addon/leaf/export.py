@@ -301,7 +301,21 @@ def export_animation(anim_data):
     }
 
 def export_light(light):
-    return {}
+    data = {}
+
+    if light.animation_data:
+        data["animation"] = export_animation(light.animation_data)
+
+    return data
 
 def export_camera(camera):
-    return {}
+    data = {
+        "lens": camera.lens,
+        "clip_start": camera.clip_start,
+        "clip_end": camera.clip_end
+    }
+
+    if camera.animation_data:
+        data["animation"] = export_animation(camera.animation_data)
+
+    return data
