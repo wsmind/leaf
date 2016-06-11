@@ -173,7 +173,7 @@ def export_material(mtl, blobs, generated_textures, generated_images):
     lmtl = mtl.leaf
     return {
         "albedo": [mtl.diffuse_color.r, mtl.diffuse_color.g, mtl.diffuse_color.b],
-        "emit": [mtl.emit],
+        "emit": mtl.emit,
         "albedoTexture": mtl.texture_slots[0].name if mtl.texture_slots[0] and mtl.texture_slots[0].use else make_albedo_texture(mathutils.Color((1.0, 1.0, 1.0))),
         "normalTexture": mtl.texture_slots[1].name if mtl.texture_slots[1] and mtl.texture_slots[1].use else make_default_normal_map(),
         "metalnessTexture": mtl.texture_slots[2].name if mtl.texture_slots[2] and mtl.texture_slots[2].use else make_metalness_texture(lmtl.metalness),

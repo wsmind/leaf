@@ -95,7 +95,7 @@ PS_OUTPUT main(GBUFFER_PS_INPUT input)
     color = sqrt(color);
 
 	output.gbuffer0 = float4(pertubatedNormal, metalness);
-	output.gbuffer1 = float4(albedo, emit);
+	output.gbuffer1 = float4(albedo, emit2);
 
 	return output;
 }

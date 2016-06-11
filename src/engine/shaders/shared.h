@@ -37,7 +37,7 @@ cbuffer SceneData: register(b0)
 cbuffer MaterialData: register(b1)
 {
     float3 albedo2;
-    float emit;
+    float emit2;
 
     // UNUSED (textures are used instead)
     float metalness2;
