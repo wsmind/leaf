@@ -9,7 +9,7 @@
 #include <engine/ResourceManager.h>
 
 const std::string Scene::resourceClassName = "Scene";
-const std::string Scene::defaultResourceData = "{\"meshes\": [], \"lights\": []}";
+const std::string Scene::defaultResourceData = "{\"meshes\": [], \"lights\": [], \"cameras\": []}";
 
 void Scene::load(const cJSON *json)
 {
@@ -23,6 +23,28 @@ void Scene::load(const cJSON *json)
 
         nodeJson = nodeJson->next;
     }
+
+    cJSON *lightsJson = cJSON_GetObjectItem(json, "lights");
+    nodeJson = lightsJson->child;
+    while (nodeJson)
+    {
+        SceneNode<Light> *node = new SceneNode<Light>(nodeJson);
+        node->registerAnimation(&this->animationPlayer);
+        this->lightNodes.push_back(node);
+
+        nodeJson = nodeJson->next;
+    }
+
+    cJSON *camerasJson = cJSON_GetObjectItem(json, "cameras");
+    nodeJson = camerasJson->child;
+    while (nodeJson)
+    {
+        SceneNode<Camera> *node = new SceneNode<Camera>(nodeJson);
+        node->registerAnimation(&this->animationPlayer);
+        this->cameraNodes.push_back(node);
+
+        nodeJson = nodeJson->next;
+    }
 }
 
 void Scene::unload()
@@ -33,6 +55,20 @@ void Scene::unload()
         delete node;
     });
     this->meshNodes.clear();
+
+    std::for_each(this->lightNodes.begin(), this->lightNodes.end(), [this](SceneNode<Light> *node)
+    {
+        node->unregisterAnimation(&this->animationPlayer);
+        delete node;
+    });
+    this->lightNodes.clear();
+
+   std::for_each(this->cameraNodes.begin(), this->cameraNodes.end(), [this](SceneNode<Camera> *node)
+    {
+        node->unregisterAnimation(&this->animationPlayer);
+        delete node;
+    });
+    this->cameraNodes.clear();
 }
 
 void Scene::updateAnimation(float time)

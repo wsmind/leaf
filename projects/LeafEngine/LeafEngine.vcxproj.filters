@@ -21,6 +21,7 @@
     <ClCompile Include="..\..\src\engine\PropertyMapping.cpp" />
     <ClCompile Include="..\..\src\engine\FCurve.cpp" />
     <ClCompile Include="..\..\src\engine\Camera.cpp" />
+    <ClCompile Include="..\..\src\engine\Light.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\engine\Renderer.h" />
@@ -49,6 +50,7 @@
     <ClInclude Include="..\..\src\engine\FCurve.h" />
     <ClInclude Include="..\..\src\engine\Camera.h" />
     <ClInclude Include="..\..\src\engine\SceneNode.h" />
+    <ClInclude Include="..\..\src\engine\Light.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\..\src\engine\shaders\plop.vs.hlsl">

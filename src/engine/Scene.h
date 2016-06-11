@@ -6,6 +6,8 @@
 #include <engine/glm/glm.hpp>
 
 #include <engine/AnimationPlayer.h>
+#include <engine/Camera.h>
+#include <engine/Light.h>
 #include <engine/Mesh.h>
 #include <engine/Resource.h>
 #include <engine/SceneNode.h>
@@ -28,6 +30,8 @@ class Scene: public Resource
 
     private:
         std::vector<SceneNode<Mesh> *> meshNodes;
+        std::vector<SceneNode<Light> *> lightNodes;
+        std::vector<SceneNode<Camera> *> cameraNodes;
 
         AnimationPlayer animationPlayer;
 };
