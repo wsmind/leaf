@@ -116,5 +116,6 @@ class LeafMaterial_PT_surface(LeafMaterialButtonsPanel, Panel):
         lmat = context.material.leaf
 
         layout.prop(mat, "diffuse_color", text="Albedo")
+        layout.prop(mat, "emit")
         layout.prop(lmat, "metalness")
         layout.prop(lmat, "roughness")
