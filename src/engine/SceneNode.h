@@ -15,6 +15,7 @@ class SceneNode
         void registerAnimation(AnimationPlayer *player) const;
         void unregisterAnimation(AnimationPlayer *player) const;
 
+        bool isHidden() const { return this->hide != 0.0f; }
         glm::mat4 computeTransformMatrix() const;
 
         DataType *getData() const;
@@ -27,6 +28,8 @@ class SceneNode
 
         // transform animation
         AnimationData *animation;
+
+        float hide;
 
         // custom data attached to this node
         DataType *data;
@@ -49,6 +52,8 @@ SceneNode<DataType>::SceneNode(const cJSON *json)
     cJSON *scale = cJSON_GetObjectItem(json, "scale");
     this->scale = glm::vec3(cJSON_GetArrayItem(scale, 0)->valuedouble, cJSON_GetArrayItem(scale, 1)->valuedouble, cJSON_GetArrayItem(scale, 2)->valuedouble);
 
+    this->hide = (float)cJSON_GetObjectItem(json, "hide")->valuedouble;
+
     cJSON *animation = cJSON_GetObjectItem(json, "animation");
     if (animation)
     {
@@ -56,6 +61,7 @@ SceneNode<DataType>::SceneNode(const cJSON *json)
         properties.add("location", (float *)&this->position);
         properties.add("rotation_euler", (float *)&this->orientation);
         properties.add("scale", (float *)&this->scale);
+        properties.add("hide", &this->hide);
 
         this->animation = new AnimationData(animation, properties);
     }

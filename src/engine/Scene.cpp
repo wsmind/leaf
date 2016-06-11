@@ -81,13 +81,16 @@ void Scene::fillRenderList(RenderList *renderList) const
 {
     std::for_each(this->meshNodes.begin(), this->meshNodes.end(), [&](const SceneNode<Mesh> *node)
     {
-        Mesh *mesh = node->getData();
+        if (!node->isHidden())
+        {
+            Mesh *mesh = node->getData();
 
-        RenderList::Job job;
-        job.mesh = mesh;
-        job.transform = node->computeTransformMatrix();
-        job.material = mesh->getMaterial();
-        renderList->addJob(job);
+            RenderList::Job job;
+            job.mesh = mesh;
+            job.transform = node->computeTransformMatrix();
+            job.material = mesh->getMaterial();
+            renderList->addJob(job);
+        }
     });
 }
 
