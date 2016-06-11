@@ -95,7 +95,8 @@ PS_OUTPUT main(BASIC_PS_INPUT input)
     float3 normal = g0.xyz;
     float metalness = g0.w;
     float3 albedo = g1.xyz;
-    float roughness = g1.w;
+    //float roughness = g1.w;
+    float emit = g1.w;
 
     const float3 light = normalize(float3(1.0, 1.0, 1.0));
 
@@ -104,7 +105,7 @@ PS_OUTPUT main(BASIC_PS_INPUT input)
     // simple lambert for diffuse
     float3 diffuse = dotNL * albedo;
 
-    output.color = float4(diffuse, 1.0);
+    output.color = float4((diffuse + emit) * albedo, 1.0);
 
     return output;
 }

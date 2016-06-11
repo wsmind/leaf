@@ -20,7 +20,7 @@ struct GBUFFER_PS_INPUT
 {
 	float4 position: SV_POSITION;
     float3 worldPosition: POSITION0;
-    float3 normal: NORMAL;
+    nointerpolation float3 normal: NORMAL;
     float2 uv: TEXCOORD;
 };
 
@@ -36,8 +36,10 @@ cbuffer SceneData: register(b0)
 
 cbuffer MaterialData: register(b1)
 {
-    // UNUSED (textures are used instead)
     float3 albedo2;
+    float emit;
+
+    // UNUSED (textures are used instead)
     float metalness2;
     float roughness2;
 };

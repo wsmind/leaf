@@ -16,9 +16,10 @@ class Material: public Resource
         struct MaterialData
         {
             glm::vec3 albedo;
+            float emit;
             float metalness;
             float roughness;
-            float _padding[3];
+            float _padding[2];
         };
         #pragma pack(pop)
 

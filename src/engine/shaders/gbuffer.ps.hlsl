@@ -55,7 +55,7 @@ PS_OUTPUT main(GBUFFER_PS_INPUT input)
     float3 tangentNormal = saturate(normalTexture.Sample(normalSampler, input.uv).rgb * 2.0 - 1.0);
     float3 pertubatedNormal = mul(tangentNormal, TBN);
 
-    float3 albedo = albedoTexture.Sample(albedoSampler, input.uv).rgb;
+    float3 albedo = albedo2 * albedoTexture.Sample(albedoSampler, input.uv).rgb;
     float metalness = metalnessTexture.Sample(metalnessSampler, input.uv).r;
     float roughness = roughnessTexture.Sample(roughnessSampler, input.uv).r;
 
@@ -95,7 +95,7 @@ PS_OUTPUT main(GBUFFER_PS_INPUT input)
     color = sqrt(color);
 
 	output.gbuffer0 = float4(pertubatedNormal, metalness);
-	output.gbuffer1 = float4(finalAlbedo, roughness);
+	output.gbuffer1 = float4(albedo, emit);
 
 	return output;
 }
