@@ -59,6 +59,19 @@ void Engine::loadData(cJSON *json)
         }
     }
 
+    cJSON *lights = cJSON_GetObjectItem(json, "lights");
+    if (lights)
+    {
+        cJSON *light = lights->child;
+        while (light)
+        {
+            std::string name = light->string;
+            ResourceManager::getInstance()->updateResourceData<Light>(name, light);
+
+            light = light->next;
+        }
+    }
+
     cJSON *cameras = cJSON_GetObjectItem(json, "cameras");
     if (cameras)
     {
