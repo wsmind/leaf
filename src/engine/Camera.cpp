@@ -44,7 +44,7 @@ void Camera::computeProjectionMatrix(glm::mat4 &projectionMatrix, float aspect) 
 {
     // assume vertical sensor fit
     float fovy = 2.0f * atanf(0.5f * this->sensorHeight / this->lens);
-    printf("fovy: %f\n", fovy);
+    printf("fovy: %f\n", fovy * 3.1415926535f / 180.0f);
 
     projectionMatrix = glm::perspective(fovy, aspect, this->clipStart, this->clipEnd);
 }
