@@ -10,7 +10,6 @@ const std::string Action::defaultResourceData = "{\"fcurves\": {}}";
 void Action::load(const cJSON *json)
 {
     cJSON *fcurves = cJSON_GetObjectItem(json, "fcurves");
-    printf("Action: loading %d fcurves\n", cJSON_GetArraySize(fcurves));
 
     cJSON *fcurveData = fcurves->child;
     while (fcurveData)
