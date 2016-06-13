@@ -32,7 +32,8 @@ std::string loadFile(const std::string &filename)
 void *loadBlob(const std::string &filename)
 {
     FILE *f = fopen(filename.c_str(), "rb");
-    assert(f);
+    if (!f)
+        return nullptr;
 
     fseek(f, 0, SEEK_END);
     long size = ftell(f);
@@ -61,6 +62,7 @@ int main()
             std::string blobName = filename.substr(0, filename.length() - 4);
 
             void *buffer = loadBlob(filename);
+            assert(buffer != nullptr);
             leaf_register_blob(blobName.c_str(), buffer);
             blobs.push_back(buffer);
 
@@ -76,7 +78,8 @@ int main()
 
     ShowCursor(FALSE);
 
-    sndPlaySound((LPCSTR)audioBuffer, SND_ASYNC | SND_MEMORY);
+    if (audioBuffer != nullptr)
+        sndPlaySound((LPCSTR)audioBuffer, SND_ASYNC | SND_MEMORY);
 
     DWORD startTime = timeGetTime();
     while (!GetAsyncKeyState(VK_ESCAPE))
