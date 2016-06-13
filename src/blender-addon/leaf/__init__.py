@@ -118,6 +118,7 @@ def register():
 
     # register callbacks
     bpy.app.handlers.frame_change_pre.append(frame_change_pre)
+    bpy.app.handlers.load_post.append(load_post)
 
     bpy.utils.register_module(__name__)
 
@@ -132,6 +133,7 @@ def unregister():
 
     # unregister callbacks
     bpy.app.handlers.frame_change_pre.remove(frame_change_pre)
+    bpy.app.handlers.load_post.remove(load_post)
 
     global engine
     engine.dll.leaf_shutdown()
@@ -142,3 +144,8 @@ def unregister():
 def frame_change_pre(scene):
     global engine
     engine.dll.leaf_update_animation(ctypes.c_float(scene.frame_current))
+
+@persistent
+def load_post(dummy):
+    global engine
+    engine.full_data_send = True
