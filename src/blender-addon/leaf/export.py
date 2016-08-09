@@ -68,14 +68,16 @@ def export_data(updated_only=False):
     return data, blobs
 
 def export_scene(scene):
+    camera_objects = [obj for obj in scene.objects if obj.type == "CAMERA"]
     return {
         "meshes": [export_scene_node(obj) for obj in scene.objects if obj.type == "MESH"],
         "lights": [export_scene_node(obj) for obj in scene.objects if obj.type == "LAMP"],
-        "cameras": [export_scene_node(obj) for obj in scene.objects if obj.type == "CAMERA"]
+        "cameras": [export_scene_node(obj) for obj in camera_objects],
+        "markers": [export_marker(marker, camera_objects) for marker in scene.timeline_markers if marker.camera]
     }
 
 def export_scene_node(obj):
-    mesh_instance = {
+    node = {
         "position": [obj.location.x, obj.location.y, obj.location.z],
         "orientation": [obj.rotation_euler.x, obj.rotation_euler.y, obj.rotation_euler.z],
         "scale": [obj.scale.x, obj.scale.y, obj.scale.z],
@@ -84,9 +86,15 @@ def export_scene_node(obj):
     }
 
     if obj.animation_data:
-        mesh_instance["animation"] = export_animation(obj.animation_data)
+        node["animation"] = export_animation(obj.animation_data)
 
-    return mesh_instance
+    return node
+
+def export_marker(marker, camera_objects):
+    return {
+        "camera": camera_objects.index(marker.camera),
+        "frame": marker.frame
+    }
 
 def export_material(mtl, blobs, generated_textures, generated_images):
 
