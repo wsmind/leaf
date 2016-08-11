@@ -29,7 +29,9 @@ class Camera: public Resource
         AnimationData *animation = nullptr;
 
         float lens; // mm
+        float ortho_scale;
         float clipStart;
         float clipEnd;
         float sensorHeight;
+        float type; // 0 = PERSP, 1 = ORTHO, 2 = PANO
 };

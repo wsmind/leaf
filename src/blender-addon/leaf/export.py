@@ -329,12 +329,24 @@ def export_light(light):
 def export_camera(camera):
     data = {
         "lens": camera.lens,
+        "ortho_scale": camera.ortho_scale,
         "clip_start": camera.clip_start,
         "clip_end": camera.clip_end,
-        "sensor_height": camera.sensor_height
+        "sensor_height": camera.sensor_height,
+        "type": export_camera_type(camera.type)
     }
 
     if camera.animation_data:
         data["animation"] = export_animation(camera.animation_data)
 
     return data
+
+def export_camera_type(type):
+    if type == "PERSP":
+        return 0
+    if type == "ORTHO":
+        return 1
+    if type == "PANO":
+        return 2
+
+    return 0
