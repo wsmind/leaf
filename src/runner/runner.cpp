@@ -96,6 +96,9 @@ int main()
 
     leaf_shutdown();
 
+    if (audioBuffer != nullptr)
+        sndPlaySound(NULL, SND_ASYNC | SND_MEMORY);
+
     free(audioBuffer);
 
     for (auto buffer: blobs)
