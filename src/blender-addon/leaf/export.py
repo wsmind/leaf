@@ -93,7 +93,7 @@ def export_scene_node(obj):
 def export_marker(marker, camera_objects):
     return {
         "camera": camera_objects.index(marker.camera),
-        "frame": marker.frame
+        "time": marker.frame
     }
 
 def export_material(mtl, blobs, generated_textures, generated_images):

@@ -9,7 +9,7 @@
 #include <engine/ResourceManager.h>
 
 const std::string Scene::resourceClassName = "Scene";
-const std::string Scene::defaultResourceData = "{\"meshes\": [], \"lights\": [], \"cameras\": []}";
+const std::string Scene::defaultResourceData = "{\"meshes\": [], \"lights\": [], \"cameras\": [], \"markers\": []}";
 
 void Scene::load(const cJSON *json)
 {
@@ -45,6 +45,18 @@ void Scene::load(const cJSON *json)
 
         nodeJson = nodeJson->next;
     }
+
+    cJSON *markersJson = cJSON_GetObjectItem(json, "markers");
+    cJSON *markerJson = markersJson->child;
+    while (markerJson)
+    {
+        Marker marker;
+        marker.cameraIndex = cJSON_GetObjectItem(markerJson, "camera")->valueint;
+        marker.time = (float)cJSON_GetObjectItem(markerJson, "time")->valuedouble;
+        this->markers.push_back(marker);
+
+        markerJson = markerJson->next;
+    }
 }
 
 void Scene::unload()
@@ -75,6 +87,8 @@ void Scene::updateAnimation(float time)
 {
     this->animationPlayer.update(time);
     AnimationPlayer::globalPlayer.update(time);
+
+    this->currentCamera = findCurrentCamera(time);
 }
 
 void Scene::fillRenderList(RenderList *renderList) const
@@ -96,12 +110,27 @@ void Scene::fillRenderList(RenderList *renderList) const
 
 void Scene::setupCameraMatrices(glm::mat4 &viewMatrix, glm::mat4 &projectionMatrix, float aspect) const
 {
-    if (this->cameraNodes.size() == 0)
+    if (this->currentCamera >= this->cameraNodes.size())
         return;
 
-    SceneNode<Camera> *node = this->cameraNodes[0];
+    SceneNode<Camera> *node = this->cameraNodes[this->currentCamera];
     Camera *camera = node->getData();
 
     viewMatrix = glm::inverse(node->computeTransformMatrix());
     camera->computeProjectionMatrix(projectionMatrix, aspect);
+}
+
+int Scene::findCurrentCamera(float time)
+{
+    if (this->markers.size() == 0)
+        return 0;
+
+    if (time <= this->markers[0].time)
+        return this->markers[0].cameraIndex;
+
+    int index = 1;
+    while ((index < this->markers.size()) && (time >= this->markers[index].time))
+        index++;
+
+    return this->markers[index - 1].cameraIndex;
 }
