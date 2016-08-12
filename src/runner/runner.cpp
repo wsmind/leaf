@@ -87,7 +87,7 @@ int main()
     DWORD startTime = timeGetTime();
     while (!GetAsyncKeyState(VK_ESCAPE))
     {
-        float time = (float)(timeGetTime() - startTime) * 0.001f * 24.0f; // hardcoded 24fps
+        float time = (float)(timeGetTime() - startTime) * 0.001f * 60.0f; // hardcoded 60fps
         leaf_update_animation(time);
         leaf_render(width, height);
     }
