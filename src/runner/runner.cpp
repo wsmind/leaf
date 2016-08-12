@@ -47,10 +47,35 @@ void *loadBlob(const std::string &filename)
     return buffer;
 }
 
-int main()
+int main(int argc, char **argv)
 {
     int width = GetSystemMetrics(SM_CXSCREEN);
     int height = GetSystemMetrics(SM_CYSCREEN);
+    float fps = 60.0f; // hardcoded 60fps
+
+    float startFrame = 0;
+
+    int argIndex = 1;
+    while (argIndex < argc)
+    {
+        std::string arg(argv[argIndex]);
+
+        size_t pos = arg.find('=');
+        if (pos != std::string::npos)
+        {
+            auto key = arg.substr(0, pos);
+            auto value = arg.substr(pos + 1);
+
+            if (key == "--start-frame")
+            {
+                startFrame = (float)atof(value.c_str());
+                printf("start frame: %f\n", startFrame);
+            }
+        }
+
+        argIndex++;
+        argv++;
+    }
 
     leaf_initialize(width, height, false);
 
@@ -87,7 +112,7 @@ int main()
     DWORD startTime = timeGetTime();
     while (!GetAsyncKeyState(VK_ESCAPE))
     {
-        float time = (float)(timeGetTime() - startTime) * 0.001f * 60.0f; // hardcoded 60fps
+        float time = (float)(timeGetTime() - startTime) * 0.001f * fps + startFrame;
         leaf_update_animation(time);
         leaf_render(width, height);
     }

@@ -44,7 +44,7 @@ class LEAF_OT_export(Operator):
             if lrd.run_after_export:
                 import subprocess
                 engineExe = os.path.join(rd.filepath, "LeafRunner.exe")
-                subprocess.Popen([engineExe], cwd=rd.filepath)
+                subprocess.Popen([engineExe, "--start-frame=" + str(lrd.run_start_frame)], cwd=rd.filepath)
         except PermissionError:
             self.report({"ERROR"}, "Failed to copy engine files. Make sure the demo is not running while exporting.")
 
@@ -62,6 +62,12 @@ class LeafRenderSettings(bpy.types.PropertyGroup):
             name="Run after export",
             description="Start the exported demo when export finishes",
             default=True,
+        )
+        cls.run_start_frame = IntProperty(
+            name="Start frame",
+            description="Frame on which the demo starts when previewing export",
+            default=0,
+            min=0
         )
 
     @classmethod
@@ -92,3 +98,6 @@ class LeafRender_PT_export(LeafRenderButtonsPanel, Panel):
         row = layout.row(align=True)
         row.operator("leaf.export", text="Export", icon='FILE_TICK')
         row.prop(lrd, "run_after_export", text="Start Demo")
+
+        row = layout.row(align=True)
+        row.prop(lrd, "run_start_frame", text="Start Frame")
