@@ -69,11 +69,14 @@ def export_data(updated_only=False):
 
 def export_scene(scene):
     camera_objects = [obj for obj in scene.objects if obj.type == "CAMERA"]
+    markers = [marker for marker in scene.timeline_markers if marker.camera]
+    markers = sorted(markers, key = lambda m: m.frame)
+
     return {
         "meshes": [export_scene_node(obj) for obj in scene.objects if obj.type == "MESH"],
         "lights": [export_scene_node(obj) for obj in scene.objects if obj.type == "LAMP"],
         "cameras": [export_scene_node(obj) for obj in camera_objects],
-        "markers": [export_marker(marker, camera_objects) for marker in scene.timeline_markers if marker.camera]
+        "markers": [export_marker(marker, camera_objects) for marker in markers]
     }
 
 def export_scene_node(obj):
