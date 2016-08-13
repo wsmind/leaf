@@ -34,9 +34,9 @@ class Scene: public Resource
     private:
         int findCurrentCamera(float time);
 
-        std::vector<SceneNode<Mesh> *> meshNodes;
-        std::vector<SceneNode<Light> *> lightNodes;
-        std::vector<SceneNode<Camera> *> cameraNodes;
+        std::vector<SceneNode *> meshNodes;
+        std::vector<SceneNode *> lightNodes;
+        std::vector<SceneNode *> cameraNodes;
 
         AnimationPlayer animationPlayer;
 

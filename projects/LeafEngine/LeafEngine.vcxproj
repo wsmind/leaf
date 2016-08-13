@@ -172,6 +172,7 @@
     <ClCompile Include="..\..\src\engine\RenderList.cpp" />
     <ClCompile Include="..\..\src\engine\ResourceManager.cpp" />
     <ClCompile Include="..\..\src\engine\Scene.cpp" />
+    <ClCompile Include="..\..\src\engine\SceneNode.cpp" />
     <ClCompile Include="..\..\src\engine\Texture.cpp" />
     <ClInclude Include="..\..\src\engine\Action.h" />
     <ClInclude Include="..\..\src\engine\AnimationData.h" />

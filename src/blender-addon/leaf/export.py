@@ -81,6 +81,7 @@ def export_scene(scene):
 
 def export_scene_node(obj):
     node = {
+        "type": export_object_type(obj.type),
         "position": [obj.location.x, obj.location.y, obj.location.z],
         "orientation": [obj.rotation_euler.x, obj.rotation_euler.y, obj.rotation_euler.z],
         "scale": [obj.scale.x, obj.scale.y, obj.scale.z],
@@ -92,6 +93,15 @@ def export_scene_node(obj):
         node["animation"] = export_animation(obj.animation_data)
 
     return node
+
+def export_object_type(type):
+    if type == "CAMERA":
+        return 0
+    if type == "MESH":
+        return 1
+    if type == "LAMP":
+        return 2
+    return None
 
 def export_marker(marker, camera_objects):
     return {

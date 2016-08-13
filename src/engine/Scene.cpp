@@ -1,8 +1,6 @@
 #include <engine/Scene.h>
 
 #include <cassert>
-#include <engine/glm/gtc/matrix_transform.hpp>
-#include <engine/glm/gtx/euler_angles.hpp>
 
 #include <engine/AnimationData.h>
 #include <engine/RenderList.h>
@@ -17,7 +15,7 @@ void Scene::load(const cJSON *json)
     cJSON *nodeJson = meshesJson->child;
     while (nodeJson)
     {
-        SceneNode<Mesh> *node = new SceneNode<Mesh>(nodeJson);
+        SceneNode*node = new SceneNode(nodeJson);
         node->registerAnimation(&this->animationPlayer);
         this->meshNodes.push_back(node);
 
@@ -28,7 +26,7 @@ void Scene::load(const cJSON *json)
     nodeJson = lightsJson->child;
     while (nodeJson)
     {
-        SceneNode<Light> *node = new SceneNode<Light>(nodeJson);
+        SceneNode *node = new SceneNode(nodeJson);
         node->registerAnimation(&this->animationPlayer);
         this->lightNodes.push_back(node);
 
@@ -39,7 +37,7 @@ void Scene::load(const cJSON *json)
     nodeJson = camerasJson->child;
     while (nodeJson)
     {
-        SceneNode<Camera> *node = new SceneNode<Camera>(nodeJson);
+        SceneNode *node = new SceneNode(nodeJson);
         node->registerAnimation(&this->animationPlayer);
         this->cameraNodes.push_back(node);
 
@@ -61,21 +59,21 @@ void Scene::load(const cJSON *json)
 
 void Scene::unload()
 {
-    std::for_each(this->meshNodes.begin(), this->meshNodes.end(), [this](SceneNode<Mesh> *node)
+    std::for_each(this->meshNodes.begin(), this->meshNodes.end(), [this](SceneNode *node)
     {
         node->unregisterAnimation(&this->animationPlayer);
         delete node;
     });
     this->meshNodes.clear();
 
-    std::for_each(this->lightNodes.begin(), this->lightNodes.end(), [this](SceneNode<Light> *node)
+    std::for_each(this->lightNodes.begin(), this->lightNodes.end(), [this](SceneNode *node)
     {
         node->unregisterAnimation(&this->animationPlayer);
         delete node;
     });
     this->lightNodes.clear();
 
-   std::for_each(this->cameraNodes.begin(), this->cameraNodes.end(), [this](SceneNode<Camera> *node)
+   std::for_each(this->cameraNodes.begin(), this->cameraNodes.end(), [this](SceneNode *node)
     {
         node->unregisterAnimation(&this->animationPlayer);
         delete node;
@@ -93,11 +91,11 @@ void Scene::updateAnimation(float time)
 
 void Scene::fillRenderList(RenderList *renderList) const
 {
-    std::for_each(this->meshNodes.begin(), this->meshNodes.end(), [&](const SceneNode<Mesh> *node)
+    std::for_each(this->meshNodes.begin(), this->meshNodes.end(), [&](const SceneNode *node)
     {
         if (!node->isHidden())
         {
-            Mesh *mesh = node->getData();
+            Mesh *mesh = node->getData<Mesh>();
 
             RenderList::Job job;
             job.mesh = mesh;
@@ -113,8 +111,8 @@ void Scene::setupCameraMatrices(glm::mat4 &viewMatrix, glm::mat4 &projectionMatr
     if (this->currentCamera >= this->cameraNodes.size())
         return;
 
-    SceneNode<Camera> *node = this->cameraNodes[this->currentCamera];
-    Camera *camera = node->getData();
+    SceneNode *node = this->cameraNodes[this->currentCamera];
+    Camera *camera = node->getData<Camera>();
 
     viewMatrix = glm::inverse(node->computeTransformMatrix());
     camera->computeProjectionMatrix(projectionMatrix, aspect);
