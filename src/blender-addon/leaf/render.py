@@ -10,6 +10,8 @@ from bpy.props import (BoolProperty,
                        IntProperty,
                        PointerProperty)
 
+engine = None
+
 class LEAF_OT_export(Operator):
     bl_idname = "leaf.export"
     bl_label = "Export Demo"
@@ -47,6 +49,18 @@ class LEAF_OT_export(Operator):
                 subprocess.Popen([engineExe, "--start-frame=" + str(lrd.run_start_frame)], cwd=rd.filepath)
         except PermissionError:
             self.report({"ERROR"}, "Failed to copy engine files. Make sure the demo is not running while exporting.")
+
+        return {"FINISHED"}
+
+class LEAF_OT_refresh(Operator):
+    bl_idname = "leaf.refresh"
+    bl_label = "Refresh"
+
+    def execute(self, context):
+        global engine
+
+        # tag everything for reupload in engine
+        engine.full_data_send = True
 
         return {"FINISHED"}
 
@@ -101,3 +115,6 @@ class LeafRender_PT_export(LeafRenderButtonsPanel, Panel):
 
         row = layout.row(align=True)
         row.prop(lrd, "run_start_frame", text="Start Frame")
+
+        row = layout.row(align=True)
+        row.operator("leaf.refresh", text="Refresh")

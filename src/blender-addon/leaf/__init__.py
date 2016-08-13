@@ -108,6 +108,7 @@ compatible_panels = [
 def register():
     global engine
     engine = EngineWrapper()
+    render.engine = engine
     engine.load()
 
     # these dimensions define the maximum viewport size, actual viewports can be smaller
@@ -140,6 +141,7 @@ def unregister():
     engine.dll.leaf_shutdown()
     engine.unload()
     engine = None
+    render.engine = None
 
 @persistent
 def frame_change_pre(scene):
