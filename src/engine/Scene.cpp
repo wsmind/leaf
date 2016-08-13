@@ -7,39 +7,37 @@
 #include <engine/ResourceManager.h>
 
 const std::string Scene::resourceClassName = "Scene";
-const std::string Scene::defaultResourceData = "{\"meshes\": [], \"lights\": [], \"cameras\": [], \"markers\": []}";
+const std::string Scene::defaultResourceData = "{\"activeCamera\": 0, \"nodes\": [], \"markers\": []}";
 
 void Scene::load(const cJSON *json)
 {
-    cJSON *meshesJson = cJSON_GetObjectItem(json, "meshes");
-    cJSON *nodeJson = meshesJson->child;
+    this->activeCamera = cJSON_GetObjectItem(json, "activeCamera")->valueint;
+
+    cJSON *nodesJson = cJSON_GetObjectItem(json, "nodes");
+    cJSON *nodeJson = nodesJson->child;
     while (nodeJson)
     {
-        SceneNode*node = new SceneNode(nodeJson);
+        // resolve parent pointer
+        cJSON *parentIndex = cJSON_GetObjectItem(nodeJson, "parent");
+        SceneNode *parent = nullptr;
+        if (parentIndex != nullptr)
+        {
+            printf("node %zd has parent %d\n", this->nodes.size() - 1, parentIndex->valueint);
+            parent = this->nodes[parentIndex->valueint];
+        }
+
+        SceneNode *node = new SceneNode(nodeJson, parent);
         node->registerAnimation(&this->animationPlayer);
-        this->meshNodes.push_back(node);
 
-        nodeJson = nodeJson->next;
-    }
+        this->nodes.push_back(node);
 
-    cJSON *lightsJson = cJSON_GetObjectItem(json, "lights");
-    nodeJson = lightsJson->child;
-    while (nodeJson)
-    {
-        SceneNode *node = new SceneNode(nodeJson);
-        node->registerAnimation(&this->animationPlayer);
-        this->lightNodes.push_back(node);
-
-        nodeJson = nodeJson->next;
-    }
-
-    cJSON *camerasJson = cJSON_GetObjectItem(json, "cameras");
-    nodeJson = camerasJson->child;
-    while (nodeJson)
-    {
-        SceneNode *node = new SceneNode(nodeJson);
-        node->registerAnimation(&this->animationPlayer);
-        this->cameraNodes.push_back(node);
+        int type = cJSON_GetObjectItem(nodeJson, "type")->valueint;
+        switch (type)
+        {
+            case 0: this->cameraNodes.push_back(node); break;
+            case 1: this->meshNodes.push_back(node); break;
+            case 2: this->lightNodes.push_back(node); break;
+        }
 
         nodeJson = nodeJson->next;
     }
@@ -59,26 +57,17 @@ void Scene::load(const cJSON *json)
 
 void Scene::unload()
 {
-    std::for_each(this->meshNodes.begin(), this->meshNodes.end(), [this](SceneNode *node)
+    std::for_each(this->nodes.begin(), this->nodes.end(), [this](SceneNode *node)
     {
         node->unregisterAnimation(&this->animationPlayer);
         delete node;
     });
-    this->meshNodes.clear();
 
-    std::for_each(this->lightNodes.begin(), this->lightNodes.end(), [this](SceneNode *node)
-    {
-        node->unregisterAnimation(&this->animationPlayer);
-        delete node;
-    });
-    this->lightNodes.clear();
+    this->nodes.clear();
 
-   std::for_each(this->cameraNodes.begin(), this->cameraNodes.end(), [this](SceneNode *node)
-    {
-        node->unregisterAnimation(&this->animationPlayer);
-        delete node;
-    });
     this->cameraNodes.clear();
+    this->meshNodes.clear();
+    this->lightNodes.clear();
 }
 
 void Scene::updateAnimation(float time)
@@ -108,10 +97,10 @@ void Scene::fillRenderList(RenderList *renderList) const
 
 void Scene::setupCameraMatrices(glm::mat4 &viewMatrix, glm::mat4 &projectionMatrix, float aspect) const
 {
-    if (this->currentCamera >= this->cameraNodes.size())
+    if (this->currentCamera >= this->nodes.size())
         return;
 
-    SceneNode *node = this->cameraNodes[this->currentCamera];
+    SceneNode *node = this->nodes[this->currentCamera];
     Camera *camera = node->getData<Camera>();
 
     viewMatrix = glm::inverse(node->computeTransformMatrix());
@@ -121,7 +110,7 @@ void Scene::setupCameraMatrices(glm::mat4 &viewMatrix, glm::mat4 &projectionMatr
 int Scene::findCurrentCamera(float time)
 {
     if (this->markers.size() == 0)
-        return 0;
+        return this->activeCamera;
 
     if (time <= this->markers[0].time)
         return this->markers[0].cameraIndex;

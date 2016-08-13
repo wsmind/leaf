@@ -34,6 +34,9 @@ class Scene: public Resource
     private:
         int findCurrentCamera(float time);
 
+        std::vector<SceneNode *> nodes;
+
+        // subsets of the above vector (same objects)
         std::vector<SceneNode *> meshNodes;
         std::vector<SceneNode *> lightNodes;
         std::vector<SceneNode *> cameraNodes;
@@ -47,5 +50,6 @@ class Scene: public Resource
         };
         std::vector<Marker> markers;
 
-        int currentCamera;
+        int currentCamera; // computed through markers, defaults to activeCamera if no markers
+        int activeCamera; // active camera at the time of export
 };

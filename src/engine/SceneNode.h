@@ -10,7 +10,7 @@ class Resource;
 class SceneNode
 {
     public:
-        SceneNode(const cJSON *json);
+        SceneNode(const cJSON *json, const SceneNode *parent);
         ~SceneNode();
 
         void registerAnimation(AnimationPlayer *player) const;
@@ -27,6 +27,8 @@ class SceneNode
         glm::vec3 position;
         glm::vec3 orientation; /// XYZ Euler
         glm::vec3 scale;
+
+        const SceneNode *parent;
 
         // transform animation
         AnimationData *animation;

@@ -12,7 +12,8 @@
 #include <engine/PropertyMapping.h>
 #include <engine/ResourceManager.h>
 
-SceneNode::SceneNode(const cJSON *json)
+SceneNode::SceneNode(const cJSON *json, const SceneNode *parent)
+    : parent(parent)
 {
     this->animation = nullptr;
 
@@ -73,5 +74,10 @@ void SceneNode::unregisterAnimation(AnimationPlayer *player) const
 glm::mat4 SceneNode::computeTransformMatrix() const
 {
     glm::mat4 rotation = glm::eulerAngleZ(this->orientation.z) * glm::eulerAngleY(this->orientation.y) * glm::eulerAngleX(this->orientation.x);
-    return glm::translate(glm::mat4(), this->position) * rotation * glm::scale(glm::mat4(), this->scale);
+    glm::mat4 transform = glm::translate(glm::mat4(), this->position) * rotation * glm::scale(glm::mat4(), this->scale);
+
+    if (this->parent != nullptr)
+        return this->parent->computeTransformMatrix() * transform;
+
+    return transform;
 }

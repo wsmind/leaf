@@ -68,18 +68,28 @@ def export_data(updated_only=False):
     return data, blobs
 
 def export_scene(scene):
-    camera_objects = [obj for obj in scene.objects if obj.type == "CAMERA"]
     markers = [marker for marker in scene.timeline_markers if marker.camera]
     markers = sorted(markers, key = lambda m: m.frame)
 
+    # sort objects by parenting depth to ensure child transform correctness
+    objects = [obj for obj in scene.objects if obj.type in ["CAMERA", "MESH", "LAMP"]]
+    objects = sorted(objects, key = lambda obj: compute_parent_depth(obj))
+
     return {
-        "meshes": [export_scene_node(obj) for obj in scene.objects if obj.type == "MESH"],
-        "lights": [export_scene_node(obj) for obj in scene.objects if obj.type == "LAMP"],
-        "cameras": [export_scene_node(obj) for obj in camera_objects],
-        "markers": [export_marker(marker, camera_objects) for marker in markers]
+        "nodes": [export_scene_node(obj, objects) for obj in objects],
+        "markers": [export_marker(marker, objects) for marker in markers],
+        "activeCamera": objects.index(scene.camera)
     }
 
-def export_scene_node(obj):
+def compute_parent_depth(obj):
+    depth = 0
+    while (obj.parent != None):
+        obj = obj.parent
+        depth = depth + 1
+
+    return depth
+
+def export_scene_node(obj, all_objects):
     node = {
         "type": export_object_type(obj.type),
         "position": [obj.location.x, obj.location.y, obj.location.z],
@@ -88,6 +98,9 @@ def export_scene_node(obj):
         "hide": float(obj.hide),
         "data": obj.data.name
     }
+
+    if obj.parent:
+        node["parent"] = all_objects.index(obj.parent)
 
     if obj.animation_data:
         node["animation"] = export_animation(obj.animation_data)
