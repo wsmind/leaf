@@ -16,7 +16,7 @@ class SceneNode
         void registerAnimation(AnimationPlayer *player) const;
         void unregisterAnimation(AnimationPlayer *player) const;
 
-        bool isHidden() const { return this->hide != 0.0f; }
+        bool isHidden() const { return this->hide == 1.0f; }
         glm::mat4 computeTransformMatrix() const;
 
         template <typename DataType>
