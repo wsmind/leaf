@@ -27,7 +27,6 @@ SceneNode::SceneNode(const cJSON *json, const SceneNode *parent)
         case 1: this->data = ResourceManager::getInstance()->requestResource<Mesh>(dataName); break;
         case 2: this->data = ResourceManager::getInstance()->requestResource<Light>(dataName); break;
     }
-    assert(this->data != nullptr);
 
     cJSON *position = cJSON_GetObjectItem(json, "position");
     this->position = glm::vec3(cJSON_GetArrayItem(position, 0)->valuedouble, cJSON_GetArrayItem(position, 1)->valuedouble, cJSON_GetArrayItem(position, 2)->valuedouble);
@@ -50,6 +49,17 @@ SceneNode::SceneNode(const cJSON *json, const SceneNode *parent)
         properties.add("hide", &this->hide);
 
         this->animation = new AnimationData(animation, properties);
+    }
+
+    cJSON *parentMatrixJson = cJSON_GetObjectItem(json, "parentMatrix");
+    if (parentMatrixJson)
+    {
+        this->parentMatrix = glm::mat4(
+            cJSON_GetArrayItem(parentMatrixJson, 0)->valuedouble, cJSON_GetArrayItem(parentMatrixJson, 1)->valuedouble, cJSON_GetArrayItem(parentMatrixJson, 2)->valuedouble, cJSON_GetArrayItem(parentMatrixJson, 3)->valuedouble,
+            cJSON_GetArrayItem(parentMatrixJson, 4)->valuedouble, cJSON_GetArrayItem(parentMatrixJson, 5)->valuedouble, cJSON_GetArrayItem(parentMatrixJson, 6)->valuedouble, cJSON_GetArrayItem(parentMatrixJson, 7)->valuedouble,
+            cJSON_GetArrayItem(parentMatrixJson, 8)->valuedouble, cJSON_GetArrayItem(parentMatrixJson, 9)->valuedouble, cJSON_GetArrayItem(parentMatrixJson, 10)->valuedouble, cJSON_GetArrayItem(parentMatrixJson, 11)->valuedouble,
+            cJSON_GetArrayItem(parentMatrixJson, 12)->valuedouble, cJSON_GetArrayItem(parentMatrixJson, 13)->valuedouble, cJSON_GetArrayItem(parentMatrixJson, 14)->valuedouble, cJSON_GetArrayItem(parentMatrixJson, 15)->valuedouble
+        );
     }
 }
 
@@ -77,7 +87,7 @@ glm::mat4 SceneNode::computeTransformMatrix() const
     glm::mat4 transform = glm::translate(glm::mat4(), this->position) * rotation * glm::scale(glm::mat4(), this->scale);
 
     if (this->parent != nullptr)
-        return this->parent->computeTransformMatrix() * transform;
+        return this->parent->computeTransformMatrix() * this->parentMatrix * transform;
 
     return transform;
 }

@@ -29,6 +29,7 @@ class SceneNode
         glm::vec3 scale;
 
         const SceneNode *parent;
+        glm::mat4 parentMatrix;
 
         // transform animation
         AnimationData *animation;

@@ -72,7 +72,7 @@ def export_scene(scene):
     markers = sorted(markers, key = lambda m: m.frame)
 
     # sort objects by parenting depth to ensure child transform correctness
-    objects = [obj for obj in scene.objects if obj.type in ["CAMERA", "MESH", "LAMP"]]
+    objects = scene.objects[:]
     objects = sorted(objects, key = lambda obj: compute_parent_depth(obj))
 
     return {
@@ -100,7 +100,14 @@ def export_scene_node(obj, all_objects):
     }
 
     if obj.parent:
+        pm = obj.matrix_parent_inverse
         node["parent"] = all_objects.index(obj.parent)
+        node["parentMatrix"] = [
+            pm[0][0], pm[1][0], pm[2][0], pm[3][0],
+            pm[0][1], pm[1][1], pm[2][1], pm[3][1],
+            pm[0][2], pm[1][2], pm[2][2], pm[3][2],
+            pm[0][3], pm[1][3], pm[2][3], pm[3][3]
+        ]
 
     if obj.animation_data:
         node["animation"] = export_animation(obj.animation_data)
@@ -114,7 +121,7 @@ def export_object_type(type):
         return 1
     if type == "LAMP":
         return 2
-    return None
+    return -1
 
 def export_marker(marker, camera_objects):
     return {
