@@ -371,6 +371,9 @@ void Renderer::render(const Scene *scene, int width, int height, bool overrideCa
     this->fullscreenQuad->bind();
     Device::context->Draw(this->fullscreenQuad->getVertexCount(), 0);
 
+    ID3D11ShaderResourceView *srvNulls[GBUFFER_PLANE_COUNT] = { nullptr, nullptr };
+    Device::context->PSSetShaderResources(0, GBUFFER_PLANE_COUNT, srvNulls);
+
     // background pass
     viewport.Width = (float)width;
     viewport.Height = (float)height;
