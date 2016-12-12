@@ -10,6 +10,7 @@
 #include <engine/glm/gtc/matrix_inverse.hpp>
 
 #include <engine/Device.h>
+#include <engine/GPUProfiler.h>
 #include <engine/Material.h>
 #include <engine/Mesh.h>
 #include <engine/RenderList.h>
@@ -265,6 +266,8 @@ Renderer::~Renderer()
 
 void Renderer::render(const Scene *scene, int width, int height, bool overrideCamera, const glm::mat4 &viewMatrixOverride, const glm::mat4 &projectionMatrixOverride)
 {
+    GPUProfiler::beginFrame();
+
     D3D11_VIEWPORT viewport;
     viewport.Width = (float)width;
     viewport.Height = (float)height;
@@ -275,8 +278,11 @@ void Renderer::render(const Scene *scene, int width, int height, bool overrideCa
     Device::context->RSSetViewports(1, &viewport);
 
     float clearColor[] = { 1.0f, 1.0f, 0.0f, 1.0f };
-    Device::context->ClearRenderTargetView(this->renderTarget, clearColor);
-    Device::context->ClearDepthStencilView(this->depthTarget, D3D11_CLEAR_DEPTH, 1.0f, 0);
+    {
+        GPUProfiler::ScopedProfile clearProfile("Clear");
+        Device::context->ClearRenderTargetView(this->renderTarget, clearColor);
+        Device::context->ClearDepthStencilView(this->depthTarget, D3D11_CLEAR_DEPTH, 1.0f, 0);
+    }
 
     glm::mat4 viewMatrix;
     glm::mat4 projectionMatrix;
@@ -385,6 +391,8 @@ void Renderer::render(const Scene *scene, int width, int height, bool overrideCa
     Device::context->Draw(this->fullscreenQuad->getVertexCount(), 0);
 
     swapChain->Present(0, 0);
+
+    GPUProfiler::endFrame();
 
     if (this->capture)
         Device::context->CopyResource(this->captureBuffer, this->backBuffer);

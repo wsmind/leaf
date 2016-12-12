@@ -163,6 +163,7 @@
     <ClCompile Include="..\..\src\engine\Device.cpp" />
     <ClCompile Include="..\..\src\engine\Engine.cpp" />
     <ClCompile Include="..\..\src\engine\FCurve.cpp" />
+    <ClCompile Include="..\..\src\engine\GPUProfiler.cpp" />
     <ClCompile Include="..\..\src\engine\Image.cpp" />
     <ClCompile Include="..\..\src\engine\Light.cpp" />
     <ClCompile Include="..\..\src\engine\Material.cpp" />
@@ -180,6 +181,7 @@
     <ClInclude Include="..\..\src\engine\Camera.h" />
     <ClInclude Include="..\..\src\engine\cJSON\cJSON.h" />
     <ClInclude Include="..\..\src\engine\FCurve.h" />
+    <ClInclude Include="..\..\src\engine\GPUProfiler.h" />
     <ClInclude Include="..\..\src\engine\Image.h" />
     <ClInclude Include="..\..\src\engine\Light.h" />
     <ClInclude Include="..\..\src\engine\Material.h" />
