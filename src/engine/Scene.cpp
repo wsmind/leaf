@@ -21,10 +21,7 @@ void Scene::load(const cJSON *json)
         cJSON *parentIndex = cJSON_GetObjectItem(nodeJson, "parent");
         SceneNode *parent = nullptr;
         if (parentIndex != nullptr)
-        {
-            printf("node %zd has parent %d\n", this->nodes.size() - 1, parentIndex->valueint);
             parent = this->nodes[parentIndex->valueint];
-        }
 
         SceneNode *node = new SceneNode(nodeJson, parent);
         node->registerAnimation(&this->animationPlayer);
