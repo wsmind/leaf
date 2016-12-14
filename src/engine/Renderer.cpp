@@ -243,10 +243,14 @@ Renderer::Renderer(HWND hwnd, int backbufferWidth, int backbufferHeight, bool ca
     ResourceManager::getInstance()->updateResourceData<Mesh>("__fullscreenQuad", cJSON_Parse("{\"vertices\": [-1, -1, 0, 0, 0, 1, 0, 0, 1, 1, 0, 0, 0, 1, 0, 1, -1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, -1, -1, 0, 0, 0, 1, 1, 0, 1, -1, 0, 0, 0, 1, 0, 0], \"vertexCount\": 6, \"material\": \"__default\"}"));
 
     this->fullscreenQuad = ResourceManager::getInstance()->requestResource<Mesh>("__fullscreenQuad");
+
+    GPUProfiler::create();
 }
 
 Renderer::~Renderer()
 {
+    GPUProfiler::destroy();
+
     ResourceManager::getInstance()->releaseResource(this->fullscreenQuad);
 
     delete this->renderList;
@@ -266,7 +270,7 @@ Renderer::~Renderer()
 
 void Renderer::render(const Scene *scene, int width, int height, bool overrideCamera, const glm::mat4 &viewMatrixOverride, const glm::mat4 &projectionMatrixOverride)
 {
-    GPUProfiler::beginFrame();
+    GPUProfiler::getInstance()->beginFrame();
 
     D3D11_VIEWPORT viewport;
     viewport.Width = (float)width;
@@ -392,7 +396,7 @@ void Renderer::render(const Scene *scene, int width, int height, bool overrideCa
 
     swapChain->Present(0, 0);
 
-    GPUProfiler::endFrame();
+    GPUProfiler::getInstance()->endFrame();
 
     if (this->capture)
         Device::context->CopyResource(this->captureBuffer, this->backBuffer);
