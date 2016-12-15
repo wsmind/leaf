@@ -283,7 +283,7 @@ void Renderer::render(const Scene *scene, int width, int height, bool overrideCa
 
     float clearColor[] = { 1.0f, 1.0f, 0.0f, 1.0f };
     {
-        GPUProfiler::ScopedProfile clearProfile("Clear");
+        GPUProfiler::ScopedProfile profile("Clear");
         Device::context->ClearRenderTargetView(this->renderTarget, clearColor);
         Device::context->ClearDepthStencilView(this->depthTarget, D3D11_CLEAR_DEPTH, 1.0f, 0);
     }
@@ -335,66 +335,80 @@ void Renderer::render(const Scene *scene, int width, int height, bool overrideCa
 
     const std::vector<RenderList::Job> &jobs = this->renderList->getJobs();
 
-    Material *currentMaterial = nullptr;
-    Mesh * currentMesh = nullptr;
-    for (const auto &job: jobs)
     {
-        if (currentMaterial != job.material)
+        GPUProfiler::ScopedProfile profile("Geometry");
+        Material *currentMaterial = nullptr;
+        Mesh * currentMesh = nullptr;
+        for (const auto &job : jobs)
         {
-            currentMaterial = job.material;
+            if (currentMaterial != job.material)
+            {
+                currentMaterial = job.material;
 
-            HRESULT res = Device::context->Map(this->cbMaterial, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+                HRESULT res = Device::context->Map(this->cbMaterial, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+                CHECK_HRESULT(res);
+                memcpy(mappedResource.pData, &currentMaterial->getMaterialData(), sizeof(Material::MaterialData));
+                Device::context->Unmap(this->cbMaterial, 0);
+
+                currentMaterial->bindTextures();
+            }
+
+            if (currentMesh != job.mesh)
+            {
+                currentMesh = job.mesh;
+                currentMesh->bind();
+            }
+
+            HRESULT res = Device::context->Map(this->cbInstance, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
             CHECK_HRESULT(res);
-            memcpy(mappedResource.pData, &currentMaterial->getMaterialData(), sizeof(Material::MaterialData));
-            Device::context->Unmap(this->cbMaterial, 0);
+            InstanceData *instanceData = (InstanceData *)mappedResource.pData;
+            instanceData->modelMatrix = job.transform;
+            instanceData->normalMatrix = glm::mat3(glm::inverseTranspose(job.transform));
+            Device::context->Unmap(this->cbInstance, 0);
 
-            currentMaterial->bindTextures();
+            Device::context->Draw(currentMesh->getVertexCount(), 0);
         }
-
-        if (currentMesh != job.mesh)
-        {
-            currentMesh = job.mesh;
-            currentMesh->bind();
-        }
-
-        HRESULT res = Device::context->Map(this->cbInstance, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-        CHECK_HRESULT(res);
-        InstanceData *instanceData = (InstanceData *)mappedResource.pData;
-        instanceData->modelMatrix = job.transform;
-        instanceData->normalMatrix = glm::mat3(glm::inverseTranspose(job.transform));
-        Device::context->Unmap(this->cbInstance, 0);
-
-        Device::context->Draw(currentMesh->getVertexCount(), 0);
     }
 
     // lighting pass
-    viewport.Width = (float)this->backbufferWidth;
-    viewport.Height = (float)this->backbufferHeight;
-    Device::context->RSSetViewports(1, &viewport);
+    {
+        GPUProfiler::ScopedProfile profile("Lighting");
 
-    Device::context->OMSetDepthStencilState(this->lightingDepthState, 0);
-    Device::context->OMSetRenderTargets(1, &this->renderTarget, this->depthTarget);
-    Device::context->VSSetShader(basicVertexShader, NULL, 0);
-    Device::context->PSSetShader(basicPixelShader, NULL, 0);
-    Device::context->PSSetSamplers(0, GBUFFER_PLANE_COUNT, this->gBufferSamplerStates);
-    Device::context->PSSetShaderResources(0, GBUFFER_PLANE_COUNT, this->gBufferSRVs);
-    this->fullscreenQuad->bind();
-    Device::context->Draw(this->fullscreenQuad->getVertexCount(), 0);
+        viewport.Width = (float)this->backbufferWidth;
+        viewport.Height = (float)this->backbufferHeight;
+        Device::context->RSSetViewports(1, &viewport);
+
+        Device::context->OMSetDepthStencilState(this->lightingDepthState, 0);
+        Device::context->OMSetRenderTargets(1, &this->renderTarget, this->depthTarget);
+        Device::context->VSSetShader(basicVertexShader, NULL, 0);
+        Device::context->PSSetShader(basicPixelShader, NULL, 0);
+        Device::context->PSSetSamplers(0, GBUFFER_PLANE_COUNT, this->gBufferSamplerStates);
+        Device::context->PSSetShaderResources(0, GBUFFER_PLANE_COUNT, this->gBufferSRVs);
+        this->fullscreenQuad->bind();
+        Device::context->Draw(this->fullscreenQuad->getVertexCount(), 0);
+    }
 
     ID3D11ShaderResourceView *srvNulls[GBUFFER_PLANE_COUNT] = { nullptr, nullptr };
     Device::context->PSSetShaderResources(0, GBUFFER_PLANE_COUNT, srvNulls);
 
     // background pass
-    viewport.Width = (float)width;
-    viewport.Height = (float)height;
-    Device::context->RSSetViewports(1, &viewport);
-    Device::context->VSSetShader(backgroundVertexShader, NULL, 0);
-    Device::context->PSSetShader(backgroundPixelShader, NULL, 0);
-    Device::context->OMSetDepthStencilState(this->backgroundDepthState, 0);
-    this->fullscreenQuad->bind();
-    Device::context->Draw(this->fullscreenQuad->getVertexCount(), 0);
+    {
+        GPUProfiler::ScopedProfile profile("Background");
 
-    swapChain->Present(0, 0);
+        viewport.Width = (float)width;
+        viewport.Height = (float)height;
+        Device::context->RSSetViewports(1, &viewport);
+        Device::context->VSSetShader(backgroundVertexShader, NULL, 0);
+        Device::context->PSSetShader(backgroundPixelShader, NULL, 0);
+        Device::context->OMSetDepthStencilState(this->backgroundDepthState, 0);
+        this->fullscreenQuad->bind();
+        Device::context->Draw(this->fullscreenQuad->getVertexCount(), 0);
+    }
+
+    {
+        GPUProfiler::ScopedProfile profile("V-Sync");
+        swapChain->Present(0, 0);
+    }
 
     GPUProfiler::getInstance()->endFrame();
 
