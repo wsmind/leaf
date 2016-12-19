@@ -245,10 +245,12 @@ Renderer::Renderer(HWND hwnd, int backbufferWidth, int backbufferHeight, bool ca
     this->fullscreenQuad = ResourceManager::getInstance()->requestResource<Mesh>("__fullscreenQuad");
 
     GPUProfiler::create();
+    GPUProfiler::getInstance()->beginJsonCapture();
 }
 
 Renderer::~Renderer()
 {
+    GPUProfiler::getInstance()->endJsonCapture("gpuprofile.json");
     GPUProfiler::destroy();
 
     ResourceManager::getInstance()->releaseResource(this->fullscreenQuad);

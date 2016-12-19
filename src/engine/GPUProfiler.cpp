@@ -1,5 +1,7 @@
 #include <engine/GPUProfiler.h>
 
+#include <fstream>
+
 #include <engine/Device.h>
 
 GPUProfiler *GPUProfiler::instance = nullptr;
@@ -63,7 +65,7 @@ void GPUProfiler::endFrame()
             // seconds
             float duration = float(end - start) / float(queryDataDisjoint.Frequency);
 
-            printf("GPU %s: %.2fms\n", point.name.c_str(), duration * 1000.0f);
+            this->jsonData << "{\"pid\":\"Leaf\",\"tid\":\"GPU\",\"ts\":" << start * 1000000 / queryDataDisjoint.Frequency << ",\"ph\":\"X\",\"cat\":\"gpu\",\"name\":\"" << point.name << "\",\"dur\":" << duration * 1000000.0f << "}," << std::endl;
         }
     }
 
@@ -98,6 +100,30 @@ void GPUProfiler::endBlock(int handle)
     Device::context->End(point.endQuery);
 }
 
+void GPUProfiler::beginJsonCapture()
+{
+    assert(this->capturingJson == false);
+
+    this->capturingJson = true;
+
+    // capture prefix
+    this->jsonData << "[" << std::endl;
+}
+
+void GPUProfiler::endJsonCapture(const std::string filename)
+{
+    assert(this->capturingJson == true);
+
+    // dump content to file
+    std::ofstream f(filename.c_str());
+    assert(f.good());
+    std::string text = this->jsonData.str();
+    f.write(text.c_str(), text.size());
+
+    this->capturingJson = false;
+    this->jsonData.clear();
+}
+
 GPUProfiler::ScopedProfile::ScopedProfile(const std::string &name)
 {
     this->blockHandle = GPUProfiler::getInstance()->beginBlock(name);
@@ -114,6 +140,8 @@ GPUProfiler::GPUProfiler()
     this->currentFrame = &this->frames[this->currentFrameIndex];
 
     this->frameBlock = 0;
+
+    this->capturingJson = false;
 
     // build the query pool
     D3D11_QUERY_DESC queryDesc;

@@ -3,6 +3,7 @@
 #include <cassert>
 #include <string>
 #include <vector>
+#include <sstream>
 
 #include <d3d11.h>
 
@@ -16,6 +17,11 @@ class GPUProfiler
         int beginBlock(const std::string &name);
         void endBlock(int handle);
         
+        // capture in the same JSON format as chrome://tracing
+        // (allows analysis in the chrome tool directly)
+        void beginJsonCapture();
+        void endJsonCapture(const std::string filename); // actually writes the file
+
         class ScopedProfile
         {
             public:
@@ -65,6 +71,9 @@ class GPUProfiler
         ProfileFrame *currentFrame;
 
         int frameBlock;
+
+        bool capturingJson;
+        std::stringstream jsonData;
 
     public:
         // singleton implementation
