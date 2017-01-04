@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string>
+
 #include <windows.h>
 #include <d3d11.h>
 
@@ -12,7 +14,7 @@ class Scene;
 class Renderer
 {
     public:
-        Renderer(HWND hwnd, int backbufferWidth, int backbufferHeight, bool capture);
+        Renderer(HWND hwnd, int backbufferWidth, int backbufferHeight, bool capture, const std::string &profileFilename);
         ~Renderer();
 
         void render(const Scene *scene, int width, int height, bool overrideCamera, const glm::mat4 &viewMatrixOverride, const glm::mat4 &projectionMatrixOverride);
@@ -22,6 +24,7 @@ class Renderer
         int backbufferWidth;
         int backbufferHeight;
         bool capture;
+        std::string profileFilename;
 
         IDXGISwapChain *swapChain;
         ID3D11Texture2D *backBuffer;

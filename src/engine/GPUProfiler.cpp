@@ -8,6 +8,9 @@ GPUProfiler *GPUProfiler::instance = nullptr;
 
 void GPUProfiler::beginFrame()
 {
+    if (!this->enabled)
+        return;
+
     // for the first few frames (as configured in FRAME_LATENCY), new disjoint will be created
     // (they will be reused for all the subsequent frames)
     if (!this->currentFrame->disjointQuery)
@@ -28,6 +31,9 @@ void GPUProfiler::beginFrame()
 
 void GPUProfiler::endFrame()
 {
+    if (!this->enabled)
+        return;
+
     // automatic frame block
     this->endBlock(this->frameBlock);
 
@@ -65,7 +71,8 @@ void GPUProfiler::endFrame()
             // seconds
             float duration = float(end - start) / float(queryDataDisjoint.Frequency);
 
-            this->jsonData << "{\"pid\":\"Leaf\",\"tid\":\"GPU\",\"ts\":" << start * 1000000 / queryDataDisjoint.Frequency << ",\"ph\":\"X\",\"cat\":\"gpu\",\"name\":\"" << point.name << "\",\"dur\":" << duration * 1000000.0f << "}," << std::endl;
+            if (this->capturingJson)
+                this->jsonData << "{\"pid\":\"Leaf\",\"tid\":\"GPU\",\"ts\":" << start * 1000000 / queryDataDisjoint.Frequency << ",\"ph\":\"X\",\"cat\":\"gpu\",\"name\":\"" << point.name << "\",\"dur\":" << duration * 1000000.0f << "}," << std::endl;
         }
     }
 
@@ -80,6 +87,9 @@ void GPUProfiler::endFrame()
 
 int GPUProfiler::beginBlock(const std::string &name)
 {
+    if (!this->enabled)
+        return 0;
+
     ProfilePoint point;
     point.name = name;
     point.startQuery = this->requestPooledQuery();
@@ -94,6 +104,9 @@ int GPUProfiler::beginBlock(const std::string &name)
 
 void GPUProfiler::endBlock(int handle)
 {
+    if (!this->enabled)
+        return;
+
     ProfilePoint &point = this->currentFrame->points[handle];
 
     // record the end timestamp
@@ -102,6 +115,9 @@ void GPUProfiler::endBlock(int handle)
 
 void GPUProfiler::beginJsonCapture()
 {
+    if (!this->enabled)
+        return;
+
     assert(this->capturingJson == false);
 
     this->capturingJson = true;
@@ -112,6 +128,9 @@ void GPUProfiler::beginJsonCapture()
 
 void GPUProfiler::endJsonCapture(const std::string filename)
 {
+    if (!this->enabled)
+        return;
+
     assert(this->capturingJson == true);
 
     // dump content to file
@@ -134,8 +153,14 @@ GPUProfiler::ScopedProfile::~ScopedProfile()
     GPUProfiler::getInstance()->endBlock(this->blockHandle);
 }
 
-GPUProfiler::GPUProfiler()
+GPUProfiler::GPUProfiler(bool enabled)
 {
+    // when the profiler is disabled, every call is stubbed to do nothing
+    this->enabled = enabled;
+
+    if (!this->enabled)
+        return;
+
     this->currentFrameIndex = 0;
     this->currentFrame = &this->frames[this->currentFrameIndex];
 
@@ -160,6 +185,9 @@ GPUProfiler::GPUProfiler()
 
 GPUProfiler::~GPUProfiler()
 {
+    if (!this->enabled)
+        return;
+
     // destroy frame data
     for (int i = 0; i < FRAME_LATENCY; i++)
     {

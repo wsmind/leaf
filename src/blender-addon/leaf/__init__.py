@@ -113,7 +113,7 @@ def register():
 
     # these dimensions define the maximum viewport size, actual viewports can be smaller
     # and will use only a subregion of it
-    engine.dll.leaf_initialize(1920, 1080, True)
+    engine.dll.leaf_initialize(1920, 1080, True, None)
     
     # tag everything for reupload in engine
     engine.full_data_send = True

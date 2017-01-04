@@ -6,10 +6,10 @@
 #include <engine/Engine.h>
 #include <engine/cJSON/cJSON.h>
 
-LEAFENGINE_API void leaf_initialize(int backbufferWidth, int backbufferHeight, bool capture)
+LEAFENGINE_API void leaf_initialize(int backbufferWidth, int backbufferHeight, bool capture, const char *profileFilename)
 {
     Engine::create();
-    Engine::getInstance()->initialize(backbufferWidth, backbufferHeight, capture);
+    Engine::getInstance()->initialize(backbufferWidth, backbufferHeight, capture, profileFilename != nullptr ? profileFilename : "");
 }
 
 LEAFENGINE_API void leaf_shutdown()

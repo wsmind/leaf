@@ -50,11 +50,12 @@ struct InstanceData
 };
 #pragma pack(pop)
 
-Renderer::Renderer(HWND hwnd, int backbufferWidth, int backbufferHeight, bool capture)
+Renderer::Renderer(HWND hwnd, int backbufferWidth, int backbufferHeight, bool capture, const std::string &profileFilename)
 {
     this->backbufferWidth = backbufferWidth;
     this->backbufferHeight = backbufferHeight;
     this->capture = capture;
+    this->profileFilename = profileFilename;
     this->renderList = new RenderList;
 
     DXGI_SWAP_CHAIN_DESC swapChainDesc;
@@ -244,13 +245,13 @@ Renderer::Renderer(HWND hwnd, int backbufferWidth, int backbufferHeight, bool ca
 
     this->fullscreenQuad = ResourceManager::getInstance()->requestResource<Mesh>("__fullscreenQuad");
 
-    GPUProfiler::create();
+    GPUProfiler::create(!this->profileFilename.empty());
     GPUProfiler::getInstance()->beginJsonCapture();
 }
 
 Renderer::~Renderer()
 {
-    GPUProfiler::getInstance()->endJsonCapture("gpuprofile.json");
+    GPUProfiler::getInstance()->endJsonCapture(this->profileFilename);
     GPUProfiler::destroy();
 
     ResourceManager::getInstance()->releaseResource(this->fullscreenQuad);

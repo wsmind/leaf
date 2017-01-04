@@ -54,6 +54,7 @@ int main(int argc, char **argv)
     float fps = 60.0f; // hardcoded 60fps
 
     float startFrame = 0;
+    std::string profileFilename;
 
     int argIndex = 1;
     while (argIndex < argc)
@@ -71,13 +72,16 @@ int main(int argc, char **argv)
                 startFrame = (float)atof(value.c_str());
                 printf("start frame: %f\n", startFrame);
             }
+            else if (key == "--profile")
+            {
+                profileFilename = value;
+            }
         }
 
         argIndex++;
-        argv++;
     }
 
-    leaf_initialize(width, height, false);
+    leaf_initialize(width, height, false, profileFilename.empty() ? nullptr : profileFilename.c_str());
 
     std::vector<void *> blobs;
     WIN32_FIND_DATA fileInfo;

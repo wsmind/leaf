@@ -14,7 +14,7 @@ class Scene;
 class Engine
 {
     public:
-        void initialize(int backbufferWidth, int backbufferHeight, bool capture);
+        void initialize(int backbufferWidth, int backbufferHeight, bool capture, const std::string &profileFilename);
         void shutdown();
 
         void loadData(cJSON *json);

@@ -6,7 +6,7 @@
 #define LEAFENGINE_API extern "C" __declspec(dllimport)
 #endif
 
-LEAFENGINE_API void leaf_initialize(int backbufferWidth, int backbufferHeight, bool capture);
+LEAFENGINE_API void leaf_initialize(int backbufferWidth, int backbufferHeight, bool capture, const char *profileFilename);
 LEAFENGINE_API void leaf_shutdown();
 
 LEAFENGINE_API void leaf_load_data(const char *data);
