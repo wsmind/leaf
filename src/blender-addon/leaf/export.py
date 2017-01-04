@@ -96,7 +96,7 @@ def export_scene_node(obj, all_objects):
         "orientation": [obj.rotation_euler.x, obj.rotation_euler.y, obj.rotation_euler.z],
         "scale": [obj.scale.x, obj.scale.y, obj.scale.z],
         "hide": float(obj.hide),
-        "data": obj.data.name
+        "data": obj.data.name if obj.data else ""
     }
 
     if obj.parent:
