@@ -68,11 +68,13 @@ void GPUProfiler::endFrame()
             Device::context->GetData(point.startQuery, &start, sizeof(UINT64), 0);
             Device::context->GetData(point.endQuery, &end, sizeof(UINT64), 0);
 
-            // seconds
-            float duration = float(end - start) / float(queryDataDisjoint.Frequency);
+            // conversion to microseconds
+            UINT64 startUs = start * 1000000 / queryDataDisjoint.Frequency;
+            UINT64 endUs = end * 1000000 / queryDataDisjoint.Frequency;
+            UINT64 durationUs = endUs - startUs;
 
             if (this->capturingJson)
-                this->jsonData << "{\"pid\":\"Leaf\",\"tid\":\"GPU\",\"ts\":" << start * 1000000 / queryDataDisjoint.Frequency << ",\"ph\":\"X\",\"cat\":\"gpu\",\"name\":\"" << point.name << "\",\"dur\":" << duration * 1000000.0f << "}," << std::endl;
+                this->jsonData << "{\"pid\":\"Leaf\",\"tid\":\"GPU\",\"ts\":" << startUs << ",\"ph\":\"X\",\"cat\":\"gpu\",\"name\":\"" << point.name << "\",\"dur\":" << durationUs << "}," << std::endl;
         }
     }
 
