@@ -24,6 +24,9 @@
     <ClCompile Include="..\..\src\engine\Light.cpp" />
     <ClCompile Include="..\..\src\engine\SceneNode.cpp" />
     <ClCompile Include="..\..\src\engine\GPUProfiler.cpp" />
+    <ClCompile Include="..\..\src\engine\DDSTextureLoader\DDSTextureLoader.cpp">
+      <Filter>DDSTextureLoader</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\engine\Renderer.h" />
@@ -54,6 +57,9 @@
     <ClInclude Include="..\..\src\engine\SceneNode.h" />
     <ClInclude Include="..\..\src\engine\Light.h" />
     <ClInclude Include="..\..\src\engine\GPUProfiler.h" />
+    <ClInclude Include="..\..\src\engine\DDSTextureLoader\DDSTextureLoader.h">
+      <Filter>DDSTextureLoader</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\..\src\engine\shaders\plop.vs.hlsl">
@@ -90,6 +96,9 @@
     </Filter>
     <Filter Include="cJSON">
       <UniqueIdentifier>{475ef57d-2dad-44f9-a439-6ba115a64e87}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="DDSTextureLoader">
+      <UniqueIdentifier>{e513681b-5414-4202-a5d4-24fc46eff4fc}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

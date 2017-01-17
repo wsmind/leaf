@@ -160,6 +160,7 @@
     <ClCompile Include="..\..\src\engine\api.cpp" />
     <ClCompile Include="..\..\src\engine\Camera.cpp" />
     <ClCompile Include="..\..\src\engine\cJSON\cJSON.c" />
+    <ClCompile Include="..\..\src\engine\DDSTextureLoader\DDSTextureLoader.cpp" />
     <ClCompile Include="..\..\src\engine\Device.cpp" />
     <ClCompile Include="..\..\src\engine\Engine.cpp" />
     <ClCompile Include="..\..\src\engine\FCurve.cpp" />
@@ -180,6 +181,7 @@
     <ClInclude Include="..\..\src\engine\AnimationPlayer.h" />
     <ClInclude Include="..\..\src\engine\Camera.h" />
     <ClInclude Include="..\..\src\engine\cJSON\cJSON.h" />
+    <ClInclude Include="..\..\src\engine\DDSTextureLoader\DDSTextureLoader.h" />
     <ClInclude Include="..\..\src\engine\FCurve.h" />
     <ClInclude Include="..\..\src\engine\GPUProfiler.h" />
     <ClInclude Include="..\..\src\engine\Image.h" />
