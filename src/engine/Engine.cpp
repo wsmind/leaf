@@ -46,109 +46,14 @@ void Engine::shutdown()
 
 void Engine::loadData(cJSON *json)
 {
-    cJSON *actions = cJSON_GetObjectItem(json, "actions");
-    if (actions)
-    {
-        cJSON *action = actions->child;
-        while (action)
-        {
-            std::string name = action->string;
-            ResourceManager::getInstance()->updateResourceData<Action>(name, action);
-
-            action = action->next;
-        }
-    }
-
-    cJSON *lights = cJSON_GetObjectItem(json, "lights");
-    if (lights)
-    {
-        cJSON *light = lights->child;
-        while (light)
-        {
-            std::string name = light->string;
-            ResourceManager::getInstance()->updateResourceData<Light>(name, light);
-
-            light = light->next;
-        }
-    }
-
-    cJSON *cameras = cJSON_GetObjectItem(json, "cameras");
-    if (cameras)
-    {
-        cJSON *camera = cameras->child;
-        while (camera)
-        {
-            std::string name = camera->string;
-            ResourceManager::getInstance()->updateResourceData<Camera>(name, camera);
-
-            camera = camera->next;
-        }
-    }
-
-    cJSON *images = cJSON_GetObjectItem(json, "images");
-    if (images)
-    {
-        cJSON *image = images->child;
-        while (image)
-        {
-            std::string name = image->string;
-            ResourceManager::getInstance()->updateResourceData<Image>(name, image);
-
-            image = image->next;
-        }
-    }
-
-    cJSON *textures = cJSON_GetObjectItem(json, "textures");
-    if (textures)
-    {
-        cJSON *texture = textures->child;
-        while (texture)
-        {
-            std::string name = texture->string;
-            ResourceManager::getInstance()->updateResourceData<Texture>(name, texture);
-
-            texture = texture->next;
-        }
-    }
-
-    cJSON *materials = cJSON_GetObjectItem(json, "materials");
-    if (materials)
-    {
-        cJSON *material = materials->child;
-        while (material)
-        {
-            std::string name = material->string;
-            ResourceManager::getInstance()->updateResourceData<Material>(name, material);
-
-            material = material->next;
-        }
-    }
-
-    cJSON *meshes = cJSON_GetObjectItem(json, "meshes");
-    if (meshes)
-    {
-        cJSON *mesh = meshes->child;
-        while (mesh)
-        {
-            std::string name = mesh->string;
-            ResourceManager::getInstance()->updateResourceData<Mesh>(name, mesh);
-
-            mesh = mesh->next;
-        }
-    }
-
-    cJSON *scenes = cJSON_GetObjectItem(json, "scenes");
-    if (scenes)
-    {
-        cJSON *scene = scenes->child;
-        while (scene)
-        {
-            std::string name = scene->string;
-            ResourceManager::getInstance()->updateResourceData<Scene>(name, scene);
-
-            scene = scene->next;
-        }
-    }
+    this->loadDataCollection<Action>(json, "actions");
+    this->loadDataCollection<Light>(json, "lights");
+    this->loadDataCollection<Camera>(json, "cameras");
+    this->loadDataCollection<Image>(json, "images");
+    this->loadDataCollection<Texture>(json, "textures");
+    this->loadDataCollection<Material>(json, "materials");
+    this->loadDataCollection<Mesh>(json, "meshes");
+    this->loadDataCollection<Scene>(json, "scenes");
 }
 
 void Engine::registerBlob(const std::string &name, const void *buffer)

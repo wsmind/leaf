@@ -26,6 +26,9 @@ class Engine
         void renderBlenderViewport(int width, int height, const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix);
 
     private:
+        template <typename ResourceType>
+        void loadDataCollection(cJSON *json, const std::string &collectionName);
+
         static Engine *instance;
 
         HWND hwnd;
@@ -39,3 +42,20 @@ class Engine
         static void destroy() { assert(Engine::instance); delete Engine::instance; }
         static Engine *getInstance() { assert(Engine::instance); return Engine::instance; }
 };
+
+template <typename ResourceType>
+void Engine::loadDataCollection(cJSON *json, const std::string &collectionName)
+{
+    cJSON *elements = cJSON_GetObjectItem(json, collectionName.c_str());
+    if (elements)
+    {
+        cJSON *element = elements->child;
+        while (element)
+        {
+            std::string resourceName = element->string;
+            ResourceManager::getInstance()->updateResourceData<ResourceType>(resourceName, element);
+
+            element = element->next;
+        }
+    }
+}
