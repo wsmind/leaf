@@ -151,8 +151,9 @@ namespace
             return E_POINTER;
         }
 
-        // open the file
-#if (_WIN32_WINNT >= _WIN32_WINNT_WIN8)
+        // open the file (the define check is not reliable enough depending on the installed SDKs,
+        // force the use of the older API to ensure Windows 7 support)
+#if 0 // (_WIN32_WINNT >= _WIN32_WINNT_WIN8)
         ScopedHandle hFile(safe_handle(CreateFile2(fileName,
             GENERIC_READ,
             FILE_SHARE_READ,
