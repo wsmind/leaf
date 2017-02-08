@@ -60,6 +60,7 @@
     <ClInclude Include="..\..\src\engine\DDSTextureLoader\DDSTextureLoader.h">
       <Filter>DDSTextureLoader</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\engine\Engine.inline.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\..\src\engine\shaders\plop.vs.hlsl">
