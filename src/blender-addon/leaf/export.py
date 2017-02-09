@@ -3,6 +3,8 @@ import mathutils
 import ctypes
 import json
 import struct
+import os.path
+import subprocess
 
 def export_data(output_file, updated_only=False):
     data = {}
@@ -255,26 +257,23 @@ def export_texture(tex):
 
     return json.dumps(output).encode("utf-8")
 
-def export_image(img, blobs):
+def export_image(img):
+    nvttPath = bpy.context.user_preferences.addons[__package__].preferences.nvttPath
+    if not os.path.exists(nvttPath):
+        raise Exception("Please configure the path to NVIDIA Texture Tools in the addon preferences")
+
+    nvcompressExe = os.path.join(nvttPath, "bin", "nvcompress.exe")
+    print("nvtt: " + nvcompressExe)
+    sourceImage = img.filepath
+    args = [
+        nvcompressExe,
+        "-color",
+        sourceImage
+    ]
+    print("running: " + str(args))
+    subprocess.run(args)
+
     blob_name = "image_" + img.name
-
-    pixel_data = None
-    if img.is_float:
-        pixel_data = (ctypes.c_float * (img.size[0] * img.size[1] * img.channels))()
-        i = 0
-        tmp = img.pixels[:]
-        for component in tmp:
-            pixel_data[i] = component
-            i += 1
-    else:
-        pixel_data = (ctypes.c_uint8 * (img.size[0] * img.size[1] * img.channels))()
-        i = 0
-        tmp = img.pixels[:]
-        for component in tmp:
-            pixel_data[i] = int(component * 255.0)
-            i += 1
-
-    blobs[blob_name] = pixel_data
 
     data = {
         "width": img.size[0],
