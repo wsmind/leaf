@@ -5,7 +5,6 @@
 #include <map>
 
 class Resource;
-struct cJSON;
 
 class ResourceManager
 {
@@ -13,16 +12,12 @@ class ResourceManager
         // this method clones the whole json tree passed to it; it is safe
         // to delete data after the call
         template <class ResourceType>
-        void updateResourceData(const std::string &name, const cJSON *data);
+        void updateResourceData(const std::string &name, const unsigned char *buffer, size_t size);
 
         template <class ResourceType>
         ResourceType *requestResource(const std::string &name);
 
         inline void releaseResource(Resource *resource);
-
-        // data store for big datasets (mesh data, image data, etc.)
-        void registerBlob(const std::string &name, const void *buffer);
-        const void *getBlob(const std::string &name) const;
 
         void update();
 
@@ -33,14 +28,16 @@ class ResourceManager
         {
             ResourceDescriptor()
                 : resource(nullptr)
-                , data(nullptr)
+                , buffer(nullptr)
+                , size(0)
                 , users(0)
                 , pendingUnload(false)
                 , ttl(0)
             {}
 
             Resource *resource;
-            cJSON *data;
+            unsigned char *buffer;
+            size_t size;
             int users; // refcount, in blender terms
 
             // resources are not unloaded right away, to avoid fast unload/load cycles
@@ -58,9 +55,6 @@ class ResourceManager
 
         typedef std::map<std::string, ResourceDescriptor> DescriptorMap;
         DescriptorMap descriptors;
-
-        typedef std::map<std::string, const void *> BlobMap;
-        BlobMap blobs;
 
     public:
         // singleton implementation

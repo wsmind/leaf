@@ -23,7 +23,7 @@ class Scene: public Resource
 
         Scene(): currentCamera(0) {}
 
-        virtual void load(const cJSON *json) override;
+        virtual void load(const unsigned char *buffer, size_t size) override;
         virtual void unload() override;
 
         void updateAnimation(float time);

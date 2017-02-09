@@ -8,8 +8,10 @@
 const std::string Light::resourceClassName = "Light";
 const std::string Light::defaultResourceData = "{}";
 
-void Light::load(const cJSON *json)
+void Light::load(const unsigned char *buffer, size_t size)
 {
+    cJSON *json = cJSON_Parse((const char *)buffer);
+
     cJSON *animation = cJSON_GetObjectItem(json, "animation");
     if (animation)
     {
@@ -18,6 +20,8 @@ void Light::load(const cJSON *json)
         this->animation = new AnimationData(animation, properties);
         AnimationPlayer::globalPlayer.registerAnimation(this->animation);
     }
+
+    cJSON_Delete(json);
 }
 
 void Light::unload()

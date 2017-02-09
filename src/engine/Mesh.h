@@ -16,7 +16,7 @@ class Mesh: public Resource
         Mesh(): vertexBuffer(nullptr), vertexCount(0) {}
         virtual ~Mesh() {}
 
-        virtual void load(const cJSON *json) override;
+        virtual void load(const unsigned char *buffer, size_t size) override;
         virtual void unload() override;
 
         void bind() const;

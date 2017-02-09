@@ -12,6 +12,8 @@
 #include <engine/PropertyMapping.h>
 #include <engine/ResourceManager.h>
 
+#include <engine/cJSON/cJSON.h>
+
 SceneNode::SceneNode(const cJSON *json, const SceneNode *parent)
     : parent(parent)
 {

@@ -17,8 +17,7 @@ class Engine
         void initialize(int backbufferWidth, int backbufferHeight, bool capture, const std::string &profileFilename);
         void shutdown();
 
-        void loadData(cJSON *json);
-        void registerBlob(const std::string &name, const void *buffer);
+        void loadData(const void *buffer, size_t size);
 
         void updateAnimation(float time);
 
@@ -26,9 +25,6 @@ class Engine
         void renderBlenderViewport(int width, int height, const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix);
 
     private:
-        template <typename ResourceType>
-        void loadDataCollection(cJSON *json, const std::string &collectionName);
-
         static Engine *instance;
 
         HWND hwnd;
@@ -42,5 +38,3 @@ class Engine
         static void destroy() { assert(Engine::instance); delete Engine::instance; }
         static Engine *getInstance() { assert(Engine::instance); return Engine::instance; }
 };
-
-#include <engine/Engine.inline.h>

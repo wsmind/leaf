@@ -15,7 +15,7 @@ class Texture: public Resource
 
         Texture(): image(nullptr) {}
 
-        virtual void load(const cJSON *json) override;
+        virtual void load(const unsigned char *buffer, size_t size) override;
         virtual void unload() override;
 
         ID3D11SamplerState *getSamplerState() const { return this->samplerState; }

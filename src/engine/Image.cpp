@@ -2,11 +2,15 @@
 
 #include <engine/ResourceManager.h>
 
+#include <engine/cJSON/cJSON.h>
+
 const std::string Image::resourceClassName = "Image";
 const std::string Image::defaultResourceData = "{\"width\": 1, \"height\": 1, \"channels\": 4, \"float\": false, \"pixels\": \"null\"}";
 
-void Image::load(const cJSON *json)
+void Image::load(const unsigned char *buffer, size_t size)
 {
+    cJSON *json = cJSON_Parse((const char *)buffer);
+
     int width = cJSON_GetObjectItem(json, "width")->valueint;
     int height = cJSON_GetObjectItem(json, "height")->valueint;
     int channels = cJSON_GetObjectItem(json, "channels")->valueint;
@@ -20,15 +24,8 @@ void Image::load(const cJSON *json)
     int valueSize = useFloat ? sizeof(float) : sizeof(unsigned char);
     int bufferSize = elementCount * valueSize;
 
-    const void *blob = ResourceManager::getInstance()->getBlob(blobName);
-    printf("Loading image blob at %p\n", blob);
-
-    const void *buffer = blob;
-    if (!blob)
-    {
-        buffer = malloc(bufferSize);
-        memset((void *)buffer, 0, bufferSize);
-    }
+    void *pixelBuffer = malloc(bufferSize);
+    memset((void *)pixelBuffer, 0, bufferSize);
 
     /*cJSON *pixels = cJSON_GetObjectItem(json, "pixels");
     cJSON *element = pixels->child;
@@ -71,18 +68,19 @@ void Image::load(const cJSON *json)
     textureDesc.MiscFlags = 0;
 
     D3D11_SUBRESOURCE_DATA textureData;
-    textureData.pSysMem = buffer;
+    textureData.pSysMem = pixelBuffer;
     textureData.SysMemPitch = width * channels * valueSize;
     textureData.SysMemSlicePitch = 0;
 
     HRESULT res = Device::device->CreateTexture2D(&textureDesc, &textureData, &this->texture);
     CHECK_HRESULT(res);
 
-    if (!blob)
-        free((void *)buffer);
+    free((void *)pixelBuffer);
 
     res = Device::device->CreateShaderResourceView(this->texture, NULL, &this->srv);
     CHECK_HRESULT(res);
+
+    cJSON_Delete(json);
 }
 
 void Image::unload()

@@ -3,6 +3,8 @@
 #include <engine/Action.h>
 #include <engine/ResourceManager.h>
 
+#include <engine/cJSON/cJSON.h>
+
 AnimationData::AnimationData(const cJSON *json, const PropertyMapping &properties)
 {
     cJSON *actionName = cJSON_GetObjectItem(json, "action");

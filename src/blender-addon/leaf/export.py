@@ -1,71 +1,75 @@
 import bpy
 import mathutils
 import ctypes
+import json
+import struct
 
-def export_data(updated_only=False):
+def export_data(output_file, updated_only=False):
     data = {}
-    blobs = {}
 
-    data["scenes"] = {}
+    data["Scene"] = {}
     for scene in list(bpy.data.scenes):
         if scene.is_updated or not updated_only:
-        #if True:
             print("exporting scene: " + scene.name)
-            data["scenes"][scene.name] = export_scene(scene)
-            #import json
-            #print(json.dumps(data["scenes"][scene.name]))
+            data["Scene"][scene.name] = export_scene(scene)
 
-    data["materials"] = {}
-    generated_textures = {}
-    generated_images = {}
+    data["Material"] = {}
     for mtl in list(bpy.data.materials):
         if mtl.is_updated or not updated_only:
             print("exporting material: " + mtl.name)
-            data["materials"][mtl.name] = export_material(mtl, blobs, generated_textures, generated_images)
+            data["Material"][mtl.name] = export_material(mtl)
 
-    data["textures"] = {}
+    data["Texture"] = {}
     for tex in list(bpy.data.textures):
         if tex.is_updated or not updated_only:
             print("exporting texture: " + tex.name)
-            data["textures"][tex.name] = export_texture(tex)
+            data["Texture"][tex.name] = export_texture(tex)
 
-    data["images"] = {}
+    data["Image"] = {}
     for img in list(bpy.data.images):
         if img.is_updated or not updated_only:
             print("exporting image: " + img.name)
-            data["images"][img.name] = export_image(img, blobs)
-            #import json
-            #print(json.dumps(data["images"][img.name]))
+            data["Image"][img.name] = export_image(img)
 
-    data["meshes"] = {}
+    data["Mesh"] = {}
     for mesh in list(bpy.data.meshes):
         if mesh.is_updated or not updated_only:
             print("exporting mesh: " + mesh.name)
-            data["meshes"][mesh.name] = export_mesh(mesh)
+            data["Mesh"][mesh.name] = export_mesh(mesh)
 
-    data["actions"] = {}
+    data["Action"] = {}
     for action in list(bpy.data.actions):
         if action.is_updated or not updated_only:
-        #if True:
             print("exporting action: " + action.name)
-            data["actions"][action.name] = export_action(action)
+            data["Action"][action.name] = export_action(action)
 
-    data["lights"] = {}
+    data["Light"] = {}
     for light in list(bpy.data.lamps):
         if light.is_updated or not updated_only:
             print("exporting light: " + light.name)
-            data["lights"][light.name] = export_light(light)
+            data["Light"][light.name] = export_light(light)
 
-    data["cameras"] = {}
+    data["Camera"] = {}
     for camera in list(bpy.data.cameras):
         if camera.is_updated or not updated_only:
             print("exporting camera: " + camera.name)
-            data["cameras"][camera.name] = export_camera(camera)
+            data["Camera"][camera.name] = export_camera(camera)
 
-    data["textures"].update(generated_textures)
-    data["images"].update(generated_images)
+    for typename, resources in data.items():
+        typebytes = typename.encode("utf-8")
+        for name, blob in resources.items():
+            namebytes = name.encode("utf-8")
+            # type name
+            output_file.write(struct.pack("=I", len(typebytes)))
+            output_file.write(typebytes)
 
-    return data, blobs
+            # resource name
+            output_file.write(struct.pack("=I", len(namebytes)))
+            output_file.write(namebytes)
+
+            # actual resource contents
+            output_file.write(struct.pack("=I", len(blob)))
+            output_file.write(blob)
 
 def export_scene(scene):
     markers = [marker for marker in scene.timeline_markers if marker.camera]
@@ -75,11 +79,13 @@ def export_scene(scene):
     objects = scene.objects[:]
     objects = sorted(objects, key = lambda obj: compute_parent_depth(obj))
 
-    return {
+    data = {
         "nodes": [export_scene_node(obj, objects) for obj in objects],
         "markers": [export_marker(marker, objects) for marker in markers],
         "activeCamera": objects.index(scene.camera)
     }
+
+    return json.dumps(data).encode("utf-8")
 
 def compute_parent_depth(obj):
     depth = 0
@@ -129,7 +135,11 @@ def export_marker(marker, camera_objects):
         "time": marker.frame
     }
 
-def export_material(mtl, blobs, generated_textures, generated_images):
+def export_material(mtl):
+
+    blobs = {}
+    generated_textures = {}
+    generated_images = {}
 
     def make_albedo_texture(color):
         name = "__generated_albedo_" + mtl.name
@@ -224,16 +234,17 @@ def export_material(mtl, blobs, generated_textures, generated_images):
     if mtl.animation_data:
         data["animation"] = export_animation(mtl.animation_data)
 
-    return data
+    return json.dumps(data).encode("utf-8")
 
 
 def export_texture(tex):
     # filter out unsupported types
     if tex.type not in ["IMAGE"]:
-        return {
+        data = {
             "type": "IMAGE",
             "image": "__default"
         }
+        return json.dumps(data).encode("utf-8")
 
     output = {
         "type": tex.type
@@ -242,7 +253,7 @@ def export_texture(tex):
     if tex.type == "IMAGE":
         output["image"] = tex.image.name if tex.image else "__default"
 
-    return output
+    return json.dumps(output).encode("utf-8")
 
 def export_image(img, blobs):
     blob_name = "image_" + img.name
@@ -265,13 +276,15 @@ def export_image(img, blobs):
 
     blobs[blob_name] = pixel_data
 
-    return {
+    data = {
         "width": img.size[0],
         "height": img.size[1],
         "channels": img.channels,
         "float": img.is_float,
         "pixels": blob_name
     }
+
+    return json.dumps(data).encode("utf-8")
 
 def export_mesh(sourceMesh):
     # always apply an edge split modifier, to get proper normals on sharp edges
@@ -310,16 +323,20 @@ def export_mesh(sourceMesh):
     bpy.data.objects.remove(obj)
     bpy.data.meshes.remove(mesh)
 
-    return {
+    data = {
         "vertices": vertices,
         "vertexCount": vertexCount,
         "material": sourceMesh.materials[0].name if (len(sourceMesh.materials) > 0 and sourceMesh.materials[0]) else "__default"
     }
 
+    return json.dumps(data).encode("utf-8")
+
 def export_action(action):
-    return {
+    data = {
         "fcurves": [export_fcurve(fcurve) for fcurve in action.fcurves],
     }
+
+    return json.dumps(data).encode("utf-8")
 
 def export_fcurve(fcurve):
     return {
@@ -357,7 +374,7 @@ def export_light(light):
     if light.animation_data:
         data["animation"] = export_animation(light.animation_data)
 
-    return data
+    return json.dumps(data).encode("utf-8")
 
 def export_camera(camera):
     data = {
@@ -372,7 +389,7 @@ def export_camera(camera):
     if camera.animation_data:
         data["animation"] = export_animation(camera.animation_data)
 
-    return data
+    return json.dumps(data).encode("utf-8")
 
 def export_camera_type(type):
     if type == "PERSP":

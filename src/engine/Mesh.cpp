@@ -5,11 +5,15 @@
 #include <engine/Material.h>
 #include <engine/ResourceManager.h>
 
+#include <engine/cJSON/cJSON.h>
+
 const std::string Mesh::resourceClassName = "Mesh";
 const std::string Mesh::defaultResourceData = "{\"vertices\": [-1, -1, 0, 0, 0, 1, 0, 0, -1, 1, 0, 0, 0, 1, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1], \"vertexCount\": 3, \"material\": \"__default\"}";
 
-void Mesh::load(const cJSON *json)
+void Mesh::load(const unsigned char *buffer, size_t size)
 {
+    cJSON *json = cJSON_Parse((const char *)buffer);
+
     cJSON *jsonVertices = cJSON_GetObjectItem(json, "vertices");
     this->vertexCount = cJSON_GetObjectItem(json, "vertexCount")->valueint;
 
@@ -45,6 +49,8 @@ void Mesh::load(const cJSON *json)
     CHECK_HRESULT(res);
 
     delete[] vertices;
+
+    cJSON_Delete(json);
 }
 
 void Mesh::unload()

@@ -18,17 +18,10 @@ LEAFENGINE_API void leaf_shutdown()
     Engine::destroy();
 }
 
-LEAFENGINE_API void leaf_load_data(const char *data)
+LEAFENGINE_API void leaf_load_data(const void *buffer, size_t size)
 {
-    cJSON *json = cJSON_Parse(data);
-    assert(json);
-    Engine::getInstance()->loadData(json);
-    cJSON_Delete(json);
-}
-
-LEAFENGINE_API void leaf_register_blob(const char *name, const void *buffer)
-{
-    Engine::getInstance()->registerBlob(name, buffer);
+    assert(buffer);
+    Engine::getInstance()->loadData(buffer, size);
 }
 
 LEAFENGINE_API void leaf_update_animation(float time)

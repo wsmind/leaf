@@ -1,27 +1,28 @@
 #pragma once
 
 #include <algorithm>
-#include <engine/cJSON/cJSON.h>
 
 #include <engine/Resource.h>
 
 template <class ResourceType>
-void ResourceManager::updateResourceData(const std::string &name, const cJSON *data)
+void ResourceManager::updateResourceData(const std::string &name, const unsigned char *buffer, size_t size)
 {
     ResourceDescriptor &descriptor = findDescriptor<ResourceType>(name);
 
-    if (descriptor.data != nullptr)
-        cJSON_Delete(descriptor.data);
+    if (descriptor.buffer != nullptr)
+        free(descriptor.buffer);
 
-    descriptor.data = cJSON_Duplicate(data, 1);
+    descriptor.buffer = (unsigned char *)malloc(size);
+    descriptor.size = size;
+    memcpy(descriptor.buffer, buffer, size);
 
     // reload if necessary
     if ((descriptor.users > 0) || descriptor.pendingUnload)
     {
         Resource *resource = descriptor.resource;
-        cJSON *newData = descriptor.data;
+        const unsigned char *newBuffer = descriptor.buffer; // calling unload() could indirectly move descriptors in memory, so we keep a copy of that pointer
         resource->unload();
-        resource->load(newData);
+        resource->load(newBuffer, size);
     }
 }
 
@@ -37,7 +38,7 @@ ResourceType *ResourceManager::requestResource(const std::string &name)
     if (descriptor.pendingUnload)
         descriptor.pendingUnload = false;
     else if (descriptor.users == 1)
-        resource->load(descriptor.data);
+        resource->load(descriptor.buffer, descriptor.size);
 
     return resource;
 }
@@ -75,7 +76,9 @@ ResourceManager::ResourceDescriptor &ResourceManager::findDescriptor(const std::
     if (descriptor.resource == nullptr)
     {
         descriptor.resource = new ResourceType;
-        descriptor.data = cJSON_Parse(ResourceType::defaultResourceData.c_str());
+        descriptor.buffer = (unsigned char *)malloc(ResourceType::defaultResourceData.size());
+        descriptor.size = ResourceType::defaultResourceData.size();
+        memcpy(descriptor.buffer, ResourceType::defaultResourceData.c_str(), descriptor.size);
     }
 
     return descriptor;

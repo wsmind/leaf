@@ -241,7 +241,8 @@ Renderer::Renderer(HWND hwnd, int backbufferWidth, int backbufferHeight, bool ca
     Device::context->PSSetConstantBuffers(0, 3, allConstantBuffers);
 
     // built-in rendering resources
-    ResourceManager::getInstance()->updateResourceData<Mesh>("__fullscreenQuad", cJSON_Parse("{\"vertices\": [-1, -1, 0, 0, 0, 1, 0, 0, 1, 1, 0, 0, 0, 1, 0, 1, -1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, -1, -1, 0, 0, 0, 1, 1, 0, 1, -1, 0, 0, 0, 1, 0, 0], \"vertexCount\": 6, \"material\": \"__default\"}"));
+    const char *fullscreenQuad = "{\"vertices\": [-1, -1, 0, 0, 0, 1, 0, 0, 1, 1, 0, 0, 0, 1, 0, 1, -1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, -1, -1, 0, 0, 0, 1, 1, 0, 1, -1, 0, 0, 0, 1, 0, 0], \"vertexCount\": 6, \"material\": \"__default\"}";
+    ResourceManager::getInstance()->updateResourceData<Mesh>("__fullscreenQuad", (const unsigned char *)fullscreenQuad, strlen(fullscreenQuad));
 
     this->fullscreenQuad = ResourceManager::getInstance()->requestResource<Mesh>("__fullscreenQuad");
 

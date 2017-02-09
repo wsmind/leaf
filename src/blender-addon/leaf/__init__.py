@@ -21,7 +21,7 @@ import ctypes
 import _ctypes
 import os
 import shutil
-import json
+import io
 
 from bpy.app.handlers import persistent
 
@@ -34,17 +34,13 @@ class LeafRenderEngine(bpy.types.RenderEngine):
     # viewport render
     def view_update(self, context):
         global engine
-        data, blobs = export.export_data(not engine.full_data_send)
-        engine.full_data_send = False
 
-        for name, buffer in blobs.items():
-            print("registering blob " + name)
-            engine.dll.leaf_register_blob(name.encode('utf-8'), buffer)
+        with io.BytesIO() as f:
+            export.export_data(f, engine.full_data_send)
+            engine.full_data_send = False
 
-        engine.blobs.update(blobs)
-
-        data_string = json.dumps(data)
-        engine.dll.leaf_load_data(data_string.encode('utf-8'))
+            data_bytes = f.getvalue()
+            engine.dll.leaf_load_data(data_bytes, len(data_bytes))
 
     def view_draw(self, context):
         vm = context.region_data.view_matrix.copy()
@@ -77,8 +73,6 @@ class EngineWrapper:
         self.dll_name = os.path.join(self.script_dir, "LeafEngine.dll")
         self.loaded_dll_name = os.path.join(self.script_dir, "LeafEngine-Loaded.dll")
 
-        self.blobs = {}
-
     def load(self):
         # copy the dll, to allow how reload after rebuild
         shutil.copy(self.dll_name, self.loaded_dll_name)
@@ -92,9 +86,6 @@ class EngineWrapper:
 
         # remove the temp dll
         os.remove(self.loaded_dll_name)
-
-        # unload all blobs stored on python side
-        self.blobs = {}
 
 compatible_panels = [
     bpy.types.TEXTURE_PT_image,

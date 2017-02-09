@@ -44,21 +44,41 @@ void Engine::shutdown()
     ResourceManager::destroy();
 }
 
-void Engine::loadData(cJSON *json)
+void Engine::loadData(const void *buffer, size_t size)
 {
-    this->loadDataCollection<Action>(json, "actions");
-    this->loadDataCollection<Light>(json, "lights");
-    this->loadDataCollection<Camera>(json, "cameras");
-    this->loadDataCollection<Image>(json, "images");
-    this->loadDataCollection<Texture>(json, "textures");
-    this->loadDataCollection<Material>(json, "materials");
-    this->loadDataCollection<Mesh>(json, "meshes");
-    this->loadDataCollection<Scene>(json, "scenes");
-}
+    const unsigned char *readPosition = (const unsigned char *)buffer;
+    const unsigned char *bufferEnd = readPosition + size;
 
-void Engine::registerBlob(const std::string &name, const void *buffer)
-{
-    ResourceManager::getInstance()->registerBlob(name, buffer);
+    while (readPosition < bufferEnd)
+    {
+        unsigned int typeNameSize = *(unsigned int *)readPosition;
+        readPosition += sizeof(unsigned int);
+
+        std::string typeName((const char *)readPosition, typeNameSize);
+        readPosition += typeNameSize;
+
+        unsigned int resourceNameSize = *(unsigned int *)readPosition;
+        readPosition += sizeof(unsigned int);
+
+        std::string resourceName((const char *)readPosition, resourceNameSize);
+        readPosition += resourceNameSize;
+
+        unsigned int blobSize = *(unsigned int *)readPosition;
+        readPosition += sizeof(unsigned int);
+
+        printf("Loading resource %s (%s), %d bytes\n", resourceName.c_str(), typeName.c_str(), blobSize);
+
+        if (typeName == "Action") ResourceManager::getInstance()->updateResourceData<Action>(resourceName, readPosition, blobSize);
+        if (typeName == "Light") ResourceManager::getInstance()->updateResourceData<Light>(resourceName, readPosition, blobSize);
+        if (typeName == "Camera") ResourceManager::getInstance()->updateResourceData<Camera>(resourceName, readPosition, blobSize);
+        if (typeName == "Image") ResourceManager::getInstance()->updateResourceData<Image>(resourceName, readPosition, blobSize);
+        if (typeName == "Texture") ResourceManager::getInstance()->updateResourceData<Texture>(resourceName, readPosition, blobSize);
+        if (typeName == "Material") ResourceManager::getInstance()->updateResourceData<Material>(resourceName, readPosition, blobSize);
+        if (typeName == "Mesh") ResourceManager::getInstance()->updateResourceData<Mesh>(resourceName, readPosition, blobSize);
+        if (typeName == "Scene") ResourceManager::getInstance()->updateResourceData<Scene>(resourceName, readPosition, blobSize);
+
+        readPosition += blobSize;
+    }
 }
 
 void Engine::updateAnimation(float time)

@@ -3,11 +3,15 @@
 #include <engine/Image.h>
 #include <engine/ResourceManager.h>
 
+#include <engine/cJSON/cJSON.h>
+
 const std::string Texture::resourceClassName = "Texture";
 const std::string Texture::defaultResourceData = "{\"type\": \"IMAGE\", \"image\": \"__default\"}";
 
-void Texture::load(const cJSON *json)
+void Texture::load(const unsigned char *buffer, size_t size)
 {
+    cJSON *json = cJSON_Parse((const char *)buffer);
+
     std::string typeString = cJSON_GetObjectItem(json, "type")->valuestring;
     if (typeString == "IMAGE") this->type = TextureType_Image;
     else assert(0);
@@ -33,6 +37,8 @@ void Texture::load(const cJSON *json)
             break;
         }
     }
+
+    cJSON_Delete(json);
 }
 
 void Texture::unload()

@@ -9,8 +9,7 @@
 LEAFENGINE_API void leaf_initialize(int backbufferWidth, int backbufferHeight, bool capture, const char *profileFilename);
 LEAFENGINE_API void leaf_shutdown();
 
-LEAFENGINE_API void leaf_load_data(const char *data);
-LEAFENGINE_API void leaf_register_blob(const char *name, const void *buffer);
+LEAFENGINE_API void leaf_load_data(const void *data, size_t size);
 
 LEAFENGINE_API void leaf_update_animation(float time);
 

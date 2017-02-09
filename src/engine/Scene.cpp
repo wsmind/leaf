@@ -6,11 +6,15 @@
 #include <engine/RenderList.h>
 #include <engine/ResourceManager.h>
 
+#include <engine/cJSON/cJSON.h>
+
 const std::string Scene::resourceClassName = "Scene";
 const std::string Scene::defaultResourceData = "{\"activeCamera\": 0, \"nodes\": [], \"markers\": []}";
 
-void Scene::load(const cJSON *json)
+void Scene::load(const unsigned char *buffer, size_t size)
 {
+    cJSON *json = cJSON_Parse((const char *)buffer);
+
     this->activeCamera = cJSON_GetObjectItem(json, "activeCamera")->valueint;
 
     cJSON *nodesJson = cJSON_GetObjectItem(json, "nodes");
@@ -50,6 +54,8 @@ void Scene::load(const cJSON *json)
 
         markerJson = markerJson->next;
     }
+
+    cJSON_Delete(json);
 }
 
 void Scene::unload()

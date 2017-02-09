@@ -20,7 +20,7 @@ class Camera: public Resource
             , sensorHeight(32.0f)
         {}
 
-        virtual void load(const cJSON *json) override;
+        virtual void load(const unsigned char *buffer, size_t size) override;
         virtual void unload() override;
 
         void computeProjectionMatrix(glm::mat4 &projectionMatrix, float aspect) const;

@@ -8,10 +8,12 @@
 #include <engine/PropertyMapping.h>
 
 const std::string Camera::resourceClassName = "Camera";
-const std::string Camera::defaultResourceData = "{\"lens\": 2.0, \"ortho_scale\": 1.0, \"clip_start\": 0.1, \"clip_end\": 100.0, \"sensorHeight\": 35.0, \"type\": 0}";
+const std::string Camera::defaultResourceData = "{\"lens\": 2.0, \"ortho_scale\": 1.0, \"clip_start\": 0.1, \"clip_end\": 100.0, \"sensor_height\": 35.0, \"type\": 0}";
 
-void Camera::load(const cJSON *json)
+void Camera::load(const unsigned char *buffer, size_t size)
 {
+    cJSON *json = cJSON_Parse((const char *)buffer);
+
     this->lens = (float)cJSON_GetObjectItem(json, "lens")->valuedouble;
     this->ortho_scale = (float)cJSON_GetObjectItem(json, "ortho_scale")->valuedouble;
     this->clipStart = (float)cJSON_GetObjectItem(json, "clip_start")->valuedouble;
@@ -32,6 +34,8 @@ void Camera::load(const cJSON *json)
         this->animation = new AnimationData(animation, properties);
         AnimationPlayer::globalPlayer.registerAnimation(this->animation);
     }
+
+    cJSON_Delete(json);
 }
 
 void Camera::unload()

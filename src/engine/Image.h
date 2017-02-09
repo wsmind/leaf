@@ -13,7 +13,7 @@ class Image: public Resource
 
         Image(): texture(nullptr) {}
 
-        virtual void load(const cJSON *json) override;
+        virtual void load(const unsigned char *buffer, size_t size) override;
         virtual void unload() override;
 
         ID3D11ShaderResourceView *getSRV() const { return this->srv; }

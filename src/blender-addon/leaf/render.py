@@ -1,6 +1,5 @@
 import os
 import shutil
-import json
 
 import bpy
 from bpy.types import Panel, Menu, Operator
@@ -24,14 +23,8 @@ class LEAF_OT_export(Operator):
 
         # export data
         from . import export
-        data, blobs = export.export_data()
-        data_string = json.dumps(data)
-        with open(os.path.join(rd.filepath, "data.json"), "wb") as f:
-            f.write(data_string.encode('utf-8'))
-
-        for name, blob in blobs.items():
-            with open(os.path.join(rd.filepath, name + ".bin"), "wb") as f:
-                f.write(blob)
+        with open(os.path.join(rd.filepath, "data.bin"), "wb") as f:
+            export.export_data(f)
 
         # copy engine files in the output folder
         script_dir = os.path.dirname(__file__)

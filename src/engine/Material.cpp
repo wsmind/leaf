@@ -7,11 +7,16 @@
 #include <engine/ResourceManager.h>
 #include <engine/Texture.h>
 
+#include <engine/cJSON/cJSON.h>
+
+
 const std::string Material::resourceClassName = "Material";
 const std::string Material::defaultResourceData = "{\"albedo\": [1.0, 1.0, 1.0], \"emit\": 1.0, \"albedoTexture\": \"__default\", \"normalTexture\": \"__default\", \"metalnessTexture\": \"__default\", \"roughnessTexture\": \"__default\"}";
 
-void Material::load(const cJSON *json)
+void Material::load(const unsigned char *buffer, size_t size)
 {
+    cJSON *json = cJSON_Parse((const char *)buffer);
+
     cJSON *diffuse = cJSON_GetObjectItem(json, "albedo");
     this->data.albedo = glm::vec3(cJSON_GetArrayItem(diffuse, 0)->valuedouble, cJSON_GetArrayItem(diffuse, 1)->valuedouble, cJSON_GetArrayItem(diffuse, 2)->valuedouble);
     this->data.emit = (float)cJSON_GetObjectItem(json, "emit")->valuedouble;
@@ -33,6 +38,8 @@ void Material::load(const cJSON *json)
         this->animation = new AnimationData(animation, properties);
         AnimationPlayer::globalPlayer.registerAnimation(this->animation);
     }
+
+    cJSON_Delete(json);
 }
 
 void Material::unload()

@@ -13,7 +13,7 @@ class Light: public Resource
         static const std::string resourceClassName;
         static const std::string defaultResourceData;
 
-        virtual void load(const cJSON *json) override;
+        virtual void load(const unsigned char *buffer, size_t size) override;
         virtual void unload() override;
     
     private:

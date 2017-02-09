@@ -182,7 +182,6 @@
     <ClInclude Include="..\..\src\engine\Camera.h" />
     <ClInclude Include="..\..\src\engine\cJSON\cJSON.h" />
     <ClInclude Include="..\..\src\engine\DDSTextureLoader\DDSTextureLoader.h" />
-    <ClInclude Include="..\..\src\engine\Engine.inline.h" />
     <ClInclude Include="..\..\src\engine\FCurve.h" />
     <ClInclude Include="..\..\src\engine\GPUProfiler.h" />
     <ClInclude Include="..\..\src\engine\Image.h" />
