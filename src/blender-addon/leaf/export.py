@@ -5,6 +5,7 @@ import json
 import struct
 import os.path
 import subprocess
+import tempfile
 
 def export_data(output_file, updated_only=False):
     data = {}
@@ -263,27 +264,20 @@ def export_image(img):
         raise Exception("Please configure the path to NVIDIA Texture Tools in the addon preferences")
 
     nvcompressExe = os.path.join(nvttPath, "bin", "nvcompress.exe")
-    print("nvtt: " + nvcompressExe)
-    sourceImage = img.filepath
+    sourcePath = bpy.path.abspath(img.filepath)
+    targetPath = os.path.join(bpy.app.tempdir, next(tempfile._get_candidate_names()))
     args = [
         nvcompressExe,
         "-color",
-        sourceImage
+        "-repeat",
+        sourcePath,
+        targetPath
     ]
     print("running: " + str(args))
     subprocess.run(args)
 
-    blob_name = "image_" + img.name
-
-    data = {
-        "width": img.size[0],
-        "height": img.size[1],
-        "channels": img.channels,
-        "float": img.is_float,
-        "pixels": blob_name
-    }
-
-    return json.dumps(data).encode("utf-8")
+    with open(targetPath, mode="rb") as outputFile:
+        return outputFile.read()
 
 def export_mesh(sourceMesh):
     # always apply an edge split modifier, to get proper normals on sharp edges
