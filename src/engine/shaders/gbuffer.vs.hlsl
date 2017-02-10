@@ -20,7 +20,7 @@ GBUFFER_PS_INPUT main(VS_INPUT input)
 
     output.worldPosition = worldPosition.xyz;
     output.normal = mul((float3x3)modelMatrix, input.normal);
-    output.uv = input.uv;
+    output.uv = float2(input.uv.x, 1.0 - input.uv.y);
 
 	return output;
 }
