@@ -19,6 +19,6 @@ class Image: public Resource
         ID3D11ShaderResourceView *getSRV() const { return this->srv; }
 
     private:
-        ID3D11Texture2D *texture;
+        ID3D11Resource *texture;
         ID3D11ShaderResourceView *srv;
 };
