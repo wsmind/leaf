@@ -38,7 +38,7 @@ class LeafRenderEngine(bpy.types.RenderEngine):
         global engine
 
         with io.BytesIO() as f:
-            export.export_data(f, engine.full_data_send)
+            export.export_data(f, not engine.full_data_send)
             engine.full_data_send = False
 
             data_bytes = f.getvalue()
