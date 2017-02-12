@@ -86,10 +86,10 @@ Renderer::Renderer(HWND hwnd, int backbufferWidth, int backbufferHeight, bool ca
     #ifdef _DEBUG
     flags |= D3D11_CREATE_DEVICE_DEBUG;
     #endif
-    HRESULT res = D3D11CreateDeviceAndSwapChain(NULL, D3D_DRIVER_TYPE_HARDWARE, NULL, flags, NULL, 0, D3D11_SDK_VERSION, &swapChainDesc, &swapChain, &Device::device, NULL, &Device::context);
+    HRESULT res = D3D11CreateDeviceAndSwapChain(NULL, D3D_DRIVER_TYPE_HARDWARE, NULL, flags, NULL, 0, D3D11_SDK_VERSION, &swapChainDesc, &this->swapChain, &Device::device, NULL, &Device::context);
     CHECK_HRESULT(res);
 
-    res = swapChain->GetBuffer(0, __uuidof(this->backBuffer), (void **)&this->backBuffer);
+    res = this->swapChain->GetBuffer(0, __uuidof(this->backBuffer), (void **)&this->backBuffer);
     CHECK_HRESULT(res);
 
     res = Device::device->CreateRenderTargetView(this->backBuffer, NULL, &this->renderTarget);
@@ -226,9 +226,13 @@ Renderer::~Renderer()
     GPUProfiler::getInstance()->endJsonCapture(this->profileFilename);
     GPUProfiler::destroy();
 
-    ResourceManager::getInstance()->releaseResource(this->fullscreenQuad);
-
-    delete this->renderList;
+    this->swapChain->Release();
+    this->backBuffer->Release();
+    this->depthBuffer->Release();
+    if (this->capture)
+        this->captureBuffer->Release();
+    this->renderTarget->Release();
+    this->depthTarget->Release();
 
     this->backgroundVertexShader->Release();
     this->basicVertexShader->Release();
@@ -240,14 +244,27 @@ Renderer::~Renderer()
     this->gbufferPixelShader->Release();
     this->plopPixelShader->Release();
 
+    this->inputLayout->Release();
+
+    this->cbScene->Release();
+    this->cbMaterial->Release();
+    this->cbInstance->Release();
+
+    delete this->renderList;
+
+    ResourceManager::getInstance()->releaseResource(this->fullscreenQuad);
+
     for (int i = 0; i < GBUFFER_PLANE_COUNT; i++)
         delete this->gBuffer[i];
 
+    this->gBufferDepthState->Release();
+    this->lightingDepthState->Release();
+    this->backgroundDepthState->Release();
+
     delete this->postProcessor;
 
-    gBufferDepthState->Release();
-    lightingDepthState->Release();
-    backgroundDepthState->Release();
+    Device::context->Release();
+    Device::device->Release();
 }
 
 void Renderer::render(const Scene *scene, int width, int height, bool overrideCamera, const glm::mat4 &viewMatrixOverride, const glm::mat4 &projectionMatrixOverride)
@@ -408,7 +425,7 @@ void Renderer::render(const Scene *scene, int width, int height, bool overrideCa
 
     {
         GPUProfiler::ScopedProfile profile("V-Sync");
-        swapChain->Present(0, 0);
+        this->swapChain->Present(0, 0);
     }
 
     GPUProfiler::getInstance()->endFrame();
