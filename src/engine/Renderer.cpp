@@ -14,6 +14,7 @@
 #include <engine/Material.h>
 #include <engine/Mesh.h>
 #include <engine/RenderList.h>
+#include <engine/RenderTarget.h>
 #include <engine/ResourceManager.h>
 #include <engine/Scene.h>
 
@@ -151,40 +152,7 @@ Renderer::Renderer(HWND hwnd, int backbufferWidth, int backbufferHeight, bool ca
     Device::context->RSSetState(rasterizerState);
 
     for (int i = 0; i < GBUFFER_PLANE_COUNT; i++)
-    {
-        D3D11_TEXTURE2D_DESC gBufferPlaneDesc;
-        ZeroMemory(&gBufferPlaneDesc, sizeof(gBufferPlaneDesc));
-        gBufferPlaneDesc.Width = this->backbufferWidth;
-        gBufferPlaneDesc.Height = this->backbufferHeight;
-        gBufferPlaneDesc.MipLevels = 1;
-        gBufferPlaneDesc.ArraySize = 1;
-        gBufferPlaneDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
-        gBufferPlaneDesc.SampleDesc.Count = 1;
-        gBufferPlaneDesc.SampleDesc.Quality = 0;
-        gBufferPlaneDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET;
-
-        res = Device::device->CreateTexture2D(&gBufferPlaneDesc, NULL, &this->gBuffer[i]);
-        CHECK_HRESULT(res);
-
-        res = Device::device->CreateRenderTargetView(this->gBuffer[i], NULL, &this->gBufferTargets[i]);
-        CHECK_HRESULT(res);
-
-        D3D11_SAMPLER_DESC samplerDesc;
-        ZeroMemory(&samplerDesc, sizeof(samplerDesc));
-        samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
-        samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
-        samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
-        samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
-        samplerDesc.MipLODBias = 0;
-        samplerDesc.MinLOD = 0;
-        samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
-
-        res = Device::device->CreateSamplerState(&samplerDesc, &this->gBufferSamplerStates[i]);
-        CHECK_HRESULT(res);
-
-        res = Device::device->CreateShaderResourceView(this->gBuffer[i], NULL, &this->gBufferSRVs[i]);
-        CHECK_HRESULT(res);
-    }
+        this->gBuffer[i] = new RenderTarget(this->backbufferWidth, this->backbufferHeight, DXGI_FORMAT_R16G16B16A16_FLOAT);
 
     if (this->capture)
     {
@@ -260,12 +228,7 @@ Renderer::~Renderer()
     delete this->renderList;
 
     for (int i = 0; i < GBUFFER_PLANE_COUNT; i++)
-    {
-        this->gBuffer[i]->Release();
-        this->gBufferTargets[i]->Release();
-        this->gBufferSamplerStates[i]->Release();
-        this->gBufferSRVs[i]->Release();
-    }
+        delete this->gBuffer[i];
 
     gBufferDepthState->Release();
     lightingDepthState->Release();
@@ -328,9 +291,13 @@ void Renderer::render(const Scene *scene, int width, int height, bool overrideCa
 
     // G-Buffer pass
     for (int i = 0; i < GBUFFER_PLANE_COUNT; i++)
-        Device::context->ClearRenderTargetView(this->gBufferTargets[i], clearColor);
+        Device::context->ClearRenderTargetView(this->gBuffer[i]->getTarget(), clearColor);
 
-    Device::context->OMSetRenderTargets(GBUFFER_PLANE_COUNT, this->gBufferTargets, this->depthTarget);
+    ID3D11RenderTargetView *gBufferTargets[GBUFFER_PLANE_COUNT] = {
+        this->gBuffer[0]->getTarget(),
+        this->gBuffer[1]->getTarget()
+    };
+    Device::context->OMSetRenderTargets(GBUFFER_PLANE_COUNT, gBufferTargets, this->depthTarget);
 
     Device::context->VSSetShader(gbufferVertexShader, NULL, 0);
     Device::context->PSSetShader(gbufferPixelShader, NULL, 0);
@@ -382,12 +349,22 @@ void Renderer::render(const Scene *scene, int width, int height, bool overrideCa
         viewport.Height = (float)this->backbufferHeight;
         Device::context->RSSetViewports(1, &viewport);
 
+        ID3D11SamplerState *gBufferSamplers[GBUFFER_PLANE_COUNT] = {
+            this->gBuffer[0]->getSamplerState(),
+            this->gBuffer[1]->getSamplerState()
+        };
+
+        ID3D11ShaderResourceView *gBufferSRVs[GBUFFER_PLANE_COUNT] = {
+            this->gBuffer[0]->getSRV(),
+            this->gBuffer[1]->getSRV()
+        };
+
         Device::context->OMSetDepthStencilState(this->lightingDepthState, 0);
         Device::context->OMSetRenderTargets(1, &this->renderTarget, this->depthTarget);
         Device::context->VSSetShader(basicVertexShader, NULL, 0);
         Device::context->PSSetShader(basicPixelShader, NULL, 0);
-        Device::context->PSSetSamplers(0, GBUFFER_PLANE_COUNT, this->gBufferSamplerStates);
-        Device::context->PSSetShaderResources(0, GBUFFER_PLANE_COUNT, this->gBufferSRVs);
+        Device::context->PSSetSamplers(0, GBUFFER_PLANE_COUNT, gBufferSamplers);
+        Device::context->PSSetShaderResources(0, GBUFFER_PLANE_COUNT, gBufferSRVs);
         this->fullscreenQuad->bind();
         Device::context->Draw(this->fullscreenQuad->getVertexCount(), 0);
     }

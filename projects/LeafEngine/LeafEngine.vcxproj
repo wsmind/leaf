@@ -172,6 +172,7 @@
     <ClCompile Include="..\..\src\engine\PropertyMapping.cpp" />
     <ClCompile Include="..\..\src\engine\Renderer.cpp" />
     <ClCompile Include="..\..\src\engine\RenderList.cpp" />
+    <ClCompile Include="..\..\src\engine\RenderTarget.cpp" />
     <ClCompile Include="..\..\src\engine\ResourceManager.cpp" />
     <ClCompile Include="..\..\src\engine\Scene.cpp" />
     <ClCompile Include="..\..\src\engine\SceneNode.cpp" />
@@ -189,6 +190,7 @@
     <ClInclude Include="..\..\src\engine\Material.h" />
     <ClInclude Include="..\..\src\engine\PropertyMapping.h" />
     <ClInclude Include="..\..\src\engine\RenderList.h" />
+    <ClInclude Include="..\..\src\engine\RenderTarget.h" />
     <ClInclude Include="..\..\src\engine\ResourceManager.inline.h">
       <FileType>CppCode</FileType>
     </ClInclude>

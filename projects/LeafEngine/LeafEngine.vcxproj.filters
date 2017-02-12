@@ -27,6 +27,7 @@
     <ClCompile Include="..\..\src\engine\DDSTextureLoader\DDSTextureLoader.cpp">
       <Filter>DDSTextureLoader</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\engine\RenderTarget.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\engine\Renderer.h" />
@@ -60,6 +61,7 @@
     <ClInclude Include="..\..\src\engine\DDSTextureLoader\DDSTextureLoader.h">
       <Filter>DDSTextureLoader</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\engine\RenderTarget.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\..\src\engine\shaders\plop.vs.hlsl">

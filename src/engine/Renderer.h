@@ -9,6 +9,7 @@
 
 class Mesh;
 class RenderList;
+class RenderTarget;
 class Scene;
 
 class Renderer
@@ -57,10 +58,7 @@ class Renderer
         // normal (xyz), metalness (w)
         // albedo (xyz), roughness (w)
         static const int GBUFFER_PLANE_COUNT = 2;
-        ID3D11Texture2D *gBuffer[GBUFFER_PLANE_COUNT];
-        ID3D11RenderTargetView *gBufferTargets[GBUFFER_PLANE_COUNT];
-        ID3D11SamplerState *gBufferSamplerStates[GBUFFER_PLANE_COUNT];
-        ID3D11ShaderResourceView *gBufferSRVs[GBUFFER_PLANE_COUNT];
+        RenderTarget *gBuffer[GBUFFER_PLANE_COUNT];
 
         ID3D11DepthStencilState *gBufferDepthState;
         ID3D11DepthStencilState *lightingDepthState;
