@@ -13,6 +13,7 @@
 #include <engine/GPUProfiler.h>
 #include <engine/Material.h>
 #include <engine/Mesh.h>
+#include <engine/PostProcessor.h>
 #include <engine/RenderList.h>
 #include <engine/RenderTarget.h>
 #include <engine/ResourceManager.h>
@@ -154,6 +155,8 @@ Renderer::Renderer(HWND hwnd, int backbufferWidth, int backbufferHeight, bool ca
     for (int i = 0; i < GBUFFER_PLANE_COUNT; i++)
         this->gBuffer[i] = new RenderTarget(this->backbufferWidth, this->backbufferHeight, DXGI_FORMAT_R16G16B16A16_FLOAT);
 
+    this->postProcessor = new PostProcessor(this->renderTarget);
+
     if (this->capture)
     {
         D3D11_TEXTURE2D_DESC captureBufferDesc;
@@ -209,7 +212,7 @@ Renderer::Renderer(HWND hwnd, int backbufferWidth, int backbufferHeight, bool ca
     Device::context->PSSetConstantBuffers(0, 3, allConstantBuffers);
 
     // built-in rendering resources
-    const char *fullscreenQuad = "{\"vertices\": [-1, -1, 0, 0, 0, 1, 0, 0, 1, 1, 0, 0, 0, 1, 0, 1, -1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, -1, -1, 0, 0, 0, 1, 1, 0, 1, -1, 0, 0, 0, 1, 0, 0], \"vertexCount\": 6, \"material\": \"__default\"}";
+    const char *fullscreenQuad = "{\"vertices\": [-1, -1, 0, 0, 0, 1, 0, 1, 1, 1, 0, 0, 0, 1, 1, 0, -1, 1, 0, 0, 0, 1, 0, 0, 1, 1, 0, 0, 0, 1, 1, 0, -1, -1, 0, 0, 0, 1, 0, 1, 1, -1, 0, 0, 0, 1, 1, 1], \"vertexCount\": 6, \"material\": \"__default\"}";
     ResourceManager::getInstance()->updateResourceData<Mesh>("__fullscreenQuad", (const unsigned char *)fullscreenQuad, strlen(fullscreenQuad));
 
     this->fullscreenQuad = ResourceManager::getInstance()->requestResource<Mesh>("__fullscreenQuad");
@@ -227,8 +230,20 @@ Renderer::~Renderer()
 
     delete this->renderList;
 
+    this->backgroundVertexShader->Release();
+    this->basicVertexShader->Release();
+    this->gbufferVertexShader->Release();
+    this->plopVertexShader->Release();
+
+    this->backgroundPixelShader->Release();
+    this->basicPixelShader->Release();
+    this->gbufferPixelShader->Release();
+    this->plopPixelShader->Release();
+
     for (int i = 0; i < GBUFFER_PLANE_COUNT; i++)
         delete this->gBuffer[i];
+
+    delete this->postProcessor;
 
     gBufferDepthState->Release();
     lightingDepthState->Release();
@@ -240,8 +255,8 @@ void Renderer::render(const Scene *scene, int width, int height, bool overrideCa
     GPUProfiler::getInstance()->beginFrame();
 
     D3D11_VIEWPORT viewport;
-    viewport.Width = (float)width;
-    viewport.Height = (float)height;
+    viewport.Width = (float)backbufferWidth;
+    viewport.Height = (float)backbufferHeight;
     viewport.MinDepth = 0.0f;
     viewport.MaxDepth = 1.0f;
     viewport.TopLeftX = 0;
@@ -345,9 +360,9 @@ void Renderer::render(const Scene *scene, int width, int height, bool overrideCa
     {
         GPUProfiler::ScopedProfile profile("Lighting");
 
-        viewport.Width = (float)this->backbufferWidth;
+        /*viewport.Width = (float)this->backbufferWidth;
         viewport.Height = (float)this->backbufferHeight;
-        Device::context->RSSetViewports(1, &viewport);
+        Device::context->RSSetViewports(1, &viewport);*/
 
         ID3D11SamplerState *gBufferSamplers[GBUFFER_PLANE_COUNT] = {
             this->gBuffer[0]->getSamplerState(),
@@ -359,8 +374,11 @@ void Renderer::render(const Scene *scene, int width, int height, bool overrideCa
             this->gBuffer[1]->getSRV()
         };
 
+        RenderTarget *radianceTarget = this->postProcessor->getRadianceTarget();
+        ID3D11RenderTargetView *radianceTargetView = radianceTarget->getTarget();
+
         Device::context->OMSetDepthStencilState(this->lightingDepthState, 0);
-        Device::context->OMSetRenderTargets(1, &this->renderTarget, this->depthTarget);
+        Device::context->OMSetRenderTargets(1, &radianceTargetView, this->depthTarget);
         Device::context->VSSetShader(basicVertexShader, NULL, 0);
         Device::context->PSSetShader(basicPixelShader, NULL, 0);
         Device::context->PSSetSamplers(0, GBUFFER_PLANE_COUNT, gBufferSamplers);
@@ -376,15 +394,17 @@ void Renderer::render(const Scene *scene, int width, int height, bool overrideCa
     {
         GPUProfiler::ScopedProfile profile("Background");
 
-        viewport.Width = (float)width;
+        /*viewport.Width = (float)width;
         viewport.Height = (float)height;
-        Device::context->RSSetViewports(1, &viewport);
+        Device::context->RSSetViewports(1, &viewport);*/
         Device::context->VSSetShader(backgroundVertexShader, NULL, 0);
         Device::context->PSSetShader(backgroundPixelShader, NULL, 0);
         Device::context->OMSetDepthStencilState(this->backgroundDepthState, 0);
         this->fullscreenQuad->bind();
         Device::context->Draw(this->fullscreenQuad->getVertexCount(), 0);
     }
+
+    this->postProcessor->render(width, height);
 
     {
         GPUProfiler::ScopedProfile profile("V-Sync");

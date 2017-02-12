@@ -28,6 +28,7 @@
       <Filter>DDSTextureLoader</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\engine\RenderTarget.cpp" />
+    <ClCompile Include="..\..\src\engine\PostProcessor.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\engine\Renderer.h" />
@@ -62,6 +63,10 @@
       <Filter>DDSTextureLoader</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\engine\RenderTarget.h" />
+    <ClInclude Include="..\..\src\engine\PostProcessor.h" />
+    <ClInclude Include="..\..\src\engine\shaders\postprocess.h">
+      <Filter>shaders</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\..\src\engine\shaders\plop.vs.hlsl">
@@ -86,6 +91,12 @@
       <Filter>shaders</Filter>
     </FxCompile>
     <FxCompile Include="..\..\src\engine\shaders\gbuffer.vs.hlsl">
+      <Filter>shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\src\engine\shaders\postprocess.ps.hlsl">
+      <Filter>shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\src\engine\shaders\postprocess.vs.hlsl">
       <Filter>shaders</Filter>
     </FxCompile>
   </ItemGroup>

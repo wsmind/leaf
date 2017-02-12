@@ -92,7 +92,7 @@ PS_OUTPUT main(GBUFFER_PS_INPUT input)
     float3 color = diffuse + specular;
 
     // gamma correction
-    color = sqrt(color);
+    //color = sqrt(color);
 
 	output.gbuffer0 = float4(pertubatedNormal, metalness);
 	output.gbuffer1 = float4(albedo, emit2);

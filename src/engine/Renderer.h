@@ -8,6 +8,7 @@
 #include <engine/glm/glm.hpp>
 
 class Mesh;
+class PostProcessor;
 class RenderList;
 class RenderTarget;
 class Scene;
@@ -63,4 +64,6 @@ class Renderer
         ID3D11DepthStencilState *gBufferDepthState;
         ID3D11DepthStencilState *lightingDepthState;
         ID3D11DepthStencilState *backgroundDepthState;
+
+        PostProcessor *postProcessor;
 };

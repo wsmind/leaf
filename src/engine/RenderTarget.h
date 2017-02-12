@@ -9,7 +9,7 @@ class RenderTarget
         ~RenderTarget();
 
         ID3D11Texture2D *getTexture() const { return this->texture; }
-        ID3D11RenderTargetView *getTarget() const{ return this->target; }
+        ID3D11RenderTargetView *getTarget() const { return this->target; }
         ID3D11SamplerState *getSamplerState() const { return this->samplerState; }
         ID3D11ShaderResourceView *getSRV() const { return this->srv; }
 
