@@ -13,6 +13,7 @@ def export_data(output_file, updated_only=False):
     data["Scene"] = {}
     for scene in list(bpy.data.scenes):
         if scene.is_updated or not updated_only:
+        #if True:
             print("exporting scene: " + scene.name)
             data["Scene"][scene.name] = export_scene(scene)
 

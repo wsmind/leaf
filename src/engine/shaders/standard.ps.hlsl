@@ -67,7 +67,7 @@ float3 computeShading(SurfaceProperties surface, LightProperties light, float3 e
     // cook-torrance microfacet model
     float3 specular = fresnel * normalDistribution * visibility;
 
-    return diffuse + specular;
+    return light.incomingRadiance * (diffuse + specular);
 }
 
 STANDARD_PS_OUTPUT main(STANDARD_PS_INPUT input)

@@ -35,7 +35,9 @@
 struct LightData
 {
     glm::vec3 position;
+    float _padding;
     glm::vec3 color;
+    float _padding2;
 };
 #pragma pack(pop)
 
@@ -335,7 +337,7 @@ void Renderer::render(const Scene *scene, int width, int height, bool overrideCa
     sceneState->cameraPosition = glm::vec3(viewMatrixInverse[3][0], viewMatrixInverse[3][1], viewMatrixInverse[3][2]);
 
     const std::vector<RenderList::Light> &lights = this->renderList->getLights();
-    sceneState->lightCount = lights.size() <= 16 ? (int)lights.size() : 16;
+    sceneState->lightCount = std::min((int)lights.size(), 16);
     for (int i = 0; i < sceneState->lightCount; i++)
     {
         sceneState->lights[i].position = lights[i].position;

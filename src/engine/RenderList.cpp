@@ -5,6 +5,7 @@
 void RenderList::clear()
 {
     this->jobs.clear();
+    this->lights.clear();
 }
 
 void RenderList::addJob(const Job &job)

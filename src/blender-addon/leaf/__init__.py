@@ -95,7 +95,8 @@ compatible_panels = [
     bpy.types.DATA_PT_lens,
     bpy.types.DATA_PT_camera,
     bpy.types.DATA_PT_camera_display,
-    bpy.types.DATA_PT_camera_safe_areas
+    bpy.types.DATA_PT_camera_safe_areas,
+    bpy.types.DATA_PT_lamp
 ]
 
 def register():
