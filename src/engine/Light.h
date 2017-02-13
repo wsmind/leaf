@@ -15,7 +15,10 @@ class Light: public Resource
 
         virtual void load(const unsigned char *buffer, size_t size) override;
         virtual void unload() override;
+
+        glm::vec3 getColor() const { return this->color; }
     
     private:
+        glm::vec3 color;
         AnimationData *animation = nullptr;
 };

@@ -12,6 +12,11 @@ void RenderList::addJob(const Job &job)
     this->jobs.push_back(job);
 }
 
+void RenderList::addLight(const Light &light)
+{
+    this->lights.push_back(light);
+}
+
 void RenderList::sort()
 {
     std::sort(this->jobs.begin(), this->jobs.end(), [](const Job &lhs, const Job &rhs)

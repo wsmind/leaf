@@ -362,7 +362,9 @@ def export_animation(anim_data):
     }
 
 def export_light(light):
-    data = {}
+    data = {
+        "color": [light.color.r * light.energy, light.color.g * light.energy, light.color.b * light.energy]
+    }
 
     if light.animation_data:
         data["animation"] = export_animation(light.animation_data)

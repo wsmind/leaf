@@ -32,6 +32,15 @@
 
 #pragma pack(push)
 #pragma pack(16)
+struct LightData
+{
+    glm::vec3 position;
+    glm::vec3 color;
+};
+#pragma pack(pop)
+
+#pragma pack(push)
+#pragma pack(16)
 struct SceneState
 {
     glm::mat4 viewMatrix;
@@ -40,7 +49,8 @@ struct SceneState
     glm::mat4 projectionMatrixInverse;
     glm::mat4 viewProjectionInverseMatrix;
     glm::vec3 cameraPosition;
-    float _padding;
+    int lightCount;
+    LightData lights[16];
 };
 #pragma pack(pop)
 
@@ -308,6 +318,10 @@ void Renderer::render(const Scene *scene, int width, int height, bool overrideCa
         scene->setupCameraMatrices(viewMatrix, projectionMatrix, (float)width / (float)height);
     }
 
+    this->renderList->clear();
+    scene->fillRenderList(this->renderList);
+    this->renderList->sort();
+
     D3D11_MAPPED_SUBRESOURCE mappedResource;
     HRESULT res = Device::context->Map(this->cbScene, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
     CHECK_HRESULT(res);
@@ -319,13 +333,18 @@ void Renderer::render(const Scene *scene, int width, int height, bool overrideCa
     sceneState->projectionMatrixInverse = glm::inverse(projectionMatrix);
     sceneState->viewProjectionInverseMatrix = glm::inverse(projectionMatrix * viewMatrix);
     sceneState->cameraPosition = glm::vec3(viewMatrixInverse[3][0], viewMatrixInverse[3][1], viewMatrixInverse[3][2]);
+
+    const std::vector<RenderList::Light> &lights = this->renderList->getLights();
+    sceneState->lightCount = lights.size() <= 16 ? (int)lights.size() : 16;
+    for (int i = 0; i < sceneState->lightCount; i++)
+    {
+        sceneState->lights[i].position = lights[i].position;
+        sceneState->lights[i].color = lights[i].color;
+    }
+
     Device::context->Unmap(this->cbScene, 0);
 
     Device::context->IASetInputLayout(inputLayout);
-
-    this->renderList->clear();
-    scene->fillRenderList(this->renderList);
-    this->renderList->sort();
 
     // G-Buffer pass
     /*for (int i = 0; i < GBUFFER_PLANE_COUNT; i++)

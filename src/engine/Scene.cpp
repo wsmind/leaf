@@ -96,6 +96,19 @@ void Scene::fillRenderList(RenderList *renderList) const
             renderList->addJob(job);
         }
     });
+
+    std::for_each(this->lightNodes.begin(), this->lightNodes.end(), [&](const SceneNode *node)
+    {
+        if (!node->isHidden())
+        {
+            Light *light = node->getData<Light>();
+
+            RenderList::Light renderLight;
+            renderLight.position = glm::vec3(node->computeTransformMatrix()[3]);
+            renderLight.color = light->getColor();
+            renderList->addLight(renderLight);
+        }
+    });
 }
 
 void Scene::setupCameraMatrices(glm::mat4 &viewMatrix, glm::mat4 &projectionMatrix, float aspect) const
