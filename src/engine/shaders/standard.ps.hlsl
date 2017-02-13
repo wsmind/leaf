@@ -60,8 +60,8 @@ STANDARD_PS_OUTPUT main(STANDARD_PS_INPUT input)
     float roughness = roughnessTexture.Sample(roughnessSampler, input.uv).r;
 
     // blend between dielectric and metal
-    float3 specularColor = metalness * lerp(metalness.xxx, albedo, metalness);
-    float3 finalAlbedo = albedo * (1.0 - metalness);
+    float3 specularColor = lerp(float3(0.04, 0.04, 0.04), albedo, metalness);
+    albedo *= (1.0 - metalness);
 
     // precompute all cosines
     float dotLH = saturate(dot(light, h));
@@ -70,7 +70,7 @@ STANDARD_PS_OUTPUT main(STANDARD_PS_INPUT input)
     float dotNV = saturate(dot(pertubatedNormal, eye));
 
     // simple lambert for diffuse
-    float3 diffuse = dotNL * finalAlbedo;
+    float3 diffuse = dotNL * albedo;
 
     // schlick fresnel approximation
     float3 fresnel = specularColor + (1.0 - specularColor) * pow(1.0 - dotNV, 5.0);
