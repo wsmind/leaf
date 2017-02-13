@@ -67,6 +67,15 @@
     <ClInclude Include="..\..\src\engine\shaders\postprocess.h">
       <Filter>shaders</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\engine\shaders\standard.h">
+      <Filter>shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\engine\shaders\scene.h">
+      <Filter>shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\engine\shaders\instance.h">
+      <Filter>shaders</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\..\src\engine\shaders\plop.vs.hlsl">
@@ -97,6 +106,12 @@
       <Filter>shaders</Filter>
     </FxCompile>
     <FxCompile Include="..\..\src\engine\shaders\postprocess.vs.hlsl">
+      <Filter>shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\src\engine\shaders\standard.ps.hlsl">
+      <Filter>shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\src\engine\shaders\standard.vs.hlsl">
       <Filter>shaders</Filter>
     </FxCompile>
   </ItemGroup>

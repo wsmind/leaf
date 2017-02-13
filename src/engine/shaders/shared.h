@@ -24,16 +24,6 @@ struct GBUFFER_PS_INPUT
     float2 uv: TEXCOORD;
 };
 
-cbuffer SceneData: register(b0)
-{
-    float4x4 viewMatrix;
-    float4x4 viewMatrixInverse;
-    float4x4 projectionMatrix;
-    float4x4 projectionMatrixInverse;
-    float4x4 viewProjectionInverseMatrix;
-    float3 cameraPosition;
-};
-
 cbuffer MaterialData: register(b1)
 {
     float3 albedo2;
@@ -42,9 +32,4 @@ cbuffer MaterialData: register(b1)
     // UNUSED (textures are used instead)
     float metalness2;
     float roughness2;
-};
-
-cbuffer InstanceData: register(b2)
-{
-    float4x4 modelMatrix;
 };

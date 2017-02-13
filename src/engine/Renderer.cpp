@@ -27,6 +27,8 @@
 #include <shaders/gbuffer.ps.hlsl.h>
 #include <shaders/plop.vs.hlsl.h>
 #include <shaders/plop.ps.hlsl.h>
+#include <shaders/standard.vs.hlsl.h>
+#include <shaders/standard.ps.hlsl.h>
 
 #pragma pack(push)
 #pragma pack(16)
@@ -173,11 +175,13 @@ Renderer::Renderer(HWND hwnd, int backbufferWidth, int backbufferHeight, bool ca
     res = Device::device->CreateVertexShader(basicVS, sizeof(basicVS), NULL, &basicVertexShader); CHECK_HRESULT(res);
     res = Device::device->CreateVertexShader(gbufferVS, sizeof(gbufferVS), NULL, &gbufferVertexShader); CHECK_HRESULT(res);
     res = Device::device->CreateVertexShader(plopVS, sizeof(plopVS), NULL, &plopVertexShader); CHECK_HRESULT(res);
+    res = Device::device->CreateVertexShader(standardVS, sizeof(standardVS), NULL, &standardVertexShader); CHECK_HRESULT(res);
 
     res = Device::device->CreatePixelShader(backgroundPS, sizeof(backgroundPS), NULL, &backgroundPixelShader); CHECK_HRESULT(res);
     res = Device::device->CreatePixelShader(basicPS, sizeof(basicPS), NULL, &basicPixelShader); CHECK_HRESULT(res);
     res = Device::device->CreatePixelShader(gbufferPS, sizeof(gbufferPS), NULL, &gbufferPixelShader); CHECK_HRESULT(res);
     res = Device::device->CreatePixelShader(plopPS, sizeof(plopPS), NULL, &plopPixelShader); CHECK_HRESULT(res);
+    res = Device::device->CreatePixelShader(standardPS, sizeof(standardPS), NULL, &standardPixelShader); CHECK_HRESULT(res);
 
     D3D11_INPUT_ELEMENT_DESC layout[] =
     {
@@ -238,11 +242,13 @@ Renderer::~Renderer()
     this->basicVertexShader->Release();
     this->gbufferVertexShader->Release();
     this->plopVertexShader->Release();
+    this->standardVertexShader->Release();
 
     this->backgroundPixelShader->Release();
     this->basicPixelShader->Release();
     this->gbufferPixelShader->Release();
     this->plopPixelShader->Release();
+    this->standardPixelShader->Release();
 
     this->inputLayout->Release();
 
@@ -322,7 +328,7 @@ void Renderer::render(const Scene *scene, int width, int height, bool overrideCa
     this->renderList->sort();
 
     // G-Buffer pass
-    for (int i = 0; i < GBUFFER_PLANE_COUNT; i++)
+    /*for (int i = 0; i < GBUFFER_PLANE_COUNT; i++)
         Device::context->ClearRenderTargetView(this->gBuffer[i]->getTarget(), clearColor);
 
     ID3D11RenderTargetView *gBufferTargets[GBUFFER_PLANE_COUNT] = {
@@ -332,9 +338,16 @@ void Renderer::render(const Scene *scene, int width, int height, bool overrideCa
     Device::context->OMSetRenderTargets(GBUFFER_PLANE_COUNT, gBufferTargets, this->depthTarget);
 
     Device::context->VSSetShader(gbufferVertexShader, NULL, 0);
-    Device::context->PSSetShader(gbufferPixelShader, NULL, 0);
+    Device::context->PSSetShader(gbufferPixelShader, NULL, 0);*/
 
     Device::context->OMSetDepthStencilState(this->gBufferDepthState, 0);
+
+    RenderTarget *radianceTarget = this->postProcessor->getRadianceTarget();
+    ID3D11RenderTargetView *radianceTargetView = radianceTarget->getTarget();
+    Device::context->OMSetRenderTargets(1, &radianceTargetView, this->depthTarget);
+
+    Device::context->VSSetShader(standardVertexShader, NULL, 0);
+    Device::context->PSSetShader(standardPixelShader, NULL, 0);
 
     const std::vector<RenderList::Job> &jobs = this->renderList->getJobs();
 
@@ -374,12 +387,8 @@ void Renderer::render(const Scene *scene, int width, int height, bool overrideCa
     }
 
     // lighting pass
-    {
+    /*{
         GPUProfiler::ScopedProfile profile("Lighting");
-
-        /*viewport.Width = (float)this->backbufferWidth;
-        viewport.Height = (float)this->backbufferHeight;
-        Device::context->RSSetViewports(1, &viewport);*/
 
         ID3D11SamplerState *gBufferSamplers[GBUFFER_PLANE_COUNT] = {
             this->gBuffer[0]->getSamplerState(),
@@ -402,7 +411,7 @@ void Renderer::render(const Scene *scene, int width, int height, bool overrideCa
         Device::context->PSSetShaderResources(0, GBUFFER_PLANE_COUNT, gBufferSRVs);
         this->fullscreenQuad->bind();
         Device::context->Draw(this->fullscreenQuad->getVertexCount(), 0);
-    }
+    }*/
 
     ID3D11ShaderResourceView *srvNulls[GBUFFER_PLANE_COUNT] = { nullptr, nullptr };
     Device::context->PSSetShaderResources(0, GBUFFER_PLANE_COUNT, srvNulls);

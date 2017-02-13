@@ -1,5 +1,10 @@
 #include "scene.h"
-#include "shared.h"
+#include "standard.h"
+
+struct STANDARD_PS_OUTPUT
+{
+    float4 radiance: SV_TARGET;
+};
 
 Texture2D<float4> albedoTexture: register(t0);
 SamplerState albedoSampler: register(s0);
@@ -13,20 +18,14 @@ SamplerState metalnessSampler: register(s2);
 Texture2D<float4> roughnessTexture: register(t3);
 SamplerState roughnessSampler: register(s3);
 
-struct PS_OUTPUT
-{
-	float4 gbuffer0: SV_TARGET0;
-	float4 gbuffer1: SV_TARGET1;
-};
-
 float g1v(float dotNV, float k)
 {
-    return 1.0 / (dotNV * (1.0 - k) + 1.0);
+return 1.0 / (dotNV * (1.0 - k) + 1.0);
 }
 
-PS_OUTPUT main(GBUFFER_PS_INPUT input)
+STANDARD_PS_OUTPUT main(STANDARD_PS_INPUT input)
 {
-	PS_OUTPUT output;
+    STANDARD_PS_OUTPUT output;
 
     const float3 light = normalize(float3(1.0, 1.0, 1.0));
     const float3 view = cameraPosition - input.worldPosition;
@@ -56,7 +55,7 @@ PS_OUTPUT main(GBUFFER_PS_INPUT input)
     float3 tangentNormal = saturate(normalTexture.Sample(normalSampler, input.uv).rgb * 2.0 - 1.0);
     float3 pertubatedNormal = mul(tangentNormal, TBN);
 
-    float3 albedo = albedo2 * albedoTexture.Sample(albedoSampler, input.uv).rgb;
+    float3 albedo = albedoTexture.Sample(albedoSampler, input.uv).rgb;
     float metalness = metalnessTexture.Sample(metalnessSampler, input.uv).r;
     float roughness = roughnessTexture.Sample(roughnessSampler, input.uv).r;
 
@@ -90,13 +89,9 @@ PS_OUTPUT main(GBUFFER_PS_INPUT input)
     // cook-torrance microfacet model
     float3 specular = fresnel * normalDistribution * visibility;
 
-    float3 color = diffuse + specular;
+    float3 radiance = diffuse + specular;
 
-    // gamma correction
-    //color = sqrt(color);
-
-	output.gbuffer0 = float4(pertubatedNormal, metalness);
-	output.gbuffer1 = float4(albedo, emit2);
+    output.radiance = float4(radiance, 1.0);
 
 	return output;
 }

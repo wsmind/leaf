@@ -1,3 +1,4 @@
+#include "scene.h"
 #include "shared.h"
 
 struct VS_INPUT
