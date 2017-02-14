@@ -17,8 +17,8 @@ POSTPROCESS_PS_OUTPUT main(POSTPROCESS_PS_INPUT input)
     // vignette
     radiance *= pow(1.0 - length(input.uv - float2(0.5, 0.5)), 2.0);
 
-    // simple gamma correction
-    float3 color = sqrt(radiance);
+    // gamma correction
+    float3 color = pow(radiance, 1.0 / 2.2);
 
     output.color = float4(color, 1.0);
 
