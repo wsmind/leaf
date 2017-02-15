@@ -70,6 +70,14 @@ float3 computeShading(SurfaceProperties surface, LightProperties light, float3 e
     return light.incomingRadiance * (diffuse + specular);
 }
 
+float computeLightFalloff(float distance, float radius)
+{
+    // see http://blog.selfshadow.com/publications/s2013-shading-course/karis/s2013_pbs_epic_notes_v2.pdf
+    float numerator = saturate(1.0 - pow(distance / radius, 4.0));
+    numerator *= numerator;
+    return numerator / (distance * distance + 1.0);
+}
+
 STANDARD_PS_OUTPUT main(STANDARD_PS_INPUT input)
 {
     STANDARD_PS_OUTPUT output;
@@ -118,9 +126,12 @@ STANDARD_PS_OUTPUT main(STANDARD_PS_INPUT input)
 
     for (int i = 0; i < lightCount; i++)
     {
+        float3 lightVector = lights[i].position - input.worldPosition;
+        float lightDistance = length(lightVector);
+
         LightProperties light;
-        light.direction = normalize(lights[i].position - input.worldPosition);
-        light.incomingRadiance = lights[i].color;
+        light.direction = lightVector / lightDistance;
+        light.incomingRadiance = lights[i].color * computeLightFalloff(lightDistance, 10.0);
 
         radiance += computeShading(surface, light, eye);
     }
