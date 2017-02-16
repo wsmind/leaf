@@ -35,9 +35,9 @@
 struct LightData
 {
     glm::vec3 position;
-    float _padding;
+    float distance;
     glm::vec3 color;
-    float _padding2;
+    float _padding;
 };
 #pragma pack(pop)
 
@@ -341,6 +341,7 @@ void Renderer::render(const Scene *scene, int width, int height, bool overrideCa
     for (int i = 0; i < sceneState->lightCount; i++)
     {
         sceneState->lights[i].position = lights[i].position;
+        sceneState->lights[i].distance = lights[i].distance;
         sceneState->lights[i].color = lights[i].color;
     }
 

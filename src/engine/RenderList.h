@@ -20,6 +20,7 @@ class RenderList
         struct Light
         {
             glm::vec3 position;
+            float distance;
             glm::vec3 color;
         };
 

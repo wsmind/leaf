@@ -17,8 +17,10 @@ class Light: public Resource
         virtual void unload() override;
 
         glm::vec3 getColor() const { return this->color; }
+        float getDistance() const { return this->distance; }
     
     private:
         glm::vec3 color;
+        float distance;
         AnimationData *animation = nullptr;
 };
