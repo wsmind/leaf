@@ -19,9 +19,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{012ADCF2-EF24-4733-A271-9B10D514D015}</ProjectGuid>
+    <ProjectGuid>{9E9E96B8-4D16-4607-907B-6EE051DABE71}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>LeafRunner</RootNamespace>
+    <RootNamespace>LeafTextureCompressor</RootNamespace>
     <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -114,33 +114,6 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>winmm.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;LeafEngine.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
-    <CustomBuildStep>
-      <Command>REM Copy binaries and python to dist/ folder
-MKDIR "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf"
-DEL /Q "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf\*.*"
-COPY "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\bin\LeafEngine.dll" "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf"
-COPY "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\bin\LeafRunner.exe" "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf"
-COPY "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\bin\LeafTextureCompressor.exe" "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf"
-COPY "$(SolutionDir)..\src\blender-addon\leaf\*.py" "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf"
-
-REM Deploy dist/ to blender addons (2.78 assumed)
-MKDIR "%APPDATA%\Blender Foundation\Blender\2.78\scripts\addons\leaf"
-COPY "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf\*.*" "%APPDATA%\Blender Foundation\Blender\2.78\scripts\addons\leaf"
-</Command>
-      <Message>
-      </Message>
-      <Inputs>
-      </Inputs>
-      <Outputs>nonexistentfile-intentionally.cpp;%(Outputs)</Outputs>
-    </CustomBuildStep>
-    <PostBuildEvent>
-      <Command>
-      </Command>
-    </PostBuildEvent>
-    <PostBuildEvent>
-      <Message>
-      </Message>
-    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -155,33 +128,6 @@ COPY "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf\*.*" "
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>winmm.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;LeafEngine.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
-    <CustomBuildStep>
-      <Command>REM Copy binaries and python to dist/ folder
-MKDIR "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf"
-DEL /Q "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf\*.*"
-COPY "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\bin\LeafEngine.dll" "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf"
-COPY "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\bin\LeafRunner.exe" "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf"
-COPY "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\bin\LeafTextureCompressor.exe" "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf"
-COPY "$(SolutionDir)..\src\blender-addon\leaf\*.py" "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf"
-
-REM Deploy dist/ to blender addons (2.78 assumed)
-MKDIR "%APPDATA%\Blender Foundation\Blender\2.78\scripts\addons\leaf"
-COPY "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf\*.*" "%APPDATA%\Blender Foundation\Blender\2.78\scripts\addons\leaf"
-</Command>
-      <Message>
-      </Message>
-      <Inputs>
-      </Inputs>
-      <Outputs>nonexistentfile-intentionally.cpp;%(Outputs)</Outputs>
-    </CustomBuildStep>
-    <PostBuildEvent>
-      <Command>
-      </Command>
-    </PostBuildEvent>
-    <PostBuildEvent>
-      <Message>
-      </Message>
-    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -200,33 +146,6 @@ COPY "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf\*.*" "
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>winmm.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;LeafEngine.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
-    <CustomBuildStep>
-      <Command>REM Copy binaries and python to dist/ folder
-MKDIR "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf"
-DEL /Q "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf\*.*"
-COPY "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\bin\LeafEngine.dll" "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf"
-COPY "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\bin\LeafRunner.exe" "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf"
-COPY "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\bin\LeafTextureCompressor.exe" "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf"
-COPY "$(SolutionDir)..\src\blender-addon\leaf\*.py" "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf"
-
-REM Deploy dist/ to blender addons (2.78 assumed)
-MKDIR "%APPDATA%\Blender Foundation\Blender\2.78\scripts\addons\leaf"
-COPY "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf\*.*" "%APPDATA%\Blender Foundation\Blender\2.78\scripts\addons\leaf"
-</Command>
-      <Message>
-      </Message>
-      <Inputs>
-      </Inputs>
-      <Outputs>nonexistentfile-intentionally.cpp;%(Outputs)</Outputs>
-    </CustomBuildStep>
-    <PostBuildEvent>
-      <Command>
-      </Command>
-    </PostBuildEvent>
-    <PostBuildEvent>
-      <Message>
-      </Message>
-    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -245,36 +164,9 @@ COPY "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf\*.*" "
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>winmm.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;LeafEngine.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
-    <CustomBuildStep>
-      <Command>REM Copy binaries and python to dist/ folder
-MKDIR "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf"
-DEL /Q "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf\*.*"
-COPY "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\bin\LeafEngine.dll" "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf"
-COPY "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\bin\LeafRunner.exe" "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf"
-COPY "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\bin\LeafTextureCompressor.exe" "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf"
-COPY "$(SolutionDir)..\src\blender-addon\leaf\*.py" "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf"
-
-REM Deploy dist/ to blender addons (2.78 assumed)
-MKDIR "%APPDATA%\Blender Foundation\Blender\2.78\scripts\addons\leaf"
-COPY "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf\*.*" "%APPDATA%\Blender Foundation\Blender\2.78\scripts\addons\leaf"
-</Command>
-      <Message>
-      </Message>
-      <Inputs>
-      </Inputs>
-      <Outputs>nonexistentfile-intentionally.cpp;%(Outputs)</Outputs>
-    </CustomBuildStep>
-    <PostBuildEvent>
-      <Command>
-      </Command>
-    </PostBuildEvent>
-    <PostBuildEvent>
-      <Message>
-      </Message>
-    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\src\runner\runner.cpp" />
+    <ClCompile Include="..\..\src\texture-compressor\texture-compressor.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
