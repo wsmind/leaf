@@ -14,7 +14,7 @@ void Light::load(const unsigned char *buffer, size_t size)
 
     cJSON *colorJson = cJSON_GetObjectItem(json, "color");
     this->color = glm::vec3(cJSON_GetArrayItem(colorJson, 0)->valuedouble, cJSON_GetArrayItem(colorJson, 1)->valuedouble, cJSON_GetArrayItem(colorJson, 2)->valuedouble);
-    this->distance = (float)cJSON_GetObjectItem(json, "distance")->valuedouble;
+    this->radius = (float)cJSON_GetObjectItem(json, "radius")->valuedouble;
 
     cJSON *animation = cJSON_GetObjectItem(json, "animation");
     if (animation)

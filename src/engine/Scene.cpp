@@ -105,7 +105,7 @@ void Scene::fillRenderList(RenderList *renderList) const
 
             RenderList::Light renderLight;
             renderLight.position = glm::vec3(node->computeTransformMatrix()[3]);
-            renderLight.distance = light->getDistance();
+            renderLight.radius = light->getRadius();
             renderLight.color = light->getColor();
             renderList->addLight(renderLight);
         }

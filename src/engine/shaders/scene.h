@@ -1,7 +1,7 @@
 struct LightData
 {
     float3 position;
-    float distance;
+    float radius;
     float3 color;
 };
 

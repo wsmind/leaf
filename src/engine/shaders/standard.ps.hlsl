@@ -131,7 +131,7 @@ STANDARD_PS_OUTPUT main(STANDARD_PS_INPUT input)
 
         LightProperties light;
         light.direction = lightVector / lightDistance;
-        light.incomingRadiance = lights[i].color * computeLightFalloff(lightDistance, lights[i].distance);
+        light.incomingRadiance = lights[i].color * computeLightFalloff(lightDistance, lights[i].radius);
 
         radiance += computeShading(surface, light, eye);
     }
