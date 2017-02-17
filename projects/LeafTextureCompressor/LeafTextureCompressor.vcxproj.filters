@@ -2,5 +2,110 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="..\..\src\texture-compressor\texture-compressor.cpp" />
+    <ClCompile Include="..\..\src\texture-compressor\nvidia-texture-tools\src\nvcore\Debug.cpp">
+      <Filter>nvidia-texture-tools\src\nvcore</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\texture-compressor\nvidia-texture-tools\src\nvcore\FileSystem.cpp">
+      <Filter>nvidia-texture-tools\src\nvcore</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\texture-compressor\nvidia-texture-tools\src\nvcore\Memory.cpp">
+      <Filter>nvidia-texture-tools\src\nvcore</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\texture-compressor\nvidia-texture-tools\src\nvcore\StrLib.cpp">
+      <Filter>nvidia-texture-tools\src\nvcore</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\texture-compressor\nvidia-texture-tools\src\nvcore\TextWriter.cpp">
+      <Filter>nvidia-texture-tools\src\nvcore</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\texture-compressor\nvidia-texture-tools\src\nvcore\Timer.cpp">
+      <Filter>nvidia-texture-tools\src\nvcore</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\texture-compressor\nvidia-texture-tools\extern\poshlib\posh.c">
+      <Filter>nvidia-texture-tools\extern\poshlib</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="nvidia-texture-tools">
+      <UniqueIdentifier>{2eeb13a5-ed40-416d-997e-2e869678d266}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="nvidia-texture-tools\src">
+      <UniqueIdentifier>{a3b1d308-3395-4061-a7c8-0aba9f149fb6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="nvidia-texture-tools\src\nvcore">
+      <UniqueIdentifier>{e8e3f89b-90c9-4ed0-a958-d13139398db6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="nvidia-texture-tools\extern">
+      <UniqueIdentifier>{971b5cf0-8575-4791-a176-4450620ab677}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="nvidia-texture-tools\extern\poshlib">
+      <UniqueIdentifier>{b54a69f4-e4c4-4ff0-89e7-cfe57d02632a}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\src\texture-compressor\nvidia-texture-tools\src\nvcore\Array.h">
+      <Filter>nvidia-texture-tools\src\nvcore</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\texture-compressor\nvidia-texture-tools\src\nvcore\Debug.h">
+      <Filter>nvidia-texture-tools\src\nvcore</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\texture-compressor\nvidia-texture-tools\src\nvcore\DefsGnucDarwin.h">
+      <Filter>nvidia-texture-tools\src\nvcore</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\texture-compressor\nvidia-texture-tools\src\nvcore\DefsGnucLinux.h">
+      <Filter>nvidia-texture-tools\src\nvcore</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\texture-compressor\nvidia-texture-tools\src\nvcore\DefsGnucWin32.h">
+      <Filter>nvidia-texture-tools\src\nvcore</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\texture-compressor\nvidia-texture-tools\src\nvcore\DefsVcWin32.h">
+      <Filter>nvidia-texture-tools\src\nvcore</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\texture-compressor\nvidia-texture-tools\src\nvcore\FileSystem.h">
+      <Filter>nvidia-texture-tools\src\nvcore</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\texture-compressor\nvidia-texture-tools\src\nvcore\ForEach.h">
+      <Filter>nvidia-texture-tools\src\nvcore</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\texture-compressor\nvidia-texture-tools\src\nvcore\Hash.h">
+      <Filter>nvidia-texture-tools\src\nvcore</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\texture-compressor\nvidia-texture-tools\src\nvcore\Memory.h">
+      <Filter>nvidia-texture-tools\src\nvcore</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\texture-compressor\nvidia-texture-tools\src\nvcore\nvcore.h">
+      <Filter>nvidia-texture-tools\src\nvcore</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\texture-compressor\nvidia-texture-tools\src\nvcore\Ptr.h">
+      <Filter>nvidia-texture-tools\src\nvcore</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\texture-compressor\nvidia-texture-tools\src\nvcore\RefCounted.h">
+      <Filter>nvidia-texture-tools\src\nvcore</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\texture-compressor\nvidia-texture-tools\src\nvcore\StdStream.h">
+      <Filter>nvidia-texture-tools\src\nvcore</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\texture-compressor\nvidia-texture-tools\src\nvcore\Stream.h">
+      <Filter>nvidia-texture-tools\src\nvcore</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\texture-compressor\nvidia-texture-tools\src\nvcore\StrLib.h">
+      <Filter>nvidia-texture-tools\src\nvcore</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\texture-compressor\nvidia-texture-tools\src\nvcore\TextWriter.h">
+      <Filter>nvidia-texture-tools\src\nvcore</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\texture-compressor\nvidia-texture-tools\src\nvcore\Timer.h">
+      <Filter>nvidia-texture-tools\src\nvcore</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\texture-compressor\nvidia-texture-tools\src\nvcore\Utils.h">
+      <Filter>nvidia-texture-tools\src\nvcore</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\texture-compressor\nvidia-texture-tools\extern\poshlib\posh.h">
+      <Filter>nvidia-texture-tools\extern\poshlib</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\src\texture-compressor\nvidia-texture-tools\src\nvcore\Array.inl">
+      <Filter>nvidia-texture-tools\src\nvcore</Filter>
+    </None>
   </ItemGroup>
 </Project>
