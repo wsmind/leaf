@@ -6,7 +6,7 @@
 #include <engine/PropertyMapping.h>
 
 const std::string Light::resourceClassName = "Light";
-const std::string Light::defaultResourceData = "{\"color\": [1.0, 1.0, 1.0], \"distance\": 1.0}";
+const std::string Light::defaultResourceData = "{\"color\": [1.0, 1.0, 1.0], \"radius\": 1.0}";
 
 void Light::load(const unsigned char *buffer, size_t size)
 {
