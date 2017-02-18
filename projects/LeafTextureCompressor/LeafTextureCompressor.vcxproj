@@ -107,8 +107,8 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\src\texture-compressor\nvidia-texture-tools\src;$(SolutionDir)..\src\texture-compressor\nvidia-texture-tools\extern\poshlib;$(SolutionDir)..\src\texture-compressor\nvidia-texture-tools\extern\stb</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>__SSE2__;__SSE__;__MMX__;WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\src\texture-compressor\nvidia-texture-tools\src;$(SolutionDir)..\src\texture-compressor\nvidia-texture-tools\extern\gnuwin32\include;$(SolutionDir)..\src\texture-compressor\nvidia-texture-tools\extern\poshlib;$(SolutionDir)..\src\texture-compressor\nvidia-texture-tools\extern\stb</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -122,8 +122,8 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\src\texture-compressor\nvidia-texture-tools\src;$(SolutionDir)..\src\texture-compressor\nvidia-texture-tools\extern\poshlib;$(SolutionDir)..\src\texture-compressor\nvidia-texture-tools\extern\stb</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>__SSE2__;__SSE__;__MMX__;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\src\texture-compressor\nvidia-texture-tools\src;$(SolutionDir)..\src\texture-compressor\nvidia-texture-tools\extern\gnuwin32\include;$(SolutionDir)..\src\texture-compressor\nvidia-texture-tools\extern\poshlib;$(SolutionDir)..\src\texture-compressor\nvidia-texture-tools\extern\stb</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -139,8 +139,8 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\src\texture-compressor\nvidia-texture-tools\src;$(SolutionDir)..\src\texture-compressor\nvidia-texture-tools\extern\poshlib;$(SolutionDir)..\src\texture-compressor\nvidia-texture-tools\extern\stb</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>__SSE2__;__SSE__;__MMX__;WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\src\texture-compressor\nvidia-texture-tools\src;$(SolutionDir)..\src\texture-compressor\nvidia-texture-tools\extern\gnuwin32\include;$(SolutionDir)..\src\texture-compressor\nvidia-texture-tools\extern\poshlib;$(SolutionDir)..\src\texture-compressor\nvidia-texture-tools\extern\stb</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -158,8 +158,8 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\src\texture-compressor\nvidia-texture-tools\src;$(SolutionDir)..\src\texture-compressor\nvidia-texture-tools\extern\poshlib;$(SolutionDir)..\src\texture-compressor\nvidia-texture-tools\extern\stb</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>__SSE2__;__SSE__;__MMX__;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\src\texture-compressor\nvidia-texture-tools\src;$(SolutionDir)..\src\texture-compressor\nvidia-texture-tools\extern\gnuwin32\include;$(SolutionDir)..\src\texture-compressor\nvidia-texture-tools\extern\poshlib;$(SolutionDir)..\src\texture-compressor\nvidia-texture-tools\extern\stb</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -214,9 +214,37 @@
     <ClCompile Include="..\..\src\texture-compressor\nvidia-texture-tools\src\nvthread\ParallelFor.cpp" />
     <ClCompile Include="..\..\src\texture-compressor\nvidia-texture-tools\src\nvthread\Thread.cpp" />
     <ClCompile Include="..\..\src\texture-compressor\nvidia-texture-tools\src\nvthread\ThreadPool.cpp" />
+    <ClCompile Include="..\..\src\texture-compressor\nvidia-texture-tools\src\nvtt\BlockCompressor.cpp" />
+    <ClCompile Include="..\..\src\texture-compressor\nvidia-texture-tools\src\nvtt\ClusterFit.cpp" />
+    <ClCompile Include="..\..\src\texture-compressor\nvidia-texture-tools\src\nvtt\CompressionOptions.cpp" />
+    <ClCompile Include="..\..\src\texture-compressor\nvidia-texture-tools\src\nvtt\CompressorDX10.cpp" />
+    <ClCompile Include="..\..\src\texture-compressor\nvidia-texture-tools\src\nvtt\CompressorDX11.cpp" />
+    <ClCompile Include="..\..\src\texture-compressor\nvidia-texture-tools\src\nvtt\CompressorDX9.cpp" />
+    <ClCompile Include="..\..\src\texture-compressor\nvidia-texture-tools\src\nvtt\CompressorDXT1.cpp" />
+    <ClCompile Include="..\..\src\texture-compressor\nvidia-texture-tools\src\nvtt\CompressorDXT5_RGBM.cpp" />
+    <ClCompile Include="..\..\src\texture-compressor\nvidia-texture-tools\src\nvtt\CompressorRGB.cpp" />
+    <ClCompile Include="..\..\src\texture-compressor\nvidia-texture-tools\src\nvtt\Context.cpp" />
+    <ClCompile Include="..\..\src\texture-compressor\nvidia-texture-tools\src\nvtt\CubeSurface.cpp" />
+    <ClCompile Include="..\..\src\texture-compressor\nvidia-texture-tools\src\nvtt\cuda\CudaCompressorDXT.cpp" />
+    <ClCompile Include="..\..\src\texture-compressor\nvidia-texture-tools\src\nvtt\cuda\CudaUtils.cpp" />
+    <ClCompile Include="..\..\src\texture-compressor\nvidia-texture-tools\src\nvtt\InputOptions.cpp" />
+    <ClCompile Include="..\..\src\texture-compressor\nvidia-texture-tools\src\nvtt\nvtt.cpp" />
+    <ClCompile Include="..\..\src\texture-compressor\nvidia-texture-tools\src\nvtt\nvtt_wrapper.cpp" />
+    <ClCompile Include="..\..\src\texture-compressor\nvidia-texture-tools\src\nvtt\OptimalCompressDXT.cpp" />
+    <ClCompile Include="..\..\src\texture-compressor\nvidia-texture-tools\src\nvtt\OutputOptions.cpp" />
+    <ClCompile Include="..\..\src\texture-compressor\nvidia-texture-tools\src\nvtt\QuickCompressDXT.cpp" />
+    <ClCompile Include="..\..\src\texture-compressor\nvidia-texture-tools\src\nvtt\SingleColorLookup.cpp" />
+    <ClCompile Include="..\..\src\texture-compressor\nvidia-texture-tools\src\nvtt\squish\colourblock.cpp" />
+    <ClCompile Include="..\..\src\texture-compressor\nvidia-texture-tools\src\nvtt\squish\colourfit.cpp" />
+    <ClCompile Include="..\..\src\texture-compressor\nvidia-texture-tools\src\nvtt\squish\colourset.cpp" />
+    <ClCompile Include="..\..\src\texture-compressor\nvidia-texture-tools\src\nvtt\squish\fastclusterfit.cpp" />
+    <ClCompile Include="..\..\src\texture-compressor\nvidia-texture-tools\src\nvtt\squish\maths.cpp" />
+    <ClCompile Include="..\..\src\texture-compressor\nvidia-texture-tools\src\nvtt\squish\weightedclusterfit.cpp" />
+    <ClCompile Include="..\..\src\texture-compressor\nvidia-texture-tools\src\nvtt\Surface.cpp" />
     <ClCompile Include="..\..\src\texture-compressor\texture-compressor.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\src\nvconfig.h" />
     <ClInclude Include="..\..\src\texture-compressor\nvidia-texture-tools\extern\poshlib\posh.h" />
     <ClInclude Include="..\..\src\texture-compressor\nvidia-texture-tools\extern\stb\stb_dxt.h" />
     <ClInclude Include="..\..\src\texture-compressor\nvidia-texture-tools\extern\stb\stb_image.h" />
@@ -286,6 +314,40 @@
     <ClInclude Include="..\..\src\texture-compressor\nvidia-texture-tools\src\nvthread\Thread.h" />
     <ClInclude Include="..\..\src\texture-compressor\nvidia-texture-tools\src\nvthread\ThreadPool.h" />
     <ClInclude Include="..\..\src\texture-compressor\nvidia-texture-tools\src\nvthread\Win32.h" />
+    <ClInclude Include="..\..\src\texture-compressor\nvidia-texture-tools\src\nvtt\BlockCompressor.h" />
+    <ClInclude Include="..\..\src\texture-compressor\nvidia-texture-tools\src\nvtt\ClusterFit.h" />
+    <ClInclude Include="..\..\src\texture-compressor\nvidia-texture-tools\src\nvtt\CompressionOptions.h" />
+    <ClInclude Include="..\..\src\texture-compressor\nvidia-texture-tools\src\nvtt\Compressor.h" />
+    <ClInclude Include="..\..\src\texture-compressor\nvidia-texture-tools\src\nvtt\CompressorDX10.h" />
+    <ClInclude Include="..\..\src\texture-compressor\nvidia-texture-tools\src\nvtt\CompressorDX11.h" />
+    <ClInclude Include="..\..\src\texture-compressor\nvidia-texture-tools\src\nvtt\CompressorDX9.h" />
+    <ClInclude Include="..\..\src\texture-compressor\nvidia-texture-tools\src\nvtt\CompressorDXT1.h" />
+    <ClInclude Include="..\..\src\texture-compressor\nvidia-texture-tools\src\nvtt\CompressorDXT5_RGBM.h" />
+    <ClInclude Include="..\..\src\texture-compressor\nvidia-texture-tools\src\nvtt\CompressorRGB.h" />
+    <ClInclude Include="..\..\src\texture-compressor\nvidia-texture-tools\src\nvtt\Context.h" />
+    <ClInclude Include="..\..\src\texture-compressor\nvidia-texture-tools\src\nvtt\CubeSurface.h" />
+    <ClInclude Include="..\..\src\texture-compressor\nvidia-texture-tools\src\nvtt\cuda\BitmapTable.h" />
+    <ClInclude Include="..\..\src\texture-compressor\nvidia-texture-tools\src\nvtt\cuda\CudaCompressorDXT.h" />
+    <ClInclude Include="..\..\src\texture-compressor\nvidia-texture-tools\src\nvtt\cuda\CudaMath.h" />
+    <ClInclude Include="..\..\src\texture-compressor\nvidia-texture-tools\src\nvtt\cuda\CudaUtils.h" />
+    <ClInclude Include="..\..\src\texture-compressor\nvidia-texture-tools\src\nvtt\InputOptions.h" />
+    <ClInclude Include="..\..\src\texture-compressor\nvidia-texture-tools\src\nvtt\nvtt.h" />
+    <ClInclude Include="..\..\src\texture-compressor\nvidia-texture-tools\src\nvtt\nvtt_wrapper.h" />
+    <ClInclude Include="..\..\src\texture-compressor\nvidia-texture-tools\src\nvtt\OptimalCompressDXT.h" />
+    <ClInclude Include="..\..\src\texture-compressor\nvidia-texture-tools\src\nvtt\OutputOptions.h" />
+    <ClInclude Include="..\..\src\texture-compressor\nvidia-texture-tools\src\nvtt\QuickCompressDXT.h" />
+    <ClInclude Include="..\..\src\texture-compressor\nvidia-texture-tools\src\nvtt\SingleColorLookup.h" />
+    <ClInclude Include="..\..\src\texture-compressor\nvidia-texture-tools\src\nvtt\squish\colourblock.h" />
+    <ClInclude Include="..\..\src\texture-compressor\nvidia-texture-tools\src\nvtt\squish\colourfit.h" />
+    <ClInclude Include="..\..\src\texture-compressor\nvidia-texture-tools\src\nvtt\squish\colourset.h" />
+    <ClInclude Include="..\..\src\texture-compressor\nvidia-texture-tools\src\nvtt\squish\fastclusterfit.h" />
+    <ClInclude Include="..\..\src\texture-compressor\nvidia-texture-tools\src\nvtt\squish\maths.h" />
+    <ClInclude Include="..\..\src\texture-compressor\nvidia-texture-tools\src\nvtt\squish\simd.h" />
+    <ClInclude Include="..\..\src\texture-compressor\nvidia-texture-tools\src\nvtt\squish\simd_sse.h" />
+    <ClInclude Include="..\..\src\texture-compressor\nvidia-texture-tools\src\nvtt\squish\simd_ve.h" />
+    <ClInclude Include="..\..\src\texture-compressor\nvidia-texture-tools\src\nvtt\squish\weightedclusterfit.h" />
+    <ClInclude Include="..\..\src\texture-compressor\nvidia-texture-tools\src\nvtt\Surface.h" />
+    <ClInclude Include="..\..\src\texture-compressor\nvidia-texture-tools\src\nvtt\TaskDispatcher.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\src\texture-compressor\nvidia-texture-tools\src\nvcore\Array.inl" />
@@ -294,6 +356,7 @@
     <None Include="..\..\src\texture-compressor\nvidia-texture-tools\src\nvmath\Matrix.inl" />
     <None Include="..\..\src\texture-compressor\nvidia-texture-tools\src\nvmath\Plane.inl" />
     <None Include="..\..\src\texture-compressor\nvidia-texture-tools\src\nvmath\Vector.inl" />
+    <None Include="..\..\src\texture-compressor\nvidia-texture-tools\src\nvtt\squish\fastclusterlookup.inl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
