@@ -19,4 +19,37 @@
 
 #define HAVE_MAYA
 
+#define HAVE_CUDA
+
+// missing class used in CudaUtils.cpp
+#define WIN32_LEAN_AND_MEAN
+#define WIN32_EXTRA_LEAN
+#include <Windows.h>
+class Library
+{
+    public:
+        Library(const char *name)
+        {
+            this->module = LoadLibrary(name);
+        }
+
+        ~Library()
+        {
+            FreeLibrary(this->module);
+        }
+
+        bool isValid()
+        {
+            return this->module != nullptr;
+        }
+
+        void *bindSymbol(const char *name)
+        {
+            return GetProcAddress(this->module, name);
+        }
+
+    private:
+        HMODULE module;
+};
+
 #endif // NV_CONFIG

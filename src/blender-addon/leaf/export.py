@@ -260,17 +260,16 @@ def export_texture(tex):
     return json.dumps(output).encode("utf-8")
 
 def export_image(img):
-    nvttPath = bpy.context.user_preferences.addons[__package__].preferences.nvttPath
-    if not os.path.exists(nvttPath):
-        raise Exception("Please configure the path to NVIDIA Texture Tools in the addon preferences")
+    script_dir = os.path.dirname(__file__)
+    texture_compressor_path = os.path.join(script_dir, "LeafTextureCompressor.exe")
 
-    nvcompressExe = os.path.join(nvttPath, "bin", "nvcompress.exe")
     sourcePath = bpy.path.abspath(img.filepath)
     targetPath = os.path.join(bpy.app.tempdir, next(tempfile._get_candidate_names()))
     args = [
-        nvcompressExe,
+        texture_compressor_path,
         "-color",
         "-repeat",
+        "-dds10",
         sourcePath,
         targetPath
     ]

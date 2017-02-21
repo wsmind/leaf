@@ -595,4 +595,7 @@
       <Filter>nvidia-texture-tools\src\nvtt\squish</Filter>
     </None>
   </ItemGroup>
+  <ItemGroup>
+    <CudaCompile Include="..\..\src\texture-compressor\nvidia-texture-tools\src\nvtt\cuda\CompressKernel.cu" />
+  </ItemGroup>
 </Project>

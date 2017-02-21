@@ -49,6 +49,7 @@
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
+    <Import Project="$(VCTargetsPath)\BuildCustomizations\CUDA 8.0.props" />
   </ImportGroup>
   <ImportGroup Label="Shared">
   </ImportGroup>
@@ -108,13 +109,17 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>__SSE2__;__SSE__;__MMX__;WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\src\texture-compressor\nvidia-texture-tools\src;$(SolutionDir)..\src\texture-compressor\nvidia-texture-tools\extern\gnuwin32\include;$(SolutionDir)..\src\texture-compressor\nvidia-texture-tools\extern\poshlib;$(SolutionDir)..\src\texture-compressor\nvidia-texture-tools\extern\stb</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\src\texture-compressor\nvidia-texture-tools\src;$(SolutionDir)..\src\texture-compressor\nvidia-texture-tools\extern\gnuwin32\include;$(SolutionDir)..\src\texture-compressor\nvidia-texture-tools\extern\poshlib;$(SolutionDir)..\src\texture-compressor\nvidia-texture-tools\extern\stb;$(CudaToolkitIncludeDir)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>winmm.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>cudart.lib;winmm.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <CustomBuildStep>
+      <Command>
+      </Command>
+    </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -123,13 +128,17 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>__SSE2__;__SSE__;__MMX__;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\src\texture-compressor\nvidia-texture-tools\src;$(SolutionDir)..\src\texture-compressor\nvidia-texture-tools\extern\gnuwin32\include;$(SolutionDir)..\src\texture-compressor\nvidia-texture-tools\extern\poshlib;$(SolutionDir)..\src\texture-compressor\nvidia-texture-tools\extern\stb</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\src\texture-compressor\nvidia-texture-tools\src;$(SolutionDir)..\src\texture-compressor\nvidia-texture-tools\extern\gnuwin32\include;$(SolutionDir)..\src\texture-compressor\nvidia-texture-tools\extern\poshlib;$(SolutionDir)..\src\texture-compressor\nvidia-texture-tools\extern\stb;$(CudaToolkitIncludeDir)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>winmm.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>cudart.lib;winmm.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <CustomBuildStep>
+      <Command>
+      </Command>
+    </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -140,15 +149,19 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>__SSE2__;__SSE__;__MMX__;WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\src\texture-compressor\nvidia-texture-tools\src;$(SolutionDir)..\src\texture-compressor\nvidia-texture-tools\extern\gnuwin32\include;$(SolutionDir)..\src\texture-compressor\nvidia-texture-tools\extern\poshlib;$(SolutionDir)..\src\texture-compressor\nvidia-texture-tools\extern\stb</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\src\texture-compressor\nvidia-texture-tools\src;$(SolutionDir)..\src\texture-compressor\nvidia-texture-tools\extern\gnuwin32\include;$(SolutionDir)..\src\texture-compressor\nvidia-texture-tools\extern\poshlib;$(SolutionDir)..\src\texture-compressor\nvidia-texture-tools\extern\stb;$(CudaToolkitIncludeDir)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>winmm.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>cudart.lib;winmm.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <CustomBuildStep>
+      <Command>
+      </Command>
+    </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -159,15 +172,19 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>__SSE2__;__SSE__;__MMX__;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\src\texture-compressor\nvidia-texture-tools\src;$(SolutionDir)..\src\texture-compressor\nvidia-texture-tools\extern\gnuwin32\include;$(SolutionDir)..\src\texture-compressor\nvidia-texture-tools\extern\poshlib;$(SolutionDir)..\src\texture-compressor\nvidia-texture-tools\extern\stb</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\src\texture-compressor\nvidia-texture-tools\src;$(SolutionDir)..\src\texture-compressor\nvidia-texture-tools\extern\gnuwin32\include;$(SolutionDir)..\src\texture-compressor\nvidia-texture-tools\extern\poshlib;$(SolutionDir)..\src\texture-compressor\nvidia-texture-tools\extern\stb;$(CudaToolkitIncludeDir)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>winmm.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>cudart.lib;winmm.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <CustomBuildStep>
+      <Command>
+      </Command>
+    </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\texture-compressor\nvidia-texture-tools\extern\poshlib\posh.c" />
@@ -356,9 +373,13 @@
     <None Include="..\..\src\texture-compressor\nvidia-texture-tools\src\nvmath\Matrix.inl" />
     <None Include="..\..\src\texture-compressor\nvidia-texture-tools\src\nvmath\Plane.inl" />
     <None Include="..\..\src\texture-compressor\nvidia-texture-tools\src\nvmath\Vector.inl" />
+    <CudaCompile Include="..\..\src\texture-compressor\nvidia-texture-tools\src\nvtt\cuda\CompressKernel.cu">
+      <FileType>Document</FileType>
+    </CudaCompile>
     <None Include="..\..\src\texture-compressor\nvidia-texture-tools\src\nvtt\squish\fastclusterlookup.inl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
+    <Import Project="$(VCTargetsPath)\BuildCustomizations\CUDA 8.0.targets" />
   </ImportGroup>
 </Project>

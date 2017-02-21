@@ -122,6 +122,7 @@ COPY "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\bin\LeafEngine.d
 COPY "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\bin\LeafRunner.exe" "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf"
 COPY "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\bin\LeafTextureCompressor.exe" "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf"
 COPY "$(SolutionDir)..\src\blender-addon\leaf\*.py" "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf"
+COPY "$(CUDA_PATH)\bin\cudart*.dll" "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf"
 
 REM Deploy dist/ to blender addons (2.78 assumed)
 MKDIR "%APPDATA%\Blender Foundation\Blender\2.78\scripts\addons\leaf"
@@ -163,6 +164,7 @@ COPY "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\bin\LeafEngine.d
 COPY "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\bin\LeafRunner.exe" "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf"
 COPY "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\bin\LeafTextureCompressor.exe" "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf"
 COPY "$(SolutionDir)..\src\blender-addon\leaf\*.py" "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf"
+COPY "$(CUDA_PATH)\bin\cudart*.dll" "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf"
 
 REM Deploy dist/ to blender addons (2.78 assumed)
 MKDIR "%APPDATA%\Blender Foundation\Blender\2.78\scripts\addons\leaf"
@@ -208,6 +210,7 @@ COPY "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\bin\LeafEngine.d
 COPY "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\bin\LeafRunner.exe" "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf"
 COPY "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\bin\LeafTextureCompressor.exe" "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf"
 COPY "$(SolutionDir)..\src\blender-addon\leaf\*.py" "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf"
+COPY "$(CUDA_PATH)\bin\cudart*.dll" "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf"
 
 REM Deploy dist/ to blender addons (2.78 assumed)
 MKDIR "%APPDATA%\Blender Foundation\Blender\2.78\scripts\addons\leaf"
@@ -253,6 +256,7 @@ COPY "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\bin\LeafEngine.d
 COPY "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\bin\LeafRunner.exe" "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf"
 COPY "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\bin\LeafTextureCompressor.exe" "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf"
 COPY "$(SolutionDir)..\src\blender-addon\leaf\*.py" "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf"
+COPY "$(CUDA_PATH)\bin\cudart*.dll" "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf"
 
 REM Deploy dist/ to blender addons (2.78 assumed)
 MKDIR "%APPDATA%\Blender Foundation\Blender\2.78\scripts\addons\leaf"
