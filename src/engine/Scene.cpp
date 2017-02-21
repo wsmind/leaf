@@ -114,7 +114,7 @@ void Scene::fillRenderList(RenderList *renderList) const
 
 void Scene::setupCameraMatrices(glm::mat4 &viewMatrix, glm::mat4 &projectionMatrix, float aspect) const
 {
-    if (this->currentCamera >= this->nodes.size())
+    if (this->currentCamera >= (int)this->nodes.size())
         return;
 
     SceneNode *node = this->nodes[this->currentCamera];
@@ -133,7 +133,7 @@ int Scene::findCurrentCamera(float time)
         return this->markers[0].cameraIndex;
 
     int index = 1;
-    while ((index < this->markers.size()) && (time >= this->markers[index].time))
+    while ((index < (int)this->markers.size()) && (time >= this->markers[index].time))
         index++;
 
     return this->markers[index - 1].cameraIndex;
