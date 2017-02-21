@@ -106,10 +106,12 @@
     <ClCompile>
       <PrecompiledHeader>
       </PrecompiledHeader>
-      <WarningLevel>Level3</WarningLevel>
+      <WarningLevel>Level2</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>__SSE2__;__SSE__;__MMX__;WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(SolutionDir)..\src\texture-compressor\nvidia-texture-tools\src;$(SolutionDir)..\src\texture-compressor\nvidia-texture-tools\extern\gnuwin32\include;$(SolutionDir)..\src\texture-compressor\nvidia-texture-tools\extern\poshlib;$(SolutionDir)..\src\texture-compressor\nvidia-texture-tools\extern\stb;$(CudaToolkitIncludeDir)</AdditionalIncludeDirectories>
+      <DisableSpecificWarnings>4091;4312;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <TreatWarningAsError>true</TreatWarningAsError>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -125,10 +127,12 @@
     <ClCompile>
       <PrecompiledHeader>
       </PrecompiledHeader>
-      <WarningLevel>Level3</WarningLevel>
+      <WarningLevel>Level2</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>__SSE2__;__SSE__;__MMX__;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(SolutionDir)..\src\texture-compressor\nvidia-texture-tools\src;$(SolutionDir)..\src\texture-compressor\nvidia-texture-tools\extern\gnuwin32\include;$(SolutionDir)..\src\texture-compressor\nvidia-texture-tools\extern\poshlib;$(SolutionDir)..\src\texture-compressor\nvidia-texture-tools\extern\stb;$(CudaToolkitIncludeDir)</AdditionalIncludeDirectories>
+      <DisableSpecificWarnings>4091;4312;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <TreatWarningAsError>true</TreatWarningAsError>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -142,7 +146,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <WarningLevel>Level3</WarningLevel>
+      <WarningLevel>Level2</WarningLevel>
       <PrecompiledHeader>
       </PrecompiledHeader>
       <Optimization>MaxSpeed</Optimization>
@@ -150,6 +154,8 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>__SSE2__;__SSE__;__MMX__;WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(SolutionDir)..\src\texture-compressor\nvidia-texture-tools\src;$(SolutionDir)..\src\texture-compressor\nvidia-texture-tools\extern\gnuwin32\include;$(SolutionDir)..\src\texture-compressor\nvidia-texture-tools\extern\poshlib;$(SolutionDir)..\src\texture-compressor\nvidia-texture-tools\extern\stb;$(CudaToolkitIncludeDir)</AdditionalIncludeDirectories>
+      <DisableSpecificWarnings>4091;4312;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <TreatWarningAsError>true</TreatWarningAsError>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -165,7 +171,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <WarningLevel>Level3</WarningLevel>
+      <WarningLevel>Level2</WarningLevel>
       <PrecompiledHeader>
       </PrecompiledHeader>
       <Optimization>MaxSpeed</Optimization>
@@ -173,6 +179,8 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>__SSE2__;__SSE__;__MMX__;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(SolutionDir)..\src\texture-compressor\nvidia-texture-tools\src;$(SolutionDir)..\src\texture-compressor\nvidia-texture-tools\extern\gnuwin32\include;$(SolutionDir)..\src\texture-compressor\nvidia-texture-tools\extern\poshlib;$(SolutionDir)..\src\texture-compressor\nvidia-texture-tools\extern\stb;$(CudaToolkitIncludeDir)</AdditionalIncludeDirectories>
+      <DisableSpecificWarnings>4091;4312;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <TreatWarningAsError>true</TreatWarningAsError>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

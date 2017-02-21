@@ -596,6 +596,8 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <CudaCompile Include="..\..\src\texture-compressor\nvidia-texture-tools\src\nvtt\cuda\CompressKernel.cu" />
+    <CudaCompile Include="..\..\src\texture-compressor\nvidia-texture-tools\src\nvtt\cuda\CompressKernel.cu">
+      <Filter>nvidia-texture-tools\src\nvtt\cuda</Filter>
+    </CudaCompile>
   </ItemGroup>
 </Project>
