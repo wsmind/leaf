@@ -281,6 +281,9 @@ Renderer::~Renderer()
 
     delete this->postProcessor;
 
+    // make sure all graphics resources are released before destroying the context
+    ResourceManager::getInstance()->clearPendingUnloads();
+
     Device::context->Release();
     Device::device->Release();
 }
