@@ -21,6 +21,14 @@ class ResourceManager
 
         void update();
 
+        // Make sure that all resources that will be unloaded soon
+        // are unloaded immediately. This is useful when destroying
+        // a subsystem for instance.
+        void clearPendingUnloads();
+
+        // dump internal state to the log
+        void dumpAllResources(bool loadedOnly) const;
+
     private:
         static ResourceManager *instance;
 
