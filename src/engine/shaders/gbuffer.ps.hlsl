@@ -53,7 +53,7 @@ PS_OUTPUT main(GBUFFER_PS_INPUT input)
     float3x3 TBN = float3x3(T * invmax, B * invmax, normal);
 
     // compute normal after normal map perturbation, in world space
-    float3 tangentNormal = saturate(normalTexture.Sample(normalSampler, input.uv).rgb * 2.0 - 1.0);
+    float3 tangentNormal = normalize(normalTexture.Sample(normalSampler, input.uv).rgb * 2.0 - 1.0);
     float3 pertubatedNormal = mul(tangentNormal, TBN);
 
     float3 albedo = albedo2 * albedoTexture.Sample(albedoSampler, input.uv).rgb;
