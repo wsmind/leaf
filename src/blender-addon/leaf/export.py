@@ -269,6 +269,7 @@ def export_image(img):
         texture_compressor_path,
         "-color",
         "-repeat",
+        #"-nocuda",
         "-dds10",
         sourcePath,
         targetPath

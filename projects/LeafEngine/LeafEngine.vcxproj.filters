@@ -76,6 +76,12 @@
     <ClInclude Include="..\..\src\engine\shaders\instance.h">
       <Filter>shaders</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\engine\shaders\tonemapping.h">
+      <Filter>shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\engine\shaders\gamma.h">
+      <Filter>shaders</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\..\src\engine\shaders\plop.vs.hlsl">
