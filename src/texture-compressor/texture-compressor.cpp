@@ -159,6 +159,7 @@ int main(int argc, char *argv[])
 
     bool silent = false;
     bool dds10 = false;
+    bool srgb = false;
 
     nv::Path input;
     nv::Path output;
@@ -309,6 +310,10 @@ int main(int argc, char *argv[])
         {
             dds10 = true;
         }
+        else if (strcmp("-srgb", argv[i]) == 0)
+        {
+            srgb = true;
+        }
 
         else if (argv[i][0] != '-')
         {
@@ -381,6 +386,7 @@ int main(int argc, char *argv[])
         printf("Output options:\n");
         printf("  -silent  \tDo not output progress messages\n");
         printf("  -dds10   \tUse DirectX 10 DDS format (enabled by default for BC6/7)\n\n");
+        printf("  -srgb    \tUse an sRGB pixel format\n\n");
 
         return EXIT_FAILURE;
     }
@@ -732,7 +738,10 @@ int main(int argc, char *argv[])
         outputOptions.setContainer(nvtt::Container_DDS10);
     }
 
-    //outputOptions.setSrgbFlag(true);
+    if (srgb)
+    {
+        outputOptions.setSrgbFlag(true);
+    }
 
     // printf("Press ENTER.\n");
     // fflush(stdout);

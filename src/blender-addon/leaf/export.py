@@ -267,13 +267,22 @@ def export_image(img):
     targetPath = os.path.join(bpy.app.tempdir, next(tempfile._get_candidate_names()))
     args = [
         texture_compressor_path,
-        "-color",
         "-repeat",
         #"-nocuda",
-        "-dds10",
-        sourcePath,
-        targetPath
+        "-dds10"
     ]
+
+    if img.colorspace_settings.name == "Linear":
+        args.append("-normal")
+        args.append("-bc1n")
+    else:
+        args.append("-color")
+        args.append("-bc1")
+        args.append("-srgb")
+
+    args.append(sourcePath)
+    args.append(targetPath)
+
     print("running: " + str(args))
     subprocess.run(args)
 
