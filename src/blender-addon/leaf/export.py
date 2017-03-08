@@ -12,8 +12,8 @@ def export_data(output_file, updated_only=False):
 
     data["Scene"] = {}
     for scene in list(bpy.data.scenes):
-        if scene.is_updated or not updated_only:
-        #if True:
+        #if scene.is_updated or not updated_only:
+        if True:
             print("exporting scene: " + scene.name)
             data["Scene"][scene.name] = export_scene(scene)
 
@@ -289,47 +289,68 @@ def export_image(img):
     with open(targetPath, mode="rb") as outputFile:
         return outputFile.read()
 
-def export_mesh(sourceMesh):
+def export_mesh(mesh):
     # always apply an edge split modifier, to get proper normals on sharp edges
-    obj = bpy.data.objects.new("__temp_obj_for_mesh_export", sourceMesh)
-    obj.modifiers.new(name="edge_split", type="EDGE_SPLIT")
-    obj.modifiers["edge_split"].use_edge_angle = False
-    mesh = obj.to_mesh(scene=bpy.context.scene, apply_modifiers=True, settings="PREVIEW", calc_tessface=True)
+    #obj = bpy.data.objects.new("__temp_obj_for_mesh_export", sourceMesh)
+    #obj.modifiers.new(name="edge_split", type="EDGE_SPLIT")
+    #obj.modifiers["edge_split"].use_edge_angle = False
+    #mesh = obj.to_mesh(scene=bpy.context.scene, apply_modifiers=True, settings="PREVIEW", calc_tessface=True)
 
     vertices = []
     vertexCount = 0
 
-    for i in range(0, len(mesh.tessfaces)):
-        face = mesh.tessfaces[i]
-        texFace = None
-        if mesh.tessface_uv_textures.active:
-            texFace = mesh.tessface_uv_textures.active.data[i]
+    uv_layer = None
 
-        elements = (0, 1, 2)
-        if len(face.vertices) == 4:
-            elements = (0, 1, 2, 2, 3, 0)
+    if len(mesh.uv_layers) > 0:
+        uv_layer = mesh.uv_layers[0]
 
-        for e in elements:
-            vertex = mesh.vertices[face.vertices[e]]
-            uv = texFace.uv[e] if texFace else (vertex.co.x, vertex.co.y + vertex.co.z)
+        # will also compute split tangents according to sharp edges
+        mesh.calc_tangents()
 
+    for face in mesh.polygons:
+        for loop in [mesh.loops[i] for i in face.loop_indices]:
+            vertex = mesh.vertices[loop.vertex_index]
             vertices.append(vertex.co.x)
             vertices.append(vertex.co.y)
             vertices.append(vertex.co.z)
-            vertices.append(vertex.normal.x)
-            vertices.append(vertex.normal.y)
-            vertices.append(vertex.normal.z)
-            vertices.append(uv[0])
-            vertices.append(uv[1])
+            vertices.append(loop.normal.x)
+            vertices.append(loop.normal.y)
+            vertices.append(loop.normal.z)
+            vertices.append(0.0)
+            vertices.append(0.0)
             vertexCount += 1
 
-    bpy.data.objects.remove(obj)
-    bpy.data.meshes.remove(mesh)
+    #for i in range(0, len(mesh.tessfaces)):
+    #    face = mesh.tessfaces[i]
+    #    texFace = None
+    #    if mesh.tessface_uv_textures.active:
+    #        texFace = mesh.tessface_uv_textures.active.data[i]
+    #
+    #    elements = (0, 1, 2)
+    #    if len(face.vertices) == 4:
+    #        elements = (0, 1, 2, 2, 3, 0)
+    #
+    #    for e in elements:
+    #        vertex = mesh.vertices[face.vertices[e]]
+    #        uv = texFace.uv[e] if texFace else (vertex.co.x, vertex.co.y + vertex.co.z)
+    #
+    #        vertices.append(vertex.co.x)
+    #        vertices.append(vertex.co.y)
+    #        vertices.append(vertex.co.z)
+    #        vertices.append(vertex.normal.x)
+    #        vertices.append(vertex.normal.y)
+    #        vertices.append(vertex.normal.z)
+    #        vertices.append(uv[0])
+    #        vertices.append(uv[1])
+    #        vertexCount += 1
+
+    #bpy.data.objects.remove(obj)
+    #bpy.data.meshes.remove(mesh)
 
     data = {
         "vertices": vertices,
         "vertexCount": vertexCount,
-        "material": sourceMesh.materials[0].name if (len(sourceMesh.materials) > 0 and sourceMesh.materials[0]) else "__default"
+        "material": mesh.materials[0].name if (len(mesh.materials) > 0 and mesh.materials[0]) else "__default"
     }
 
     return json.dumps(data).encode("utf-8")

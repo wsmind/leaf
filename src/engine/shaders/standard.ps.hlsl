@@ -99,8 +99,8 @@ STANDARD_PS_OUTPUT main(STANDARD_PS_INPUT input)
     // solve the linear system
     float3 dp2perp = cross(dp2, normal);
     float3 dp1perp = cross(normal, dp1);
-    float3 T = dp2perp * duv1.x + dp1perp * duv2.x;
-    float3 B = dp2perp * duv1.y + dp1perp * duv2.y;
+    float3 B = dp2perp * duv1.x + dp1perp * duv2.x;
+    float3 T = dp2perp * duv1.y + dp1perp * duv2.y;
 
     // construct a scale-invariant frame
     float invmax = rsqrt(max(dot(T, T), dot(B, B)));
@@ -108,7 +108,7 @@ STANDARD_PS_OUTPUT main(STANDARD_PS_INPUT input)
 
     // compute normal after normal map perturbation, in world space
     float3 tangentNormal = normalize(normalTexture.Sample(normalSampler, input.uv).rgb * 2.0 - 1.0);
-    float3 pertubatedNormal = mul(tangentNormal, TBN);
+    float3 perturbedNormal = mul(tangentNormal, TBN);
 
     float3 albedo = albedoTexture.Sample(albedoSampler, input.uv).rgb;
     float metalness = metalnessTexture.Sample(metalnessSampler, input.uv).r;
@@ -120,7 +120,7 @@ STANDARD_PS_OUTPUT main(STANDARD_PS_INPUT input)
 
     SurfaceProperties surface;
     surface.albedo = albedo;
-    surface.normal = pertubatedNormal;
+    surface.normal = perturbedNormal;
     surface.specularColor = specularColor;
     surface.roughness = roughness;
 
