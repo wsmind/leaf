@@ -8,7 +8,7 @@
 #include <engine/cJSON/cJSON.h>
 
 const std::string Mesh::resourceClassName = "Mesh";
-const std::string Mesh::defaultResourceData = "{\"vertices\": [-1, -1, 0, 0, 0, 1, 0, 0, -1, 1, 0, 0, 0, 1, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1], \"vertexCount\": 3, \"material\": \"__default\"}";
+const std::string Mesh::defaultResourceData = "{\"vertices\": [-1, -1, 0, 0, 0, 1, 1, 0, 0, 1, 0, 0, -1, 1, 0, 0, 0, 1, 1, 0, 0, 1, 0, 1, 1, 1, 0, 0, 0, 1, 1, 0, 0, 1, 1, 1], \"vertexCount\": 3, \"material\": \"__default\"}";
 
 void Mesh::load(const unsigned char *buffer, size_t size)
 {
@@ -67,7 +67,7 @@ void Mesh::bind() const
 {
     assert(this->vertexBuffer != nullptr);
 
-    UINT stride = sizeof(float) * (3 /* pos */ + 3 /* normal */ + 2 /* uv */);
+    UINT stride = sizeof(float) * (3 /* pos */ + 3 /* normal */ + 4 /* tangent */ + 2 /* uv */);
     UINT offset = 0;
     Device::context->IASetVertexBuffers(0, 1, &this->vertexBuffer, &stride, &offset);
     Device::context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);

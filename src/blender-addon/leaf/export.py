@@ -311,6 +311,10 @@ def export_mesh(mesh):
         vertices.append(loop.normal.x)
         vertices.append(loop.normal.y)
         vertices.append(loop.normal.z)
+        vertices.append(loop.tangent.x)
+        vertices.append(loop.tangent.y)
+        vertices.append(loop.tangent.z)
+        vertices.append(loop.bitangent_sign)
         vertices.append(uv[0])
         vertices.append(uv[1])
 
