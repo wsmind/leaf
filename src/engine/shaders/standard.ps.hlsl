@@ -87,24 +87,11 @@ STANDARD_PS_OUTPUT main(STANDARD_PS_INPUT input)
     const float3 view = cameraPosition - input.worldPosition;
     const float3 eye = normalize(view);
     const float3 normal = normalize(input.normal);
+    const float3 tangent = normalize(input.tangent.xyz);
+    const float3 bitangent = normalize(input.tangent.w * cross(normal, tangent));
 
-    // compute TBN for normal mapping (algorithm from http://www.thetenthplanet.de/archives/1180)
-
-    // get edge vectors of the pixel triangle
-    float3 dp1 = ddx(view);
-    float3 dp2 = ddy(view);
-    float2 duv1 = ddx(input.uv);
-    float2 duv2 = ddy(input.uv);
-
-    // solve the linear system
-    float3 dp2perp = cross(dp2, normal);
-    float3 dp1perp = cross(normal, dp1);
-    float3 B = dp2perp * duv1.x + dp1perp * duv2.x;
-    float3 T = dp2perp * duv1.y + dp1perp * duv2.y;
-
-    // construct a scale-invariant frame
-    float invmax = rsqrt(max(dot(T, T), dot(B, B)));
-    float3x3 TBN = float3x3(T * invmax, B * invmax, normal);
+    // compute TBN frame for normal mapping
+    float3x3 TBN = float3x3(tangent, bitangent, normal);
 
     // compute normal after normal map perturbation, in world space
     float3 tangentNormal = normalize(normalTexture.Sample(normalSampler, input.uv).rgb * 2.0 - 1.0);
