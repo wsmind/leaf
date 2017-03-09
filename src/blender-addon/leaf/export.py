@@ -290,12 +290,6 @@ def export_image(img):
         return outputFile.read()
 
 def export_mesh(mesh):
-    # always apply an edge split modifier, to get proper normals on sharp edges
-    #obj = bpy.data.objects.new("__temp_obj_for_mesh_export", sourceMesh)
-    #obj.modifiers.new(name="edge_split", type="EDGE_SPLIT")
-    #obj.modifiers["edge_split"].use_edge_angle = False
-    #mesh = obj.to_mesh(scene=bpy.context.scene, apply_modifiers=True, settings="PREVIEW", calc_tessface=True)
-
     vertices = []
     vertexCount = 0
 
@@ -307,45 +301,26 @@ def export_mesh(mesh):
         # will also compute split tangents according to sharp edges
         mesh.calc_tangents()
 
+    def output_vertex(loop_index):
+        loop = mesh.loops[loop_index]
+        vertex = mesh.vertices[loop.vertex_index]
+        uv = uv_layer.data[loop_index].uv if uv_layer else (vertex.co.x, vertex.co.y + vertex.co.z)
+        vertices.append(vertex.co.x)
+        vertices.append(vertex.co.y)
+        vertices.append(vertex.co.z)
+        vertices.append(loop.normal.x)
+        vertices.append(loop.normal.y)
+        vertices.append(loop.normal.z)
+        vertices.append(uv[0])
+        vertices.append(uv[1])
+
+    # build triangles out of n-gons
     for face in mesh.polygons:
-        for loop in [mesh.loops[i] for i in face.loop_indices]:
-            vertex = mesh.vertices[loop.vertex_index]
-            vertices.append(vertex.co.x)
-            vertices.append(vertex.co.y)
-            vertices.append(vertex.co.z)
-            vertices.append(loop.normal.x)
-            vertices.append(loop.normal.y)
-            vertices.append(loop.normal.z)
-            vertices.append(0.0)
-            vertices.append(0.0)
-            vertexCount += 1
-
-    #for i in range(0, len(mesh.tessfaces)):
-    #    face = mesh.tessfaces[i]
-    #    texFace = None
-    #    if mesh.tessface_uv_textures.active:
-    #        texFace = mesh.tessface_uv_textures.active.data[i]
-    #
-    #    elements = (0, 1, 2)
-    #    if len(face.vertices) == 4:
-    #        elements = (0, 1, 2, 2, 3, 0)
-    #
-    #    for e in elements:
-    #        vertex = mesh.vertices[face.vertices[e]]
-    #        uv = texFace.uv[e] if texFace else (vertex.co.x, vertex.co.y + vertex.co.z)
-    #
-    #        vertices.append(vertex.co.x)
-    #        vertices.append(vertex.co.y)
-    #        vertices.append(vertex.co.z)
-    #        vertices.append(vertex.normal.x)
-    #        vertices.append(vertex.normal.y)
-    #        vertices.append(vertex.normal.z)
-    #        vertices.append(uv[0])
-    #        vertices.append(uv[1])
-    #        vertexCount += 1
-
-    #bpy.data.objects.remove(obj)
-    #bpy.data.meshes.remove(mesh)
+        for i in range(len(face.loop_indices) - 2):
+            output_vertex(face.loop_indices[0])
+            output_vertex(face.loop_indices[i + 1])
+            output_vertex(face.loop_indices[i + 2])
+            vertexCount += 3
 
     data = {
         "vertices": vertices,
