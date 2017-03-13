@@ -260,6 +260,9 @@ def export_texture(tex):
     return json.dumps(output).encode("utf-8")
 
 def export_image(img):
+    if img.filepath == "":
+        return b''
+
     script_dir = os.path.dirname(__file__)
     texture_compressor_path = os.path.join(script_dir, "LeafTextureCompressor.exe")
 
