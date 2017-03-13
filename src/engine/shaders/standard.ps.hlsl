@@ -48,7 +48,7 @@ float3 computeShading(SurfaceProperties surface, LightProperties light, float3 e
     float dotNV = saturate(dot(surface.normal, eye));
 
     // simple lambert for diffuse
-    float3 diffuse = dotNL * surface.albedo;
+    float3 diffuse = dotNL * surface.albedo / 3.141592;
 
     // schlick fresnel approximation
     float3 fresnel = surface.specularColor + (1.0 - surface.specularColor) * pow(1.0 - dotNV, 5.0);
