@@ -8,7 +8,19 @@
 #include <engine/cJSON/cJSON.h>
 
 const std::string Mesh::resourceClassName = "Mesh";
-const std::string Mesh::defaultResourceData = "{\"vertices\": [-1, -1, 0, 0, 0, 1, 1, 0, 0, 1, 0, 0, -1, 1, 0, 0, 0, 1, 1, 0, 0, 1, 0, 1, 1, 1, 0, 0, 0, 1, 1, 0, 0, 1, 1, 1], \"vertexCount\": 3, \"material\": \"__default\"}";
+const std::string Mesh::defaultResourceData = "{"
+        "\"vertices\": ["
+            "-1, -1, 0, 0, 0, 1, 1, 0, 0, 1, 0, 0,"
+            "-1, 1, 0, 0, 0, 1, 1, 0, 0, 1, 0, 1,"
+            "1, 1, 0, 0, 0, 1, 1, 0, 0, 1, 1, 1"
+        "],"
+        "\"vertexCount\": 3,"
+        "\"indices\": ["
+            "0, 1, 2"
+        "],"
+        "\"indexCount\": 3,"
+        "\"material\": \"__default\""
+    "}";
 
 void Mesh::load(const unsigned char *buffer, size_t size)
 {
@@ -17,8 +29,13 @@ void Mesh::load(const unsigned char *buffer, size_t size)
     cJSON *jsonVertices = cJSON_GetObjectItem(json, "vertices");
     this->vertexCount = cJSON_GetObjectItem(json, "vertexCount")->valueint;
 
+    cJSON *jsonIndices = cJSON_GetObjectItem(json, "indices");
+    this->indexCount = cJSON_GetObjectItem(json, "indexCount")->valueint;
+
     std::string materialName = cJSON_GetObjectItem(json, "material")->valuestring;
     this->material = ResourceManager::getInstance()->requestResource<Material>(materialName);
+
+    // vertex buffer
 
     int arraySize = cJSON_GetArraySize(jsonVertices);
     float *vertices = new float[arraySize];
@@ -50,6 +67,38 @@ void Mesh::load(const unsigned char *buffer, size_t size)
 
     delete[] vertices;
 
+    // index buffer
+
+    arraySize = cJSON_GetArraySize(jsonIndices);
+    uint32_t *indices = new uint32_t[arraySize];
+
+    cJSON *intValue = jsonIndices->child;
+    uint32_t *indexWritePosition = indices;
+    while (intValue)
+    {
+        *indexWritePosition++ = (uint32_t)intValue->valueint;
+
+        intValue = intValue->next;
+    }
+
+    D3D11_BUFFER_DESC ibDesc;
+    ibDesc.Usage = D3D11_USAGE_IMMUTABLE;
+    ibDesc.ByteWidth = sizeof(uint32_t) * arraySize;
+    ibDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+    ibDesc.StructureByteStride = 0;
+    ibDesc.MiscFlags = 0;
+    ibDesc.CPUAccessFlags = 0;
+
+    D3D11_SUBRESOURCE_DATA indexData;
+    indexData.pSysMem = indices;
+    indexData.SysMemPitch = 0;
+    indexData.SysMemSlicePitch = 0;
+
+    res = Device::device->CreateBuffer(&ibDesc, &indexData, &this->indexBuffer);
+    CHECK_HRESULT(res);
+
+    delete[] indices;
+
     cJSON_Delete(json);
 }
 
@@ -59,6 +108,11 @@ void Mesh::unload()
     this->vertexBuffer = nullptr;
 
     this->vertexCount = 0;
+
+    this->indexBuffer->Release();
+    this->indexBuffer = nullptr;
+
+    this->indexCount = 0;
 
     ResourceManager::getInstance()->releaseResource(this->material);
 }
@@ -70,5 +124,6 @@ void Mesh::bind() const
     UINT stride = sizeof(float) * (3 /* pos */ + 3 /* normal */ + 4 /* tangent */ + 2 /* uv */);
     UINT offset = 0;
     Device::context->IASetVertexBuffers(0, 1, &this->vertexBuffer, &stride, &offset);
+    Device::context->IASetIndexBuffer(this->indexBuffer, DXGI_FORMAT_R32_UINT, 0);
     Device::context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 }

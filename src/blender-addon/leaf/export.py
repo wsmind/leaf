@@ -296,6 +296,9 @@ def export_mesh(mesh):
     vertices = []
     vertexCount = 0
 
+    indices = []
+    indexCount = 0
+
     uv_layer = None
 
     if len(mesh.uv_layers) > 0:
@@ -321,17 +324,24 @@ def export_mesh(mesh):
         vertices.append(uv[0])
         vertices.append(uv[1])
 
+    # export all loops
+    for i in range(len(mesh.loops)):
+        output_vertex(i)
+        vertexCount += 1
+
     # build triangles out of n-gons
     for face in mesh.polygons:
         for i in range(len(face.loop_indices) - 2):
-            output_vertex(face.loop_indices[0])
-            output_vertex(face.loop_indices[i + 1])
-            output_vertex(face.loop_indices[i + 2])
-            vertexCount += 3
+            indices.append(face.loop_indices[0])
+            indices.append(face.loop_indices[i + 1])
+            indices.append(face.loop_indices[i + 2])
+            indexCount += 3
 
     data = {
         "vertices": vertices,
         "vertexCount": vertexCount,
+        "indices": indices,
+        "indexCount": indexCount,
         "material": mesh.materials[0].name if (len(mesh.materials) > 0 and mesh.materials[0]) else "__default"
     }
 

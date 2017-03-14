@@ -21,12 +21,15 @@ class Mesh: public Resource
 
         void bind() const;
 
-        int getVertexCount() const { return this->vertexCount; }
+        int getIndexCount() const { return this->indexCount; }
         Material *getMaterial() const { return this->material; }
 
     private:
         ID3D11Buffer *vertexBuffer;
         int vertexCount;
+
+        ID3D11Buffer *indexBuffer;
+        int indexCount;
 
         // assume one material per mesh; submeshes may be implemented later
         Material *material;

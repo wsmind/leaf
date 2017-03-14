@@ -63,5 +63,5 @@ void PostProcessor::render(int width, int height)
     Device::context->PSSetShaderResources(0, 1, &radianceSRV);
 
     this->fullscreenQuad->bind();
-    Device::context->Draw(this->fullscreenQuad->getVertexCount(), 0);
+    Device::context->DrawIndexed(this->fullscreenQuad->getIndexCount(), 0, 0);
 }

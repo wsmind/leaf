@@ -229,7 +229,21 @@ Renderer::Renderer(HWND hwnd, int backbufferWidth, int backbufferHeight, bool ca
     Device::context->PSSetConstantBuffers(0, 3, allConstantBuffers);
 
     // built-in rendering resources
-    const char *fullscreenQuad = "{\"vertices\": [-1, -1, 0, 0, 0, 1, 1, 0, 0, 1, 0, 1, 1, 1, 0, 0, 0, 1, 1, 0, 0, 1, 1, 0, -1, 1, 0, 0, 0, 1, 1, 0, 0, 1, 0, 0, 1, 1, 0, 0, 0, 1, 1, 0, 0, 1, 1, 0, -1, -1, 0, 0, 0, 1, 1, 0, 0, 1, 0, 1, 1, -1, 0, 0, 0, 1, 1, 0, 0, 1, 1, 1], \"vertexCount\": 6, \"material\": \"__default\"}";
+    const char *fullscreenQuad = "{"
+            "\"vertices\": ["
+                "-1, -1, 0, 0, 0, 1, 1, 0, 0, 1, 0, 1,"
+                "-1, 1, 0, 0, 0, 1, 1, 0, 0, 1, 0, 0,"
+                "1, 1, 0, 0, 0, 1, 1, 0, 0, 1, 1, 0,"
+                "1, -1, 0, 0, 0, 1, 1, 0, 0, 1, 1, 1"
+            "],"
+            "\"vertexCount\": 4,"
+            "\"indices\": ["
+                "0, 2, 1,"
+                "2, 0, 3"
+            "],"
+            "\"indexCount\": 6,"
+            "\"material\": \"__default\""
+        "}";
     ResourceManager::getInstance()->updateResourceData<Mesh>("__fullscreenQuad", (const unsigned char *)fullscreenQuad, strlen(fullscreenQuad));
 
     this->fullscreenQuad = ResourceManager::getInstance()->requestResource<Mesh>("__fullscreenQuad");
@@ -408,7 +422,7 @@ void Renderer::render(const Scene *scene, int width, int height, bool overrideCa
             instanceData->normalMatrix = glm::mat3(glm::inverseTranspose(job.transform));
             Device::context->Unmap(this->cbInstance, 0);
 
-            Device::context->Draw(currentMesh->getVertexCount(), 0);
+            Device::context->DrawIndexed(currentMesh->getIndexCount(), 0, 0);
         }
     }
 
@@ -436,7 +450,7 @@ void Renderer::render(const Scene *scene, int width, int height, bool overrideCa
         Device::context->PSSetSamplers(0, GBUFFER_PLANE_COUNT, gBufferSamplers);
         Device::context->PSSetShaderResources(0, GBUFFER_PLANE_COUNT, gBufferSRVs);
         this->fullscreenQuad->bind();
-        Device::context->Draw(this->fullscreenQuad->getVertexCount(), 0);
+        Device::context->DrawIndexed(this->fullscreenQuad->getIndexCount(), 0, 0);
     }*/
 
     ID3D11ShaderResourceView *srvNulls[GBUFFER_PLANE_COUNT] = { nullptr, nullptr };
@@ -453,7 +467,7 @@ void Renderer::render(const Scene *scene, int width, int height, bool overrideCa
         Device::context->PSSetShader(backgroundPixelShader, NULL, 0);
         Device::context->OMSetDepthStencilState(this->backgroundDepthState, 0);
         this->fullscreenQuad->bind();
-        Device::context->Draw(this->fullscreenQuad->getVertexCount(), 0);
+        Device::context->DrawIndexed(this->fullscreenQuad->getIndexCount(), 0, 0);
     }
 
     this->postProcessor->render(width, height);
