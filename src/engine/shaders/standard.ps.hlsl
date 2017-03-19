@@ -48,10 +48,10 @@ float3 computeShading(SurfaceProperties surface, LightProperties light, float3 e
     float dotNV = saturate(dot(surface.normal, eye));
 
     // simple lambert for diffuse
-    float3 diffuse = dotNL * surface.albedo / 3.141592;
+    float3 diffuse = surface.albedo / 3.141592;
 
     // schlick fresnel approximation
-    float3 fresnel = surface.specularColor + (1.0 - surface.specularColor) * pow(1.0 - dotNV, 5.0);
+    float3 fresnel = surface.specularColor + (1.0 - surface.specularColor) * pow(1.0 - dotLH, 5.0);
 
     float alpha = surface.roughness * surface.roughness;
     float alphaSquared = alpha * alpha;
@@ -67,7 +67,7 @@ float3 computeShading(SurfaceProperties surface, LightProperties light, float3 e
     // cook-torrance microfacet model
     float3 specular = fresnel * normalDistribution * visibility;
 
-    return light.incomingRadiance * (diffuse + specular);
+    return dotNL * light.incomingRadiance * (diffuse + specular);
 }
 
 float computeLightFalloff(float distance, float radius)
