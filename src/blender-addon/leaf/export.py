@@ -301,7 +301,7 @@ def export_mesh(mesh):
 
     uv_layer = None
 
-    if len(mesh.uv_layers) > 0:
+    if len(mesh.uv_layers) > 0 and len(mesh.uv_layers[0].data) > 0:
         uv_layer = mesh.uv_layers[0]
 
         # will also compute split tangents according to sharp edges
