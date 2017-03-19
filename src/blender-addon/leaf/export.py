@@ -271,17 +271,21 @@ def export_image(img):
     args = [
         texture_compressor_path,
         "-repeat",
-        #"-nocuda",
+        "-nocuda",
         "-dds10"
     ]
 
     if img.colorspace_settings.name == "Linear":
+        args.append("-linear")
+    else:
+        args.append("-color")
+        args.append("-srgb")
+    
+    if img.leaf.is_normal_map:
         args.append("-normal")
         args.append("-bc1n")
     else:
-        args.append("-color")
         args.append("-bc1")
-        args.append("-srgb")
 
     args.append(sourcePath)
     args.append(targetPath)

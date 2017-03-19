@@ -123,6 +123,15 @@ void setNormalMap(nvtt::InputOptions & inputOptions)
     inputOptions.setNormalizeMipmaps(true);
 }
 
+// Set options for linear maps.
+void setLinearMap(nvtt::InputOptions & inputOptions)
+{
+    inputOptions.setNormalMap(false);
+    inputOptions.setConvertToNormalMap(false);
+    inputOptions.setGamma(1.0f, 1.0f);
+    inputOptions.setNormalizeMipmaps(false);
+}
+
 // Set options for color maps.
 void setColorMap(nvtt::InputOptions & inputOptions)
 {
@@ -133,7 +142,6 @@ void setColorMap(nvtt::InputOptions & inputOptions)
 }
 
 
-
 int main(int argc, char *argv[])
 {
     MyAssertHandler assertHandler;
@@ -142,6 +150,7 @@ int main(int argc, char *argv[])
     bool alpha = false;
     bool normal = false;
     bool color2normal = false;
+    bool linear = false;
     bool wrapRepeat = false;
     bool noMipmaps = false;
     bool fast = false;
@@ -183,6 +192,10 @@ int main(int argc, char *argv[])
         else if (strcmp("-tonormal", argv[i]) == 0)
         {
             color2normal = true;
+        }
+        else if (strcmp("-tonormal", argv[i]) == 0)
+        {
+            linear = true;
         }
         else if (strcmp("-clamp", argv[i]) == 0)
         {
@@ -589,6 +602,10 @@ int main(int argc, char *argv[])
         else if (color2normal)
         {
             setColorToNormalMap(inputOptions);
+        }
+        else if (linear)
+        {
+            setLinearMap(inputOptions);
         }
         else
         {

@@ -7,12 +7,14 @@ bl_info = {
 if "bpy" in locals():
     import imp
     imp.reload(export)
+    imp.reload(image)
     imp.reload(material)
     imp.reload(preferences)
     imp.reload(render)
     imp.reload(texture)
 else:
     from . import export
+    from . import image
     from . import material
     from . import preferences
     from . import render

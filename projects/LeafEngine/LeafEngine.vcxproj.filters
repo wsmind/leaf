@@ -154,5 +154,8 @@
     <None Include="..\..\src\blender-addon\leaf\preferences.py">
       <Filter>blender-addon</Filter>
     </None>
+    <None Include="..\..\src\blender-addon\leaf\image.py">
+      <Filter>blender-addon</Filter>
+    </None>
   </ItemGroup>
 </Project>
