@@ -193,7 +193,7 @@ int main(int argc, char *argv[])
         {
             color2normal = true;
         }
-        else if (strcmp("-tonormal", argv[i]) == 0)
+        else if (strcmp("-linear", argv[i]) == 0)
         {
             linear = true;
         }
