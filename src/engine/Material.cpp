@@ -11,7 +11,7 @@
 
 
 const std::string Material::resourceClassName = "Material";
-const std::string Material::defaultResourceData = "{\"albedo\": [1.0, 1.0, 1.0], \"emit\": 1.0, \"albedoTexture\": \"__default\", \"normalTexture\": \"__default\", \"metalnessTexture\": \"__default\", \"roughnessTexture\": \"__default\"}";
+const std::string Material::defaultResourceData = "{\"albedo\": [1.0, 1.0, 1.0], \"emit\": 1.0, \"metalness\": 0.0, \"roughness\": 0.0, \"albedoTexture\": \"__default\", \"normalTexture\": \"__default\", \"metalnessTexture\": \"__default\", \"roughnessTexture\": \"__default\"}";
 
 void Material::load(const unsigned char *buffer, size_t size)
 {
@@ -20,8 +20,8 @@ void Material::load(const unsigned char *buffer, size_t size)
     cJSON *diffuse = cJSON_GetObjectItem(json, "albedo");
     this->data.albedo = glm::vec3(cJSON_GetArrayItem(diffuse, 0)->valuedouble, cJSON_GetArrayItem(diffuse, 1)->valuedouble, cJSON_GetArrayItem(diffuse, 2)->valuedouble);
     this->data.emit = (float)cJSON_GetObjectItem(json, "emit")->valuedouble;
-    /*this->data.metalness = (float)cJSON_GetObjectItem(json, "metalness")->valuedouble;
-    this->data.roughness = (float)cJSON_GetObjectItem(json, "roughness")->valuedouble;*/
+    this->data.metalness = (float)cJSON_GetObjectItem(json, "metalness")->valuedouble;
+    this->data.roughness = (float)cJSON_GetObjectItem(json, "roughness")->valuedouble;
 
     this->albedoTexture = ResourceManager::getInstance()->requestResource<Texture>(cJSON_GetObjectItem(json, "albedoTexture")->valuestring);
     this->normalTexture = ResourceManager::getInstance()->requestResource<Texture>(cJSON_GetObjectItem(json, "normalTexture")->valuestring);

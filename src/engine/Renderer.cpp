@@ -11,6 +11,7 @@
 
 #include <engine/Device.h>
 #include <engine/GPUProfiler.h>
+#include <engine/Image.h>
 #include <engine/Material.h>
 #include <engine/Mesh.h>
 #include <engine/PostProcessor.h>
@@ -18,6 +19,7 @@
 #include <engine/RenderTarget.h>
 #include <engine/ResourceManager.h>
 #include <engine/Scene.h>
+#include <engine/Texture.h>
 
 #include <shaders/background.vs.hlsl.h>
 #include <shaders/background.ps.hlsl.h>
@@ -29,6 +31,10 @@
 #include <shaders/plop.ps.hlsl.h>
 #include <shaders/standard.vs.hlsl.h>
 #include <shaders/standard.ps.hlsl.h>
+
+static const unsigned char blackDDS[] = { 68, 68, 83, 32, 124, 0, 0, 0, 7, 16, 2, 0, 4, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 85, 86, 69, 82, 0, 0, 0, 0, 78, 86, 84, 84, 0, 1, 2, 0, 32, 0, 0, 0, 4, 0, 0, 0, 68, 88, 49, 48, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 16, 64, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 71, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 170, 170, 170, 170, 0, 0, 0, 0, 170, 170, 170, 170, 0, 0, 0, 0, 170, 170, 170, 170 };
+static const unsigned char whiteDDS[] = { 68, 68, 83, 32, 124, 0, 0, 0, 7, 16, 2, 0, 4, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 85, 86, 69, 82, 0, 0, 0, 0, 78, 86, 84, 84, 0, 1, 2, 0, 32, 0, 0, 0, 4, 0, 0, 0, 68, 88, 49, 48, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 16, 64, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 71, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 255, 255, 255, 255, 170, 170, 170, 170, 255, 255, 255, 255, 170, 170, 170, 170, 255, 255, 255, 255, 170, 170, 170, 170 };
+static const unsigned char normalDDS[] = { 68, 68, 83, 32, 124, 0, 0, 0, 7, 16, 2, 0, 4, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 85, 86, 69, 82, 0, 0, 0, 0, 78, 86, 84, 84, 0, 1, 2, 0, 32, 0, 0, 0, 4, 0, 0, 128, 68, 88, 49, 48, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 16, 64, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 71, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 255, 139, 31, 124, 255, 255, 255, 255, 255, 139, 31, 124, 255, 255, 255, 255, 255, 139, 31, 124, 255, 255, 255, 255 };
 
 #pragma pack(push)
 #pragma pack(16)
@@ -229,6 +235,15 @@ Renderer::Renderer(HWND hwnd, int backbufferWidth, int backbufferHeight, bool ca
     Device::context->PSSetConstantBuffers(0, 3, allConstantBuffers);
 
     // built-in rendering resources
+
+    ResourceManager::getInstance()->updateResourceData<Image>("__default_black", blackDDS, sizeof(blackDDS));
+    ResourceManager::getInstance()->updateResourceData<Image>("__default_white", whiteDDS, sizeof(whiteDDS));
+    ResourceManager::getInstance()->updateResourceData<Image>("__default_normal", normalDDS, sizeof(normalDDS));
+
+    ResourceManager::getInstance()->updateResourceData<Texture>("__default_black", (const unsigned char *)"{\"type\": \"IMAGE\", \"image\": \"__default_black\"}", 46);
+    ResourceManager::getInstance()->updateResourceData<Texture>("__default_white", (const unsigned char *)"{\"type\": \"IMAGE\", \"image\": \"__default_white\"}", 46);
+    ResourceManager::getInstance()->updateResourceData<Texture>("__default_normal", (const unsigned char *)"{\"type\": \"IMAGE\", \"image\": \"__default_normal\"}", 47);
+
     const char *fullscreenQuad = "{"
             "\"vertices\": ["
                 "-1, -1, 0, 0, 0, 1, 1, 0, 0, 1, 0, 1,"

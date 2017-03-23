@@ -1,6 +1,9 @@
 #include "scene.h"
 #include "standard.h"
 
+// temp for albedo2
+#include "shared.h"
+
 struct STANDARD_PS_OUTPUT
 {
     float4 radiance: SV_TARGET;
@@ -97,9 +100,9 @@ STANDARD_PS_OUTPUT main(STANDARD_PS_INPUT input)
     float3 tangentNormal = normalize(normalTexture.Sample(normalSampler, input.uv).rgb * 2.0 - 1.0);
     float3 perturbedNormal = mul(tangentNormal, TBN);
 
-    float3 albedo = albedoTexture.Sample(albedoSampler, input.uv).rgb;
-    float metalness = metalnessTexture.Sample(metalnessSampler, input.uv).r;
-    float roughness = roughnessTexture.Sample(roughnessSampler, input.uv).r;
+    float3 albedo = albedo2 * albedoTexture.Sample(albedoSampler, input.uv).rgb;
+    float metalness = saturate(metalness2 + metalnessTexture.Sample(metalnessSampler, input.uv).r);
+    float roughness = saturate(roughness2 + roughnessTexture.Sample(roughnessSampler, input.uv).r);
 
     // blend between dielectric and metal
     float3 specularColor = lerp(float3(0.04, 0.04, 0.04), albedo, metalness);
