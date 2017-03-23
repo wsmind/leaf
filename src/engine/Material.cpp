@@ -31,8 +31,8 @@ void Material::load(const unsigned char *buffer, size_t size)
     {
         PropertyMapping properties;
         properties.add("diffuse_color", (float *)&this->data.baseColorMultiplier);
-        properties.add("metallic_offset", &this->data.metallicOffset);
-        properties.add("roughness_offset", &this->data.roughnessOffset);
+        properties.add("leaf.metallic_offset", &this->data.metallicOffset);
+        properties.add("leaf.roughness_offset", &this->data.roughnessOffset);
 
         this->animation = new AnimationData(animation, properties);
         AnimationPlayer::globalPlayer.registerAnimation(this->animation);
