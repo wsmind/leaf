@@ -124,6 +124,10 @@ def register():
         panel.COMPAT_ENGINES.add("LEAF");
 
 def unregister():
+    # switch to another render engine if necessary
+    if bpy.context.scene.render.engine == "LEAF":
+        bpy.context.scene.render.engine = "BLENDER_RENDER"
+
     for panel in compatible_panels:
         panel.COMPAT_ENGINES.remove("LEAF");
 
