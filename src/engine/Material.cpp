@@ -9,31 +9,30 @@
 
 #include <engine/cJSON/cJSON.h>
 
-
 const std::string Material::resourceClassName = "Material";
-const std::string Material::defaultResourceData = "{\"albedo\": [1.0, 1.0, 1.0], \"emit\": 1.0, \"metalness\": 0.0, \"roughness\": 0.0, \"albedoTexture\": \"__default\", \"normalTexture\": \"__default\", \"metalnessTexture\": \"__default\", \"roughnessTexture\": \"__default\"}";
+const std::string Material::defaultResourceData = "{\"baseColorMultiplier\": [1.0, 1.0, 1.0], \"metallicOffset\": 0.0, \"roughnessOffset\": 0.0, \"baseColorMap\": \"__default\", \"normalMap\": \"__default\", \"metallicMap\": \"__default\", \"roughnessMap\": \"__default\"}";
 
 void Material::load(const unsigned char *buffer, size_t size)
 {
     cJSON *json = cJSON_Parse((const char *)buffer);
 
-    cJSON *diffuse = cJSON_GetObjectItem(json, "albedo");
-    this->data.albedo = glm::vec3(cJSON_GetArrayItem(diffuse, 0)->valuedouble, cJSON_GetArrayItem(diffuse, 1)->valuedouble, cJSON_GetArrayItem(diffuse, 2)->valuedouble);
-    this->data.emit = (float)cJSON_GetObjectItem(json, "emit")->valuedouble;
-    this->data.metalness = (float)cJSON_GetObjectItem(json, "metalness")->valuedouble;
-    this->data.roughness = (float)cJSON_GetObjectItem(json, "roughness")->valuedouble;
+    cJSON *diffuse = cJSON_GetObjectItem(json, "baseColorMultiplier");
+    this->data.baseColorMultiplier = glm::vec3(cJSON_GetArrayItem(diffuse, 0)->valuedouble, cJSON_GetArrayItem(diffuse, 1)->valuedouble, cJSON_GetArrayItem(diffuse, 2)->valuedouble);
+    this->data.metallicOffset = (float)cJSON_GetObjectItem(json, "metallicOffset")->valuedouble;
+    this->data.roughnessOffset = (float)cJSON_GetObjectItem(json, "roughnessOffset")->valuedouble;
 
-    this->albedoTexture = ResourceManager::getInstance()->requestResource<Texture>(cJSON_GetObjectItem(json, "albedoTexture")->valuestring);
-    this->normalTexture = ResourceManager::getInstance()->requestResource<Texture>(cJSON_GetObjectItem(json, "normalTexture")->valuestring);
-    this->metalnessTexture = ResourceManager::getInstance()->requestResource<Texture>(cJSON_GetObjectItem(json, "metalnessTexture")->valuestring);
-    this->roughnessTexture = ResourceManager::getInstance()->requestResource<Texture>(cJSON_GetObjectItem(json, "roughnessTexture")->valuestring);
+    this->baseColorMap = ResourceManager::getInstance()->requestResource<Texture>(cJSON_GetObjectItem(json, "baseColorMap")->valuestring);
+    this->normalMap = ResourceManager::getInstance()->requestResource<Texture>(cJSON_GetObjectItem(json, "normalMap")->valuestring);
+    this->metallicMap = ResourceManager::getInstance()->requestResource<Texture>(cJSON_GetObjectItem(json, "metallicMap")->valuestring);
+    this->roughnessMap = ResourceManager::getInstance()->requestResource<Texture>(cJSON_GetObjectItem(json, "roughnessMap")->valuestring);
 
     cJSON *animation = cJSON_GetObjectItem(json, "animation");
     if (animation)
     {
         PropertyMapping properties;
-        properties.add("diffuse_color", (float *)&this->data.albedo);
-        properties.add("emit", &this->data.emit);
+        properties.add("diffuse_color", (float *)&this->data.baseColorMultiplier);
+        properties.add("metallic_offset", &this->data.metallicOffset);
+        properties.add("roughness_offset", &this->data.roughnessOffset);
 
         this->animation = new AnimationData(animation, properties);
         AnimationPlayer::globalPlayer.registerAnimation(this->animation);
@@ -51,26 +50,26 @@ void Material::unload()
         this->animation = nullptr;
     }
 
-    ResourceManager::getInstance()->releaseResource(this->albedoTexture);
-    ResourceManager::getInstance()->releaseResource(this->normalTexture);
-    ResourceManager::getInstance()->releaseResource(this->metalnessTexture);
-    ResourceManager::getInstance()->releaseResource(this->roughnessTexture);
+    ResourceManager::getInstance()->releaseResource(this->baseColorMap);
+    ResourceManager::getInstance()->releaseResource(this->normalMap);
+    ResourceManager::getInstance()->releaseResource(this->metallicMap);
+    ResourceManager::getInstance()->releaseResource(this->roughnessMap);
 }
 
 void Material::bindTextures() const
 {
     ID3D11SamplerState *samplers[] = {
-        this->albedoTexture->getSamplerState(),
-        this->normalTexture->getSamplerState(),
-        this->metalnessTexture->getSamplerState(),
-        this->roughnessTexture->getSamplerState()
+        this->baseColorMap->getSamplerState(),
+        this->normalMap->getSamplerState(),
+        this->metallicMap->getSamplerState(),
+        this->roughnessMap->getSamplerState()
     };
 
     ID3D11ShaderResourceView *srvs[] = {
-        this->albedoTexture->getSRV(),
-        this->normalTexture->getSRV(),
-        this->metalnessTexture->getSRV(),
-        this->roughnessTexture->getSRV()
+        this->baseColorMap->getSRV(),
+        this->normalMap->getSRV(),
+        this->metallicMap->getSRV(),
+        this->roughnessMap->getSRV()
     };
 
     Device::context->PSSetSamplers(0, 4, samplers);

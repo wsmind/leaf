@@ -15,14 +15,14 @@ class LeafMaterialSettings(bpy.types.PropertyGroup):
             description="Leaf material settings",
             type=cls,
         )
-        cls.metalness = FloatProperty(
-            name="Metalness Offset",
+        cls.metallic_offset = FloatProperty(
+            name="Metallic Offset",
             description="0: dielectric, 1: metal",
             min=-1.0, max=1.0,
             default=0.0,
             subtype="FACTOR"
         )
-        cls.roughness = FloatProperty(
+        cls.roughness_offset = FloatProperty(
             name="Roughness Offset",
             description="0: smooth, 1: rough",
             min=-1.0, max=1.0,
@@ -115,7 +115,6 @@ class LeafMaterial_PT_surface(LeafMaterialButtonsPanel, Panel):
         mat = context.material
         lmat = context.material.leaf
 
-        layout.prop(mat, "diffuse_color", text="Albedo")
-        layout.prop(mat, "emit")
-        layout.prop(lmat, "metalness")
-        layout.prop(lmat, "roughness")
+        layout.prop(mat, "diffuse_color", text="Base Color")
+        layout.prop(lmat, "metallic_offset")
+        layout.prop(lmat, "roughness_offset")

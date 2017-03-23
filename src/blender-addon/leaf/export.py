@@ -142,14 +142,13 @@ def export_marker(marker, camera_objects):
 def export_material(mtl):
     lmtl = mtl.leaf
     data = {
-        "albedo": [mtl.diffuse_color.r, mtl.diffuse_color.g, mtl.diffuse_color.b],
-        "emit": mtl.emit,
-        "metalness": lmtl.metalness,
-        "roughness": lmtl.roughness,
-        "albedoTexture": mtl.texture_slots[0].name if mtl.texture_slots[0] and mtl.texture_slots[0].use else "__default_white",
-        "normalTexture": mtl.texture_slots[1].name if mtl.texture_slots[1] and mtl.texture_slots[1].use else "__default_normal",
-        "metalnessTexture": mtl.texture_slots[2].name if mtl.texture_slots[2] and mtl.texture_slots[2].use else "__default_black",
-        "roughnessTexture": mtl.texture_slots[3].name if mtl.texture_slots[3] and mtl.texture_slots[3].use else "__default_black"
+        "baseColorMultiplier": [mtl.diffuse_color.r, mtl.diffuse_color.g, mtl.diffuse_color.b],
+        "metallicOffset": lmtl.metallic_offset,
+        "roughnessOffset": lmtl.roughness_offset,
+        "baseColorMap": mtl.texture_slots[0].name if mtl.texture_slots[0] and mtl.texture_slots[0].use else "__default_white",
+        "normalMap": mtl.texture_slots[1].name if mtl.texture_slots[1] and mtl.texture_slots[1].use else "__default_normal",
+        "metallicMap": mtl.texture_slots[2].name if mtl.texture_slots[2] and mtl.texture_slots[2].use else "__default_black",
+        "roughnessMap": mtl.texture_slots[3].name if mtl.texture_slots[3] and mtl.texture_slots[3].use else "__default_black"
     }
 
     if mtl.animation_data:
@@ -187,7 +186,7 @@ def export_image(img):
     args = [
         texture_compressor_path,
         "-repeat",
-        "-nocuda",
+        #"-nocuda",
         "-dds10"
     ]
 

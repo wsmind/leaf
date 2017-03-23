@@ -1,26 +1,6 @@
 #include "scene.h"
 #include "standard.h"
 
-// temp for albedo2
-#include "shared.h"
-
-struct STANDARD_PS_OUTPUT
-{
-    float4 radiance: SV_TARGET;
-};
-
-Texture2D<float4> albedoTexture: register(t0);
-SamplerState albedoSampler: register(s0);
-
-Texture2D<float4> normalTexture: register(t1);
-SamplerState normalSampler: register(s1);
-
-Texture2D<float4> metalnessTexture: register(t2);
-SamplerState metalnessSampler: register(s2);
-
-Texture2D<float4> roughnessTexture: register(t3);
-SamplerState roughnessSampler: register(s3);
-
 float g1v(float dotNV, float k)
 {
     return 1.0 / (dotNV * (1.0 - k) + 1.0);
@@ -97,16 +77,16 @@ STANDARD_PS_OUTPUT main(STANDARD_PS_INPUT input)
     float3x3 TBN = float3x3(tangent, bitangent, normal);
 
     // compute normal after normal map perturbation, in world space
-    float3 tangentNormal = normalize(normalTexture.Sample(normalSampler, input.uv).rgb * 2.0 - 1.0);
+    float3 tangentNormal = normalize(normalMap.Sample(normalSampler, input.uv).rgb * 2.0 - 1.0);
     float3 perturbedNormal = mul(tangentNormal, TBN);
 
-    float3 albedo = albedo2 * albedoTexture.Sample(albedoSampler, input.uv).rgb;
-    float metalness = saturate(metalness2 + metalnessTexture.Sample(metalnessSampler, input.uv).r);
-    float roughness = saturate(roughness2 + roughnessTexture.Sample(roughnessSampler, input.uv).r);
+    float3 baseColor = baseColorMultiplier * baseColorMap.Sample(baseColorSampler, input.uv).rgb;
+    float metallic = saturate(metallicOffset + metallicMap.Sample(metallicSampler, input.uv).r);
+    float roughness = saturate(roughnessOffset + roughnessMap.Sample(roughnessSampler, input.uv).r);
 
     // blend between dielectric and metal
-    float3 specularColor = lerp(float3(0.04, 0.04, 0.04), albedo, metalness);
-    albedo *= (1.0 - metalness);
+    float3 albedo = baseColor * (1.0 - metallic);
+    float3 specularColor = lerp(float3(0.04, 0.04, 0.04), baseColor, metallic);
 
     SurfaceProperties surface;
     surface.albedo = albedo;

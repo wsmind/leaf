@@ -35,7 +35,7 @@ class LeafTexture_UL_slots(UIList):
     def draw_item(self, context, layout, data, item, icon, active_data, active_propname, index):
         ma = data
         tex = item.texture if item else None
-        slot_names = ["Albedo", "Normal Map", "Metalness", "Roughness"]
+        slot_names = ["Base Color", "Normal Map", "Metallic", "Roughness"]
         title = slot_names[index] if index < len(slot_names) else "<unused>"
 
         if tex:

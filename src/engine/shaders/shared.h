@@ -23,13 +23,3 @@ struct GBUFFER_PS_INPUT
     nointerpolation float3 normal: NORMAL;
     float2 uv: TEXCOORD;
 };
-
-cbuffer MaterialData: register(b1)
-{
-    float3 albedo2;
-    float emit2;
-
-    // UNUSED (textures are used instead)
-    float metalness2;
-    float roughness2;
-};

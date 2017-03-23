@@ -16,11 +16,10 @@ class Material: public Resource
         #pragma pack(16)
         struct MaterialData
         {
-            glm::vec3 albedo;
-            float emit;
-            float metalness;
-            float roughness;
-            float _padding[2];
+            glm::vec3 baseColorMultiplier;
+            float metallicOffset;
+            float roughnessOffset;
+            float _padding[3];
         };
         #pragma pack(pop)
 
@@ -37,10 +36,10 @@ class Material: public Resource
     private:
         MaterialData data;
 
-        Texture *albedoTexture;
-        Texture *normalTexture;
-        Texture *metalnessTexture;
-        Texture *roughnessTexture;
+        Texture *baseColorMap;
+        Texture *normalMap;
+        Texture *metallicMap;
+        Texture *roughnessMap;
 
         AnimationData *animation = nullptr;
 };
