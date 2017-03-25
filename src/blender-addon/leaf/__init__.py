@@ -75,7 +75,7 @@ class EngineWrapper:
 
         self.script_dir = os.path.dirname(__file__)
         self.dll_name = os.path.join(self.script_dir, "LeafEngine.dll")
-        self.loaded_dll_name = os.path.join(self.script_dir, "LeafEngine-Loaded.dll")
+        self.loaded_dll_name = os.path.join(bpy.app.tempdir, "LeafEngine-Loaded.dll")
 
     def load(self):
         # copy the dll, to allow how reload after rebuild
