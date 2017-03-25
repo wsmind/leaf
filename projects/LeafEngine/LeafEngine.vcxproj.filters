@@ -157,5 +157,8 @@
     <None Include="..\..\src\blender-addon\leaf\image.py">
       <Filter>blender-addon</Filter>
     </None>
+    <None Include="..\..\src\blender-addon\leaf\cooking.py">
+      <Filter>blender-addon</Filter>
+    </None>
   </ItemGroup>
 </Project>

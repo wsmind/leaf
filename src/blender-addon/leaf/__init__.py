@@ -6,6 +6,7 @@ bl_info = {
 
 if "bpy" in locals():
     import imp
+    imp.reload(cooking)
     imp.reload(export)
     imp.reload(image)
     imp.reload(material)
@@ -13,6 +14,7 @@ if "bpy" in locals():
     imp.reload(render)
     imp.reload(texture)
 else:
+    from . import cooking
     from . import export
     from . import image
     from . import material
@@ -113,6 +115,9 @@ def register():
     
     # tag everything for reupload in engine
     engine.full_data_send = True
+    
+    cooking.cooker = cooking.Cooker()
+    cooking.cooker.register_processor("image", cooking.ImageProcessor())
 
     # register callbacks
     bpy.app.handlers.frame_change_pre.append(frame_change_pre)
@@ -132,6 +137,8 @@ def unregister():
         panel.COMPAT_ENGINES.remove("LEAF");
 
     bpy.utils.unregister_module(__name__)
+
+    cooking.cooker = None
 
     # unregister callbacks
     bpy.app.handlers.frame_change_pre.remove(frame_change_pre)

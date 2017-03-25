@@ -7,6 +7,8 @@ import os.path
 import subprocess
 import tempfile
 
+from . import cooking
+
 def export_data(output_file, updated_only=False):
     data = {}
 
@@ -175,41 +177,14 @@ def export_texture(tex):
     return json.dumps(output).encode("utf-8")
 
 def export_image(img):
-    if img.filepath == "":
-        return b''
+    options = {
+        "cuda": True,
+        "linear": img.colorspace_settings.name == "Linear",
+        "normal_map": img.leaf.is_normal_map
+    }
 
-    script_dir = os.path.dirname(__file__)
-    texture_compressor_path = os.path.join(script_dir, "LeafTextureCompressor.exe")
+    return cooking.cooker.cook("image", img.filepath, options)
 
-    sourcePath = bpy.path.abspath(img.filepath)
-    targetPath = os.path.join(bpy.app.tempdir, next(tempfile._get_candidate_names()))
-    args = [
-        texture_compressor_path,
-        "-repeat",
-        #"-nocuda",
-        "-dds10"
-    ]
-
-    if img.colorspace_settings.name == "Linear":
-        args.append("-linear")
-    else:
-        args.append("-color")
-        args.append("-srgb")
-    
-    if img.leaf.is_normal_map:
-        args.append("-normal")
-        args.append("-bc1n")
-    else:
-        args.append("-bc1")
-
-    args.append(sourcePath)
-    args.append(targetPath)
-
-    print("running: " + str(args))
-    subprocess.run(args)
-
-    with open(targetPath, mode="rb") as outputFile:
-        return outputFile.read()
 
 def export_mesh(mesh):
     vertices = []
