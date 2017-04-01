@@ -22,8 +22,8 @@ STANDARD_PS_INPUT main(VS_INPUT input)
     output.position.z = (output.position.z + output.position.w) * 0.5;
 
     output.worldPosition = worldPosition.xyz;
-    output.normal = mul((float3x3)modelMatrix, input.normal);
-    output.tangent = float4(mul((float3x3)modelMatrix, input.tangent.xyz), input.tangent.w);
+    output.normal = mul(normalMatrix, input.normal);
+    output.tangent = float4(mul(normalMatrix, input.tangent.xyz), input.tangent.w);
     output.uv = float2(input.uv.x, 1.0 - input.uv.y);
 
     return output;
