@@ -178,7 +178,7 @@ def export_texture(tex):
 
 def export_image(img):
     options = {
-        "cuda": False,
+        "cuda": bpy.context.user_preferences.addons[__package__].preferences.cuda_enabled,
         "linear": img.colorspace_settings.name == "Linear",
         "normal_map": img.leaf.is_normal_map
     }
