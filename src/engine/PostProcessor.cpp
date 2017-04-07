@@ -64,4 +64,9 @@ void PostProcessor::render(int width, int height)
 
     this->fullscreenQuad->bind();
     Device::context->DrawIndexed(this->fullscreenQuad->getIndexCount(), 0, 0);
+
+    ID3D11SamplerState *nullSampler = nullptr;
+    ID3D11ShaderResourceView *nullSRV = nullptr;
+    Device::context->PSSetSamplers(0, 1, &nullSampler);
+    Device::context->PSSetShaderResources(0, 1, &nullSRV);
 }
