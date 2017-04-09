@@ -24,7 +24,7 @@ class Light: public Resource
         };
 
         LightType getType() const { return this->type; }
-        glm::vec3 getColor() const { return this->color; }
+        glm::vec3 getColor() const { return this->color * this->energy; }
         float getRadius() const { return this->radius; }
         float getSpotAngle() const { return this->spotAngle; }
         float getSpotBlend() const { return this->spotBlend; }
@@ -32,6 +32,7 @@ class Light: public Resource
     private:
         LightType type;
         glm::vec3 color;
+        float energy;
         float radius;
         float spotAngle;
         float spotBlend;

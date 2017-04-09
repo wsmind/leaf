@@ -280,7 +280,8 @@ def export_animation(anim_data):
 
 def export_light(light):
     data = {
-        "color": [light.color.r * light.energy, light.color.g * light.energy, light.color.b * light.energy],
+        "color": [light.color.r, light.color.g, light.color.b],
+        "energy": light.energy,
         "radius": light.distance,
         "type": export_light_type(light.type),
         "spotAngle": light.spot_size if light.type == "SPOT" else 0,
