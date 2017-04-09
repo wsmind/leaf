@@ -102,9 +102,10 @@ void Scene::fillRenderList(RenderList *renderList) const
         if (!node->isHidden())
         {
             Light *light = node->getData<Light>();
+            glm::mat4 transform = node->computeTransformMatrix();
 
             RenderList::Light renderLight;
-            renderLight.position = glm::vec3(node->computeTransformMatrix()[3]);
+            renderLight.position = glm::vec3(transform[3]);
             renderLight.radius = light->getRadius();
             renderLight.color = light->getColor();
             renderList->addLight(renderLight);

@@ -13,13 +13,19 @@ void Light::load(const unsigned char *buffer, size_t size)
     cJSON *json = cJSON_Parse((const char *)buffer);
 
     cJSON *colorJson = cJSON_GetObjectItem(json, "color");
+    this->type = (LightType)cJSON_GetObjectItem(json, "type")->valueint;
     this->color = glm::vec3(cJSON_GetArrayItem(colorJson, 0)->valuedouble, cJSON_GetArrayItem(colorJson, 1)->valuedouble, cJSON_GetArrayItem(colorJson, 2)->valuedouble);
     this->radius = (float)cJSON_GetObjectItem(json, "radius")->valuedouble;
+    this->spotAngle = (float)cJSON_GetObjectItem(json, "spotAngle")->valuedouble;
+    this->spotBlend = (float)cJSON_GetObjectItem(json, "spotBlend")->valuedouble;
 
     cJSON *animation = cJSON_GetObjectItem(json, "animation");
     if (animation)
     {
         PropertyMapping properties;
+        properties.add("distance", &this->radius);
+        properties.add("spot_size", &this->spotAngle);
+        properties.add("spot_blend", &this->spotBlend);
 
         this->animation = new AnimationData(animation, properties);
         AnimationPlayer::globalPlayer.registerAnimation(this->animation);

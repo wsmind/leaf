@@ -9,6 +9,7 @@ if "bpy" in locals():
     imp.reload(cooking)
     imp.reload(export)
     imp.reload(image)
+    imp.reload(light)
     imp.reload(material)
     imp.reload(preferences)
     imp.reload(render)
@@ -17,6 +18,7 @@ else:
     from . import cooking
     from . import export
     from . import image
+    from . import light
     from . import material
     from . import preferences
     from . import render

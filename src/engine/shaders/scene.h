@@ -1,4 +1,4 @@
-struct LightData
+struct PointLightData
 {
     float3 position;
     float radius;
@@ -13,6 +13,6 @@ cbuffer SceneData : register(b0)
     float4x4 projectionMatrixInverse;
     float4x4 viewProjectionInverseMatrix;
     float3 cameraPosition;
-    int lightCount;
-    LightData lights[16];
+    int pointLightCount;
+    PointLightData pointLights[16];
 };

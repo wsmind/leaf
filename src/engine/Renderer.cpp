@@ -38,7 +38,7 @@ static const unsigned char normalDDS[] = { 68, 68, 83, 32, 124, 0, 0, 0, 7, 16, 
 
 #pragma pack(push)
 #pragma pack(16)
-struct LightData
+struct PointLightData
 {
     glm::vec3 position;
     float radius;
@@ -57,8 +57,8 @@ struct SceneState
     glm::mat4 projectionMatrixInverse;
     glm::mat4 viewProjectionInverseMatrix;
     glm::vec3 cameraPosition;
-    int lightCount;
-    LightData lights[16];
+    int pointLightCount;
+    PointLightData pointLights[16];
 };
 #pragma pack(pop)
 
@@ -369,12 +369,12 @@ void Renderer::render(const Scene *scene, int width, int height, bool overrideCa
     sceneState->cameraPosition = glm::vec3(viewMatrixInverse[3][0], viewMatrixInverse[3][1], viewMatrixInverse[3][2]);
 
     const std::vector<RenderList::Light> &lights = this->renderList->getLights();
-    sceneState->lightCount = std::min((int)lights.size(), 16);
-    for (int i = 0; i < sceneState->lightCount; i++)
+    sceneState->pointLightCount = std::min((int)lights.size(), 16);
+    for (int i = 0; i < sceneState->pointLightCount; i++)
     {
-        sceneState->lights[i].position = lights[i].position;
-        sceneState->lights[i].radius = lights[i].radius;
-        sceneState->lights[i].color = lights[i].color;
+        sceneState->pointLights[i].position = lights[i].position;
+        sceneState->pointLights[i].radius = lights[i].radius;
+        sceneState->pointLights[i].color = lights[i].color;
     }
 
     Device::context->Unmap(this->cbScene, 0);

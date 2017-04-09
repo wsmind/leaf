@@ -94,14 +94,15 @@ STANDARD_PS_OUTPUT main(STANDARD_PS_INPUT input)
     surface.specularColor = specularColor;
     surface.roughness = roughness;
 
-    for (int i = 0; i < lightCount; i++)
+    // point lights
+    for (int i = 0; i < pointLightCount; i++)
     {
-        float3 lightVector = lights[i].position - input.worldPosition;
+        float3 lightVector = pointLights[i].position - input.worldPosition;
         float lightDistance = length(lightVector);
 
         LightProperties light;
         light.direction = lightVector / lightDistance;
-        light.incomingRadiance = lights[i].color * computeLightFalloff(lightDistance, lights[i].radius);
+        light.incomingRadiance = pointLights[i].color * computeLightFalloff(lightDistance, pointLights[i].radius);
 
         radiance += computeShading(surface, light, eye);
     }

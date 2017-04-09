@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cmath>
 #include <string>
 
 #include <engine/glm/glm.hpp>
@@ -16,11 +17,25 @@ class Light: public Resource
         virtual void load(const unsigned char *buffer, size_t size) override;
         virtual void unload() override;
 
+        // this enum is serialized in json data (see export.py)
+        enum LightType
+        {
+            Point = 0,
+            Spot = 1
+        };
+
+        LightType getType() const { return this->type; }
         glm::vec3 getColor() const { return this->color; }
         float getRadius() const { return this->radius; }
-    
+        float getSpotAngle() const { return this->spotAngle * (float)M_PI / 180.0f; }
+        float getSpotBlend() const { return this->spotBlend; }
+
     private:
+        LightType type;
         glm::vec3 color;
         float radius;
+        float spotAngle;
+        float spotBlend;
+
         AnimationData *animation = nullptr;
 };

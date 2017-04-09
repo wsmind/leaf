@@ -281,13 +281,21 @@ def export_animation(anim_data):
 def export_light(light):
     data = {
         "color": [light.color.r * light.energy, light.color.g * light.energy, light.color.b * light.energy],
-        "radius": light.distance
+        "radius": light.distance,
+        "type": export_light_type(light.type),
+        "spotAngle": light.spot_size if light.type == "SPOT" else 0,
+        "spotBlend": light.spot_blend if light.type == "SPOT" else 0
     }
 
     if light.animation_data:
         data["animation"] = export_animation(light.animation_data)
 
     return json.dumps(data).encode("utf-8")
+
+def export_light_type(type):
+    if type == "POINT": return 0
+    if type == "SPOT": return 1
+    return 0
 
 def export_camera(camera):
     data = {

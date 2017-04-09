@@ -95,7 +95,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;LEAFENGINE_EXPORTS;WIN32_LEAN_AND_MEAN;WIN32_EXTRA_LEAN;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_USE_MATH_DEFINES;WIN32;_DEBUG;_WINDOWS;_USRDLL;LEAFENGINE_EXPORTS;WIN32_LEAN_AND_MEAN;WIN32_EXTRA_LEAN;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <TreatWarningAsError>true</TreatWarningAsError>
     </ClCompile>
     <Link>
@@ -110,7 +110,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>_DEBUG;_WINDOWS;_USRDLL;LEAFENGINE_EXPORTS;WIN32_LEAN_AND_MEAN;WIN32_EXTRA_LEAN;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_USE_MATH_DEFINES;_DEBUG;_WINDOWS;_USRDLL;LEAFENGINE_EXPORTS;WIN32_LEAN_AND_MEAN;WIN32_EXTRA_LEAN;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <TreatWarningAsError>true</TreatWarningAsError>
     </ClCompile>
     <Link>
@@ -127,7 +127,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;LEAFENGINE_EXPORTS;WIN32_LEAN_AND_MEAN;WIN32_EXTRA_LEAN;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_USE_MATH_DEFINES;WIN32;NDEBUG;_WINDOWS;_USRDLL;LEAFENGINE_EXPORTS;WIN32_LEAN_AND_MEAN;WIN32_EXTRA_LEAN;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <TreatWarningAsError>true</TreatWarningAsError>
     </ClCompile>
     <Link>
@@ -146,7 +146,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>NDEBUG;_WINDOWS;_USRDLL;LEAFENGINE_EXPORTS;WIN32_LEAN_AND_MEAN;WIN32_EXTRA_LEAN;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_USE_MATH_DEFINES;NDEBUG;_WINDOWS;_USRDLL;LEAFENGINE_EXPORTS;WIN32_LEAN_AND_MEAN;WIN32_EXTRA_LEAN;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <TreatWarningAsError>true</TreatWarningAsError>
     </ClCompile>
     <Link>
@@ -530,6 +530,7 @@
     <None Include="..\..\src\blender-addon\leaf\cooking.py" />
     <None Include="..\..\src\blender-addon\leaf\export.py" />
     <None Include="..\..\src\blender-addon\leaf\image.py" />
+    <None Include="..\..\src\blender-addon\leaf\light.py" />
     <None Include="..\..\src\blender-addon\leaf\preferences.py" />
     <None Include="..\..\src\blender-addon\leaf\render.py" />
     <None Include="..\..\src\blender-addon\leaf\material.py" />
