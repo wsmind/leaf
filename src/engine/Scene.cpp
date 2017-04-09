@@ -108,6 +108,15 @@ void Scene::fillRenderList(RenderList *renderList) const
             renderLight.position = glm::vec3(transform[3]);
             renderLight.radius = light->getRadius();
             renderLight.color = light->getColor();
+
+            if (light->getType() == Light::Spot)
+            {
+                renderLight.spot = true;
+                renderLight.direction = glm::vec3(-transform[2]);
+                renderLight.angle = light->getSpotAngle();
+                renderLight.blend = light->getSpotBlend();
+            }
+
             renderList->addLight(renderLight);
         }
     });

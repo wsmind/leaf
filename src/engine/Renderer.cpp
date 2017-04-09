@@ -49,6 +49,19 @@ struct PointLightData
 
 #pragma pack(push)
 #pragma pack(16)
+struct SpotLightData
+{
+    glm::vec3 position;
+    float radius;
+    glm::vec3 color;
+    float angle;
+    glm::vec3 direction;
+    float blend;
+};
+#pragma pack(pop)
+
+#pragma pack(push)
+#pragma pack(16)
 struct SceneState
 {
     glm::mat4 viewMatrix;
@@ -58,7 +71,10 @@ struct SceneState
     glm::mat4 viewProjectionInverseMatrix;
     glm::vec3 cameraPosition;
     int pointLightCount;
+    int spotLightCount;
+    float _padding[3];
     PointLightData pointLights[16];
+    SpotLightData spotLights[16];
 };
 #pragma pack(pop)
 
@@ -369,12 +385,28 @@ void Renderer::render(const Scene *scene, int width, int height, bool overrideCa
     sceneState->cameraPosition = glm::vec3(viewMatrixInverse[3][0], viewMatrixInverse[3][1], viewMatrixInverse[3][2]);
 
     const std::vector<RenderList::Light> &lights = this->renderList->getLights();
-    sceneState->pointLightCount = std::min((int)lights.size(), 16);
-    for (int i = 0; i < sceneState->pointLightCount; i++)
+    sceneState->pointLightCount = 0;
+    sceneState->spotLightCount = 0;
+    for (int i = 0; i < lights.size(); i++)
     {
-        sceneState->pointLights[i].position = lights[i].position;
-        sceneState->pointLights[i].radius = lights[i].radius;
-        sceneState->pointLights[i].color = lights[i].color;
+        if (!lights[i].spot && sceneState->pointLightCount < 16)
+        {
+            int index = sceneState->pointLightCount++;
+            sceneState->pointLights[index].position = lights[i].position;
+            sceneState->pointLights[index].radius = lights[i].radius;
+            sceneState->pointLights[index].color = lights[i].color;
+        }
+
+        if (lights[i].spot && sceneState->spotLightCount < 16)
+        {
+            int index = sceneState->spotLightCount++;
+            sceneState->spotLights[index].position = lights[i].position;
+            sceneState->spotLights[index].radius = lights[i].radius;
+            sceneState->spotLights[index].color = lights[i].color;
+            sceneState->spotLights[index].angle = lights[i].angle;
+            sceneState->spotLights[index].direction = lights[i].direction;
+            sceneState->spotLights[index].blend = lights[i].blend;
+        }
     }
 
     Device::context->Unmap(this->cbScene, 0);

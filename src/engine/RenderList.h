@@ -19,9 +19,15 @@ class RenderList
 
         struct Light
         {
+            bool spot;
             glm::vec3 position;
             float radius;
             glm::vec3 color;
+
+            // only used for spotlights
+            glm::vec3 direction;
+            float angle;
+            float blend;
         };
 
         void clear();

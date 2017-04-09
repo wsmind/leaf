@@ -107,6 +107,23 @@ STANDARD_PS_OUTPUT main(STANDARD_PS_INPUT input)
         radiance += computeShading(surface, light, eye);
     }
 
+    // spot lights
+    for (int i = 0; i < spotLightCount; i++)
+    {
+        float3 lightVector = spotLights[i].position - input.worldPosition;
+        float lightDistance = length(lightVector);
+
+        LightProperties light;
+        light.direction = lightVector / lightDistance;
+        light.incomingRadiance = spotLights[i].color * computeLightFalloff(lightDistance, spotLights[i].radius);
+
+        // temp angle falloff
+        float angleFalloff = saturate(dot(-light.direction, spotLights[i].direction) - 0.5);
+        light.incomingRadiance *= angleFalloff;
+
+        radiance += computeShading(surface, light, eye);
+    }
+
     output.radiance = float4(radiance, 1.0);
 
 	return output;
