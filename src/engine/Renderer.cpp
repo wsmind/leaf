@@ -54,9 +54,9 @@ struct SpotLightData
     glm::vec3 position;
     float radius;
     glm::vec3 color;
-    float angle;
+    float cosAngleScale;
     glm::vec3 direction;
-    float blend;
+    float cosAngleOffset;
 };
 #pragma pack(pop)
 
@@ -399,13 +399,19 @@ void Renderer::render(const Scene *scene, int width, int height, bool overrideCa
 
         if (lights[i].spot && sceneState->spotLightCount < 16)
         {
+            // angle falloff precomputations
+            float cosOuterAngle = cosf(lights[i].angle * 0.5f);
+            float cosInnerAngle = glm::mix(cosOuterAngle + 0.001f, 1.0f, lights[i].blend);
+            float cosAngleScale = 1.0f / (cosInnerAngle - cosOuterAngle);
+            float cosAngleOffset = -cosOuterAngle * cosAngleScale;
+
             int index = sceneState->spotLightCount++;
             sceneState->spotLights[index].position = lights[i].position;
             sceneState->spotLights[index].radius = lights[i].radius;
             sceneState->spotLights[index].color = lights[i].color;
-            sceneState->spotLights[index].angle = lights[i].angle;
+            sceneState->spotLights[index].cosAngleScale = cosAngleScale;
             sceneState->spotLights[index].direction = lights[i].direction;
-            sceneState->spotLights[index].blend = lights[i].blend;
+            sceneState->spotLights[index].cosAngleOffset = cosAngleOffset;
         }
     }
 

@@ -117,8 +117,9 @@ STANDARD_PS_OUTPUT main(STANDARD_PS_INPUT input)
         light.direction = lightVector / lightDistance;
         light.incomingRadiance = spotLights[i].color * computeLightFalloff(lightDistance, spotLights[i].radius);
 
-        // temp angle falloff
-        float angleFalloff = saturate(dot(-light.direction, spotLights[i].direction) - 0.5);
+        // angle falloff (scale and offset are precomputed on CPU according to the inner and outer angles)
+        float angleFalloff = saturate(dot(-light.direction, spotLights[i].direction) * spotLights[i].cosAngleScale + spotLights[i].cosAngleOffset);
+        angleFalloff *= angleFalloff; // more natural square attenuation
         light.incomingRadiance *= angleFalloff;
 
         radiance += computeShading(surface, light, eye);

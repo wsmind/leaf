@@ -1,6 +1,5 @@
 #pragma once
 
-#include <cmath>
 #include <string>
 
 #include <engine/glm/glm.hpp>
@@ -27,7 +26,7 @@ class Light: public Resource
         LightType getType() const { return this->type; }
         glm::vec3 getColor() const { return this->color; }
         float getRadius() const { return this->radius; }
-        float getSpotAngle() const { return this->spotAngle * (float)M_PI / 180.0f; }
+        float getSpotAngle() const { return this->spotAngle; }
         float getSpotBlend() const { return this->spotBlend; }
 
     private:

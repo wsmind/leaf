@@ -10,9 +10,9 @@ struct SpotLightData
     float3 position;
     float radius;
     float3 color;
-    float angle;
+    float cosAngleScale;
     float3 direction;
-    float blend;
+    float cosAngleOffset;
 };
 
 cbuffer SceneData : register(b0)
