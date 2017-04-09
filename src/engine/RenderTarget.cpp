@@ -2,7 +2,7 @@
 
 #include <engine/Device.h>
 
-RenderTarget::RenderTarget(int width, int height, DXGI_FORMAT format)
+RenderTarget::RenderTarget(int width, int height, DXGI_FORMAT format, bool msaa)
 {
     D3D11_TEXTURE2D_DESC textureDesc;
     ZeroMemory(&textureDesc, sizeof(textureDesc));
@@ -11,7 +11,7 @@ RenderTarget::RenderTarget(int width, int height, DXGI_FORMAT format)
     textureDesc.MipLevels = 1;
     textureDesc.ArraySize = 1;
     textureDesc.Format = format;
-    textureDesc.SampleDesc.Count = 1;
+    textureDesc.SampleDesc.Count = msaa ? 4 : 1;
     textureDesc.SampleDesc.Quality = 0;
     textureDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET;
 

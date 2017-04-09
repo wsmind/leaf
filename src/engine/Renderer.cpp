@@ -121,7 +121,7 @@ Renderer::Renderer(HWND hwnd, int backbufferWidth, int backbufferHeight, bool ca
     depthBufferDesc.MipLevels = 1;
     depthBufferDesc.ArraySize = 1;
     depthBufferDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-    depthBufferDesc.SampleDesc.Count = 1;
+    depthBufferDesc.SampleDesc.Count = 4;
     depthBufferDesc.SampleDesc.Quality = 0;
     depthBufferDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
 
@@ -131,7 +131,7 @@ Renderer::Renderer(HWND hwnd, int backbufferWidth, int backbufferHeight, bool ca
     D3D11_DEPTH_STENCIL_VIEW_DESC depthTargetDesc;
     ZeroMemory(&depthTargetDesc, sizeof(depthTargetDesc));
     depthTargetDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-    depthTargetDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+    depthTargetDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2DMS;
     depthTargetDesc.Texture2D.MipSlice = 0;
 
     res = Device::device->CreateDepthStencilView(depthBuffer, &depthTargetDesc, &this->depthTarget);
@@ -171,8 +171,8 @@ Renderer::Renderer(HWND hwnd, int backbufferWidth, int backbufferHeight, bool ca
     Device::device->CreateRasterizerState(&rasterizerDesc, &rasterizerState);
     Device::context->RSSetState(rasterizerState);
 
-    for (int i = 0; i < GBUFFER_PLANE_COUNT; i++)
-        this->gBuffer[i] = new RenderTarget(this->backbufferWidth, this->backbufferHeight, DXGI_FORMAT_R16G16B16A16_FLOAT);
+    //for (int i = 0; i < GBUFFER_PLANE_COUNT; i++)
+    //    this->gBuffer[i] = new RenderTarget(this->backbufferWidth, this->backbufferHeight, DXGI_FORMAT_R16G16B16A16_FLOAT);
 
     this->postProcessor = new PostProcessor(this->renderTarget);
 
@@ -301,8 +301,8 @@ Renderer::~Renderer()
 
     ResourceManager::getInstance()->releaseResource(this->fullscreenQuad);
 
-    for (int i = 0; i < GBUFFER_PLANE_COUNT; i++)
-        delete this->gBuffer[i];
+    //for (int i = 0; i < GBUFFER_PLANE_COUNT; i++)
+    //    delete this->gBuffer[i];
 
     this->gBufferDepthState->Release();
     this->lightingDepthState->Release();

@@ -1,8 +1,8 @@
 #include "postprocess.h"
 #include "tonemapping.h"
 
-Texture2D radianceTexture: register(t0);
-SamplerState radianceSampler: register(s0);
+Texture2DMS<float4> radianceTexture: register(t0);
+//SamplerState radianceSampler: register(s0);
 
 struct POSTPROCESS_PS_OUTPUT
 {
@@ -13,13 +13,24 @@ POSTPROCESS_PS_OUTPUT main(POSTPROCESS_PS_INPUT input)
 {
     POSTPROCESS_PS_OUTPUT output;
 
-    float3 radiance = radianceTexture.Sample(radianceSampler, input.uv).rgb;
+    float width;
+    float height;
+    float samples;
+    radianceTexture.GetDimensions(width, height, samples);
+
+    // simple MSAA resolve with a box filter, but tone-mapping aware
+    float3 color = float3(0.0, 0.0, 0.0);
+    for (int i = 0; i < 4; i++)
+    {
+        float3 radiance = radianceTexture.Load(input.uv * float2(width, height), i).rgb;
+
+        // tone mapping (also applies gamma correction)
+        color += reinhardToneMapping(radiance);
+    }
+    color *= 0.25;
 
     // vignette
     //radiance *= pow(1.0 - length(input.uv - float2(0.5, 0.5)), 2.0);
-
-    // tone mapping (also applies gamma correction)
-    float3 color = reinhardToneMapping(radiance);
 
     output.color = float4(color, 1.0);
 

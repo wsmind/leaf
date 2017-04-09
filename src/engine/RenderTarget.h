@@ -5,7 +5,7 @@
 class RenderTarget
 {
     public:
-        RenderTarget(int width, int height, DXGI_FORMAT format);
+        RenderTarget(int width, int height, DXGI_FORMAT format, bool msaa = false);
         ~RenderTarget();
 
         ID3D11Texture2D *getTexture() const { return this->texture; }
