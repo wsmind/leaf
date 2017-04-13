@@ -272,7 +272,9 @@ Renderer::Renderer(HWND hwnd, int backbufferWidth, int backbufferHeight, bool ca
                 "2, 0, 3"
             "],"
             "\"indexCount\": 6,"
-            "\"material\": \"__default\""
+            "\"material\": \"__default\","
+            "\"minBound\": [-1.0, -1.0, 0.0],"
+            "\"maxBound\": [1.0, 1.0, 0.0]"
         "}";
     ResourceManager::getInstance()->updateResourceData<Mesh>("__fullscreenQuad", (const unsigned char *)fullscreenQuad, strlen(fullscreenQuad));
 

@@ -5,6 +5,8 @@
 #include <engine/Device.h>
 #include <engine/Resource.h>
 
+#include <engine/glm/vec3.hpp>
+
 class Material;
 
 class Mesh: public Resource
@@ -33,4 +35,8 @@ class Mesh: public Resource
 
         // assume one material per mesh; submeshes may be implemented later
         Material *material;
+
+        // AABB
+        glm::vec3 minBound;
+        glm::vec3 maxBound;
 };

@@ -19,7 +19,9 @@ const std::string Mesh::defaultResourceData = "{"
             "0, 1, 2"
         "],"
         "\"indexCount\": 3,"
-        "\"material\": \"__default\""
+        "\"material\": \"__default\","
+        "\"minBound\": [-1.0, -1.0, 0.0],"
+        "\"maxBound\": [1.0, 1.0, 0.0]"
     "}";
 
 void Mesh::load(const unsigned char *buffer, size_t size)
@@ -34,6 +36,12 @@ void Mesh::load(const unsigned char *buffer, size_t size)
 
     std::string materialName = cJSON_GetObjectItem(json, "material")->valuestring;
     this->material = ResourceManager::getInstance()->requestResource<Material>(materialName);
+
+    cJSON *minBoundJson = cJSON_GetObjectItem(json, "minBound");
+    this->minBound = glm::vec3(cJSON_GetArrayItem(minBoundJson, 0)->valuedouble, cJSON_GetArrayItem(minBoundJson, 1)->valuedouble, cJSON_GetArrayItem(minBoundJson, 2)->valuedouble);
+
+    cJSON *maxBoundJson = cJSON_GetObjectItem(json, "maxBound");
+    this->maxBound = glm::vec3(cJSON_GetArrayItem(maxBoundJson, 0)->valuedouble, cJSON_GetArrayItem(maxBoundJson, 1)->valuedouble, cJSON_GetArrayItem(maxBoundJson, 2)->valuedouble);
 
     // vertex buffer
 
