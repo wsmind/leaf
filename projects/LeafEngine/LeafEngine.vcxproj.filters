@@ -84,6 +84,9 @@
       <Filter>shaders</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\engine\ShadowRenderer.h" />
+    <ClInclude Include="..\..\src\engine\shaders\depthonly.h">
+      <Filter>shaders</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\..\src\engine\shaders\plop.vs.hlsl">
@@ -120,6 +123,12 @@
       <Filter>shaders</Filter>
     </FxCompile>
     <FxCompile Include="..\..\src\engine\shaders\standard.vs.hlsl">
+      <Filter>shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\src\engine\shaders\depthonly.ps.hlsl">
+      <Filter>shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\src\engine\shaders\depthonly.vs.hlsl">
       <Filter>shaders</Filter>
     </FxCompile>
   </ItemGroup>

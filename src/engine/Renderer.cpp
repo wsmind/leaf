@@ -192,7 +192,7 @@ Renderer::Renderer(HWND hwnd, int backbufferWidth, int backbufferHeight, bool ca
     //    this->gBuffer[i] = new RenderTarget(this->backbufferWidth, this->backbufferHeight, DXGI_FORMAT_R16G16B16A16_FLOAT);
 
     this->postProcessor = new PostProcessor(this->renderTarget);
-    this->shadowRenderer = new ShadowRenderer(512);
+    this->shadowRenderer = new ShadowRenderer(1024);
 
     if (this->capture)
     {
@@ -246,10 +246,6 @@ Renderer::Renderer(HWND hwnd, int backbufferWidth, int backbufferHeight, bool ca
     cbDesc.ByteWidth = sizeof(InstanceData);
     res = Device::device->CreateBuffer(&cbDesc, NULL, &this->cbInstance);
     CHECK_HRESULT(res);
-
-    ID3D11Buffer *allConstantBuffers[] = { this->cbScene, this->cbMaterial, this->cbInstance };
-    Device::context->VSSetConstantBuffers(0, 3, allConstantBuffers);
-    Device::context->PSSetConstantBuffers(0, 3, allConstantBuffers);
 
     // built-in rendering resources
 
@@ -342,22 +338,6 @@ void Renderer::render(const Scene *scene, int width, int height, bool overrideCa
 {
     GPUProfiler::getInstance()->beginFrame();
 
-    D3D11_VIEWPORT viewport;
-    viewport.Width = (float)backbufferWidth;
-    viewport.Height = (float)backbufferHeight;
-    viewport.MinDepth = 0.0f;
-    viewport.MaxDepth = 1.0f;
-    viewport.TopLeftX = 0;
-    viewport.TopLeftY = 0;
-    Device::context->RSSetViewports(1, &viewport);
-
-    float clearColor[] = { 1.0f, 1.0f, 0.0f, 1.0f };
-    {
-        GPUProfiler::ScopedProfile profile("Clear");
-        Device::context->ClearRenderTargetView(this->renderTarget, clearColor);
-        Device::context->ClearDepthStencilView(this->depthTarget, D3D11_CLEAR_DEPTH, 1.0f, 0);
-    }
-
     glm::mat4 viewMatrix;
     glm::mat4 projectionMatrix;
 
@@ -376,6 +356,27 @@ void Renderer::render(const Scene *scene, int width, int height, bool overrideCa
     this->renderList->clear();
     scene->fillRenderList(this->renderList);
     this->renderList->sort();
+
+    Device::context->IASetInputLayout(inputLayout);
+
+    // shadow maps
+    this->shadowRenderer->render(scene, this->renderList);
+
+    D3D11_VIEWPORT viewport;
+    viewport.Width = (float)backbufferWidth;
+    viewport.Height = (float)backbufferHeight;
+    viewport.MinDepth = 0.0f;
+    viewport.MaxDepth = 1.0f;
+    viewport.TopLeftX = 0;
+    viewport.TopLeftY = 0;
+    Device::context->RSSetViewports(1, &viewport);
+
+    float clearColor[] = { 1.0f, 1.0f, 0.0f, 1.0f };
+    {
+        GPUProfiler::ScopedProfile profile("Clear");
+        Device::context->ClearRenderTargetView(this->renderTarget, clearColor);
+        Device::context->ClearDepthStencilView(this->depthTarget, D3D11_CLEAR_DEPTH, 1.0f, 0);
+    }
 
     D3D11_MAPPED_SUBRESOURCE mappedResource;
     HRESULT res = Device::context->Map(this->cbScene, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
@@ -422,11 +423,6 @@ void Renderer::render(const Scene *scene, int width, int height, bool overrideCa
 
     Device::context->Unmap(this->cbScene, 0);
 
-    Device::context->IASetInputLayout(inputLayout);
-
-    // shadow maps
-    this->shadowRenderer->render(scene, this->renderList);
-
     Device::context->OMSetDepthStencilState(this->gBufferDepthState, 0);
 
     RenderTarget *radianceTarget = this->postProcessor->getRadianceTarget();
@@ -435,6 +431,10 @@ void Renderer::render(const Scene *scene, int width, int height, bool overrideCa
 
     Device::context->VSSetShader(standardVertexShader, NULL, 0);
     Device::context->PSSetShader(standardPixelShader, NULL, 0);
+
+    ID3D11Buffer *allConstantBuffers[] = { this->cbScene, this->cbMaterial, this->cbInstance };
+    Device::context->VSSetConstantBuffers(0, 3, allConstantBuffers);
+    Device::context->PSSetConstantBuffers(0, 3, allConstantBuffers);
 
     const std::vector<RenderList::Job> &jobs = this->renderList->getJobs();
 
