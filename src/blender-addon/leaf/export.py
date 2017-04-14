@@ -252,8 +252,6 @@ def export_mesh(mesh):
         "maxBound": max_bound
     }
 
-    print(json.dumps(data).encode("utf-8"))
-
     return json.dumps(data).encode("utf-8")
 
 def export_action(action):
