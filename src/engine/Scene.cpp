@@ -7,6 +7,7 @@
 #include <engine/ResourceManager.h>
 
 #include <engine/cJSON/cJSON.h>
+#include <engine/glm/gtc/matrix_transform.hpp>
 
 const std::string Scene::resourceClassName = "Scene";
 const std::string Scene::defaultResourceData = "{\"activeCamera\": 0, \"nodes\": [], \"markers\": []}";
@@ -116,6 +117,10 @@ void Scene::fillRenderList(RenderList *renderList) const
                 renderLight.direction = glm::vec3(-transform[2]);
                 renderLight.angle = light->getSpotAngle();
                 renderLight.blend = light->getSpotBlend();
+
+                glm::mat4 viewMatrix = glm::inverse(node->computeTransformMatrix());
+                glm::mat4 projectionMatrix = glm::perspective(light->getSpotAngle(), 1.0f, 0.1f, light->getRadius());
+                renderLight.shadowTransform = projectionMatrix * viewMatrix;
             }
 
             renderList->addLight(renderLight);

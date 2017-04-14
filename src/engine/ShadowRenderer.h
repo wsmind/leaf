@@ -2,6 +2,7 @@
 
 #include <d3d11.h>
 
+class RenderList;
 class Scene;
 
 class ShadowRenderer
@@ -10,7 +11,7 @@ class ShadowRenderer
         ShadowRenderer(int resolution);
         ~ShadowRenderer();
 
-        void render(const Scene *scene);
+        void render(const Scene *scene, const RenderList *renderList);
 
     private:
         ID3D11Texture2D *shadowMap;

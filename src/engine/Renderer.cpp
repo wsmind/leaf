@@ -425,7 +425,7 @@ void Renderer::render(const Scene *scene, int width, int height, bool overrideCa
     Device::context->IASetInputLayout(inputLayout);
 
     // shadow maps
-    this->shadowRenderer->render(scene);
+    this->shadowRenderer->render(scene, this->renderList);
 
     Device::context->OMSetDepthStencilState(this->gBufferDepthState, 0);
 
@@ -472,33 +472,6 @@ void Renderer::render(const Scene *scene, int width, int height, bool overrideCa
             Device::context->DrawIndexed(currentMesh->getIndexCount(), 0, 0);
         }
     }
-
-    // lighting pass
-    /*{
-        GPUProfiler::ScopedProfile profile("Lighting");
-
-        ID3D11SamplerState *gBufferSamplers[GBUFFER_PLANE_COUNT] = {
-            this->gBuffer[0]->getSamplerState(),
-            this->gBuffer[1]->getSamplerState()
-        };
-
-        ID3D11ShaderResourceView *gBufferSRVs[GBUFFER_PLANE_COUNT] = {
-            this->gBuffer[0]->getSRV(),
-            this->gBuffer[1]->getSRV()
-        };
-
-        RenderTarget *radianceTarget = this->postProcessor->getRadianceTarget();
-        ID3D11RenderTargetView *radianceTargetView = radianceTarget->getTarget();
-
-        Device::context->OMSetDepthStencilState(this->lightingDepthState, 0);
-        Device::context->OMSetRenderTargets(1, &radianceTargetView, this->depthTarget);
-        Device::context->VSSetShader(basicVertexShader, NULL, 0);
-        Device::context->PSSetShader(basicPixelShader, NULL, 0);
-        Device::context->PSSetSamplers(0, GBUFFER_PLANE_COUNT, gBufferSamplers);
-        Device::context->PSSetShaderResources(0, GBUFFER_PLANE_COUNT, gBufferSRVs);
-        this->fullscreenQuad->bind();
-        Device::context->DrawIndexed(this->fullscreenQuad->getIndexCount(), 0, 0);
-    }*/
 
     ID3D11ShaderResourceView *srvNulls[GBUFFER_PLANE_COUNT] = { nullptr, nullptr };
     Device::context->PSSetShaderResources(0, GBUFFER_PLANE_COUNT, srvNulls);

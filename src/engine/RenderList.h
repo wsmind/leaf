@@ -28,6 +28,7 @@ class RenderList
             glm::vec3 direction;
             float angle;
             float blend;
+            glm::mat4 shadowTransform;
         };
 
         void clear();
