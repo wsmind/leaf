@@ -1,4 +1,5 @@
 import bpy
+import math
 import mathutils
 import ctypes
 import json
@@ -193,6 +194,9 @@ def export_mesh(mesh):
     indices = []
     indexCount = 0
 
+    min_bound = (math.inf, math.inf, math.inf)
+    max_bound = (-math.inf, -math.inf, -math.inf)
+
     uv_layer = None
 
     if len(mesh.uv_layers) > 0 and len(mesh.uv_layers[0].data) > 0:
@@ -202,6 +206,10 @@ def export_mesh(mesh):
         mesh.calc_tangents()
 
     def output_vertex(loop_index):
+        nonlocal vertices
+        nonlocal min_bound
+        nonlocal max_bound
+
         loop = mesh.loops[loop_index]
         vertex = mesh.vertices[loop.vertex_index]
         uv = uv_layer.data[loop_index].uv if uv_layer else (vertex.co.x, vertex.co.y + vertex.co.z)
@@ -217,6 +225,9 @@ def export_mesh(mesh):
         vertices.append(loop.bitangent_sign)
         vertices.append(uv[0])
         vertices.append(uv[1])
+
+        min_bound = min(min_bound[0], vertex.co.x), min(min_bound[1], vertex.co.y), min(min_bound[2], vertex.co.y)
+        max_bound = max(max_bound[0], vertex.co.x), max(max_bound[1], vertex.co.y), max(max_bound[2], vertex.co.y)
 
     # export all loops
     for i in range(len(mesh.loops)):
@@ -236,8 +247,12 @@ def export_mesh(mesh):
         "vertexCount": vertexCount,
         "indices": indices,
         "indexCount": indexCount,
-        "material": mesh.materials[0].name if (len(mesh.materials) > 0 and mesh.materials[0]) else "__default"
+        "material": mesh.materials[0].name if (len(mesh.materials) > 0 and mesh.materials[0]) else "__default",
+        "minBound": min_bound,
+        "maxBound": max_bound
     }
+
+    print(json.dumps(data).encode("utf-8"))
 
     return json.dumps(data).encode("utf-8")
 
