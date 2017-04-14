@@ -19,6 +19,7 @@
 #include <engine/RenderTarget.h>
 #include <engine/ResourceManager.h>
 #include <engine/Scene.h>
+#include <engine/ShadowRenderer.h>
 #include <engine/Texture.h>
 
 #include <shaders/background.vs.hlsl.h>
@@ -191,6 +192,7 @@ Renderer::Renderer(HWND hwnd, int backbufferWidth, int backbufferHeight, bool ca
     //    this->gBuffer[i] = new RenderTarget(this->backbufferWidth, this->backbufferHeight, DXGI_FORMAT_R16G16B16A16_FLOAT);
 
     this->postProcessor = new PostProcessor(this->renderTarget);
+    this->shadowRenderer = new ShadowRenderer(512);
 
     if (this->capture)
     {
@@ -325,6 +327,7 @@ Renderer::~Renderer()
     this->backgroundDepthState->Release();
 
     delete this->postProcessor;
+    delete this->shadowRenderer;
 
     // make sure all graphics resources are released before destroying the context
     ResourceManager::getInstance()->clearPendingUnloads();
@@ -419,18 +422,8 @@ void Renderer::render(const Scene *scene, int width, int height, bool overrideCa
 
     Device::context->IASetInputLayout(inputLayout);
 
-    // G-Buffer pass
-    /*for (int i = 0; i < GBUFFER_PLANE_COUNT; i++)
-        Device::context->ClearRenderTargetView(this->gBuffer[i]->getTarget(), clearColor);
-
-    ID3D11RenderTargetView *gBufferTargets[GBUFFER_PLANE_COUNT] = {
-        this->gBuffer[0]->getTarget(),
-        this->gBuffer[1]->getTarget()
-    };
-    Device::context->OMSetRenderTargets(GBUFFER_PLANE_COUNT, gBufferTargets, this->depthTarget);
-
-    Device::context->VSSetShader(gbufferVertexShader, NULL, 0);
-    Device::context->PSSetShader(gbufferPixelShader, NULL, 0);*/
+    // shadow maps
+    this->shadowRenderer->render(scene);
 
     Device::context->OMSetDepthStencilState(this->gBufferDepthState, 0);
 

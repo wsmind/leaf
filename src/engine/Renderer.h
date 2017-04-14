@@ -12,6 +12,7 @@ class PostProcessor;
 class RenderList;
 class RenderTarget;
 class Scene;
+class ShadowRenderer;
 
 class Renderer
 {
@@ -68,4 +69,5 @@ class Renderer
         ID3D11DepthStencilState *backgroundDepthState;
 
         PostProcessor *postProcessor;
+        ShadowRenderer *shadowRenderer;
 };
