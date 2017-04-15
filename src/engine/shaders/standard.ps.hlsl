@@ -135,7 +135,9 @@ STANDARD_PS_OUTPUT main(STANDARD_PS_INPUT input)
         radiance += computeShading(surface, light, eye);
     }
 
-    output.radiance = float4(radiance, 1.0);
+    float transmittance = exp(input.viewPosition.z * mist);
+
+    output.radiance = float4(radiance * transmittance, 1.0);
 
 	return output;
 }

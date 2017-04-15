@@ -28,4 +28,5 @@ cbuffer SceneData : register(b0)
     float3 ambientColor;
     PointLightData pointLights[16];
     SpotLightData spotLights[16];
+    float mist;
 };

@@ -76,6 +76,8 @@ struct SceneState
     glm::vec3 ambientColor;
     PointLightData pointLights[16];
     SpotLightData spotLights[16];
+    float mist;
+    float _padding[3];
 };
 #pragma pack(pop)
 
@@ -390,6 +392,7 @@ void Renderer::render(const Scene *scene, int width, int height, bool overrideCa
     sceneState->viewProjectionInverseMatrix = glm::inverse(projectionMatrix * viewMatrix);
     sceneState->cameraPosition = glm::vec3(viewMatrixInverse[3][0], viewMatrixInverse[3][1], viewMatrixInverse[3][2]);
     sceneState->ambientColor = scene->getAmbientColor();
+    sceneState->mist = scene->getMist();
 
     const std::vector<RenderList::Light> &lights = this->renderList->getLights();
     sceneState->pointLightCount = 0;
