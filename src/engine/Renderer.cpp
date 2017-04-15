@@ -60,6 +60,8 @@ struct SpotLightData
     float cosAngleScale;
     glm::vec3 direction;
     float cosAngleOffset;
+    float scattering;
+    float _padding[3];
 };
 #pragma pack(pop)
 
@@ -76,10 +78,10 @@ struct SceneState
     int pointLightCount;
     int spotLightCount;
     glm::vec3 ambientColor;
-    PointLightData pointLights[MAX_LIGHT];
-    SpotLightData spotLights[MAX_LIGHT];
     float mist;
     float _padding[3];
+    PointLightData pointLights[MAX_LIGHT];
+    SpotLightData spotLights[MAX_LIGHT];
 };
 #pragma pack(pop)
 
@@ -424,6 +426,7 @@ void Renderer::render(const Scene *scene, int width, int height, bool overrideCa
             sceneState->spotLights[index].cosAngleScale = cosAngleScale;
             sceneState->spotLights[index].direction = lights[i].direction;
             sceneState->spotLights[index].cosAngleOffset = cosAngleOffset;
+            sceneState->spotLights[index].scattering = lights[i].scattering;
         }
     }
 

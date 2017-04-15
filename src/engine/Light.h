@@ -28,6 +28,7 @@ class Light: public Resource
         float getRadius() const { return this->radius; }
         float getSpotAngle() const { return this->spotAngle; }
         float getSpotBlend() const { return this->spotBlend; }
+        float getScattering() const { return this->scattering; }
 
     private:
         LightType type;
@@ -36,6 +37,7 @@ class Light: public Resource
         float radius;
         float spotAngle;
         float spotBlend;
+        float scattering;
 
         AnimationData *animation = nullptr;
 };

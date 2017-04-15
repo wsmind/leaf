@@ -121,6 +121,7 @@ void Scene::fillRenderList(RenderList *renderList) const
                 renderLight.direction = glm::vec3(-transform[2]);
                 renderLight.angle = light->getSpotAngle();
                 renderLight.blend = light->getSpotBlend();
+                renderLight.scattering = light->getScattering();
 
                 glm::mat4 viewMatrix = glm::inverse(node->computeTransformMatrix());
                 glm::mat4 projectionMatrix = glm::perspective(light->getSpotAngle(), 1.0f, 0.1f, light->getRadius());

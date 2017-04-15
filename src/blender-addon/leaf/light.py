@@ -7,6 +7,25 @@ from bpy.props import (BoolProperty,
                        IntProperty,
                        PointerProperty)
 
+class LeafLightSettings(bpy.types.PropertyGroup):
+    @classmethod
+    def register(cls):
+        bpy.types.Lamp.leaf = PointerProperty(
+            name="Leaf Lamp Settings",
+            description="Leaf lamp settings",
+            type=cls,
+        )
+        cls.scattering = FloatProperty(
+            name="Scattering",
+            min=-0.0, max=100.0,
+            default=0.0,
+            subtype="FACTOR"
+        )
+
+    @classmethod
+    def unregister(cls):
+        del bpy.types.Material.leaf
+
 class LeafLightButtonsPanel():
     bl_space_type = "PROPERTIES"
     bl_region_type = "WINDOW"
@@ -31,6 +50,7 @@ class LeafLight_PT_spot(LeafLightButtonsPanel, Panel):
         layout = self.layout
 
         lamp = context.lamp
+        leaf_lamp = lamp.leaf
 
         split = layout.split()
 
@@ -38,6 +58,7 @@ class LeafLight_PT_spot(LeafLightButtonsPanel, Panel):
         sub = col.column()
         sub.prop(lamp, "spot_size", text="Size")
         sub.prop(lamp, "spot_blend", text="Blend", slider=True)
+        sub.prop(leaf_lamp, "scattering", text="Scattering", slider=True)
 
         col = split.column()
         col.prop(lamp, "show_cone")

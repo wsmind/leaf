@@ -6,7 +6,7 @@
 #include <engine/PropertyMapping.h>
 
 const std::string Light::resourceClassName = "Light";
-const std::string Light::defaultResourceData = "{\"type\": 0,\"color\": [1.0, 1.0, 1.0], \"energy\": 1.0, \"radius\": 1.0, \"spotAngle\": 3.14, \"spotBlend\": 1.0}";
+const std::string Light::defaultResourceData = "{\"type\": 0,\"color\": [1.0, 1.0, 1.0], \"energy\": 1.0, \"radius\": 1.0, \"spotAngle\": 3.14, \"spotBlend\": 1.0, \"scattering\": 0.0}";
 
 void Light::load(const unsigned char *buffer, size_t size)
 {
@@ -19,6 +19,7 @@ void Light::load(const unsigned char *buffer, size_t size)
     this->radius = (float)cJSON_GetObjectItem(json, "radius")->valuedouble;
     this->spotAngle = (float)cJSON_GetObjectItem(json, "spotAngle")->valuedouble;
     this->spotBlend = (float)cJSON_GetObjectItem(json, "spotBlend")->valuedouble;
+    this->scattering = (float)cJSON_GetObjectItem(json, "scattering")->valuedouble;
 
     cJSON *animation = cJSON_GetObjectItem(json, "animation");
     if (animation)
@@ -29,6 +30,7 @@ void Light::load(const unsigned char *buffer, size_t size)
         properties.add("distance", &this->radius);
         properties.add("spot_size", &this->spotAngle);
         properties.add("spot_blend", &this->spotBlend);
+        properties.add("leaf.scattering", &this->scattering);
 
         this->animation = new AnimationData(animation, properties);
         AnimationPlayer::globalPlayer.registerAnimation(this->animation);

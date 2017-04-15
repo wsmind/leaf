@@ -15,6 +15,7 @@ struct SpotLightData
     float cosAngleScale;
     float3 direction;
     float cosAngleOffset;
+    float scattering;
 };
 
 cbuffer SceneData : register(b0)
@@ -28,7 +29,7 @@ cbuffer SceneData : register(b0)
     int pointLightCount;
     int spotLightCount;
     float3 ambientColor;
+    float mist;
     PointLightData pointLights[MAX_LIGHT];
     SpotLightData spotLights[MAX_LIGHT];
-    float mist;
 };

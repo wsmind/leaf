@@ -307,7 +307,8 @@ def export_light(light):
         "radius": light.distance,
         "type": export_light_type(light.type),
         "spotAngle": light.spot_size if light.type == "SPOT" else 0,
-        "spotBlend": light.spot_blend if light.type == "SPOT" else 0
+        "spotBlend": light.spot_blend if light.type == "SPOT" else 0,
+        "scattering": light.leaf.scattering
     }
 
     if light.animation_data:

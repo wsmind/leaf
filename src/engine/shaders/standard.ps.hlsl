@@ -143,7 +143,11 @@ STANDARD_PS_OUTPUT main(STANDARD_PS_INPUT input)
 
         radiance += computeShading(surface, light, eye);
 
+        if (spotLights[i].scattering == 0.0)
+            continue;
+
         float3 samplePosition = cameraPosition;
+        float3 sampledScattering = float3(0.0, 0.0, 0.0);
         for (int k = 0; k < MARCHING_ITERATIONS; k++)
         {
             float3 lightVector2 = spotLights[i].position - samplePosition;
@@ -154,15 +158,17 @@ STANDARD_PS_OUTPUT main(STANDARD_PS_INPUT input)
             float shadowFactor2 = sampleShadowMap(i, samplePosition);
             float3 radiance2 = spotLights[i].color * computeLightFalloff(lightDistance, spotLights[i].radius) * angleFalloff2 * shadowFactor2;
 
-            inScattering += stepLength * radiance2 * exp(-opticalDepth);
+            sampledScattering += stepLength * radiance2 * exp(-opticalDepth);
 
             samplePosition += input.marchingStep;
         }
+
+        inScattering += sampledScattering * spotLights[i].scattering;
     }
 
     float transmittance = exp(input.viewPosition.z * mist);
 
-    output.radiance = float4(radiance * transmittance + mist * inScattering, 1.0);
+    output.radiance = float4(lerp(ambientColor, radiance, transmittance) + inScattering, 1.0);
 
 	return output;
 }

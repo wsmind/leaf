@@ -29,6 +29,7 @@ class RenderList
             float angle;
             float blend;
             glm::mat4 shadowTransform;
+            float scattering;
         };
 
         void clear();
