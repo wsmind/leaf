@@ -62,6 +62,20 @@ float computeLightFalloff(float distance, float radius)
     return numerator / (distance * distance + 1.0);
 }
 
+float sampleShadowMap(int index, float3 worldPosition)
+{
+    float4 shadowCoords = mul(lightMatrix[index], float4(worldPosition, 1.0));
+    shadowCoords.z = (shadowCoords.z + shadowCoords.w) * 0.5; // hack; GL to DX clip space
+    shadowCoords /= shadowCoords.w;
+    shadowCoords.xy = shadowCoords.xy * 0.125 + 0.125 + 0.25 * float2(index % 4.0, floor(float(index) / 4.0));
+    shadowCoords.y = 1.0 - shadowCoords.y;
+
+    float bias = 0.0005;
+    float shadowFactor = (shadowMap.Sample(shadowMapSampler, shadowCoords.xy).r >= shadowCoords.z - bias);
+
+    return shadowFactor;
+}
+
 STANDARD_PS_OUTPUT main(STANDARD_PS_INPUT input)
 {
     STANDARD_PS_OUTPUT output;
@@ -109,19 +123,14 @@ STANDARD_PS_OUTPUT main(STANDARD_PS_INPUT input)
     }
 
     // spot lights
+    float3 inScattering = float3(0.0, 0.0, 0.0);
+    float stepLength = length(input.marchingStep);
     for (int i = 0; i < spotLightCount; i++)
     {
         float3 lightVector = spotLights[i].position - input.worldPosition;
         float lightDistance = length(lightVector);
 
-        float4 shadowCoords = mul(lightMatrix[i], float4(input.worldPosition, 1.0));
-        shadowCoords.z = (shadowCoords.z + shadowCoords.w) * 0.5; // hack; GL to DX clip space
-        shadowCoords /= shadowCoords.w;
-        shadowCoords.xy = shadowCoords.xy * 0.125 + 0.125 + 0.25 * float2(i % 4.0, floor(float(i) / 4.0));
-        shadowCoords.y = 1.0 - shadowCoords.y;
-
-        float bias = 0.0005;
-        float shadowFactor = (shadowMap.Sample(shadowMapSampler, shadowCoords.xy).r >= shadowCoords.z - bias);
+        float shadowFactor = sampleShadowMap(i, input.worldPosition);
 
         LightProperties light;
         light.direction = lightVector / lightDistance;
@@ -133,11 +142,27 @@ STANDARD_PS_OUTPUT main(STANDARD_PS_INPUT input)
         light.incomingRadiance *= angleFalloff;
 
         radiance += computeShading(surface, light, eye);
+
+        float3 samplePosition = cameraPosition;
+        for (int k = 0; k < MARCHING_ITERATIONS; k++)
+        {
+            float3 lightVector2 = spotLights[i].position - samplePosition;
+            float lightDistance2 = length(lightVector2);
+            float opticalDepth = distance(cameraPosition, samplePosition) + lightDistance2;
+            float angleFalloff2 = saturate(dot(-lightVector2 / lightDistance2, spotLights[i].direction) * spotLights[i].cosAngleScale + spotLights[i].cosAngleOffset);
+            angleFalloff2 *= angleFalloff2; // more natural square attenuation
+            float shadowFactor2 = sampleShadowMap(i, samplePosition);
+            float3 radiance2 = spotLights[i].color * computeLightFalloff(lightDistance, spotLights[i].radius) * angleFalloff2 * shadowFactor2;
+
+            inScattering += stepLength * radiance2 * exp(-opticalDepth);
+
+            samplePosition += input.marchingStep;
+        }
     }
 
     float transmittance = exp(input.viewPosition.z * mist);
 
-    output.radiance = float4(radiance * transmittance, 1.0);
+    output.radiance = float4(radiance * transmittance + mist * inScattering, 1.0);
 
 	return output;
 }

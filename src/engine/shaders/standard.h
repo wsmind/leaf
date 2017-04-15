@@ -22,6 +22,7 @@ struct STANDARD_PS_INPUT
     float4 position : SV_POSITION;
     float3 worldPosition : POSITION0;
     float3 viewPosition : POSITION1;
+    float3 marchingStep : POSITION2;
     float3 normal : NORMAL;
     float4 tangent : TANGENT;
     float2 uv : TEXCOORD;
@@ -31,3 +32,5 @@ struct STANDARD_PS_OUTPUT
 {
     float4 radiance : SV_TARGET;
 };
+
+#define MARCHING_ITERATIONS 64

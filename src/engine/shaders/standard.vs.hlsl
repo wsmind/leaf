@@ -23,6 +23,7 @@ STANDARD_PS_INPUT main(VS_INPUT input)
 
     output.worldPosition = worldPosition.xyz;
     output.viewPosition = viewPosition.xyz;
+    output.marchingStep = (output.worldPosition - cameraPosition) / MARCHING_ITERATIONS;
     output.normal = mul(normalMatrix, input.normal);
     output.tangent = float4(mul(normalMatrix, input.tangent.xyz), input.tangent.w);
     output.uv = float2(input.uv.x, 1.0 - input.uv.y);
