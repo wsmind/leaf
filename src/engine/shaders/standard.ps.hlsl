@@ -121,7 +121,8 @@ STANDARD_PS_OUTPUT main(STANDARD_PS_INPUT input)
         shadowCoords.xy = shadowCoords.xy * 0.125 + 0.125 +0.25 * float2(i % 4.0, floor(float(i) / 4.0));
         shadowCoords.y = 1.0 - shadowCoords.y;
 
-        float shadowFactor = (shadowMap.Sample(shadowMapSampler, shadowCoords.xy).r >= shadowCoords.z);
+        float bias = 0.0005;
+        float shadowFactor = (shadowMap.Sample(shadowMapSampler, shadowCoords.xy).r >= shadowCoords.z - bias);
 
         LightProperties light;
         light.direction = lightVector / lightDistance;
