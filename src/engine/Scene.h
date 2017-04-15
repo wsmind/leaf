@@ -15,21 +15,24 @@
 class AnimationData;
 class RenderList;
 
-class Scene: public Resource
+class Scene : public Resource
 {
     public:
-        static const std::string resourceClassName;
-        static const std::string defaultResourceData;
+    static const std::string resourceClassName;
+    static const std::string defaultResourceData;
 
-        Scene(): currentCamera(0) {}
+    Scene() : currentCamera(0) {}
 
-        virtual void load(const unsigned char *buffer, size_t size) override;
-        virtual void unload() override;
+    virtual void load(const unsigned char *buffer, size_t size) override;
+    virtual void unload() override;
 
-        void updateAnimation(float time);
+    void updateAnimation(float time);
 
-        void fillRenderList(RenderList *renderList) const;
-        void setupCameraMatrices(glm::mat4 &viewMatrix, glm::mat4 &projectionMatrix, float aspect) const;
+    void fillRenderList(RenderList *renderList) const;
+    void setupCameraMatrices(glm::mat4 &viewMatrix, glm::mat4 &projectionMatrix, float aspect) const;
+
+    glm::vec3 getAmbientColor() const { return this->ambientColor; }
+    float getMist() const { return this->mist; }
 
     private:
         int findCurrentCamera(float time);
@@ -52,4 +55,7 @@ class Scene: public Resource
 
         int currentCamera; // computed through markers, defaults to activeCamera if no markers
         int activeCamera; // active camera at the time of export
+
+        glm::vec3 ambientColor;
+        float mist;
 };

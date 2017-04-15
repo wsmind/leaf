@@ -86,10 +86,19 @@ def export_scene(scene):
     objects = scene.objects[:]
     objects = sorted(objects, key = lambda obj: compute_parent_depth(obj))
 
+    ambient = [0.0, 0.0, 0.0]
+    mist = 0.0
+    world = scene.world
+    if world:
+        ambient = [world.ambient_color.r, world.ambient_color.g, world.ambient_color.b]
+        mist = world.mist_settings.intensity
+
     data = {
         "nodes": [export_scene_node(obj, objects) for obj in objects],
         "markers": [export_marker(marker, objects) for marker in markers],
-        "activeCamera": objects.index(scene.camera) if scene.camera else 0
+        "activeCamera": objects.index(scene.camera) if scene.camera else 0,
+        "ambientColor": ambient,
+        "mist": mist
     }
 
     return json.dumps(data).encode("utf-8")

@@ -10,7 +10,7 @@
 #include <engine/glm/gtc/matrix_transform.hpp>
 
 const std::string Scene::resourceClassName = "Scene";
-const std::string Scene::defaultResourceData = "{\"activeCamera\": 0, \"nodes\": [], \"markers\": []}";
+const std::string Scene::defaultResourceData = "{\"activeCamera\": 0, \"nodes\": [], \"markers\": [], \"ambientColor\": [0.0, 0.0, 0.0], \"mist\": 0.0}";
 
 void Scene::load(const unsigned char *buffer, size_t size)
 {
@@ -55,6 +55,10 @@ void Scene::load(const unsigned char *buffer, size_t size)
 
         markerJson = markerJson->next;
     }
+
+    cJSON *ambientJson = cJSON_GetObjectItem(json, "ambientColor");
+    this->ambientColor = glm::vec3(cJSON_GetArrayItem(ambientJson, 0)->valuedouble, cJSON_GetArrayItem(ambientJson, 1)->valuedouble, cJSON_GetArrayItem(ambientJson, 2)->valuedouble);
+    this->mist = (float)cJSON_GetObjectItem(json, "mist")->valuedouble;
 
     cJSON_Delete(json);
 }

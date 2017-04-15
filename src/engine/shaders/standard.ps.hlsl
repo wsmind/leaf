@@ -66,7 +66,7 @@ STANDARD_PS_OUTPUT main(STANDARD_PS_INPUT input)
 {
     STANDARD_PS_OUTPUT output;
 
-    float3 radiance = float3(0.0, 0.0, 0.0);
+    float3 radiance = ambientColor;
 
     const float3 view = cameraPosition - input.worldPosition;
     const float3 eye = normalize(view);
@@ -109,7 +109,6 @@ STANDARD_PS_OUTPUT main(STANDARD_PS_INPUT input)
     }
 
     // spot lights
-    float3 plop = float3(0.0, 0.0, 0.0);
     for (int i = 0; i < spotLightCount; i++)
     {
         float3 lightVector = spotLights[i].position - input.worldPosition;

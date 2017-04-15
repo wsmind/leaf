@@ -25,6 +25,7 @@ cbuffer SceneData : register(b0)
     float3 cameraPosition;
     int pointLightCount;
     int spotLightCount;
+    float3 ambientColor;
     PointLightData pointLights[16];
     SpotLightData spotLights[16];
 };

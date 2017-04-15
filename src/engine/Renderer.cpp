@@ -73,7 +73,7 @@ struct SceneState
     glm::vec3 cameraPosition;
     int pointLightCount;
     int spotLightCount;
-    float _padding[3];
+    glm::vec3 ambientColor;
     PointLightData pointLights[16];
     SpotLightData spotLights[16];
 };
@@ -389,6 +389,7 @@ void Renderer::render(const Scene *scene, int width, int height, bool overrideCa
     sceneState->projectionMatrixInverse = glm::inverse(projectionMatrix);
     sceneState->viewProjectionInverseMatrix = glm::inverse(projectionMatrix * viewMatrix);
     sceneState->cameraPosition = glm::vec3(viewMatrixInverse[3][0], viewMatrixInverse[3][1], viewMatrixInverse[3][2]);
+    sceneState->ambientColor = scene->getAmbientColor();
 
     const std::vector<RenderList::Light> &lights = this->renderList->getLights();
     sceneState->pointLightCount = 0;
