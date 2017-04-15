@@ -118,7 +118,7 @@ STANDARD_PS_OUTPUT main(STANDARD_PS_INPUT input)
         float4 shadowCoords = mul(lightMatrix[i], float4(input.worldPosition, 1.0));
         shadowCoords.z = (shadowCoords.z + shadowCoords.w) * 0.5; // hack; GL to DX clip space
         shadowCoords /= shadowCoords.w;
-        shadowCoords.xy = shadowCoords.xy * 0.125 + 0.125 +0.25 * float2(i % 4.0, floor(float(i) / 4.0));
+        shadowCoords.xy = shadowCoords.xy * 0.125 + 0.125 + 0.25 * float2(i % 4.0, floor(float(i) / 4.0));
         shadowCoords.y = 1.0 - shadowCoords.y;
 
         float bias = 0.0005;
