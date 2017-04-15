@@ -436,6 +436,8 @@ void Renderer::render(const Scene *scene, int width, int height, bool overrideCa
     Device::context->VSSetConstantBuffers(0, 3, allConstantBuffers);
     Device::context->PSSetConstantBuffers(0, 3, allConstantBuffers);
 
+    this->shadowRenderer->bind();
+
     const std::vector<RenderList::Job> &jobs = this->renderList->getJobs();
 
     {
@@ -473,8 +475,7 @@ void Renderer::render(const Scene *scene, int width, int height, bool overrideCa
         }
     }
 
-    ID3D11ShaderResourceView *srvNulls[GBUFFER_PLANE_COUNT] = { nullptr, nullptr };
-    Device::context->PSSetShaderResources(0, GBUFFER_PLANE_COUNT, srvNulls);
+    this->shadowRenderer->unbind();
 
     // background pass
     {

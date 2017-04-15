@@ -87,6 +87,9 @@
     <ClInclude Include="..\..\src\engine\shaders\depthonly.h">
       <Filter>shaders</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\engine\shaders\shadows.h">
+      <Filter>shaders</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\..\src\engine\shaders\plop.vs.hlsl">

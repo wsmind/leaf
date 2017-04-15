@@ -1,4 +1,5 @@
 #include "scene.h"
+#include "shadows.h"
 #include "standard.h"
 
 float g1v(float dotNV, float k)
@@ -108,14 +109,23 @@ STANDARD_PS_OUTPUT main(STANDARD_PS_INPUT input)
     }
 
     // spot lights
+    float3 plop = float3(0.0, 0.0, 0.0);
     for (int i = 0; i < spotLightCount; i++)
     {
         float3 lightVector = spotLights[i].position - input.worldPosition;
         float lightDistance = length(lightVector);
 
+        float4 shadowCoords = mul(lightMatrix[i], float4(input.worldPosition, 1.0));
+        shadowCoords.z = (shadowCoords.z + shadowCoords.w) * 0.5; // hack; GL to DX clip space
+        shadowCoords /= shadowCoords.w;
+        shadowCoords.xy = shadowCoords.xy * 0.125 + 0.125 +0.25 * float2(i % 4.0, floor(float(i) / 4.0));
+        shadowCoords.y = 1.0 - shadowCoords.y;
+
+        float shadowFactor = (shadowMap.Sample(shadowMapSampler, shadowCoords.xy).r >= shadowCoords.z);
+
         LightProperties light;
         light.direction = lightVector / lightDistance;
-        light.incomingRadiance = spotLights[i].color * computeLightFalloff(lightDistance, spotLights[i].radius);
+        light.incomingRadiance = spotLights[i].color * computeLightFalloff(lightDistance, spotLights[i].radius) * shadowFactor;
 
         // angle falloff (scale and offset are precomputed on CPU according to the inner and outer angles)
         float angleFalloff = saturate(dot(-light.direction, spotLights[i].direction) * spotLights[i].cosAngleScale + spotLights[i].cosAngleOffset);
