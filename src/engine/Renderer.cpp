@@ -37,6 +37,8 @@ static const unsigned char blackDDS[] = { 68, 68, 83, 32, 124, 0, 0, 0, 7, 16, 2
 static const unsigned char whiteDDS[] = { 68, 68, 83, 32, 124, 0, 0, 0, 7, 16, 2, 0, 4, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 85, 86, 69, 82, 0, 0, 0, 0, 78, 86, 84, 84, 0, 1, 2, 0, 32, 0, 0, 0, 4, 0, 0, 0, 68, 88, 49, 48, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 16, 64, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 71, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 255, 255, 255, 255, 170, 170, 170, 170, 255, 255, 255, 255, 170, 170, 170, 170, 255, 255, 255, 255, 170, 170, 170, 170 };
 static const unsigned char normalDDS[] = { 68, 68, 83, 32, 124, 0, 0, 0, 7, 16, 2, 0, 4, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 85, 86, 69, 82, 0, 0, 0, 0, 78, 86, 84, 84, 0, 1, 2, 0, 32, 0, 0, 0, 4, 0, 0, 128, 68, 88, 49, 48, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 16, 64, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 71, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 255, 139, 31, 124, 255, 255, 255, 255, 255, 139, 31, 124, 255, 255, 255, 255, 255, 139, 31, 124, 255, 255, 255, 255 };
 
+#define MAX_LIGHT 8
+
 #pragma pack(push)
 #pragma pack(16)
 struct PointLightData
@@ -74,8 +76,8 @@ struct SceneState
     int pointLightCount;
     int spotLightCount;
     glm::vec3 ambientColor;
-    PointLightData pointLights[16];
-    SpotLightData spotLights[16];
+    PointLightData pointLights[MAX_LIGHT];
+    SpotLightData spotLights[MAX_LIGHT];
     float mist;
     float _padding[3];
 };
@@ -399,7 +401,7 @@ void Renderer::render(const Scene *scene, int width, int height, bool overrideCa
     sceneState->spotLightCount = 0;
     for (int i = 0; i < lights.size(); i++)
     {
-        if (!lights[i].spot && sceneState->pointLightCount < 16)
+        if (!lights[i].spot && sceneState->pointLightCount < MAX_LIGHT)
         {
             int index = sceneState->pointLightCount++;
             sceneState->pointLights[index].position = lights[i].position;
@@ -407,7 +409,7 @@ void Renderer::render(const Scene *scene, int width, int height, bool overrideCa
             sceneState->pointLights[index].color = lights[i].color;
         }
 
-        if (lights[i].spot && sceneState->spotLightCount < 16)
+        if (lights[i].spot && sceneState->spotLightCount < MAX_LIGHT)
         {
             // angle falloff precomputations
             float cosOuterAngle = cosf(lights[i].angle * 0.5f);

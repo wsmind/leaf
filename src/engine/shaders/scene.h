@@ -1,3 +1,5 @@
+#define MAX_LIGHT 8
+
 struct PointLightData
 {
     float3 position;
@@ -26,7 +28,7 @@ cbuffer SceneData : register(b0)
     int pointLightCount;
     int spotLightCount;
     float3 ambientColor;
-    PointLightData pointLights[16];
-    SpotLightData spotLights[16];
+    PointLightData pointLights[MAX_LIGHT];
+    SpotLightData spotLights[MAX_LIGHT];
     float mist;
 };
