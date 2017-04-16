@@ -141,7 +141,7 @@ void Scene::setupCameraMatrices(glm::mat4 &viewMatrix, glm::mat4 &projectionMatr
     SceneNode *node = this->nodes[this->currentCamera];
     Camera *camera = node->getData<Camera>();
 
-    viewMatrix = glm::inverse(node->computeTransformMatrix());
+    viewMatrix = glm::inverse(node->computeTransformMatrix(true));
     camera->computeProjectionMatrix(projectionMatrix, aspect);
 }
 
