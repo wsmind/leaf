@@ -19,7 +19,7 @@ class Material: public Resource
             glm::vec3 baseColorMultiplier;
             float metallicOffset;
             float roughnessOffset;
-            float _padding[3];
+            glm::vec3 emissive;
         };
         #pragma pack(pop)
 

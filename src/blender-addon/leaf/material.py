@@ -5,7 +5,8 @@ from bpy.props import (BoolProperty,
                        EnumProperty,
                        FloatProperty,
                        IntProperty,
-                       PointerProperty)
+                       PointerProperty,
+                       FloatVectorProperty)
 
 class LeafMaterialSettings(bpy.types.PropertyGroup):
     @classmethod
@@ -28,6 +29,12 @@ class LeafMaterialSettings(bpy.types.PropertyGroup):
             min=-1.0, max=1.0,
             default=0.0,
             subtype="FACTOR"
+        )
+        cls.emissive = FloatVectorProperty(
+            name="Emissive",
+            subtype='COLOR',
+            description="Unshaded color",
+            default=[0.0, 0.0, 0.0]
         )
 
     @classmethod
@@ -116,5 +123,6 @@ class LeafMaterial_PT_surface(LeafMaterialButtonsPanel, Panel):
         lmat = context.material.leaf
 
         layout.prop(mat, "diffuse_color", text="Base Color")
+        layout.prop(lmat, "emissive")
         layout.prop(lmat, "metallic_offset")
         layout.prop(lmat, "roughness_offset")

@@ -155,6 +155,7 @@ def export_material(mtl):
     lmtl = mtl.leaf
     data = {
         "baseColorMultiplier": [mtl.diffuse_color.r, mtl.diffuse_color.g, mtl.diffuse_color.b],
+        "emissive": [lmtl.emissive.r, lmtl.emissive.g, lmtl.emissive.b],
         "metallicOffset": lmtl.metallic_offset,
         "roughnessOffset": lmtl.roughness_offset,
         "baseColorMap": mtl.texture_slots[0].name if mtl.texture_slots[0] and mtl.texture_slots[0].use else "__default_white",

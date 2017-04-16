@@ -10,14 +10,16 @@
 #include <engine/cJSON/cJSON.h>
 
 const std::string Material::resourceClassName = "Material";
-const std::string Material::defaultResourceData = "{\"baseColorMultiplier\": [1.0, 1.0, 1.0], \"metallicOffset\": 0.0, \"roughnessOffset\": 0.0, \"baseColorMap\": \"__default\", \"normalMap\": \"__default\", \"metallicMap\": \"__default\", \"roughnessMap\": \"__default\"}";
+const std::string Material::defaultResourceData = "{\"baseColorMultiplier\": [1.0, 1.0, 1.0], \"emissive\": [0.0, 0.0, 0.0], \"metallicOffset\": 0.0, \"roughnessOffset\": 0.0, \"baseColorMap\": \"__default\", \"normalMap\": \"__default\", \"metallicMap\": \"__default\", \"roughnessMap\": \"__default\"}";
 
 void Material::load(const unsigned char *buffer, size_t size)
 {
     cJSON *json = cJSON_Parse((const char *)buffer);
 
     cJSON *diffuse = cJSON_GetObjectItem(json, "baseColorMultiplier");
+    cJSON *emissive = cJSON_GetObjectItem(json, "emissive");
     this->data.baseColorMultiplier = glm::vec3(cJSON_GetArrayItem(diffuse, 0)->valuedouble, cJSON_GetArrayItem(diffuse, 1)->valuedouble, cJSON_GetArrayItem(diffuse, 2)->valuedouble);
+    this->data.emissive = glm::vec3(cJSON_GetArrayItem(emissive, 0)->valuedouble, cJSON_GetArrayItem(emissive, 1)->valuedouble, cJSON_GetArrayItem(emissive, 2)->valuedouble);
     this->data.metallicOffset = (float)cJSON_GetObjectItem(json, "metallicOffset")->valuedouble;
     this->data.roughnessOffset = (float)cJSON_GetObjectItem(json, "roughnessOffset")->valuedouble;
 
@@ -31,6 +33,7 @@ void Material::load(const unsigned char *buffer, size_t size)
     {
         PropertyMapping properties;
         properties.add("diffuse_color", (float *)&this->data.baseColorMultiplier);
+        properties.add("leaf.emissive", (float *)&this->data.emissive);
         properties.add("leaf.metallic_offset", &this->data.metallicOffset);
         properties.add("leaf.roughness_offset", &this->data.roughnessOffset);
 

@@ -80,7 +80,7 @@ STANDARD_PS_OUTPUT main(STANDARD_PS_INPUT input)
 {
     STANDARD_PS_OUTPUT output;
 
-    float3 radiance = ambientColor;
+    float3 radiance = ambientColor + emissive;
 
     const float3 view = cameraPosition - input.worldPosition;
     const float3 eye = normalize(view);

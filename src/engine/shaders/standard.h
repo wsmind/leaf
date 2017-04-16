@@ -3,6 +3,7 @@ cbuffer StandardMaterialData : register(b1)
     float3 baseColorMultiplier;
     float metallicOffset;
     float roughnessOffset;
+    float3 emissive;
 };
 
 Texture2D<float4> baseColorMap: register(t0);
