@@ -32,8 +32,8 @@ ShadowRenderer::ShadowRenderer(int resolution)
 
     D3D11_TEXTURE2D_DESC shadowMapDesc;
     ZeroMemory(&shadowMapDesc, sizeof(shadowMapDesc));
-    shadowMapDesc.Width = resolution * 4;
-    shadowMapDesc.Height = resolution * 4;
+    shadowMapDesc.Width = resolution;// *4;
+    shadowMapDesc.Height = resolution;// *4;
     shadowMapDesc.MipLevels = 1;
     shadowMapDesc.ArraySize = 1;
     shadowMapDesc.Format = DXGI_FORMAT_R24G8_TYPELESS;
@@ -160,8 +160,8 @@ void ShadowRenderer::render(const Scene *scene, const RenderList *renderList)
         viewport.Height = (float)this->resolution;
         viewport.MinDepth = 0.0f;
         viewport.MaxDepth = 1.0f;
-        viewport.TopLeftX = (float)((index % 4) * this->resolution);
-        viewport.TopLeftY = (float)((3 - (index / 4)) * this->resolution);
+        viewport.TopLeftX = 0.0f; // (float)((index % 4) * this->resolution);
+        viewport.TopLeftY = 0.0f; // (float)((3 - (index / 4)) * this->resolution);
         Device::context->RSSetViewports(1, &viewport);
 
         Device::context->OMSetDepthStencilState(this->depthState, 0);

@@ -25,7 +25,7 @@ POSTPROCESS_PS_OUTPUT main(POSTPROCESS_PS_INPUT input)
         float3 radiance = radianceTexture.Load(input.uv * float2(width, height), i).rgb;
 
         // tone mapping (also applies gamma correction)
-        color += reinhardToneMapping(radiance);
+        color += filmicToneMapping(radiance);
     }
     color *= 0.25;
 
