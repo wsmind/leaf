@@ -68,7 +68,9 @@ SceneNode::SceneNode(const cJSON *json, const SceneNode *parent)
 SceneNode::~SceneNode()
 {
     delete this->animation;
-    ResourceManager::getInstance()->releaseResource(this->data);
+
+    if (this->data != nullptr)
+        ResourceManager::getInstance()->releaseResource(this->data);
 }
 
 void SceneNode::registerAnimation(AnimationPlayer *player) const
