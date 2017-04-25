@@ -203,6 +203,7 @@
     </ClInclude>
     <ClInclude Include="..\..\src\engine\SceneNode.h" />
     <ClInclude Include="..\..\src\engine\shaders\depthonly.h" />
+    <ClInclude Include="..\..\src\engine\shaders\Fxaa3_11.h" />
     <ClInclude Include="..\..\src\engine\shaders\gamma.h" />
     <ClInclude Include="..\..\src\engine\shaders\instance.h" />
     <ClInclude Include="..\..\src\engine\shaders\postprocess.h" />

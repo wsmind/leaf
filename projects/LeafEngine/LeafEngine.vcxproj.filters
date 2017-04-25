@@ -90,6 +90,9 @@
     <ClInclude Include="..\..\src\engine\shaders\shadows.h">
       <Filter>shaders</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\engine\shaders\Fxaa3_11.h">
+      <Filter>shaders</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\..\src\engine\shaders\plop.vs.hlsl">
