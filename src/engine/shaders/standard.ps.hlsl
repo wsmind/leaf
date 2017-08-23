@@ -153,7 +153,7 @@ STANDARD_PS_OUTPUT main(STANDARD_PS_INPUT input)
         {
             float3 lightVector2 = spotLights[i].position - samplePosition;
             float lightDistance2 = length(lightVector2);
-            float opticalDepth = distance(cameraPosition, samplePosition) + lightDistance2;
+            float opticalDepth = /*distance(cameraPosition, samplePosition) +*/ lightDistance2;
             float angleFalloff2 = saturate(dot(-lightVector2 / lightDistance2, spotLights[i].direction) * spotLights[i].cosAngleScale + spotLights[i].cosAngleOffset);
             angleFalloff2 *= angleFalloff2; // more natural square attenuation
             float shadowFactor2 = sampleShadowMap(i, samplePosition);
