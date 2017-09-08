@@ -31,7 +31,7 @@ class Scene : public Resource
     void updateTransforms();
 
     void fillRenderList(RenderList *renderList) const;
-    void setupCameraMatrices(glm::mat4 &viewMatrix, glm::mat4 &projectionMatrix, float aspect) const;
+    void setupCamera(glm::mat4 &viewMatrix, glm::mat4 &projectionMatrix, float &shutterSpeed, float aspect) const;
 
     glm::vec3 getAmbientColor() const { return this->ambientColor; }
     float getMist() const { return this->mist; }

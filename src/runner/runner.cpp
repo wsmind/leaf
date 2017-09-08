@@ -80,11 +80,17 @@ int main(int argc, char **argv)
         sndPlaySound((LPCSTR)audioBuffer, SND_ASYNC | SND_MEMORY);
 
     DWORD startTime = timeGetTime();
+    DWORD previousTime = startTime;
     while (!GetAsyncKeyState(VK_ESCAPE))
     {
-        float time = (float)(timeGetTime() - startTime) * 0.001f * fps + startFrame;
-        leaf_update_animation(time);
-        leaf_render(width, height);
+        DWORD currentTime = timeGetTime();
+        float deltaTime = (float)(currentTime - previousTime) * 0.001f;
+        previousTime = currentTime;
+
+        float animationTime = (float)(currentTime - startTime) * 0.001f * fps + startFrame;
+        leaf_update_animation(animationTime);
+
+        leaf_render(width, height, deltaTime);
     }
 
     ShowCursor(TRUE);

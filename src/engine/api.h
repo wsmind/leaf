@@ -13,5 +13,5 @@ LEAFENGINE_API void leaf_load_data(const void *data, size_t size);
 
 LEAFENGINE_API void leaf_update_animation(float time);
 
-LEAFENGINE_API void leaf_render(int width, int height);
+LEAFENGINE_API void leaf_render(int width, int height, float deltaTime);
 LEAFENGINE_API void leaf_render_blender_viewport(int width, int height, float view_matrix[], float projection_matrix[]);

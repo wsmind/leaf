@@ -80,7 +80,8 @@ struct SceneState
     int spotLightCount;
     glm::vec3 ambientColor;
     float mist;
-    float _padding[3];
+    float motionSpeedFactor; // shutter speed / delta time 
+    float _padding[2];
     PointLightData pointLights[MAX_LIGHT];
     SpotLightData spotLights[MAX_LIGHT];
 };
@@ -342,12 +343,13 @@ Renderer::~Renderer()
     Device::device->Release();
 }
 
-void Renderer::render(const Scene *scene, int width, int height, bool overrideCamera, const glm::mat4 &viewMatrixOverride, const glm::mat4 &projectionMatrixOverride)
+void Renderer::render(const Scene *scene, int width, int height, bool overrideCamera, const glm::mat4 &viewMatrixOverride, const glm::mat4 &projectionMatrixOverride, float deltaTime)
 {
     GPUProfiler::getInstance()->beginFrame();
 
     glm::mat4 viewMatrix;
     glm::mat4 projectionMatrix;
+    float shutterSpeed = 0.01f;
 
     if (overrideCamera)
     {
@@ -358,7 +360,7 @@ void Renderer::render(const Scene *scene, int width, int height, bool overrideCa
     else
     {
         // get camera from scene
-        scene->setupCameraMatrices(viewMatrix, projectionMatrix, (float)width / (float)height);
+        scene->setupCamera(viewMatrix, projectionMatrix, shutterSpeed, (float)width / (float)height);
     }
 
     this->renderList->clear();
@@ -400,6 +402,7 @@ void Renderer::render(const Scene *scene, int width, int height, bool overrideCa
     sceneState->cameraPosition = glm::vec3(viewMatrixInverse[3][0], viewMatrixInverse[3][1], viewMatrixInverse[3][2]);
     sceneState->ambientColor = scene->getAmbientColor();
     sceneState->mist = scene->getMist();
+    sceneState->motionSpeedFactor = shutterSpeed / deltaTime;
 
     const std::vector<RenderList::Light> &lights = this->renderList->getLights();
     sceneState->pointLightCount = 0;
@@ -523,7 +526,7 @@ void Renderer::renderBlenderViewport(const Scene *scene, int width, int height, 
 {
     assert(this->capture);
 
-    this->render(scene, width, height, true, viewMatrix, projectionMatrix);
+    this->render(scene, width, height, true, viewMatrix, projectionMatrix, 1.0f / 60.0f);
 
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);

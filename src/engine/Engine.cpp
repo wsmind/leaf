@@ -86,7 +86,7 @@ void Engine::updateAnimation(float time)
     this->scene->updateAnimation(time);
 }
 
-void Engine::render(int width, int height)
+void Engine::render(int width, int height, float deltaTime)
 {
     // process window events to avoid the window turning unresponsive
     MSG msg;
@@ -99,7 +99,7 @@ void Engine::render(int width, int height)
     ResourceManager::getInstance()->update();
 
     this->scene->updateTransforms();
-    this->renderer->render(this->scene, width, height, false, glm::mat4(), glm::mat4());
+    this->renderer->render(this->scene, width, height, false, glm::mat4(), glm::mat4(), deltaTime);
 }
 
 void Engine::renderBlenderViewport(int width, int height, const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix)
