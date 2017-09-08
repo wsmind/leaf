@@ -86,6 +86,16 @@ void Scene::updateAnimation(float time)
     this->currentCamera = findCurrentCamera(time);
 }
 
+void Scene::updateTransforms()
+{
+    // nodes are sorted at export by parenting depth, ensuring
+    // correctness in the hierarchy transforms
+    std::for_each(this->nodes.begin(), this->nodes.end(), [this](SceneNode *node)
+    {
+        node->updateTransforms();
+    });
+}
+
 void Scene::fillRenderList(RenderList *renderList) const
 {
     std::for_each(this->meshNodes.begin(), this->meshNodes.end(), [&](const SceneNode *node)
@@ -96,7 +106,7 @@ void Scene::fillRenderList(RenderList *renderList) const
 
             RenderList::Job job;
             job.mesh = mesh;
-            job.transform = node->computeTransformMatrix();
+            job.transform = node->getCurrentTransform();
             job.material = mesh->getMaterial();
             renderList->addJob(job);
         }
@@ -107,7 +117,7 @@ void Scene::fillRenderList(RenderList *renderList) const
         if (!node->isHidden())
         {
             Light *light = node->getData<Light>();
-            glm::mat4 transform = node->computeTransformMatrix();
+            glm::mat4 transform = node->getCurrentTransform();
 
             RenderList::Light renderLight;
             renderLight.position = glm::vec3(transform[3]);
@@ -123,7 +133,7 @@ void Scene::fillRenderList(RenderList *renderList) const
                 renderLight.blend = light->getSpotBlend();
                 renderLight.scattering = light->getScattering();
 
-                glm::mat4 viewMatrix = glm::inverse(node->computeTransformMatrix());
+                glm::mat4 viewMatrix = glm::inverse(node->computeViewTransform());
                 glm::mat4 projectionMatrix = glm::perspective(light->getSpotAngle(), 1.0f, 0.1f, light->getRadius());
                 renderLight.shadowTransform = projectionMatrix * viewMatrix;
             }
@@ -141,7 +151,7 @@ void Scene::setupCameraMatrices(glm::mat4 &viewMatrix, glm::mat4 &projectionMatr
     SceneNode *node = this->nodes[this->currentCamera];
     Camera *camera = node->getData<Camera>();
 
-    viewMatrix = glm::inverse(node->computeTransformMatrix(true));
+    viewMatrix = glm::inverse(node->computeViewTransform());
     camera->computeProjectionMatrix(projectionMatrix, aspect);
 }
 

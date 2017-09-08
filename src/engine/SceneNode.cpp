@@ -29,8 +29,7 @@ SceneNode::SceneNode(const cJSON *json, const SceneNode *parent)
         case 1: this->data = ResourceManager::getInstance()->requestResource<Mesh>(dataName); break;
         case 2: this->data = ResourceManager::getInstance()->requestResource<Light>(dataName); break;
     }
-
-    cJSON *position = cJSON_GetObjectItem(json, "position");
+cJSON *position = cJSON_GetObjectItem(json, "position");
     this->position = glm::vec3(cJSON_GetArrayItem(position, 0)->valuedouble, cJSON_GetArrayItem(position, 1)->valuedouble, cJSON_GetArrayItem(position, 2)->valuedouble);
 
     cJSON *orientation = cJSON_GetObjectItem(json, "orientation");
@@ -85,25 +84,38 @@ void SceneNode::unregisterAnimation(AnimationPlayer *player) const
         player->unregisterAnimation(this->animation);
 }
 
-glm::mat4 SceneNode::computeTransformMatrix(bool unitScale) const
+void SceneNode::updateTransforms()
+{
+    // backup current transform
+    this->previousFrameTransform = this->currentTransform;
+
+    // node's own transform
+    glm::mat4 rotation = glm::eulerAngleZ(this->orientation.z) * glm::eulerAngleY(this->orientation.y) * glm::eulerAngleX(this->orientation.x);
+    glm::mat4 transform = glm::translate(glm::mat4(), this->position) * rotation * glm::scale(glm::mat4(), this->scale);
+
+    // apply parent transform, if any
+    if (this->parent != nullptr)
+    {
+        glm::mat4 parentTransform = this->parent->currentTransform * this->parentMatrix;
+        transform = parentTransform * transform;
+    }
+
+    this->currentTransform = transform;
+}
+
+glm::mat4 SceneNode::computeViewTransform() const
 {
     glm::mat4 rotation = glm::eulerAngleZ(this->orientation.z) * glm::eulerAngleY(this->orientation.y) * glm::eulerAngleX(this->orientation.x);
     glm::mat4 transform = glm::translate(glm::mat4(), this->position) * rotation;
 
-    if (!unitScale)
-        transform = transform * glm::scale(glm::mat4(), this->scale);
-
     if (this->parent != nullptr)
     {
-        glm::mat4 parentTransform = this->parent->computeTransformMatrix(false) * this->parentMatrix;
+        glm::mat4 parentTransform = this->parent->computeViewTransform() * this->parentMatrix;
 
-        if (unitScale)
-        {
-            // compensate for parent scale
-            glm::vec3 scaledUnit = glm::mat3(parentTransform) * glm::vec3(1.0f, 0.0f, 0.0f);
-            float parentScale = glm::length(scaledUnit);
-            transform = transform * glm::scale(glm::mat4(), glm::vec3(1.0f / parentScale));
-        }
+        // compensate for parent scale
+        glm::vec3 scaledUnit = glm::mat3(parentTransform) * glm::vec3(1.0f, 0.0f, 0.0f);
+        float parentScale = glm::length(scaledUnit);
+        transform = transform * glm::scale(glm::mat4(), glm::vec3(1.0f / parentScale));
 
         transform = parentTransform * transform;
     }

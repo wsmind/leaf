@@ -17,7 +17,16 @@ class SceneNode
         void unregisterAnimation(AnimationPlayer *player) const;
 
         bool isHidden() const { return this->hide == 1.0f; }
-        glm::mat4 computeTransformMatrix(bool unitScale = false) const;
+
+        // update current and last frame transforms, applying the parent transform
+        // (parent must have been updated before to ensure correctness)
+        void updateTransforms();
+
+        glm::mat4 getCurrentTransform() const { return this->currentTransform; }
+        glm::mat4 getPreviousFrameTransform() const { return this->previousFrameTransform; }
+
+        // view transform is a special case because cameras need to ignore scaling
+        glm::mat4 computeViewTransform() const;
 
         template <typename DataType>
         DataType *getData() const;
@@ -25,8 +34,12 @@ class SceneNode
     private:
         // transform
         glm::vec3 position;
-        glm::vec3 orientation; /// XYZ Euler
+        glm::vec3 orientation; // XYZ Euler
         glm::vec3 scale;
+
+        // baked transform of the above fields, with parent transform applied
+        glm::mat4 currentTransform;
+        glm::mat4 previousFrameTransform;
 
         const SceneNode *parent;
         glm::mat4 parentMatrix;
