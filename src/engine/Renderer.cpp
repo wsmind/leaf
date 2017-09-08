@@ -74,6 +74,7 @@ struct SceneState
     glm::mat4 projectionMatrix;
     glm::mat4 projectionMatrixInverse;
     glm::mat4 viewProjectionInverseMatrix;
+    glm::mat4 previousFrameViewProjectionMatrix;
     glm::vec3 cameraPosition;
     int pointLightCount;
     int spotLightCount;
@@ -395,6 +396,7 @@ void Renderer::render(const Scene *scene, int width, int height, bool overrideCa
     sceneState->projectionMatrix = projectionMatrix;
     sceneState->projectionMatrixInverse = glm::inverse(projectionMatrix);
     sceneState->viewProjectionInverseMatrix = glm::inverse(projectionMatrix * viewMatrix);
+    sceneState->previousFrameViewProjectionMatrix = previousFrameViewProjectionMatrix;
     sceneState->cameraPosition = glm::vec3(viewMatrixInverse[3][0], viewMatrixInverse[3][1], viewMatrixInverse[3][2]);
     sceneState->ambientColor = scene->getAmbientColor();
     sceneState->mist = scene->getMist();
@@ -510,6 +512,8 @@ void Renderer::render(const Scene *scene, int width, int height, bool overrideCa
     }
 
     GPUProfiler::getInstance()->endFrame();
+
+    this->previousFrameViewProjectionMatrix = projectionMatrix * viewMatrix;
 
     if (this->capture)
         Device::context->CopyResource(this->captureBuffer, this->backBuffer);

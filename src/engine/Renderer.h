@@ -70,4 +70,6 @@ class Renderer
 
         PostProcessor *postProcessor;
         ShadowRenderer *shadowRenderer;
+
+        glm::mat4 previousFrameViewProjectionMatrix;
 };
