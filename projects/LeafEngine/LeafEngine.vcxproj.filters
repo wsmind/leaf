@@ -186,5 +186,8 @@
     <None Include="..\..\src\blender-addon\leaf\light.py">
       <Filter>blender-addon</Filter>
     </None>
+    <None Include="..\..\src\blender-addon\leaf\camera.py">
+      <Filter>blender-addon</Filter>
+    </None>
   </ItemGroup>
 </Project>

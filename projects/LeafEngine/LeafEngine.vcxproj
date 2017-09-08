@@ -636,6 +636,7 @@
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\src\blender-addon\leaf\camera.py" />
     <None Include="..\..\src\blender-addon\leaf\cooking.py" />
     <None Include="..\..\src\blender-addon\leaf\export.py" />
     <None Include="..\..\src\blender-addon\leaf\image.py" />

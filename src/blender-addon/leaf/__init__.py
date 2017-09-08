@@ -6,6 +6,7 @@ bl_info = {
 
 if "bpy" in locals():
     import imp
+    imp.reload(camera)
     imp.reload(cooking)
     imp.reload(export)
     imp.reload(image)
@@ -15,6 +16,7 @@ if "bpy" in locals():
     imp.reload(render)
     imp.reload(texture)
 else:
+    from . import camera
     from . import cooking
     from . import export
     from . import image

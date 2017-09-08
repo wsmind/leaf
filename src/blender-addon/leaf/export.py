@@ -329,7 +329,8 @@ def export_camera(camera):
         "clip_start": camera.clip_start,
         "clip_end": camera.clip_end,
         "sensor_height": camera.sensor_height,
-        "type": export_camera_type(camera.type)
+        "type": export_camera_type(camera.type),
+        "shutter_speed": camera.leaf.shutter_speed
     }
 
     if camera.animation_data:

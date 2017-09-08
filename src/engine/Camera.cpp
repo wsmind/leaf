@@ -8,7 +8,7 @@
 #include <engine/PropertyMapping.h>
 
 const std::string Camera::resourceClassName = "Camera";
-const std::string Camera::defaultResourceData = "{\"lens\": 2.0, \"ortho_scale\": 1.0, \"clip_start\": 0.1, \"clip_end\": 100.0, \"sensor_height\": 35.0, \"type\": 0}";
+const std::string Camera::defaultResourceData = "{\"lens\": 2.0, \"ortho_scale\": 1.0, \"clip_start\": 0.1, \"clip_end\": 100.0, \"sensor_height\": 35.0, \"type\": 0, \"shutter_speed\": 0.01}";
 
 void Camera::load(const unsigned char *buffer, size_t size)
 {
@@ -20,6 +20,7 @@ void Camera::load(const unsigned char *buffer, size_t size)
     this->clipEnd = (float)cJSON_GetObjectItem(json, "clip_end")->valuedouble;
     this->sensorHeight = (float)cJSON_GetObjectItem(json, "sensor_height")->valuedouble;
     this->type = (float)cJSON_GetObjectItem(json, "type")->valuedouble;
+    this->shutterSpeed = (float)cJSON_GetObjectItem(json, "shutter_speed")->valuedouble;
 
     cJSON *animation = cJSON_GetObjectItem(json, "animation");
     if (animation)
@@ -30,6 +31,7 @@ void Camera::load(const unsigned char *buffer, size_t size)
         properties.add("clip_start", &this->clipStart);
         properties.add("clip_end", &this->clipEnd);
         properties.add("type", &this->type);
+        properties.add("leaf.shutter_speed", &this->shutterSpeed);
 
         this->animation = new AnimationData(animation, properties);
         AnimationPlayer::globalPlayer.registerAnimation(this->animation);

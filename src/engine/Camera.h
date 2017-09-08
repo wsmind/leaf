@@ -24,6 +24,8 @@ class Camera: public Resource
         virtual void unload() override;
 
         void computeProjectionMatrix(glm::mat4 &projectionMatrix, float aspect) const;
+
+        float getShutterSpeed() const { return this->shutterSpeed; }
     
     private:
         AnimationData *animation = nullptr;
@@ -34,4 +36,5 @@ class Camera: public Resource
         float clipEnd;
         float sensorHeight;
         float type; // 0 = PERSP, 1 = ORTHO, 2 = PANO
+        float shutterSpeed;
 };
