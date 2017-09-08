@@ -61,6 +61,10 @@ void Scene::load(const unsigned char *buffer, size_t size)
     this->mist = (float)cJSON_GetObjectItem(json, "mist")->valuedouble;
 
     cJSON_Delete(json);
+
+    // update current and last frame's transforms
+    this->updateTransforms();
+    this->updateTransforms();
 }
 
 void Scene::unload()
@@ -107,6 +111,7 @@ void Scene::fillRenderList(RenderList *renderList) const
             RenderList::Job job;
             job.mesh = mesh;
             job.transform = node->getCurrentTransform();
+            job.previousFrameTransform = node->getPreviousFrameTransform();
             job.material = mesh->getMaterial();
             renderList->addJob(job);
         }

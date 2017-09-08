@@ -90,6 +90,7 @@ struct SceneState
 struct InstanceData
 {
     glm::mat4 modelMatrix;
+    glm::mat4 previousFrameModelMatrix;
     glm::mat3x4 normalMatrix; // use 3x4 to match cbuffer packing rules
 };
 #pragma pack(pop)
@@ -477,6 +478,7 @@ void Renderer::render(const Scene *scene, int width, int height, bool overrideCa
             CHECK_HRESULT(res);
             InstanceData *instanceData = (InstanceData *)mappedResource.pData;
             instanceData->modelMatrix = job.transform;
+            instanceData->previousFrameModelMatrix = job.previousFrameTransform;
             instanceData->normalMatrix = glm::mat3x4(glm::inverseTranspose(glm::mat3(job.transform)));
             Device::context->Unmap(this->cbInstance, 0);
 

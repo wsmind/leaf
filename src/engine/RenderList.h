@@ -15,6 +15,7 @@ class RenderList
             Material *material;
             Mesh *mesh;
             glm::mat4 transform;
+            glm::mat4 previousFrameTransform;
         };
 
         struct Light
