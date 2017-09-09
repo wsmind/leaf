@@ -203,6 +203,8 @@ Renderer::Renderer(HWND hwnd, int backbufferWidth, int backbufferHeight, bool ca
     this->postProcessor = new PostProcessor(this->renderTarget);
     this->shadowRenderer = new ShadowRenderer(2048);
 
+    this->motionTarget = new RenderTarget(backbufferWidth, backbufferHeight, DXGI_FORMAT_R16G16B16A16_FLOAT);
+    
     if (this->capture)
     {
         D3D11_TEXTURE2D_DESC captureBufferDesc;
@@ -336,6 +338,8 @@ Renderer::~Renderer()
     delete this->postProcessor;
     delete this->shadowRenderer;
 
+    delete this->motionTarget;
+
     // make sure all graphics resources are released before destroying the context
     ResourceManager::getInstance()->clearPendingUnloads();
 
@@ -441,8 +445,8 @@ void Renderer::render(const Scene *scene, int width, int height, bool overrideCa
     Device::context->OMSetDepthStencilState(this->gBufferDepthState, 0);
 
     RenderTarget *radianceTarget = this->postProcessor->getRadianceTarget();
-    ID3D11RenderTargetView *radianceTargetView = radianceTarget->getTarget();
-    Device::context->OMSetRenderTargets(1, &radianceTargetView, this->depthTarget);
+    ID3D11RenderTargetView *targetViews[] = { radianceTarget->getTarget(), this->motionTarget->getTarget() };
+    Device::context->OMSetRenderTargets(2, targetViews, this->depthTarget);
 
     Device::context->VSSetShader(standardVertexShader, NULL, 0);
     Device::context->PSSetShader(standardPixelShader, NULL, 0);

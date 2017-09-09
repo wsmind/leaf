@@ -32,7 +32,8 @@ struct STANDARD_PS_INPUT
 
 struct STANDARD_PS_OUTPUT
 {
-    float4 radiance : SV_TARGET;
+    float4 radiance : SV_TARGET0;
+    float4 motion : SV_TARGET1;
 };
 
 #define MARCHING_ITERATIONS 64

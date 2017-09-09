@@ -170,6 +170,7 @@ STANDARD_PS_OUTPUT main(STANDARD_PS_INPUT input)
     float transmittance = exp(input.viewPosition.z * mist);
     
     output.radiance = float4(lerp(ambientColor, radiance, transmittance) + inScattering, 1.0);
+    output.motion = float4(input.motion, 0.0, 0.0);
 
 	return output;
 }
