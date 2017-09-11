@@ -386,9 +386,11 @@ void Renderer::render(const Scene *scene, int width, int height, bool overrideCa
     Device::context->RSSetViewports(1, &viewport);
 
     float clearColor[] = { 1.0f, 1.0f, 0.0f, 1.0f };
+    float clearMotion[] = { 0.0f, 0.0f, 0.0f, 0.0f };
     {
         GPUProfiler::ScopedProfile profile("Clear");
         Device::context->ClearRenderTargetView(this->renderTarget, clearColor);
+        Device::context->ClearRenderTargetView(this->motionTarget->getTarget(), clearMotion);
         Device::context->ClearDepthStencilView(this->depthTarget, D3D11_CLEAR_DEPTH, 1.0f, 0);
     }
 
