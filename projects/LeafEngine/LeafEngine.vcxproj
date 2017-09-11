@@ -173,6 +173,7 @@
     <ClCompile Include="..\..\src\engine\Light.cpp" />
     <ClCompile Include="..\..\src\engine\Material.cpp" />
     <ClCompile Include="..\..\src\engine\Mesh.cpp" />
+    <ClCompile Include="..\..\src\engine\MotionBlurRenderer.cpp" />
     <ClCompile Include="..\..\src\engine\PostProcessor.cpp" />
     <ClCompile Include="..\..\src\engine\PropertyMapping.cpp" />
     <ClCompile Include="..\..\src\engine\Renderer.cpp" />
@@ -194,6 +195,7 @@
     <ClInclude Include="..\..\src\engine\Image.h" />
     <ClInclude Include="..\..\src\engine\Light.h" />
     <ClInclude Include="..\..\src\engine\Material.h" />
+    <ClInclude Include="..\..\src\engine\MotionBlurRenderer.h" />
     <ClInclude Include="..\..\src\engine\PostProcessor.h" />
     <ClInclude Include="..\..\src\engine\PropertyMapping.h" />
     <ClInclude Include="..\..\src\engine\RenderList.h" />

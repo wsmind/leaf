@@ -30,6 +30,7 @@
     <ClCompile Include="..\..\src\engine\RenderTarget.cpp" />
     <ClCompile Include="..\..\src\engine\PostProcessor.cpp" />
     <ClCompile Include="..\..\src\engine\ShadowRenderer.cpp" />
+    <ClCompile Include="..\..\src\engine\MotionBlurRenderer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\engine\Renderer.h" />
@@ -93,6 +94,7 @@
     <ClInclude Include="..\..\src\engine\shaders\Fxaa3_11.h">
       <Filter>shaders</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\engine\MotionBlurRenderer.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\..\src\engine\shaders\plop.vs.hlsl">

@@ -3,6 +3,7 @@
 #include <engine/Device.h>
 #include <engine/GPUProfiler.h>
 #include <engine/Mesh.h>
+#include <engine/MotionBlurRenderer.h>
 #include <engine/RenderTarget.h>
 #include <engine/ResourceManager.h>
 
@@ -32,6 +33,8 @@ PostProcessor::PostProcessor(ID3D11RenderTargetView *backBufferTarget)
     this->targets[1] = new RenderTarget(backBufferDesc.Width, backBufferDesc.Height, DXGI_FORMAT_R16G16B16A16_FLOAT);
 
     this->fullscreenQuad = ResourceManager::getInstance()->requestResource<Mesh>("__fullscreenQuad");
+
+    this->motionBlurRenderer = new MotionBlurRenderer();
 }
 
 PostProcessor::~PostProcessor()
@@ -45,6 +48,8 @@ PostProcessor::~PostProcessor()
     delete this->targets[1];
 
     ResourceManager::getInstance()->releaseResource(this->fullscreenQuad);
+
+    delete this->motionBlurRenderer;
 }
 
 void PostProcessor::render(int width, int height)

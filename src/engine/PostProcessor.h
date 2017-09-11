@@ -3,6 +3,7 @@
 #include <d3d11.h>
 
 class Mesh;
+class MotionBlurRenderer;
 class RenderTarget;
 
 class PostProcessor
@@ -26,4 +27,6 @@ class PostProcessor
         ID3D11PixelShader *fxaaPixelShader;
 
         Mesh *fullscreenQuad;
+
+        MotionBlurRenderer *motionBlurRenderer;
 };
