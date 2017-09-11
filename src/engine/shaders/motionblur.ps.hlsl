@@ -18,7 +18,13 @@ MOTIONBLUR_PS_OUTPUT main(POSTPROCESS_PS_INPUT input)
     float3 radiance = radianceTexture.Sample(radianceSampler, input.uv).rgb;
     float2 motion = motionTexture.Sample(motionSampler, input.uv).rg;
 
-    output.color = float4(radiance * float3(motion, 1.0), 1.0);
+    for (float n = 0.1f; n <= 1.0f; n += 0.1f)
+    {
+        radiance += radianceTexture.Sample(radianceSampler, input.uv + motion * n).rgb;
+        radiance += radianceTexture.Sample(radianceSampler, input.uv - motion * n).rgb;
+    }
+
+    output.color = float4(radiance / 21.0f, 1.0);
 
 	return output;
 }
