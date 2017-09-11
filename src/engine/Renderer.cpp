@@ -511,7 +511,7 @@ void Renderer::render(const Scene *scene, int width, int height, bool overrideCa
         Device::context->DrawIndexed(this->fullscreenQuad->getIndexCount(), 0, 0);
     }
 
-    this->postProcessor->render(width, height);
+    this->postProcessor->render(width, height, this->motionTarget);
 
     {
         GPUProfiler::ScopedProfile profile("V-Sync");

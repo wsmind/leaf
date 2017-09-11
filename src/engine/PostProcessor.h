@@ -14,7 +14,7 @@ class PostProcessor
 
         RenderTarget *getRadianceTarget() const { return this->targets[0]; }
 
-        void render(int width, int height);
+        void render(int width, int height, RenderTarget *motionTarget);
 
     private:
         ID3D11RenderTargetView *backBufferTarget;

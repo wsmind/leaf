@@ -52,23 +52,26 @@ PostProcessor::~PostProcessor()
     delete this->motionBlurRenderer;
 }
 
-void PostProcessor::render(int width, int height)
+void PostProcessor::render(int width, int height, RenderTarget *motionTarget)
 {
     GPUProfiler::ScopedProfile profile("PostProcess");
 
     this->fullscreenQuad->bind();
 
+    Device::context->VSSetShader(postprocessVertexShader, NULL, 0);
+
+    this->motionBlurRenderer->render(this->targets[0], motionTarget, this->targets[1]);
+
     ID3D11RenderTargetView *target0 = this->targets[0]->getTarget();
     ID3D11RenderTargetView *target1 = this->targets[1]->getTarget();
 
     // tone mapping and gamma correction
-    Device::context->OMSetRenderTargets(1, &target1, nullptr);
+    Device::context->OMSetRenderTargets(1, &target0, nullptr);
 
-    Device::context->VSSetShader(postprocessVertexShader, NULL, 0);
     Device::context->PSSetShader(postprocessPixelShader, NULL, 0);
 
-    ID3D11SamplerState *radianceSamplerState = this->targets[0]->getSamplerState();
-    ID3D11ShaderResourceView *radianceSRV = this->targets[0]->getSRV();
+    ID3D11SamplerState *radianceSamplerState = this->targets[1]->getSamplerState();
+    ID3D11ShaderResourceView *radianceSRV = this->targets[1]->getSRV();
     Device::context->PSSetSamplers(0, 1, &radianceSamplerState);
     Device::context->PSSetShaderResources(0, 1, &radianceSRV);
 
@@ -95,8 +98,8 @@ void PostProcessor::render(int width, int height)
     Device::context->VSSetShader(fxaaVertexShader, NULL, 0);
     Device::context->PSSetShader(fxaaPixelShader, NULL, 0);
 
-    ID3D11SamplerState *target1SamplerState = this->targets[1]->getSamplerState();
-    ID3D11ShaderResourceView *target1SRV = this->targets[1]->getSRV();
+    ID3D11SamplerState *target1SamplerState = this->targets[0]->getSamplerState();
+    ID3D11ShaderResourceView *target1SRV = this->targets[0]->getSRV();
     Device::context->PSSetSamplers(0, 1, &target1SamplerState);
     Device::context->PSSetShaderResources(0, 1, &target1SRV);
 

@@ -145,6 +145,9 @@
     <FxCompile Include="..\..\src\engine\shaders\fxaa.vs.hlsl">
       <Filter>shaders</Filter>
     </FxCompile>
+    <FxCompile Include="..\..\src\engine\shaders\motionblur.ps.hlsl">
+      <Filter>shaders</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="shaders">
