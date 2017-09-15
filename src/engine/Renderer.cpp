@@ -74,7 +74,6 @@ struct SceneState
     glm::mat4 projectionMatrix;
     glm::mat4 projectionMatrixInverse;
     glm::mat4 viewProjectionInverseMatrix;
-    glm::mat4 previousFrameViewProjectionMatrix;
     glm::vec3 cameraPosition;
     int pointLightCount;
     int spotLightCount;
@@ -92,7 +91,7 @@ struct SceneState
 struct InstanceData
 {
     glm::mat4 modelMatrix;
-    glm::mat4 previousFrameModelMatrix;
+    glm::mat4 worldToPreviousFrameClipSpaceMatrix;
     glm::mat3x4 normalMatrix; // use 3x4 to match cbuffer packing rules
 };
 #pragma pack(pop)
@@ -353,13 +352,14 @@ void Renderer::render(const Scene *scene, int width, int height, bool overrideCa
 
     glm::mat4 viewMatrix;
     glm::mat4 projectionMatrix;
-    float shutterSpeed = 0.01f;
+    float shutterSpeed;
 
     if (overrideCamera)
     {
         // use the provided camera parameters
         viewMatrix = viewMatrixOverride;
         projectionMatrix = projectionMatrixOverride;
+        shutterSpeed = 0.01f; // hardcoded shutter speed for edition camera
     }
     else
     {
@@ -404,7 +404,6 @@ void Renderer::render(const Scene *scene, int width, int height, bool overrideCa
     sceneState->projectionMatrix = projectionMatrix;
     sceneState->projectionMatrixInverse = glm::inverse(projectionMatrix);
     sceneState->viewProjectionInverseMatrix = glm::inverse(projectionMatrix * viewMatrix);
-    sceneState->previousFrameViewProjectionMatrix = previousFrameViewProjectionMatrix;
     sceneState->cameraPosition = glm::vec3(viewMatrixInverse[3][0], viewMatrixInverse[3][1], viewMatrixInverse[3][2]);
     sceneState->ambientColor = scene->getAmbientColor();
     sceneState->mist = scene->getMist();
@@ -489,7 +488,7 @@ void Renderer::render(const Scene *scene, int width, int height, bool overrideCa
             CHECK_HRESULT(res);
             InstanceData *instanceData = (InstanceData *)mappedResource.pData;
             instanceData->modelMatrix = job.transform;
-            instanceData->previousFrameModelMatrix = job.previousFrameTransform;
+            instanceData->worldToPreviousFrameClipSpaceMatrix = this->previousFrameViewProjectionMatrix * job.previousFrameTransform * glm::inverse(job.transform);
             instanceData->normalMatrix = glm::mat3x4(glm::inverseTranspose(glm::mat3(job.transform)));
             Device::context->Unmap(this->cbInstance, 0);
 

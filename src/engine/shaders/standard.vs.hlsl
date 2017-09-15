@@ -18,10 +18,6 @@ STANDARD_PS_INPUT main(VS_INPUT input)
     float4 viewPosition = mul(viewMatrix, worldPosition);
     output.position = mul(projectionMatrix, viewPosition);
    
-    float4 previousFramePosition = mul(previousFrameViewProjectionMatrix, mul(previousFrameModelMatrix, float4(input.pos, 1.0)));
-    float2 frameMovement = (output.position.xy / output.position.w) - (previousFramePosition.xy / previousFramePosition.w);
-    output.motion = 0.5 * frameMovement * motionSpeedFactor;
-
     // hack; GL to DX clip space
     output.position.z = (output.position.z + output.position.w) * 0.5;
 
@@ -31,6 +27,7 @@ STANDARD_PS_INPUT main(VS_INPUT input)
     output.normal = mul(normalMatrix, input.normal);
     output.tangent = float4(mul(normalMatrix, input.tangent.xyz), input.tangent.w);
     output.uv = float2(input.uv.x, 1.0 - input.uv.y);
+    output.clipPosition = output.position;
 
     return output;
 }

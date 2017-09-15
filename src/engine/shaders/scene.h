@@ -25,7 +25,6 @@ cbuffer SceneData : register(b0)
     float4x4 projectionMatrix;
     float4x4 projectionMatrixInverse;
     float4x4 viewProjectionInverseMatrix;
-    float4x4 previousFrameViewProjectionMatrix;
     float3 cameraPosition;
     int pointLightCount;
     int spotLightCount;

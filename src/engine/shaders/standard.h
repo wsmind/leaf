@@ -27,7 +27,7 @@ struct STANDARD_PS_INPUT
     float3 normal : NORMAL;
     float4 tangent : TANGENT;
     float2 uv : TEXCOORD0;
-    float2 motion : TEXCOORD1;
+    float4 clipPosition : TEXCOORD1;
 };
 
 struct STANDARD_PS_OUTPUT
