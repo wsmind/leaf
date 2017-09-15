@@ -175,7 +175,8 @@ STANDARD_PS_OUTPUT main(STANDARD_PS_INPUT input)
     // estimate pixel movement from last frame
     float4 previousFrameClipSpacePosition = mul(worldToPreviousFrameClipSpaceMatrix, float4(input.worldPosition, 1.0));
     float2 frameMovement = (input.clipPosition.xy / input.clipPosition.w) - (previousFrameClipSpacePosition.xy /= previousFrameClipSpacePosition.w);
-    float2 motion = 0.25 * frameMovement * motionSpeedFactor;
+    float2 motion = 0.5 * frameMovement * motionSpeedFactor;
+    motion = 0.5 * float2(motion.x, -motion.y); // convert to texture space
     output.motion = float4(motion, 0.0, 0.0);
 
 	return output;
