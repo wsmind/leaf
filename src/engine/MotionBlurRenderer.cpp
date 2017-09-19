@@ -10,11 +10,35 @@ MotionBlurRenderer::MotionBlurRenderer()
 {
     HRESULT res;
     res = Device::device->CreatePixelShader(motionblurPS, sizeof(motionblurPS), NULL, &this->motionblurPixelShader); CHECK_HRESULT(res);
+
+    D3D11_TEXTURE2D_DESC textureDesc;
+    ZeroMemory(&textureDesc, sizeof(textureDesc));
+    textureDesc.Width = 10;
+    textureDesc.Height = 10;
+    textureDesc.MipLevels = 1;
+    textureDesc.ArraySize = 1;
+    textureDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
+    textureDesc.SampleDesc.Count = 1;
+    textureDesc.SampleDesc.Quality = 0;
+    textureDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS;
+
+    res = Device::device->CreateTexture2D(&textureDesc, NULL, &this->tileMaxTexture);
+    CHECK_HRESULT(res);
+
+    res = Device::device->CreateShaderResourceView(this->tileMaxTexture, NULL, &this->tileMaxSRV);
+    CHECK_HRESULT(res);
+
+    res = Device::device->CreateUnorderedAccessView(this->tileMaxTexture, NULL, &this->tileMaxUAV);
+    CHECK_HRESULT(res);
 }
 
 MotionBlurRenderer::~MotionBlurRenderer()
 {
     this->motionblurPixelShader->Release();
+
+    this->tileMaxTexture->Release();
+    this->tileMaxSRV->Release();
+    this->tileMaxUAV->Release();
 }
 
 void MotionBlurRenderer::render(RenderTarget *radianceTarget, RenderTarget *motionTarget, RenderTarget *outputTarget)
