@@ -73,7 +73,7 @@ float sampleShadowMap(int index, float3 worldPosition)
     shadowCoords.y = 1.0 - shadowCoords.y;
 
     float bias = 0.0005;
-    float shadowFactor = (shadowMap.Sample(shadowMapSampler, shadowCoords.xy).r >= shadowCoords.z - bias);
+    float shadowFactor = (shadowMap.SampleLevel(shadowMapSampler, shadowCoords.xy, 0).r >= shadowCoords.z - bias);
 
     return shadowFactor;
 }

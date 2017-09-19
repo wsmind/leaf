@@ -14,6 +14,7 @@ class MotionBlurRenderer
 
     private:
         ID3D11PixelShader *motionblurPixelShader;
+        ID3D11ComputeShader *tileMaxComputeShader;
 
         ID3D11Texture2D *tileMaxTexture;
         ID3D11ShaderResourceView *tileMaxSRV;

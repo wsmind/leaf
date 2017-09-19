@@ -148,6 +148,9 @@
     <FxCompile Include="..\..\src\engine\shaders\motionblur.ps.hlsl">
       <Filter>shaders</Filter>
     </FxCompile>
+    <FxCompile Include="..\..\src\engine\shaders\tilemax.cs.hlsl">
+      <Filter>shaders</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="shaders">

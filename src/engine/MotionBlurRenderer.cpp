@@ -5,11 +5,14 @@
 #include <engine/RenderTarget.h>
 
 #include <shaders/motionblur.ps.hlsl.h>
+#include <shaders/tilemax.cs.hlsl.h>
 
 MotionBlurRenderer::MotionBlurRenderer()
 {
     HRESULT res;
     res = Device::device->CreatePixelShader(motionblurPS, sizeof(motionblurPS), NULL, &this->motionblurPixelShader); CHECK_HRESULT(res);
+
+    res = Device::device->CreateComputeShader(tileMaxCS, sizeof(tileMaxCS), NULL, &this->tileMaxComputeShader); CHECK_HRESULT(res);
 
     D3D11_TEXTURE2D_DESC textureDesc;
     ZeroMemory(&textureDesc, sizeof(textureDesc));
@@ -35,6 +38,7 @@ MotionBlurRenderer::MotionBlurRenderer()
 MotionBlurRenderer::~MotionBlurRenderer()
 {
     this->motionblurPixelShader->Release();
+    this->tileMaxComputeShader->Release();
 
     this->tileMaxTexture->Release();
     this->tileMaxSRV->Release();
