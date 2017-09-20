@@ -53,6 +53,10 @@ void MotionBlurRenderer::render(RenderTarget *radianceTarget, RenderTarget *moti
 {
     GPUProfiler::ScopedProfile profile("MotionBlur");
 
+    ID3D11SamplerState *nullSamplers[] = { nullptr, nullptr, nullptr };
+    ID3D11ShaderResourceView *nullSRVs[] = { nullptr, nullptr, nullptr };
+    ID3D11UnorderedAccessView *nullUAVs[] = { nullptr, nullptr, nullptr };
+
     ID3D11RenderTargetView *outputTargetView = outputTarget->getTarget();
     Device::context->OMSetRenderTargets(1, &outputTargetView, nullptr);
 
@@ -63,16 +67,16 @@ void MotionBlurRenderer::render(RenderTarget *radianceTarget, RenderTarget *moti
     Device::context->CSSetUnorderedAccessViews(0, 1, &this->tileMaxUAV, nullptr);
     Device::context->CSSetShader(this->tileMaxComputeShader, nullptr, 0);
     Device::context->Dispatch(this->tileCountX, this->tileCountY, 1);
+    Device::context->CSSetShaderResources(0, 1, nullSRVs);
+    Device::context->CSSetUnorderedAccessViews(0, 1, nullUAVs, nullptr);
 
     ID3D11SamplerState *samplerStates[] = { radianceTarget->getSamplerState(), motionTarget->getSamplerState() };
-    ID3D11ShaderResourceView *srvs[] = { radianceTarget->getSRV(), motionTarget->getSRV() };
+    ID3D11ShaderResourceView *srvs[] = { radianceTarget->getSRV(), motionTarget->getSRV(), this->tileMaxSRV };
     Device::context->PSSetSamplers(0, 2, samplerStates);
-    Device::context->PSSetShaderResources(0, 2, srvs);
+    Device::context->PSSetShaderResources(0, 3, srvs);
 
     Device::context->DrawIndexed(6, 0, 0);
 
-    ID3D11SamplerState *nullSamplers[] = { nullptr, nullptr };
-    ID3D11ShaderResourceView *nullSRVs[] = { nullptr, nullptr };
     Device::context->PSSetSamplers(0, 2, nullSamplers);
-    Device::context->PSSetShaderResources(0, 2, nullSRVs);
+    Device::context->PSSetShaderResources(0, 3, nullSRVs);
 }
