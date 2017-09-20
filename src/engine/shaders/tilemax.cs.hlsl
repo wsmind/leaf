@@ -1,6 +1,6 @@
 Texture2D<float4> motionTexture: register(t0);
 
-RWTexture2D<float4> tileMax;
+RWTexture2D<float4> tileMax: register(u0);
 
 SamplerState PointSampler
 {
