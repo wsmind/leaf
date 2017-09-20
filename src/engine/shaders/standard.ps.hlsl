@@ -176,6 +176,10 @@ STANDARD_PS_OUTPUT main(STANDARD_PS_INPUT input)
     float4 previousFrameClipSpacePosition = mul(worldToPreviousFrameClipSpaceMatrix, float4(input.worldPosition, 1.0));
     float2 frameMovement = (input.clipPosition.xy / input.clipPosition.w) - (previousFrameClipSpacePosition.xy / previousFrameClipSpacePosition.w);
     float2 motion = 0.5 * frameMovement * motionSpeedFactor;
+    //if (abs(motion.x) > motionMaximum.x) motion *= motionMaximum.x / abs(motion.x);
+    //if (abs(motion.y) > motionMaximum.y) motion *= motionMaximum.y / abs(motion.y);
+    /*motion *= max(1.0, motionMaximum.x / (abs(motion.x) + 0.001));
+    motion *= max(1.0, motionMaximum.y / (abs(motion.y) + 0.001));*/
     motion = 0.5 * float2(motion.x, -motion.y); // convert to texture space
     output.motion = float4(motion, 0.0, 0.0);
 
