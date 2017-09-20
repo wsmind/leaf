@@ -30,7 +30,8 @@ cbuffer SceneData : register(b0)
     int spotLightCount;
     float3 ambientColor;
     float mist;
-    float motionSpeedFactor; // shutter speed / delta time 
+    float motionSpeedFactor; // shutter speed / delta time
+    float2 motionMaximum; // hardcoded to 0.5 * 40px / resolution
     PointLightData pointLights[MAX_LIGHT];
     SpotLightData spotLights[MAX_LIGHT];
 };

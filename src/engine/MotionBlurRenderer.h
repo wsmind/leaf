@@ -7,12 +7,16 @@ class RenderTarget;
 class MotionBlurRenderer
 {
     public:
-        MotionBlurRenderer();
+        MotionBlurRenderer(int backbufferWidth, int backbufferHeight, int tileSize);
         ~MotionBlurRenderer();
 
         void render(RenderTarget *radianceTarget, RenderTarget *motionTarget, RenderTarget *outputTarget);
 
     private:
+        int tileSize;
+        int tileCountX;
+        int tileCountY;
+
         ID3D11PixelShader *motionblurPixelShader;
         ID3D11ComputeShader *tileMaxComputeShader;
 

@@ -79,8 +79,8 @@ struct SceneState
     int spotLightCount;
     glm::vec3 ambientColor;
     float mist;
-    float motionSpeedFactor; // shutter speed / delta time 
-    float _padding[2];
+    float motionSpeedFactor; // shutter speed / delta time
+    glm::vec2 motionMaximum; // hardcoded to 40px / resolution
     PointLightData pointLights[MAX_LIGHT];
     SpotLightData spotLights[MAX_LIGHT];
 };
@@ -408,6 +408,7 @@ void Renderer::render(const Scene *scene, int width, int height, bool overrideCa
     sceneState->ambientColor = scene->getAmbientColor();
     sceneState->mist = scene->getMist();
     sceneState->motionSpeedFactor = shutterSpeed / deltaTime;
+    sceneState->motionMaximum = glm::vec2(20.0f) / glm::vec2((float)this->backbufferWidth, (float)this->backbufferHeight);
 
     const std::vector<RenderList::Light> &lights = this->renderList->getLights();
     sceneState->pointLightCount = 0;

@@ -34,7 +34,7 @@ PostProcessor::PostProcessor(ID3D11RenderTargetView *backBufferTarget)
 
     this->fullscreenQuad = ResourceManager::getInstance()->requestResource<Mesh>("__fullscreenQuad");
 
-    this->motionBlurRenderer = new MotionBlurRenderer();
+    this->motionBlurRenderer = new MotionBlurRenderer(backBufferDesc.Width, backBufferDesc.Height, 40);
 }
 
 PostProcessor::~PostProcessor()
