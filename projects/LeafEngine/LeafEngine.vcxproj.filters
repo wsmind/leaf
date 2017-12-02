@@ -1,71 +1,93 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="..\..\src\engine\Renderer.cpp" />
     <ClCompile Include="..\..\src\engine\api.cpp" />
     <ClCompile Include="..\..\src\engine\Engine.cpp" />
-    <ClCompile Include="..\..\src\engine\Mesh.cpp" />
-    <ClCompile Include="..\..\src\engine\Device.cpp" />
-    <ClCompile Include="..\..\src\engine\ResourceManager.cpp" />
-    <ClCompile Include="..\..\src\engine\Material.cpp" />
     <ClCompile Include="..\..\src\engine\cJSON\cJSON.c">
       <Filter>cJSON</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\engine\Scene.cpp" />
-    <ClCompile Include="..\..\src\engine\RenderList.cpp" />
-    <ClCompile Include="..\..\src\engine\Texture.cpp" />
-    <ClCompile Include="..\..\src\engine\Image.cpp" />
-    <ClCompile Include="..\..\src\engine\Action.cpp" />
-    <ClCompile Include="..\..\src\engine\AnimationData.cpp" />
-    <ClCompile Include="..\..\src\engine\AnimationPlayer.cpp" />
-    <ClCompile Include="..\..\src\engine\PropertyMapping.cpp" />
-    <ClCompile Include="..\..\src\engine\FCurve.cpp" />
-    <ClCompile Include="..\..\src\engine\Camera.cpp" />
-    <ClCompile Include="..\..\src\engine\Light.cpp" />
-    <ClCompile Include="..\..\src\engine\SceneNode.cpp" />
-    <ClCompile Include="..\..\src\engine\GPUProfiler.cpp" />
     <ClCompile Include="..\..\src\engine\DDSTextureLoader\DDSTextureLoader.cpp">
       <Filter>DDSTextureLoader</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\engine\RenderTarget.cpp" />
-    <ClCompile Include="..\..\src\engine\PostProcessor.cpp" />
-    <ClCompile Include="..\..\src\engine\ShadowRenderer.cpp" />
-    <ClCompile Include="..\..\src\engine\MotionBlurRenderer.cpp" />
+    <ClCompile Include="..\..\src\engine\animation\Action.cpp">
+      <Filter>animation</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\engine\animation\AnimationData.cpp">
+      <Filter>animation</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\engine\animation\AnimationPlayer.cpp">
+      <Filter>animation</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\engine\animation\FCurve.cpp">
+      <Filter>animation</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\engine\animation\PropertyMapping.cpp">
+      <Filter>animation</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\engine\resource\ResourceManager.cpp">
+      <Filter>resource</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\engine\scene\Scene.cpp">
+      <Filter>scene</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\engine\scene\SceneNode.cpp">
+      <Filter>scene</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\engine\render\Camera.cpp">
+      <Filter>render</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\engine\render\Device.cpp">
+      <Filter>render</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\engine\render\GPUProfiler.cpp">
+      <Filter>render</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\engine\render\Image.cpp">
+      <Filter>render</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\engine\render\Light.cpp">
+      <Filter>render</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\engine\render\Material.cpp">
+      <Filter>render</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\engine\render\Mesh.cpp">
+      <Filter>render</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\engine\render\MotionBlurRenderer.cpp">
+      <Filter>render</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\engine\render\PostProcessor.cpp">
+      <Filter>render</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\engine\render\Renderer.cpp">
+      <Filter>render</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\engine\render\RenderList.cpp">
+      <Filter>render</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\engine\render\RenderTarget.cpp">
+      <Filter>render</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\engine\render\ShadowRenderer.cpp">
+      <Filter>render</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\engine\render\Texture.cpp">
+      <Filter>render</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\src\engine\Renderer.h" />
     <ClInclude Include="..\..\src\engine\api.h" />
     <ClInclude Include="..\..\src\engine\Engine.h" />
     <ClInclude Include="..\..\src\engine\shaders\shared.h">
       <Filter>shaders</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\engine\Resource.h" />
-    <ClInclude Include="..\..\src\engine\ResourceManager.h" />
-    <ClInclude Include="..\..\src\engine\Device.h" />
-    <ClInclude Include="..\..\src\engine\Mesh.h" />
-    <ClInclude Include="..\..\src\engine\Material.h" />
-    <ClInclude Include="..\..\src\engine\ResourceManager.inline.h" />
     <ClInclude Include="..\..\src\engine\cJSON\cJSON.h">
       <Filter>cJSON</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\engine\Scene.h" />
-    <ClInclude Include="..\..\src\engine\RenderList.h" />
-    <ClInclude Include="..\..\src\engine\Texture.h" />
-    <ClInclude Include="..\..\src\engine\Image.h" />
-    <ClInclude Include="..\..\src\engine\Action.h" />
-    <ClInclude Include="..\..\src\engine\AnimationData.h" />
-    <ClInclude Include="..\..\src\engine\AnimationPlayer.h" />
-    <ClInclude Include="..\..\src\engine\PropertyMapping.h" />
-    <ClInclude Include="..\..\src\engine\FCurve.h" />
-    <ClInclude Include="..\..\src\engine\Camera.h" />
-    <ClInclude Include="..\..\src\engine\SceneNode.h" />
-    <ClInclude Include="..\..\src\engine\Light.h" />
-    <ClInclude Include="..\..\src\engine\GPUProfiler.h" />
     <ClInclude Include="..\..\src\engine\DDSTextureLoader\DDSTextureLoader.h">
       <Filter>DDSTextureLoader</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\engine\RenderTarget.h" />
-    <ClInclude Include="..\..\src\engine\PostProcessor.h" />
     <ClInclude Include="..\..\src\engine\shaders\postprocess.h">
       <Filter>shaders</Filter>
     </ClInclude>
@@ -84,7 +106,6 @@
     <ClInclude Include="..\..\src\engine\shaders\gamma.h">
       <Filter>shaders</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\engine\ShadowRenderer.h" />
     <ClInclude Include="..\..\src\engine\shaders\depthonly.h">
       <Filter>shaders</Filter>
     </ClInclude>
@@ -94,7 +115,78 @@
     <ClInclude Include="..\..\src\engine\shaders\Fxaa3_11.h">
       <Filter>shaders</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\engine\MotionBlurRenderer.h" />
+    <ClInclude Include="..\..\src\engine\animation\Action.h">
+      <Filter>animation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\engine\animation\AnimationData.h">
+      <Filter>animation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\engine\animation\AnimationPlayer.h">
+      <Filter>animation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\engine\animation\FCurve.h">
+      <Filter>animation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\engine\animation\PropertyMapping.h">
+      <Filter>animation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\engine\resource\Resource.h">
+      <Filter>resource</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\engine\resource\ResourceManager.h">
+      <Filter>resource</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\engine\resource\ResourceManager.inline.h">
+      <Filter>resource</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\engine\scene\Scene.h">
+      <Filter>scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\engine\scene\SceneNode.h">
+      <Filter>scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\engine\render\Camera.h">
+      <Filter>render</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\engine\render\Device.h">
+      <Filter>render</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\engine\render\GPUProfiler.h">
+      <Filter>render</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\engine\render\Image.h">
+      <Filter>render</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\engine\render\Light.h">
+      <Filter>render</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\engine\render\Material.h">
+      <Filter>render</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\engine\render\Mesh.h">
+      <Filter>render</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\engine\render\MotionBlurRenderer.h">
+      <Filter>render</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\engine\render\PostProcessor.h">
+      <Filter>render</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\engine\render\Renderer.h">
+      <Filter>render</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\engine\render\RenderList.h">
+      <Filter>render</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\engine\render\RenderTarget.h">
+      <Filter>render</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\engine\render\ShadowRenderer.h">
+      <Filter>render</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\engine\render\Texture.h">
+      <Filter>render</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\..\src\engine\shaders\plop.vs.hlsl">
@@ -164,6 +256,18 @@
     </Filter>
     <Filter Include="DDSTextureLoader">
       <UniqueIdentifier>{e513681b-5414-4202-a5d4-24fc46eff4fc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="render">
+      <UniqueIdentifier>{72bc7154-f70f-45d7-99f3-3f6d70621c1f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="animation">
+      <UniqueIdentifier>{dc62a2f9-ed5e-4809-b0be-924748be178a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="scene">
+      <UniqueIdentifier>{3e92bb58-06aa-46ba-84e5-8e3b0ff6d028}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="resource">
+      <UniqueIdentifier>{41e80b41-e701-463c-aaa1-0395237703f1}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

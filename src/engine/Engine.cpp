@@ -5,15 +5,15 @@
 #include <windows.h>
 #include <mmsystem.h>
 
-#include <engine/Action.h>
-#include <engine/Camera.h>
-#include <engine/Image.h>
-#include <engine/Material.h>
-#include <engine/Mesh.h>
-#include <engine/Renderer.h>
-#include <engine/ResourceManager.h>
-#include <engine/Scene.h>
-#include <engine/Texture.h>
+#include <engine/animation/Action.h>
+#include <engine/render/Camera.h>
+#include <engine/render/Image.h>
+#include <engine/render/Material.h>
+#include <engine/render/Mesh.h>
+#include <engine/render/Renderer.h>
+#include <engine/resource/ResourceManager.h>
+#include <engine/scene/Scene.h>
+#include <engine/render/Texture.h>
 
 Engine *Engine::instance = nullptr;
 
