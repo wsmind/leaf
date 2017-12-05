@@ -20,6 +20,7 @@
 #include <engine/render/ShadowRenderer.h>
 #include <engine/render/Texture.h>
 #include <engine/render/graph/FrameGraph.h>
+#include <engine/render/graph/Pass.h>
 #include <engine/resource/ResourceManager.h>
 #include <engine/scene/Scene.h>
 
@@ -376,8 +377,6 @@ void Renderer::render(const Scene *scene, int width, int height, bool overrideCa
     this->frameGraph->addClearTarget(this->motionTarget->getTarget(), glm::vec4(0.0f, 0.0f, 0.0f, 0.0f));
     this->frameGraph->addClearTarget(this->depthTarget, 1.0, 0);
 
-    this->frameGraph->execute();
-
     D3D11_VIEWPORT viewport;
     viewport.Width = (float)backbufferWidth;
     viewport.Height = (float)backbufferHeight;
@@ -385,7 +384,17 @@ void Renderer::render(const Scene *scene, int width, int height, bool overrideCa
     viewport.MaxDepth = 1.0f;
     viewport.TopLeftX = 0;
     viewport.TopLeftY = 0;
-    Device::context->RSSetViewports(1, &viewport);
+
+    RenderTarget *radianceTarget = this->postProcessor->getRadianceTarget();
+
+    Pass *geometryPass = this->frameGraph->addPass("Geometry");
+    geometryPass->setTargets({ radianceTarget->getTarget(), this->motionTarget->getTarget() }, this->depthTarget);
+    geometryPass->setViewport(viewport);
+
+    this->frameGraph->execute();
+
+    ID3D11RenderTargetView *targetViews[] = { radianceTarget->getTarget(), this->motionTarget->getTarget() };
+    Device::context->OMSetRenderTargets(2, targetViews, this->depthTarget);
 
     D3D11_MAPPED_SUBRESOURCE mappedResource;
     HRESULT res = Device::context->Map(this->cbScene, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
@@ -438,10 +447,6 @@ void Renderer::render(const Scene *scene, int width, int height, bool overrideCa
     Device::context->Unmap(this->cbScene, 0);
 
     Device::context->OMSetDepthStencilState(this->gBufferDepthState, 0);
-
-    RenderTarget *radianceTarget = this->postProcessor->getRadianceTarget();
-    ID3D11RenderTargetView *targetViews[] = { radianceTarget->getTarget(), this->motionTarget->getTarget() };
-    Device::context->OMSetRenderTargets(2, targetViews, this->depthTarget);
 
     Device::context->VSSetShader(standardVertexShader, NULL, 0);
     Device::context->PSSetShader(standardPixelShader, NULL, 0);
