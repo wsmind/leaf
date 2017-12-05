@@ -376,7 +376,7 @@ void Renderer::render(const Scene *scene, int width, int height, bool overrideCa
     this->frameGraph->addClearTarget(this->motionTarget->getTarget(), glm::vec4(0.0f, 0.0f, 0.0f, 0.0f));
     this->frameGraph->addClearTarget(this->depthTarget, 1.0, 0);
 
-    this->frameGraph->execute(Device::context);
+    this->frameGraph->execute();
 
     D3D11_VIEWPORT viewport;
     viewport.Width = (float)backbufferWidth;

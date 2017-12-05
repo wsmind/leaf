@@ -1,11 +1,17 @@
 #include <engine/render/graph/FrameGraph.h>
 
+#include <engine/render/Device.h>
+
 #include <engine/render/graph/GPUProfiler.h>
 #include <engine/render/graph/Pass.h>
 
 FrameGraph::FrameGraph(const std::string &profileFilename)
 {
-    GPUProfiler::create(!this->profileFilename.empty());
+    Device::device->GetImmediateContext(&this->context);
+
+    this->profileFilename = profileFilename;
+
+    GPUProfiler::create(!this->profileFilename.empty(), this->context);
     GPUProfiler::getInstance()->beginJsonCapture();
 }
 
@@ -13,6 +19,8 @@ FrameGraph::~FrameGraph()
 {
     GPUProfiler::getInstance()->endJsonCapture(this->profileFilename);
     GPUProfiler::destroy();
+
+    this->context->Release();
 }
 
 void FrameGraph::addClearTarget(ID3D11RenderTargetView *target, glm::vec4 color)
@@ -39,12 +47,12 @@ Pass *FrameGraph::addPass(const std::string &name)
     return pass;
 }
 
-void FrameGraph::execute(ID3D11DeviceContext *context)
+void FrameGraph::execute()
 {
     GPUProfiler::getInstance()->beginFrame();
 
-    this->clearAllTargets(context);
-    this->executeAllPasses(context);
+    this->clearAllTargets(this->context);
+    this->executeAllPasses(this->context);
 
     GPUProfiler::getInstance()->endFrame();
 }

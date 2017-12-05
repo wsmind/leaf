@@ -25,11 +25,13 @@ class FrameGraph
 
         Pass *addPass(const std::string &name);
 
-        void execute(ID3D11DeviceContext *context);
+        void execute();
 
     private:
         void clearAllTargets(ID3D11DeviceContext *context);
         void executeAllPasses(ID3D11DeviceContext *context);
+
+        ID3D11DeviceContext *context;
 
         std::string profileFilename;
 

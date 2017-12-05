@@ -33,7 +33,7 @@ class GPUProfiler
         };
         
     private:
-        GPUProfiler(bool enabled);
+        GPUProfiler(bool enabled, ID3D11DeviceContext *context);
         ~GPUProfiler();
 
         ID3D11Query *requestPooledQuery();
@@ -42,6 +42,7 @@ class GPUProfiler
         static GPUProfiler *instance;
 
         bool enabled;
+        ID3D11DeviceContext *context;
 
         // queries are preallocated and used dynamically during frames
         // (only D3D11_QUERY_TIMESTAMP queries are pooled)
@@ -79,7 +80,7 @@ class GPUProfiler
 
     public:
         // singleton implementation
-        static void create(bool enabled) { assert(!GPUProfiler::instance); GPUProfiler::instance = new GPUProfiler(enabled); }
+        static void create(bool enabled, ID3D11DeviceContext *context) { assert(!GPUProfiler::instance); GPUProfiler::instance = new GPUProfiler(enabled, context); }
         static void destroy() { assert(GPUProfiler::instance); delete GPUProfiler::instance; }
         static GPUProfiler *getInstance() { assert(GPUProfiler::instance); return GPUProfiler::instance; }
 };

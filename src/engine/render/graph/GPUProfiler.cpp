@@ -11,8 +11,8 @@ void GPUProfiler::beginFrame()
     if (!this->enabled)
         return;
 
-    // for the first few frames (as configured in FRAME_LATENCY), new disjoint will be created
-    // (they will be reused for all the subsequent frames)
+    // for the first few frames (as configured in FRAME_LATENCY), new disjoint queries
+    // will be created (they will be reused for all the subsequent frames)
     if (!this->currentFrame->disjointQuery)
     {
         D3D11_QUERY_DESC queryDesc;
@@ -23,7 +23,7 @@ void GPUProfiler::beginFrame()
     }
 
     // start the enclosing disjoint query
-    Device::context->Begin(this->currentFrame->disjointQuery);
+    this->context->Begin(this->currentFrame->disjointQuery);
 
     // automatic frame block
     this->frameBlock = this->beginBlock("Frame");
@@ -39,7 +39,7 @@ void GPUProfiler::endFrame()
 
     // finish the frame disjoint query
     // don't retrieve anything right now, the results should be ready in FRAME_LATENCY
-    Device::context->End(this->currentFrame->disjointQuery);
+    this->context->End(this->currentFrame->disjointQuery);
 
     // switch to next frame (should contain results from FRAME_LATENCY frames ago, and will
     // be replaced by the next profiled frame)
@@ -52,7 +52,7 @@ void GPUProfiler::endFrame()
 
     // retrieve results
     D3D11_QUERY_DATA_TIMESTAMP_DISJOINT queryDataDisjoint;
-    HRESULT result = Device::context->GetData(this->currentFrame->disjointQuery, &queryDataDisjoint, sizeof(queryDataDisjoint), 0);
+    HRESULT result = this->context->GetData(this->currentFrame->disjointQuery, &queryDataDisjoint, sizeof(queryDataDisjoint), 0);
 
     // if data is still not available, FRAME_LATENCY should be increased
     assert(result == S_OK);
@@ -65,8 +65,8 @@ void GPUProfiler::endFrame()
             UINT64 start;
             UINT64 end;
 
-            Device::context->GetData(point.startQuery, &start, sizeof(UINT64), 0);
-            Device::context->GetData(point.endQuery, &end, sizeof(UINT64), 0);
+            this->context->GetData(point.startQuery, &start, sizeof(UINT64), 0);
+            this->context->GetData(point.endQuery, &end, sizeof(UINT64), 0);
 
             // conversion to microseconds
             UINT64 startUs = start * 1000000 / queryDataDisjoint.Frequency;
@@ -98,7 +98,7 @@ int GPUProfiler::beginBlock(const std::string &name)
     point.endQuery = this->requestPooledQuery();
 
     // record the start timestamp
-    Device::context->End(point.startQuery);
+    this->context->End(point.startQuery);
 
     this->currentFrame->points.push_back(point);
     return (int)this->currentFrame->points.size() - 1;
@@ -112,7 +112,7 @@ void GPUProfiler::endBlock(int handle)
     ProfilePoint &point = this->currentFrame->points[handle];
 
     // record the end timestamp
-    Device::context->End(point.endQuery);
+    this->context->End(point.endQuery);
 }
 
 void GPUProfiler::beginJsonCapture()
@@ -155,13 +155,15 @@ GPUProfiler::ScopedProfile::~ScopedProfile()
     GPUProfiler::getInstance()->endBlock(this->blockHandle);
 }
 
-GPUProfiler::GPUProfiler(bool enabled)
+GPUProfiler::GPUProfiler(bool enabled, ID3D11DeviceContext *context)
 {
     // when the profiler is disabled, every call is stubbed to do nothing
     this->enabled = enabled;
 
     if (!this->enabled)
         return;
+
+    this->context = context;
 
     this->currentFrameIndex = 0;
     this->currentFrame = &this->frames[this->currentFrameIndex];
