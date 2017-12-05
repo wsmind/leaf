@@ -7,6 +7,7 @@
 
 #include <engine/glm/glm.hpp>
 
+class FrameGraph;
 class Mesh;
 class PostProcessor;
 class RenderList;
@@ -27,7 +28,8 @@ class Renderer
         int backbufferWidth;
         int backbufferHeight;
         bool capture;
-        std::string profileFilename;
+
+        FrameGraph *frameGraph;
 
         IDXGISwapChain *swapChain;
         ID3D11Texture2D *backBuffer;

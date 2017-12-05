@@ -1,7 +1,7 @@
 #include <engine/render/MotionBlurRenderer.h>
 
 #include <engine/render/Device.h>
-#include <engine/render/GPUProfiler.h>
+#include <engine/render/graph/GPUProfiler.h>
 #include <engine/render/RenderTarget.h>
 
 #include <shaders/motionblur.ps.hlsl.h>

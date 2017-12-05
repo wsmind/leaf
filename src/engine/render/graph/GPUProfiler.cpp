@@ -1,4 +1,4 @@
-#include <engine/render/GPUProfiler.h>
+#include <engine/render/graph/GPUProfiler.h>
 
 #include <fstream>
 

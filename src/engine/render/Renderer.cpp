@@ -10,17 +10,18 @@
 #include <engine/glm/gtc/matrix_inverse.hpp>
 
 #include <engine/render/Device.h>
-#include <engine/render/GPUProfiler.h>
+#include <engine/render/graph/GPUProfiler.h>
 #include <engine/render/Image.h>
 #include <engine/render/Material.h>
 #include <engine/render/Mesh.h>
 #include <engine/render/PostProcessor.h>
 #include <engine/render/RenderList.h>
 #include <engine/render/RenderTarget.h>
-#include <engine/resource/ResourceManager.h>
-#include <engine/scene/Scene.h>
 #include <engine/render/ShadowRenderer.h>
 #include <engine/render/Texture.h>
+#include <engine/render/graph/FrameGraph.h>
+#include <engine/resource/ResourceManager.h>
+#include <engine/scene/Scene.h>
 
 #include <shaders/background.vs.hlsl.h>
 #include <shaders/background.ps.hlsl.h>
@@ -101,7 +102,6 @@ Renderer::Renderer(HWND hwnd, int backbufferWidth, int backbufferHeight, bool ca
     this->backbufferWidth = backbufferWidth;
     this->backbufferHeight = backbufferHeight;
     this->capture = capture;
-    this->profileFilename = profileFilename;
     this->renderList = new RenderList;
 
     DXGI_SWAP_CHAIN_DESC swapChainDesc;
@@ -288,14 +288,12 @@ Renderer::Renderer(HWND hwnd, int backbufferWidth, int backbufferHeight, bool ca
 
     this->fullscreenQuad = ResourceManager::getInstance()->requestResource<Mesh>("__fullscreenQuad");
 
-    GPUProfiler::create(!this->profileFilename.empty());
-    GPUProfiler::getInstance()->beginJsonCapture();
+    this->frameGraph = new FrameGraph(profileFilename);
 }
 
 Renderer::~Renderer()
 {
-    GPUProfiler::getInstance()->endJsonCapture(this->profileFilename);
-    GPUProfiler::destroy();
+    delete this->frameGraph;
 
     this->swapChain->Release();
     this->backBuffer->Release();
@@ -348,8 +346,6 @@ Renderer::~Renderer()
 
 void Renderer::render(const Scene *scene, int width, int height, bool overrideCamera, const glm::mat4 &viewMatrixOverride, const glm::mat4 &projectionMatrixOverride, float deltaTime)
 {
-    GPUProfiler::getInstance()->beginFrame();
-
     glm::mat4 viewMatrix;
     glm::mat4 projectionMatrix;
     float shutterSpeed;
@@ -376,6 +372,12 @@ void Renderer::render(const Scene *scene, int width, int height, bool overrideCa
     // shadow maps
     this->shadowRenderer->render(scene, this->renderList);
 
+    this->frameGraph->addClearTarget(this->renderTarget, glm::vec4(1.0f, 1.0f, 0.0f, 1.0f));
+    this->frameGraph->addClearTarget(this->motionTarget->getTarget(), glm::vec4(0.0f, 0.0f, 0.0f, 0.0f));
+    this->frameGraph->addClearTarget(this->depthTarget, 1.0, 0);
+
+    this->frameGraph->execute(Device::context);
+
     D3D11_VIEWPORT viewport;
     viewport.Width = (float)backbufferWidth;
     viewport.Height = (float)backbufferHeight;
@@ -384,15 +386,6 @@ void Renderer::render(const Scene *scene, int width, int height, bool overrideCa
     viewport.TopLeftX = 0;
     viewport.TopLeftY = 0;
     Device::context->RSSetViewports(1, &viewport);
-
-    float clearColor[] = { 1.0f, 1.0f, 0.0f, 1.0f };
-    float clearMotion[] = { 0.0f, 0.0f, 0.0f, 0.0f };
-    {
-        GPUProfiler::ScopedProfile profile("Clear");
-        Device::context->ClearRenderTargetView(this->renderTarget, clearColor);
-        Device::context->ClearRenderTargetView(this->motionTarget->getTarget(), clearMotion);
-        Device::context->ClearDepthStencilView(this->depthTarget, D3D11_CLEAR_DEPTH, 1.0f, 0);
-    }
 
     D3D11_MAPPED_SUBRESOURCE mappedResource;
     HRESULT res = Device::context->Map(this->cbScene, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
@@ -519,8 +512,6 @@ void Renderer::render(const Scene *scene, int width, int height, bool overrideCa
         GPUProfiler::ScopedProfile profile("V-Sync");
         this->swapChain->Present(0, 0);
     }
-
-    GPUProfiler::getInstance()->endFrame();
 
     this->previousFrameViewProjectionMatrix = projectionMatrix * viewMatrix;
 

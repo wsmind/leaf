@@ -1,7 +1,7 @@
 #include <engine/render/ShadowRenderer.h>
 
 #include <engine/render/Device.h>
-#include <engine/render/GPUProfiler.h>
+#include <engine/render/graph/GPUProfiler.h>
 #include <engine/render/RenderList.h>
 #include <engine/scene/Scene.h>
 

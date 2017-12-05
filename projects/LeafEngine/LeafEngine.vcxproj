@@ -169,7 +169,9 @@
     <ClCompile Include="..\..\src\engine\Engine.cpp" />
     <ClCompile Include="..\..\src\engine\render\Camera.cpp" />
     <ClCompile Include="..\..\src\engine\render\Device.cpp" />
-    <ClCompile Include="..\..\src\engine\render\GPUProfiler.cpp" />
+    <ClCompile Include="..\..\src\engine\render\graph\FrameGraph.cpp" />
+    <ClCompile Include="..\..\src\engine\render\graph\GPUProfiler.cpp" />
+    <ClCompile Include="..\..\src\engine\render\graph\Pass.cpp" />
     <ClCompile Include="..\..\src\engine\render\Image.cpp" />
     <ClCompile Include="..\..\src\engine\render\Light.cpp" />
     <ClCompile Include="..\..\src\engine\render\Material.cpp" />
@@ -193,7 +195,9 @@
     <ClInclude Include="..\..\src\engine\DDSTextureLoader\DDSTextureLoader.h" />
     <ClInclude Include="..\..\src\engine\render\Camera.h" />
     <ClInclude Include="..\..\src\engine\render\Device.h" />
-    <ClInclude Include="..\..\src\engine\render\GPUProfiler.h" />
+    <ClInclude Include="..\..\src\engine\render\graph\FrameGraph.h" />
+    <ClInclude Include="..\..\src\engine\render\graph\GPUProfiler.h" />
+    <ClInclude Include="..\..\src\engine\render\graph\Pass.h" />
     <ClInclude Include="..\..\src\engine\render\Image.h" />
     <ClInclude Include="..\..\src\engine\render\Light.h" />
     <ClInclude Include="..\..\src\engine\render\Material.h" />

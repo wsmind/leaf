@@ -39,9 +39,6 @@
     <ClCompile Include="..\..\src\engine\render\Device.cpp">
       <Filter>render</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\engine\render\GPUProfiler.cpp">
-      <Filter>render</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\engine\render\Image.cpp">
       <Filter>render</Filter>
     </ClCompile>
@@ -74,6 +71,15 @@
     </ClCompile>
     <ClCompile Include="..\..\src\engine\render\Texture.cpp">
       <Filter>render</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\engine\render\graph\FrameGraph.cpp">
+      <Filter>render\graph</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\engine\render\graph\Pass.cpp">
+      <Filter>render\graph</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\engine\render\graph\GPUProfiler.cpp">
+      <Filter>render\graph</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -151,9 +157,6 @@
     <ClInclude Include="..\..\src\engine\render\Device.h">
       <Filter>render</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\engine\render\GPUProfiler.h">
-      <Filter>render</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\engine\render\Image.h">
       <Filter>render</Filter>
     </ClInclude>
@@ -186,6 +189,15 @@
     </ClInclude>
     <ClInclude Include="..\..\src\engine\render\Texture.h">
       <Filter>render</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\engine\render\graph\FrameGraph.h">
+      <Filter>render\graph</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\engine\render\graph\Pass.h">
+      <Filter>render\graph</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\engine\render\graph\GPUProfiler.h">
+      <Filter>render\graph</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -268,6 +280,9 @@
     </Filter>
     <Filter Include="resource">
       <UniqueIdentifier>{41e80b41-e701-463c-aaa1-0395237703f1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="render\graph">
+      <UniqueIdentifier>{db13e090-122a-4dce-8674-106afaf29344}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
