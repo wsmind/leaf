@@ -85,8 +85,8 @@
   <ItemGroup>
     <ClInclude Include="..\..\src\engine\api.h" />
     <ClInclude Include="..\..\src\engine\Engine.h" />
-    <ClInclude Include="..\..\src\engine\shaders\shared.h">
-      <Filter>shaders</Filter>
+    <ClInclude Include="..\..\src\engine\render\shaders\shared.h">
+      <Filter>render\shaders</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\engine\cJSON\cJSON.h">
       <Filter>cJSON</Filter>
@@ -94,32 +94,32 @@
     <ClInclude Include="..\..\src\engine\DDSTextureLoader\DDSTextureLoader.h">
       <Filter>DDSTextureLoader</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\engine\shaders\postprocess.h">
-      <Filter>shaders</Filter>
+    <ClInclude Include="..\..\src\engine\render\shaders\postprocess.h">
+      <Filter>render\shaders</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\engine\shaders\standard.h">
-      <Filter>shaders</Filter>
+    <ClInclude Include="..\..\src\engine\render\shaders\standard.h">
+      <Filter>render\shaders</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\engine\shaders\scene.h">
-      <Filter>shaders</Filter>
+    <ClInclude Include="..\..\src\engine\render\shaders\scene.h">
+      <Filter>render\shaders</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\engine\shaders\instance.h">
-      <Filter>shaders</Filter>
+    <ClInclude Include="..\..\src\engine\render\shaders\instance.h">
+      <Filter>render\shaders</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\engine\shaders\tonemapping.h">
-      <Filter>shaders</Filter>
+    <ClInclude Include="..\..\src\engine\render\shaders\tonemapping.h">
+      <Filter>render\shaders</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\engine\shaders\gamma.h">
-      <Filter>shaders</Filter>
+    <ClInclude Include="..\..\src\engine\render\shaders\gamma.h">
+      <Filter>render\shaders</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\engine\shaders\depthonly.h">
-      <Filter>shaders</Filter>
+    <ClInclude Include="..\..\src\engine\render\shaders\depthonly.h">
+      <Filter>render\shaders</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\engine\shaders\shadows.h">
-      <Filter>shaders</Filter>
+    <ClInclude Include="..\..\src\engine\render\shaders\shadows.h">
+      <Filter>render\shaders</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\engine\shaders\Fxaa3_11.h">
-      <Filter>shaders</Filter>
+    <ClInclude Include="..\..\src\engine\render\shaders\Fxaa3_11.h">
+      <Filter>render\shaders</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\engine\animation\Action.h">
       <Filter>animation</Filter>
@@ -201,65 +201,62 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="..\..\src\engine\shaders\plop.vs.hlsl">
-      <Filter>shaders</Filter>
+    <FxCompile Include="..\..\src\engine\render\shaders\plop.vs.hlsl">
+      <Filter>render\shaders</Filter>
     </FxCompile>
-    <FxCompile Include="..\..\src\engine\shaders\plop.ps.hlsl">
-      <Filter>shaders</Filter>
+    <FxCompile Include="..\..\src\engine\render\shaders\plop.ps.hlsl">
+      <Filter>render\shaders</Filter>
     </FxCompile>
-    <FxCompile Include="..\..\src\engine\shaders\basic.ps.hlsl">
-      <Filter>shaders</Filter>
+    <FxCompile Include="..\..\src\engine\render\shaders\basic.ps.hlsl">
+      <Filter>render\shaders</Filter>
     </FxCompile>
-    <FxCompile Include="..\..\src\engine\shaders\basic.vs.hlsl">
-      <Filter>shaders</Filter>
+    <FxCompile Include="..\..\src\engine\render\shaders\basic.vs.hlsl">
+      <Filter>render\shaders</Filter>
     </FxCompile>
-    <FxCompile Include="..\..\src\engine\shaders\background.ps.hlsl">
-      <Filter>shaders</Filter>
+    <FxCompile Include="..\..\src\engine\render\shaders\background.ps.hlsl">
+      <Filter>render\shaders</Filter>
     </FxCompile>
-    <FxCompile Include="..\..\src\engine\shaders\background.vs.hlsl">
-      <Filter>shaders</Filter>
+    <FxCompile Include="..\..\src\engine\render\shaders\background.vs.hlsl">
+      <Filter>render\shaders</Filter>
     </FxCompile>
-    <FxCompile Include="..\..\src\engine\shaders\gbuffer.ps.hlsl">
-      <Filter>shaders</Filter>
+    <FxCompile Include="..\..\src\engine\render\shaders\gbuffer.ps.hlsl">
+      <Filter>render\shaders</Filter>
     </FxCompile>
-    <FxCompile Include="..\..\src\engine\shaders\gbuffer.vs.hlsl">
-      <Filter>shaders</Filter>
+    <FxCompile Include="..\..\src\engine\render\shaders\gbuffer.vs.hlsl">
+      <Filter>render\shaders</Filter>
     </FxCompile>
-    <FxCompile Include="..\..\src\engine\shaders\postprocess.ps.hlsl">
-      <Filter>shaders</Filter>
+    <FxCompile Include="..\..\src\engine\render\shaders\postprocess.ps.hlsl">
+      <Filter>render\shaders</Filter>
     </FxCompile>
-    <FxCompile Include="..\..\src\engine\shaders\postprocess.vs.hlsl">
-      <Filter>shaders</Filter>
+    <FxCompile Include="..\..\src\engine\render\shaders\postprocess.vs.hlsl">
+      <Filter>render\shaders</Filter>
     </FxCompile>
-    <FxCompile Include="..\..\src\engine\shaders\standard.ps.hlsl">
-      <Filter>shaders</Filter>
+    <FxCompile Include="..\..\src\engine\render\shaders\standard.ps.hlsl">
+      <Filter>render\shaders</Filter>
     </FxCompile>
-    <FxCompile Include="..\..\src\engine\shaders\standard.vs.hlsl">
-      <Filter>shaders</Filter>
+    <FxCompile Include="..\..\src\engine\render\shaders\standard.vs.hlsl">
+      <Filter>render\shaders</Filter>
     </FxCompile>
-    <FxCompile Include="..\..\src\engine\shaders\depthonly.ps.hlsl">
-      <Filter>shaders</Filter>
+    <FxCompile Include="..\..\src\engine\render\shaders\depthonly.ps.hlsl">
+      <Filter>render\shaders</Filter>
     </FxCompile>
-    <FxCompile Include="..\..\src\engine\shaders\depthonly.vs.hlsl">
-      <Filter>shaders</Filter>
+    <FxCompile Include="..\..\src\engine\render\shaders\depthonly.vs.hlsl">
+      <Filter>render\shaders</Filter>
     </FxCompile>
-    <FxCompile Include="..\..\src\engine\shaders\fxaa.ps.hlsl">
-      <Filter>shaders</Filter>
+    <FxCompile Include="..\..\src\engine\render\shaders\fxaa.ps.hlsl">
+      <Filter>render\shaders</Filter>
     </FxCompile>
-    <FxCompile Include="..\..\src\engine\shaders\fxaa.vs.hlsl">
-      <Filter>shaders</Filter>
+    <FxCompile Include="..\..\src\engine\render\shaders\fxaa.vs.hlsl">
+      <Filter>render\shaders</Filter>
     </FxCompile>
-    <FxCompile Include="..\..\src\engine\shaders\motionblur.ps.hlsl">
-      <Filter>shaders</Filter>
+    <FxCompile Include="..\..\src\engine\render\shaders\motionblur.ps.hlsl">
+      <Filter>render\shaders</Filter>
     </FxCompile>
-    <FxCompile Include="..\..\src\engine\shaders\tilemax.cs.hlsl">
-      <Filter>shaders</Filter>
+    <FxCompile Include="..\..\src\engine\render\shaders\tilemax.cs.hlsl">
+      <Filter>render\shaders</Filter>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
-    <Filter Include="shaders">
-      <UniqueIdentifier>{03d0b7eb-fedd-41ff-97c7-c5fdb14a8527}</UniqueIdentifier>
-    </Filter>
     <Filter Include="blender-addon">
       <UniqueIdentifier>{841e16fa-304c-4e34-a9fe-7435ea03131c}</UniqueIdentifier>
     </Filter>
@@ -283,6 +280,12 @@
     </Filter>
     <Filter Include="render\graph">
       <UniqueIdentifier>{db13e090-122a-4dce-8674-106afaf29344}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="render\shaders">
+      <UniqueIdentifier>{03d0b7eb-fedd-41ff-97c7-c5fdb14a8527}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="render\shaders\constants">
+      <UniqueIdentifier>{732e4431-2c83-4b86-90d6-e5b78b4b7c34}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

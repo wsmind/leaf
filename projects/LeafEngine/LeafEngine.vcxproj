@@ -214,23 +214,23 @@
     <ClInclude Include="..\..\src\engine\resource\ResourceManager.inline.h" />
     <ClInclude Include="..\..\src\engine\scene\Scene.h" />
     <ClInclude Include="..\..\src\engine\scene\SceneNode.h" />
-    <ClInclude Include="..\..\src\engine\shaders\depthonly.h" />
-    <ClInclude Include="..\..\src\engine\shaders\Fxaa3_11.h" />
-    <ClInclude Include="..\..\src\engine\shaders\gamma.h" />
-    <ClInclude Include="..\..\src\engine\shaders\instance.h" />
-    <ClInclude Include="..\..\src\engine\shaders\postprocess.h" />
-    <ClInclude Include="..\..\src\engine\shaders\scene.h" />
-    <ClInclude Include="..\..\src\engine\shaders\shadows.h" />
-    <ClInclude Include="..\..\src\engine\shaders\standard.h" />
-    <ClInclude Include="..\..\src\engine\shaders\tonemapping.h" />
+    <ClInclude Include="..\..\src\engine\render\shaders\depthonly.h" />
+    <ClInclude Include="..\..\src\engine\render\shaders\Fxaa3_11.h" />
+    <ClInclude Include="..\..\src\engine\render\shaders\gamma.h" />
+    <ClInclude Include="..\..\src\engine\render\shaders\instance.h" />
+    <ClInclude Include="..\..\src\engine\render\shaders\postprocess.h" />
+    <ClInclude Include="..\..\src\engine\render\shaders\scene.h" />
+    <ClInclude Include="..\..\src\engine\render\shaders\shadows.h" />
+    <ClInclude Include="..\..\src\engine\render\shaders\standard.h" />
+    <ClInclude Include="..\..\src\engine\render\shaders\tonemapping.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\engine\api.h" />
     <ClInclude Include="..\..\src\engine\Engine.h" />
-    <ClInclude Include="..\..\src\engine\shaders\shared.h" />
+    <ClInclude Include="..\..\src\engine\render\shaders\shared.h" />
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="..\..\src\engine\shaders\background.ps.hlsl">
+    <FxCompile Include="..\..\src\engine\render\shaders\background.ps.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
       <VariableName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">backgroundPS</VariableName>
@@ -256,7 +256,7 @@
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
       </ObjectFileOutput>
     </FxCompile>
-    <FxCompile Include="..\..\src\engine\shaders\background.vs.hlsl">
+    <FxCompile Include="..\..\src\engine\render\shaders\background.vs.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
       <VariableName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">backgroundVS</VariableName>
@@ -282,7 +282,7 @@
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
       </ObjectFileOutput>
     </FxCompile>
-    <FxCompile Include="..\..\src\engine\shaders\basic.ps.hlsl">
+    <FxCompile Include="..\..\src\engine\render\shaders\basic.ps.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
       <VariableName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">basicPS</VariableName>
@@ -308,7 +308,7 @@
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
       </ObjectFileOutput>
     </FxCompile>
-    <FxCompile Include="..\..\src\engine\shaders\basic.vs.hlsl">
+    <FxCompile Include="..\..\src\engine\render\shaders\basic.vs.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
       <HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)\shaders\basic.vs.hlsl.h</HeaderFileOutput>
@@ -334,7 +334,7 @@
       <VariableName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">basicVS</VariableName>
       <VariableName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">basicVS</VariableName>
     </FxCompile>
-    <FxCompile Include="..\..\src\engine\shaders\depthonly.ps.hlsl">
+    <FxCompile Include="..\..\src\engine\render\shaders\depthonly.ps.hlsl">
       <VariableName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">depthonlyPS</VariableName>
       <HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)\shaders\depthonly.ps.hlsl.h</HeaderFileOutput>
       <VariableName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">depthonlyPS</VariableName>
@@ -360,7 +360,7 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
     </FxCompile>
-    <FxCompile Include="..\..\src\engine\shaders\depthonly.vs.hlsl">
+    <FxCompile Include="..\..\src\engine\render\shaders\depthonly.vs.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
       <VariableName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">depthonlyVS</VariableName>
@@ -386,7 +386,7 @@
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
       </ObjectFileOutput>
     </FxCompile>
-    <FxCompile Include="..\..\src\engine\shaders\fxaa.ps.hlsl">
+    <FxCompile Include="..\..\src\engine\render\shaders\fxaa.ps.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
       <VariableName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">fxaaPS</VariableName>
@@ -412,7 +412,7 @@
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
       </ObjectFileOutput>
     </FxCompile>
-    <FxCompile Include="..\..\src\engine\shaders\fxaa.vs.hlsl">
+    <FxCompile Include="..\..\src\engine\render\shaders\fxaa.vs.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
       <VariableName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">fxaaVS</VariableName>
@@ -438,7 +438,7 @@
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
       </ObjectFileOutput>
     </FxCompile>
-    <FxCompile Include="..\..\src\engine\shaders\gbuffer.ps.hlsl">
+    <FxCompile Include="..\..\src\engine\render\shaders\gbuffer.ps.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
       <VariableName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">gbufferPS</VariableName>
@@ -464,7 +464,7 @@
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
       </ObjectFileOutput>
     </FxCompile>
-    <FxCompile Include="..\..\src\engine\shaders\gbuffer.vs.hlsl">
+    <FxCompile Include="..\..\src\engine\render\shaders\gbuffer.vs.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
       <VariableName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">gbufferVS</VariableName>
@@ -490,7 +490,7 @@
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
       </ObjectFileOutput>
     </FxCompile>
-    <FxCompile Include="..\..\src\engine\shaders\motionblur.ps.hlsl">
+    <FxCompile Include="..\..\src\engine\render\shaders\motionblur.ps.hlsl">
       <HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)\shaders\motionblur.ps.hlsl.h</HeaderFileOutput>
       <VariableName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">motionblurPS</VariableName>
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -504,7 +504,7 @@
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
       </ObjectFileOutput>
     </FxCompile>
-    <FxCompile Include="..\..\src\engine\shaders\plop.ps.hlsl">
+    <FxCompile Include="..\..\src\engine\render\shaders\plop.ps.hlsl">
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">5.0</ShaderModel>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
@@ -530,7 +530,7 @@
       <VariableName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">plopPS</VariableName>
       <VariableName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">plopPS</VariableName>
     </FxCompile>
-    <FxCompile Include="..\..\src\engine\shaders\plop.vs.hlsl">
+    <FxCompile Include="..\..\src\engine\render\shaders\plop.vs.hlsl">
       <VariableName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">plopVS</VariableName>
       <HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)\shaders\plop.vs.hlsl.h</HeaderFileOutput>
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -556,7 +556,7 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
     </FxCompile>
-    <FxCompile Include="..\..\src\engine\shaders\postprocess.ps.hlsl">
+    <FxCompile Include="..\..\src\engine\render\shaders\postprocess.ps.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
       <VariableName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">postprocessPS</VariableName>
@@ -582,7 +582,7 @@
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
       </ObjectFileOutput>
     </FxCompile>
-    <FxCompile Include="..\..\src\engine\shaders\postprocess.vs.hlsl">
+    <FxCompile Include="..\..\src\engine\render\shaders\postprocess.vs.hlsl">
       <VariableName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">postprocessVS</VariableName>
       <HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)\shaders\postprocess.vs.hlsl.h</HeaderFileOutput>
       <VariableName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">postprocessVS</VariableName>
@@ -608,7 +608,7 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
     </FxCompile>
-    <FxCompile Include="..\..\src\engine\shaders\standard.ps.hlsl">
+    <FxCompile Include="..\..\src\engine\render\shaders\standard.ps.hlsl">
       <VariableName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">standardPS</VariableName>
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
       </ObjectFileOutput>
@@ -634,7 +634,7 @@
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
       <HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)\shaders\standard.ps.hlsl.h</HeaderFileOutput>
     </FxCompile>
-    <FxCompile Include="..\..\src\engine\shaders\standard.vs.hlsl">
+    <FxCompile Include="..\..\src\engine\render\shaders\standard.vs.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">5.0</ShaderModel>
       <VariableName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">standardVS</VariableName>
@@ -652,7 +652,7 @@
       <VariableName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">standardVS</VariableName>
       <HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)\shaders\standard.vs.hlsl.h</HeaderFileOutput>
     </FxCompile>
-    <FxCompile Include="..\..\src\engine\shaders\tilemax.cs.hlsl">
+    <FxCompile Include="..\..\src\engine\render\shaders\tilemax.cs.hlsl">
       <HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)\shaders\tilemax.cs.hlsl.h</HeaderFileOutput>
       <HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)\shaders\tilemax.cs.hlsl.h</HeaderFileOutput>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Compute</ShaderType>
