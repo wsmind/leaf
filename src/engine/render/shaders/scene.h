@@ -1,4 +1,11 @@
-#define MAX_LIGHT 8
+#include "constants/SceneConstants.h"
+
+cbuffer SceneConstants : register(b0)
+{
+	SceneConstants sceneConstants;
+}
+
+/*#define MAX_LIGHT 8
 
 struct PointLightData
 {
@@ -35,3 +42,4 @@ cbuffer SceneData : register(b0)
     PointLightData pointLights[MAX_LIGHT];
     SpotLightData spotLights[MAX_LIGHT];
 };
+*/

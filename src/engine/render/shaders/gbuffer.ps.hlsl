@@ -29,7 +29,7 @@ PS_OUTPUT main(GBUFFER_PS_INPUT input)
 	PS_OUTPUT output;
 
     const float3 light = normalize(float3(1.0, 1.0, 1.0));
-    const float3 view = cameraPosition - input.worldPosition;
+    const float3 view = sceneConstants.cameraPosition - input.worldPosition;
     const float3 eye = normalize(view);
     const float3 normal = normalize(input.normal);
     const float3 h = normalize(eye + light);

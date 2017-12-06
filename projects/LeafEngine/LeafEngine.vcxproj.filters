@@ -199,6 +199,12 @@
     <ClInclude Include="..\..\src\engine\render\graph\GPUProfiler.h">
       <Filter>render\graph</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\engine\render\shaders\constants\ShaderTypes.h">
+      <Filter>render\shaders\constants</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\engine\render\shaders\constants\SceneConstants.h">
+      <Filter>render\shaders\constants</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\..\src\engine\render\shaders\plop.vs.hlsl">

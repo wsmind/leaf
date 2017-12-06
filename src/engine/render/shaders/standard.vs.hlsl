@@ -15,15 +15,15 @@ STANDARD_PS_INPUT main(VS_INPUT input)
     STANDARD_PS_INPUT output;
 
     float4 worldPosition = mul(modelMatrix, float4(input.pos, 1.0));
-    float4 viewPosition = mul(viewMatrix, worldPosition);
-    output.position = mul(projectionMatrix, viewPosition);
+    float4 viewPosition = mul(sceneConstants.viewMatrix, worldPosition);
+    output.position = mul(sceneConstants.projectionMatrix, viewPosition);
    
     // hack; GL to DX clip space
     output.position.z = (output.position.z + output.position.w) * 0.5;
 
     output.worldPosition = worldPosition.xyz;
     output.viewPosition = viewPosition.xyz;
-    output.marchingStep = (output.worldPosition - cameraPosition) / MARCHING_ITERATIONS;
+    output.marchingStep = (output.worldPosition - sceneConstants.cameraPosition) / MARCHING_ITERATIONS;
     output.normal = mul(normalMatrix, input.normal);
     output.tangent = float4(mul(normalMatrix, input.tangent.xyz), input.tangent.w);
     output.uv = float2(input.uv.x, 1.0 - input.uv.y);

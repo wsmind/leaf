@@ -82,9 +82,9 @@ STANDARD_PS_OUTPUT main(STANDARD_PS_INPUT input)
 {
     STANDARD_PS_OUTPUT output;
 
-    float3 radiance = ambientColor + emissive;
+    float3 radiance = sceneConstants.ambientColor + emissive;
 
-    const float3 view = cameraPosition - input.worldPosition;
+    const float3 view = sceneConstants.cameraPosition - input.worldPosition;
     const float3 eye = normalize(view);
     const float3 normal = normalize(input.normal);
     const float3 tangent = normalize(input.tangent.xyz);
@@ -112,14 +112,14 @@ STANDARD_PS_OUTPUT main(STANDARD_PS_INPUT input)
     surface.roughness = roughness;
 
     // point lights
-    for (int i = 0; i < pointLightCount; i++)
+    for (int i = 0; i < sceneConstants.pointLightCount; i++)
     {
-        float3 lightVector = pointLights[i].position - input.worldPosition;
+        float3 lightVector = sceneConstants.pointLights[i].position - input.worldPosition;
         float lightDistance = length(lightVector);
 
         LightProperties light;
         light.direction = lightVector / lightDistance;
-        light.incomingRadiance = pointLights[i].color * computeLightFalloff(lightDistance, pointLights[i].radius);
+        light.incomingRadiance = sceneConstants.pointLights[i].color * computeLightFalloff(lightDistance, sceneConstants.pointLights[i].radius);
 
         radiance += computeShading(surface, light, eye);
     }
@@ -127,57 +127,57 @@ STANDARD_PS_OUTPUT main(STANDARD_PS_INPUT input)
     // spot lights
     float3 inScattering = float3(0.0, 0.0, 0.0);
     float stepLength = length(input.marchingStep);
-    for (int i = 0; i < spotLightCount; i++)
+    for (int i = 0; i < sceneConstants.spotLightCount; i++)
     {
-        float3 lightVector = spotLights[i].position - input.worldPosition;
+        float3 lightVector = sceneConstants.spotLights[i].position - input.worldPosition;
         float lightDistance = length(lightVector);
 
         float shadowFactor = sampleShadowMap(i, input.worldPosition);
 
         LightProperties light;
         light.direction = lightVector / lightDistance;
-        light.incomingRadiance = spotLights[i].color * computeLightFalloff(lightDistance, spotLights[i].radius) * shadowFactor;
+        light.incomingRadiance = sceneConstants.spotLights[i].color * computeLightFalloff(lightDistance, sceneConstants.spotLights[i].radius) * shadowFactor;
 
         // angle falloff (scale and offset are precomputed on CPU according to the inner and outer angles)
-        float angleFalloff = saturate(dot(-light.direction, spotLights[i].direction) * spotLights[i].cosAngleScale + spotLights[i].cosAngleOffset);
+        float angleFalloff = saturate(dot(-light.direction, sceneConstants.spotLights[i].direction) * sceneConstants.spotLights[i].cosAngleScale + sceneConstants.spotLights[i].cosAngleOffset);
         angleFalloff *= angleFalloff; // more natural square attenuation
         light.incomingRadiance *= angleFalloff;
 
         radiance += computeShading(surface, light, eye);
 
-        if (spotLights[i].scattering == 0.0)
+        if (sceneConstants.spotLights[i].scattering == 0.0)
             continue;
 
-        float3 samplePosition = cameraPosition;
+        float3 samplePosition = sceneConstants.cameraPosition;
         float3 sampledScattering = float3(0.0, 0.0, 0.0);
         for (int k = 0; k < MARCHING_ITERATIONS; k++)
         {
-            float3 lightVector2 = spotLights[i].position - samplePosition;
+            float3 lightVector2 = sceneConstants.spotLights[i].position - samplePosition;
             float lightDistance2 = length(lightVector2);
             float opticalDepth = /*distance(cameraPosition, samplePosition) +*/ lightDistance2;
-            float angleFalloff2 = saturate(dot(-lightVector2 / lightDistance2, spotLights[i].direction) * spotLights[i].cosAngleScale + spotLights[i].cosAngleOffset);
+            float angleFalloff2 = saturate(dot(-lightVector2 / lightDistance2, sceneConstants.spotLights[i].direction) * sceneConstants.spotLights[i].cosAngleScale + sceneConstants.spotLights[i].cosAngleOffset);
             angleFalloff2 *= angleFalloff2; // more natural square attenuation
             float shadowFactor2 = sampleShadowMap(i, samplePosition);
-            float3 radiance2 = spotLights[i].color * computeLightFalloff(lightDistance, spotLights[i].radius) * angleFalloff2 * shadowFactor2;
+            float3 radiance2 = sceneConstants.spotLights[i].color * computeLightFalloff(lightDistance, sceneConstants.spotLights[i].radius) * angleFalloff2 * shadowFactor2;
 
             sampledScattering += stepLength * radiance2 * exp(-opticalDepth);
 
             samplePosition += input.marchingStep;
         }
 
-        inScattering += sampledScattering * spotLights[i].scattering;
+        inScattering += sampledScattering * sceneConstants.spotLights[i].scattering;
     }
 
-    float transmittance = exp(input.viewPosition.z * mist);
+    float transmittance = exp(input.viewPosition.z * sceneConstants.mist);
     
-    output.radiance = float4(lerp(ambientColor, radiance, transmittance) + inScattering, 1.0);
+    output.radiance = float4(lerp(sceneConstants.ambientColor, radiance, transmittance) + inScattering, 1.0);
 
     // estimate pixel movement from last frame
     float4 previousFrameClipSpacePosition = mul(worldToPreviousFrameClipSpaceMatrix, float4(input.worldPosition, 1.0));
     float2 frameMovement = (input.clipPosition.xy / input.clipPosition.w) - (previousFrameClipSpacePosition.xy / previousFrameClipSpacePosition.w);
-    float2 motion = 0.5 * frameMovement * motionSpeedFactor;
-    if (abs(motion.x) > motionMaximum.x) motion *= motionMaximum.x / abs(motion.x);
-    if (abs(motion.y) > motionMaximum.y) motion *= motionMaximum.y / abs(motion.y);
+    float2 motion = 0.5 * frameMovement * sceneConstants.motionSpeedFactor;
+    if (abs(motion.x) > sceneConstants.motionMaximum.x) motion *= sceneConstants.motionMaximum.x / abs(motion.x);
+    if (abs(motion.y) > sceneConstants.motionMaximum.y) motion *= sceneConstants.motionMaximum.y / abs(motion.y);
     /*motion *= max(1.0, motionMaximum.x / (abs(motion.x) + 0.001));
     motion *= max(1.0, motionMaximum.y / (abs(motion.y) + 0.001));*/
     motion = 0.5 * float2(motion.x, -motion.y); // convert to texture space

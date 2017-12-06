@@ -21,6 +21,7 @@
 #include <engine/render/Texture.h>
 #include <engine/render/graph/FrameGraph.h>
 #include <engine/render/graph/Pass.h>
+#include <engine/render/shaders/constants/SceneConstants.h>
 #include <engine/resource/ResourceManager.h>
 #include <engine/scene/Scene.h>
 
@@ -38,55 +39,6 @@
 static const unsigned char blackDDS[] = { 68, 68, 83, 32, 124, 0, 0, 0, 7, 16, 2, 0, 4, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 85, 86, 69, 82, 0, 0, 0, 0, 78, 86, 84, 84, 0, 1, 2, 0, 32, 0, 0, 0, 4, 0, 0, 0, 68, 88, 49, 48, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 16, 64, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 71, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 170, 170, 170, 170, 0, 0, 0, 0, 170, 170, 170, 170, 0, 0, 0, 0, 170, 170, 170, 170 };
 static const unsigned char whiteDDS[] = { 68, 68, 83, 32, 124, 0, 0, 0, 7, 16, 2, 0, 4, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 85, 86, 69, 82, 0, 0, 0, 0, 78, 86, 84, 84, 0, 1, 2, 0, 32, 0, 0, 0, 4, 0, 0, 0, 68, 88, 49, 48, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 16, 64, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 71, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 255, 255, 255, 255, 170, 170, 170, 170, 255, 255, 255, 255, 170, 170, 170, 170, 255, 255, 255, 255, 170, 170, 170, 170 };
 static const unsigned char normalDDS[] = { 68, 68, 83, 32, 124, 0, 0, 0, 7, 16, 2, 0, 4, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 85, 86, 69, 82, 0, 0, 0, 0, 78, 86, 84, 84, 0, 1, 2, 0, 32, 0, 0, 0, 4, 0, 0, 128, 68, 88, 49, 48, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 16, 64, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 71, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 255, 139, 31, 124, 255, 255, 255, 255, 255, 139, 31, 124, 255, 255, 255, 255, 255, 139, 31, 124, 255, 255, 255, 255 };
-
-#define MAX_LIGHT 8
-
-#pragma pack(push)
-#pragma pack(16)
-struct PointLightData
-{
-    glm::vec3 position;
-    float radius;
-    glm::vec3 color;
-    float _padding;
-};
-#pragma pack(pop)
-
-#pragma pack(push)
-#pragma pack(16)
-struct SpotLightData
-{
-    glm::vec3 position;
-    float radius;
-    glm::vec3 color;
-    float cosAngleScale;
-    glm::vec3 direction;
-    float cosAngleOffset;
-    float scattering;
-    float _padding[3];
-};
-#pragma pack(pop)
-
-#pragma pack(push)
-#pragma pack(16)
-struct SceneState
-{
-    glm::mat4 viewMatrix;
-    glm::mat4 viewMatrixInverse;
-    glm::mat4 projectionMatrix;
-    glm::mat4 projectionMatrixInverse;
-    glm::mat4 viewProjectionInverseMatrix;
-    glm::vec3 cameraPosition;
-    int pointLightCount;
-    int spotLightCount;
-    glm::vec3 ambientColor;
-    float mist;
-    float motionSpeedFactor; // shutter speed / delta time
-    glm::vec2 motionMaximum; // hardcoded to 40px / resolution
-    PointLightData pointLights[MAX_LIGHT];
-    SpotLightData spotLights[MAX_LIGHT];
-};
-#pragma pack(pop)
 
 #pragma pack(push)
 #pragma pack(16)
@@ -246,7 +198,7 @@ Renderer::Renderer(HWND hwnd, int backbufferWidth, int backbufferHeight, bool ca
     cbDesc.MiscFlags = 0;
     cbDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 
-    cbDesc.ByteWidth = sizeof(SceneState);
+    cbDesc.ByteWidth = sizeof(SceneConstants);
     res = Device::device->CreateBuffer(&cbDesc, NULL, &this->cbScene);
     CHECK_HRESULT(res);
 
@@ -399,7 +351,7 @@ void Renderer::render(const Scene *scene, int width, int height, bool overrideCa
     D3D11_MAPPED_SUBRESOURCE mappedResource;
     HRESULT res = Device::context->Map(this->cbScene, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
     CHECK_HRESULT(res);
-    SceneState *sceneState = (SceneState *)mappedResource.pData;
+	SceneConstants *sceneState = (SceneConstants *)mappedResource.pData;
     sceneState->viewMatrix = viewMatrix;
     glm::mat4 viewMatrixInverse = glm::inverse(viewMatrix);
     sceneState->viewMatrixInverse = viewMatrixInverse;
