@@ -4,7 +4,7 @@
 #include <vector>
 
 #include <windows.h>
-#include <d3d11.h>
+#include <d3d11_1.h>
 
 #include <engine/glm/vec4.hpp>
 
@@ -33,6 +33,7 @@ class FrameGraph
         void executeAllPasses();
 
         ID3D11DeviceContext *context;
+		ID3DUserDefinedAnnotation *annotation;
 
         std::string profileFilename;
 

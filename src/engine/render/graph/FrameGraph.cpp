@@ -27,6 +27,9 @@ FrameGraph::FrameGraph(const std::string &profileFilename)
 
     Device::device->GetImmediateContext(&this->context);
 
+	res = this->context->QueryInterface(__uuidof(this->annotation), (void **)&this->annotation);
+	CHECK_HRESULT(res);
+
     this->profileFilename = profileFilename;
 
     GPUProfiler::create(!this->profileFilename.empty(), this->context);
@@ -39,6 +42,7 @@ FrameGraph::~FrameGraph()
     GPUProfiler::destroy();
 
     this->context->Release();
+	this->annotation->Release();
 
     this->sceneConstantBuffer->Release();
     this->passConstantBuffer->Release();
@@ -99,7 +103,11 @@ void FrameGraph::clearAllTargets()
 {
     GPUProfiler::ScopedProfile profile("Clear");
 
-    for (auto &colorTarget : this->clearColorTargets)
+	std::string clearName("Clear");
+	std::wstring clearNameWide(clearName.begin(), clearName.end());
+	this->annotation->BeginEvent(clearNameWide.c_str());
+
+	for (auto &colorTarget : this->clearColorTargets)
         this->context->ClearRenderTargetView(colorTarget.target, (float *)&colorTarget.color);
 
     for (auto &depthTarget : this->clearDepthTargets)
@@ -107,13 +115,15 @@ void FrameGraph::clearAllTargets()
 
     this->clearColorTargets.clear();
     this->clearDepthTargets.clear();
+
+	this->annotation->EndEvent();
 }
 
 void FrameGraph::executeAllPasses()
 {
     for (auto *pass : this->passes)
     {
-        pass->execute(this->context, this->passConstantBuffer);
+        pass->execute(this->context, this->passConstantBuffer, this->annotation);
         delete pass;
     }
 

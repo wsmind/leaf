@@ -4,7 +4,7 @@
 #include <vector>
 
 #include <windows.h>
-#include <d3d11.h>
+#include <d3d11_1.h>
 
 #include <engine/render/shaders/constants/PassConstants.h>
 
@@ -28,7 +28,7 @@ class Pass
 
         Batch *addBatch(const std::string &name);
 
-        void execute(ID3D11DeviceContext *context, ID3D11Buffer *passConstantBuffer);
+        void execute(ID3D11DeviceContext *context, ID3D11Buffer *passConstantBuffer, ID3DUserDefinedAnnotation *annotation);
 
     private:
         std::string name;

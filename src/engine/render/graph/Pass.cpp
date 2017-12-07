@@ -39,9 +39,12 @@ Batch *Pass::addBatch(const std::string &name)
     return batch;
 }
 
-void Pass::execute(ID3D11DeviceContext *context, ID3D11Buffer *passConstantBuffer)
+void Pass::execute(ID3D11DeviceContext *context, ID3D11Buffer *passConstantBuffer, ID3DUserDefinedAnnotation *annotation)
 {
     GPUProfiler::ScopedProfile profile(this->name);
+
+	std::wstring nameWide(name.begin(), name.end());
+	annotation->BeginEvent(nameWide.c_str());
 
     // upload pass constants to GPU
     D3D11_MAPPED_SUBRESOURCE mappedResource;
@@ -64,4 +67,6 @@ void Pass::execute(ID3D11DeviceContext *context, ID3D11Buffer *passConstantBuffe
 
     if ((this->colorTargets.size() > 0) || (this->depthStencilTarget != nullptr))
         context->OMSetRenderTargets(0, nullptr, nullptr);
+
+	annotation->EndEvent();
 }
