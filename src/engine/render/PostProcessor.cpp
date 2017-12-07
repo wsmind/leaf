@@ -53,8 +53,6 @@ void PostProcessor::render(FrameGraph *frameGraph, int width, int height, Render
 {
     this->fullscreenQuad->bind();
 
-    //Device::context->VSSetShader(postprocessVertexShader, NULL, 0);
-
     //this->motionBlurRenderer->render(this->targets[0], motionTarget, this->targets[1]);
 
     ID3D11RenderTargetView *target0 = this->targets[0]->getTarget();
@@ -81,22 +79,6 @@ void PostProcessor::render(FrameGraph *frameGraph, int width, int height, Render
     Job *toneMappingJob = toneMappingBatch->addJob();
     this->fullscreenQuad->setupJob(toneMappingJob);
 
-    //Device::context->OMSetRenderTargets(1, &target0, nullptr);
-
-    //Device::context->PSSetShader(postprocessPixelShader, NULL, 0);
-
-    //ID3D11SamplerState *radianceSamplerState = this->targets[1]->getSamplerState();
-    //ID3D11ShaderResourceView *radianceSRV = this->targets[1]->getSRV();
-    //Device::context->PSSetSamplers(0, 1, &radianceSamplerState);
-    //Device::context->PSSetShaderResources(0, 1, &radianceSRV);
-
-    //Device::context->DrawIndexed(this->fullscreenQuad->getIndexCount(), 0, 0);
-
-    /*ID3D11SamplerState *nullSampler = nullptr;
-    ID3D11ShaderResourceView *nullSRV = nullptr;
-    Device::context->PSSetSamplers(0, 1, &nullSampler);
-    Device::context->PSSetShaderResources(0, 1, &nullSRV);*/
-
     // fxaa pass and blit to backbuffer
     Pass *fxaaPass = frameGraph->addPass("FXAA");
     fxaaPass->setTargets({ this->backbufferTarget }, nullptr);
@@ -117,9 +99,4 @@ void PostProcessor::render(FrameGraph *frameGraph, int width, int height, Render
 
     Job *fxaaJob = fxaaBatch->addJob();
     this->fullscreenQuad->setupJob(fxaaJob);
-
-    //ID3D11SamplerState *target1SamplerState = this->targets[0]->getSamplerState();
-    //Device::context->PSSetSamplers(0, 1, &target1SamplerState);
-
-    //Device::context->DrawIndexed(this->fullscreenQuad->getIndexCount(), 0, 0);
 }
