@@ -1,4 +1,5 @@
 #include "instance.h"
+#include "pass.h"
 #include "scene.h"
 #include "shadows.h"
 #include "standard.h"
@@ -82,9 +83,9 @@ STANDARD_PS_OUTPUT main(STANDARD_PS_INPUT input)
 {
     STANDARD_PS_OUTPUT output;
 
-    float3 radiance = sceneConstants.ambientColor + emissive;
+    float3 radiance = sceneConstants.ambientColor + standardConstants.emissive;
 
-    const float3 view = sceneConstants.cameraPosition - input.worldPosition;
+    const float3 view = passConstants.cameraPosition - input.worldPosition;
     const float3 eye = normalize(view);
     const float3 normal = normalize(input.normal);
     const float3 tangent = normalize(input.tangent.xyz);
@@ -97,9 +98,9 @@ STANDARD_PS_OUTPUT main(STANDARD_PS_INPUT input)
     float3 tangentNormal = normalize(normalMap.Sample(normalSampler, input.uv).rgb * 2.0 - 1.0);
     float3 perturbedNormal = mul(tangentNormal, TBN);
 
-    float3 baseColor = baseColorMultiplier * baseColorMap.Sample(baseColorSampler, input.uv).rgb;
-    float metallic = saturate(metallicOffset + metallicMap.Sample(metallicSampler, input.uv).r);
-    float roughness = saturate(roughnessOffset + roughnessMap.Sample(roughnessSampler, input.uv).r);
+    float3 baseColor = standardConstants.baseColorMultiplier * baseColorMap.Sample(baseColorSampler, input.uv).rgb;
+    float metallic = saturate(standardConstants.metallicOffset + metallicMap.Sample(metallicSampler, input.uv).r);
+    float roughness = saturate(standardConstants.roughnessOffset + roughnessMap.Sample(roughnessSampler, input.uv).r);
 
     // blend between dielectric and metal
     float3 albedo = baseColor * (1.0 - metallic);
@@ -148,7 +149,7 @@ STANDARD_PS_OUTPUT main(STANDARD_PS_INPUT input)
         if (sceneConstants.spotLights[i].scattering == 0.0)
             continue;
 
-        float3 samplePosition = sceneConstants.cameraPosition;
+        float3 samplePosition = passConstants.cameraPosition;
         float3 sampledScattering = float3(0.0, 0.0, 0.0);
         for (int k = 0; k < MARCHING_ITERATIONS; k++)
         {

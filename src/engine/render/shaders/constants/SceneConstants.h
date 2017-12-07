@@ -30,18 +30,15 @@ struct SpotLightData
 
 struct SceneConstants
 {
-	float4x4 viewMatrix;
-	float4x4 viewMatrixInverse;
-	float4x4 projectionMatrix;
-	float4x4 projectionMatrixInverse;
-	float4x4 viewProjectionInverseMatrix;
-	float3 cameraPosition;
-	int pointLightCount;
-	int spotLightCount;
-	float3 ambientColor;
-	float mist;
+    float3 ambientColor;
 	float motionSpeedFactor; // shutter speed / delta time
 	float2 motionMaximum; // hardcoded to 0.5 * 40px / resolution
-	PointLightData pointLights[MAX_LIGHT];
+    float mist;
+    int pointLightCount;
+    PointLightData pointLights[MAX_LIGHT];
 	SpotLightData spotLights[MAX_LIGHT];
+    int spotLightCount;
+    float _padding0;
+    float _padding1;
+    float _padding2;
 };

@@ -3,6 +3,7 @@
 #include <cassert>
 
 #include <engine/render/Material.h>
+#include <engine/render/graph/Job.h>
 #include <engine/resource/ResourceManager.h>
 
 #include <engine/cJSON/cJSON.h>
@@ -134,4 +135,11 @@ void Mesh::bind() const
     Device::context->IASetVertexBuffers(0, 1, &this->vertexBuffer, &stride, &offset);
     Device::context->IASetIndexBuffer(this->indexBuffer, DXGI_FORMAT_R32_UINT, 0);
     Device::context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+}
+
+void Mesh::setupJob(Job *job) const
+{
+    assert(this->vertexBuffer != nullptr);
+
+    job->setBuffers(this->vertexBuffer, this->indexBuffer, this->indexCount);
 }

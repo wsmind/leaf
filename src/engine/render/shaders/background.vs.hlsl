@@ -1,3 +1,4 @@
+#include "pass.h"
 #include "scene.h"
 #include "shared.h"
 
@@ -15,7 +16,7 @@ BACKGROUND_PS_INPUT main(VS_INPUT input)
 
     // force z to 1 to make sure the background is always behind everything
 	output.pos = float4(input.pos.xy, 1.0, 1.0);
-    output.worldPosition = mul(sceneConstants.viewProjectionInverseMatrix, output.pos).xyz;
+    output.worldPosition = mul(passConstants.viewProjectionInverseMatrix, output.pos).xyz;
 
 	return output;
 }

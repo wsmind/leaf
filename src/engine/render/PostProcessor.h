@@ -2,6 +2,7 @@
 
 #include <d3d11.h>
 
+class FrameGraph;
 class Mesh;
 class MotionBlurRenderer;
 class RenderTarget;
@@ -12,9 +13,9 @@ class PostProcessor
         PostProcessor(ID3D11RenderTargetView *backBufferTarget);
         ~PostProcessor();
 
-        RenderTarget *getRadianceTarget() const { return this->targets[0]; }
+        RenderTarget *getRadianceTarget() const { return this->targets[1]; }
 
-        void render(int width, int height, RenderTarget *motionTarget);
+        void render(FrameGraph *frameGraph, int width, int height, RenderTarget *motionTarget);
 
     private:
         ID3D11RenderTargetView *backBufferTarget;

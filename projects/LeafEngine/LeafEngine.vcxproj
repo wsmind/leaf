@@ -169,8 +169,10 @@
     <ClCompile Include="..\..\src\engine\Engine.cpp" />
     <ClCompile Include="..\..\src\engine\render\Camera.cpp" />
     <ClCompile Include="..\..\src\engine\render\Device.cpp" />
+    <ClCompile Include="..\..\src\engine\render\graph\Batch.cpp" />
     <ClCompile Include="..\..\src\engine\render\graph\FrameGraph.cpp" />
     <ClCompile Include="..\..\src\engine\render\graph\GPUProfiler.cpp" />
+    <ClCompile Include="..\..\src\engine\render\graph\Job.cpp" />
     <ClCompile Include="..\..\src\engine\render\graph\Pass.cpp" />
     <ClCompile Include="..\..\src\engine\render\Image.cpp" />
     <ClCompile Include="..\..\src\engine\render\Light.cpp" />
@@ -195,8 +197,10 @@
     <ClInclude Include="..\..\src\engine\DDSTextureLoader\DDSTextureLoader.h" />
     <ClInclude Include="..\..\src\engine\render\Camera.h" />
     <ClInclude Include="..\..\src\engine\render\Device.h" />
+    <ClInclude Include="..\..\src\engine\render\graph\Batch.h" />
     <ClInclude Include="..\..\src\engine\render\graph\FrameGraph.h" />
     <ClInclude Include="..\..\src\engine\render\graph\GPUProfiler.h" />
+    <ClInclude Include="..\..\src\engine\render\graph\Job.h" />
     <ClInclude Include="..\..\src\engine\render\graph\Pass.h" />
     <ClInclude Include="..\..\src\engine\render\Image.h" />
     <ClInclude Include="..\..\src\engine\render\Light.h" />
@@ -207,8 +211,11 @@
     <ClInclude Include="..\..\src\engine\render\Renderer.h" />
     <ClInclude Include="..\..\src\engine\render\RenderList.h" />
     <ClInclude Include="..\..\src\engine\render\RenderTarget.h" />
+    <ClInclude Include="..\..\src\engine\render\shaders\constants\PassConstants.h" />
     <ClInclude Include="..\..\src\engine\render\shaders\constants\SceneConstants.h" />
     <ClInclude Include="..\..\src\engine\render\shaders\constants\ShaderTypes.h" />
+    <ClInclude Include="..\..\src\engine\render\shaders\constants\StandardConstants.h" />
+    <ClInclude Include="..\..\src\engine\render\shaders\pass.h" />
     <ClInclude Include="..\..\src\engine\render\ShadowRenderer.h" />
     <ClInclude Include="..\..\src\engine\render\Texture.h" />
     <ClInclude Include="..\..\src\engine\resource\Resource.h" />

@@ -1,12 +1,30 @@
 #include <engine/render/graph/FrameGraph.h>
 
 #include <engine/render/Device.h>
-
 #include <engine/render/graph/GPUProfiler.h>
 #include <engine/render/graph/Pass.h>
+#include <engine/render/shaders/constants/SceneConstants.h>
+#include <engine/render/shaders/constants/PassConstants.h>
 
 FrameGraph::FrameGraph(const std::string &profileFilename)
 {
+    HRESULT res;
+
+    D3D11_BUFFER_DESC cbDesc;
+    cbDesc.Usage = D3D11_USAGE_DYNAMIC;
+    cbDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+    cbDesc.StructureByteStride = 0;
+    cbDesc.MiscFlags = 0;
+    cbDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+
+    cbDesc.ByteWidth = sizeof(SceneConstants);
+    res = Device::device->CreateBuffer(&cbDesc, NULL, &this->sceneConstantBuffer);
+    CHECK_HRESULT(res);
+
+    cbDesc.ByteWidth = sizeof(PassConstants);
+    res = Device::device->CreateBuffer(&cbDesc, NULL, &this->passConstantBuffer);
+    CHECK_HRESULT(res);
+
     Device::device->GetImmediateContext(&this->context);
 
     this->profileFilename = profileFilename;
@@ -21,6 +39,9 @@ FrameGraph::~FrameGraph()
     GPUProfiler::destroy();
 
     this->context->Release();
+
+    this->sceneConstantBuffer->Release();
+    this->passConstantBuffer->Release();
 }
 
 void FrameGraph::addClearTarget(ID3D11RenderTargetView *target, glm::vec4 color)
@@ -47,35 +68,52 @@ Pass *FrameGraph::addPass(const std::string &name)
     return pass;
 }
 
-void FrameGraph::execute()
+void FrameGraph::execute(const SceneConstants &sceneConstants)
 {
     GPUProfiler::getInstance()->beginFrame();
 
-    this->clearAllTargets(this->context);
-    this->executeAllPasses(this->context);
+    // upload scene constants to GPU
+    D3D11_MAPPED_SUBRESOURCE mappedResource;
+    HRESULT res = this->context->Map(this->sceneConstantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+    CHECK_HRESULT(res);
+    memcpy(mappedResource.pData, &sceneConstants, sizeof(SceneConstants));
+    this->context->Unmap(this->sceneConstantBuffer, 0);
+
+    // bind common buffers
+    ID3D11Buffer *commonConstantBuffers[] = { this->sceneConstantBuffer, this->passConstantBuffer };
+    Device::context->VSSetConstantBuffers(0, 2, commonConstantBuffers);
+    Device::context->PSSetConstantBuffers(0, 2, commonConstantBuffers);
+
+    this->clearAllTargets();
+    this->executeAllPasses();
+
+    // unbind common buffers
+    ID3D11Buffer *nullConstantBuffers[] = { nullptr, nullptr };
+    Device::context->VSSetConstantBuffers(0, 2, nullConstantBuffers);
+    Device::context->PSSetConstantBuffers(0, 2, nullConstantBuffers);
 
     GPUProfiler::getInstance()->endFrame();
 }
 
-void FrameGraph::clearAllTargets(ID3D11DeviceContext *context)
+void FrameGraph::clearAllTargets()
 {
     GPUProfiler::ScopedProfile profile("Clear");
 
     for (auto &colorTarget : this->clearColorTargets)
-        context->ClearRenderTargetView(colorTarget.target, (float *)&colorTarget.color);
+        this->context->ClearRenderTargetView(colorTarget.target, (float *)&colorTarget.color);
 
     for (auto &depthTarget : this->clearDepthTargets)
-        context->ClearDepthStencilView(depthTarget.target, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, depthTarget.depth, depthTarget.stencil);
+        this->context->ClearDepthStencilView(depthTarget.target, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, depthTarget.depth, depthTarget.stencil);
 
     this->clearColorTargets.clear();
     this->clearDepthTargets.clear();
 }
 
-void FrameGraph::executeAllPasses(ID3D11DeviceContext *context)
+void FrameGraph::executeAllPasses()
 {
     for (auto *pass : this->passes)
     {
-        pass->execute(context);
+        pass->execute(this->context, this->passConstantBuffer);
         delete pass;
     }
 

@@ -19,6 +19,7 @@
 #include <engine/render/RenderTarget.h>
 #include <engine/render/ShadowRenderer.h>
 #include <engine/render/Texture.h>
+#include <engine/render/graph/Batch.h>
 #include <engine/render/graph/FrameGraph.h>
 #include <engine/render/graph/Pass.h>
 #include <engine/render/shaders/constants/SceneConstants.h>
@@ -191,25 +192,6 @@ Renderer::Renderer(HWND hwnd, int backbufferWidth, int backbufferHeight, bool ca
     res = Device::device->CreateInputLayout(layout, 4, basicVS, sizeof(basicVS), &inputLayout);
     CHECK_HRESULT(res);
 
-    D3D11_BUFFER_DESC cbDesc;
-    cbDesc.Usage = D3D11_USAGE_DYNAMIC;
-    cbDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-    cbDesc.StructureByteStride = 0;
-    cbDesc.MiscFlags = 0;
-    cbDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-
-    cbDesc.ByteWidth = sizeof(SceneConstants);
-    res = Device::device->CreateBuffer(&cbDesc, NULL, &this->cbScene);
-    CHECK_HRESULT(res);
-
-    cbDesc.ByteWidth = sizeof(Material::MaterialData);
-    res = Device::device->CreateBuffer(&cbDesc, NULL, &this->cbMaterial);
-    CHECK_HRESULT(res);
-
-    cbDesc.ByteWidth = sizeof(InstanceData);
-    res = Device::device->CreateBuffer(&cbDesc, NULL, &this->cbInstance);
-    CHECK_HRESULT(res);
-
     // built-in rendering resources
 
     ResourceManager::getInstance()->updateResourceData<Image>("__default_black", blackDDS, sizeof(blackDDS));
@@ -270,10 +252,6 @@ Renderer::~Renderer()
 
     this->inputLayout->Release();
 
-    this->cbScene->Release();
-    this->cbMaterial->Release();
-    this->cbInstance->Release();
-
     delete this->renderList;
 
     ResourceManager::getInstance()->releaseResource(this->fullscreenQuad);
@@ -320,10 +298,46 @@ void Renderer::render(const Scene *scene, int width, int height, bool overrideCa
     scene->fillRenderList(this->renderList);
     this->renderList->sort();
 
-    Device::context->IASetInputLayout(inputLayout);
-
     // shadow maps
-    this->shadowRenderer->render(scene, this->renderList);
+    //this->shadowRenderer->render(scene, this->renderList);
+
+    SceneConstants sceneConstants;
+    sceneConstants.ambientColor = scene->getAmbientColor();
+    sceneConstants.mist = scene->getMist();
+    sceneConstants.motionSpeedFactor = shutterSpeed / deltaTime;
+    sceneConstants.motionMaximum = glm::vec2(20.0f) / glm::vec2((float)this->backbufferWidth, (float)this->backbufferHeight);
+
+    const std::vector<RenderList::Light> &lights = this->renderList->getLights();
+    sceneConstants.pointLightCount = 0;
+    sceneConstants.spotLightCount = 0;
+    for (int i = 0; i < lights.size(); i++)
+    {
+        if (!lights[i].spot && sceneConstants.pointLightCount < MAX_LIGHT)
+        {
+            int index = sceneConstants.pointLightCount++;
+            sceneConstants.pointLights[index].position = lights[i].position;
+            sceneConstants.pointLights[index].radius = lights[i].radius;
+            sceneConstants.pointLights[index].color = lights[i].color;
+        }
+
+        if (lights[i].spot && sceneConstants.spotLightCount < MAX_LIGHT)
+        {
+            // angle falloff precomputations
+            float cosOuterAngle = cosf(lights[i].angle * 0.5f);
+            float cosInnerAngle = glm::mix(cosOuterAngle + 0.001f, 1.0f, lights[i].blend);
+            float cosAngleScale = 1.0f / (cosInnerAngle - cosOuterAngle);
+            float cosAngleOffset = -cosOuterAngle * cosAngleScale;
+
+            int index = sceneConstants.spotLightCount++;
+            sceneConstants.spotLights[index].position = lights[i].position;
+            sceneConstants.spotLights[index].radius = lights[i].radius;
+            sceneConstants.spotLights[index].color = lights[i].color;
+            sceneConstants.spotLights[index].cosAngleScale = cosAngleScale;
+            sceneConstants.spotLights[index].direction = lights[i].direction;
+            sceneConstants.spotLights[index].cosAngleOffset = cosAngleOffset;
+            sceneConstants.spotLights[index].scattering = lights[i].scattering;
+        }
+    }
 
     this->frameGraph->addClearTarget(this->renderTarget, glm::vec4(1.0f, 1.0f, 0.0f, 1.0f));
     this->frameGraph->addClearTarget(this->motionTarget->getTarget(), glm::vec4(0.0f, 0.0f, 0.0f, 0.0f));
@@ -339,134 +353,73 @@ void Renderer::render(const Scene *scene, int width, int height, bool overrideCa
 
     RenderTarget *radianceTarget = this->postProcessor->getRadianceTarget();
 
-    Pass *geometryPass = this->frameGraph->addPass("Geometry");
-    geometryPass->setTargets({ radianceTarget->getTarget(), this->motionTarget->getTarget() }, this->depthTarget);
-    geometryPass->setViewport(viewport);
+    Pass *radiancePass = this->frameGraph->addPass("Radiance");
+    radiancePass->setTargets({ radianceTarget->getTarget(), this->motionTarget->getTarget() }, this->depthTarget);
+    radiancePass->setViewport(viewport, viewMatrix, projectionMatrix);
 
-    this->frameGraph->execute();
-
-    ID3D11RenderTargetView *targetViews[] = { radianceTarget->getTarget(), this->motionTarget->getTarget() };
-    Device::context->OMSetRenderTargets(2, targetViews, this->depthTarget);
-
-    D3D11_MAPPED_SUBRESOURCE mappedResource;
-    HRESULT res = Device::context->Map(this->cbScene, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-    CHECK_HRESULT(res);
-	SceneConstants *sceneState = (SceneConstants *)mappedResource.pData;
-    sceneState->viewMatrix = viewMatrix;
-    glm::mat4 viewMatrixInverse = glm::inverse(viewMatrix);
-    sceneState->viewMatrixInverse = viewMatrixInverse;
-    sceneState->projectionMatrix = projectionMatrix;
-    sceneState->projectionMatrixInverse = glm::inverse(projectionMatrix);
-    sceneState->viewProjectionInverseMatrix = glm::inverse(projectionMatrix * viewMatrix);
-    sceneState->cameraPosition = glm::vec3(viewMatrixInverse[3][0], viewMatrixInverse[3][1], viewMatrixInverse[3][2]);
-    sceneState->ambientColor = scene->getAmbientColor();
-    sceneState->mist = scene->getMist();
-    sceneState->motionSpeedFactor = shutterSpeed / deltaTime;
-    sceneState->motionMaximum = glm::vec2(20.0f) / glm::vec2((float)this->backbufferWidth, (float)this->backbufferHeight);
-
-    const std::vector<RenderList::Light> &lights = this->renderList->getLights();
-    sceneState->pointLightCount = 0;
-    sceneState->spotLightCount = 0;
-    for (int i = 0; i < lights.size(); i++)
-    {
-        if (!lights[i].spot && sceneState->pointLightCount < MAX_LIGHT)
-        {
-            int index = sceneState->pointLightCount++;
-            sceneState->pointLights[index].position = lights[i].position;
-            sceneState->pointLights[index].radius = lights[i].radius;
-            sceneState->pointLights[index].color = lights[i].color;
-        }
-
-        if (lights[i].spot && sceneState->spotLightCount < MAX_LIGHT)
-        {
-            // angle falloff precomputations
-            float cosOuterAngle = cosf(lights[i].angle * 0.5f);
-            float cosInnerAngle = glm::mix(cosOuterAngle + 0.001f, 1.0f, lights[i].blend);
-            float cosAngleScale = 1.0f / (cosInnerAngle - cosOuterAngle);
-            float cosAngleOffset = -cosOuterAngle * cosAngleScale;
-
-            int index = sceneState->spotLightCount++;
-            sceneState->spotLights[index].position = lights[i].position;
-            sceneState->spotLights[index].radius = lights[i].radius;
-            sceneState->spotLights[index].color = lights[i].color;
-            sceneState->spotLights[index].cosAngleScale = cosAngleScale;
-            sceneState->spotLights[index].direction = lights[i].direction;
-            sceneState->spotLights[index].cosAngleOffset = cosAngleOffset;
-            sceneState->spotLights[index].scattering = lights[i].scattering;
-        }
-    }
-
-    Device::context->Unmap(this->cbScene, 0);
-
-    Device::context->OMSetDepthStencilState(this->gBufferDepthState, 0);
-
-    Device::context->VSSetShader(standardVertexShader, NULL, 0);
-    Device::context->PSSetShader(standardPixelShader, NULL, 0);
-
-    ID3D11Buffer *allConstantBuffers[] = { this->cbScene, this->cbMaterial, this->cbInstance };
-    Device::context->VSSetConstantBuffers(0, 3, allConstantBuffers);
-    Device::context->PSSetConstantBuffers(0, 3, allConstantBuffers);
-
-    this->shadowRenderer->bind();
+    //this->shadowRenderer->bind();
 
     const std::vector<RenderList::Job> &jobs = this->renderList->getJobs();
 
     {
-        GPUProfiler::ScopedProfile profile("Geometry");
+        //GPUProfiler::ScopedProfile profile("Geometry");
         Material *currentMaterial = nullptr;
-        Mesh * currentMesh = nullptr;
+        Mesh *currentMesh = nullptr;
+        Batch *currentBatch = nullptr;
+        Job *currentJob = nullptr;
         for (const auto &job : jobs)
         {
             if (currentMaterial != job.material)
             {
                 currentMaterial = job.material;
 
-                HRESULT res = Device::context->Map(this->cbMaterial, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-                CHECK_HRESULT(res);
-                memcpy(mappedResource.pData, &currentMaterial->getMaterialData(), sizeof(Material::MaterialData));
-                Device::context->Unmap(this->cbMaterial, 0);
+                currentBatch = radiancePass->addBatch(std::string("Material"));
+                currentBatch->setDepthStencil(this->gBufferDepthState);
+                currentBatch->setVertexShader(standardVertexShader);
+                currentBatch->setPixelShader(standardPixelShader);
+                currentBatch->setInputLayout(this->inputLayout, 0, 0);
 
-                currentMaterial->bindTextures();
+                currentMaterial->setupBatch(currentBatch);
             }
 
             if (currentMesh != job.mesh)
             {
                 currentMesh = job.mesh;
-                currentMesh->bind();
+
+                currentJob = currentBatch->addJob();
+                currentMesh->setupJob(currentJob);
             }
 
-            HRESULT res = Device::context->Map(this->cbInstance, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+            /*HRESULT res = Device::context->Map(this->cbInstance, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
             CHECK_HRESULT(res);
             InstanceData *instanceData = (InstanceData *)mappedResource.pData;
             instanceData->modelMatrix = job.transform;
             instanceData->worldToPreviousFrameClipSpaceMatrix = this->previousFrameViewProjectionMatrix * job.previousFrameTransform * glm::inverse(job.transform);
             instanceData->normalMatrix = glm::mat3x4(glm::inverseTranspose(glm::mat3(job.transform)));
-            Device::context->Unmap(this->cbInstance, 0);
+            Device::context->Unmap(this->cbInstance, 0);*/
 
-            Device::context->DrawIndexed(currentMesh->getIndexCount(), 0, 0);
+            //Device::context->DrawIndexed(currentMesh->getIndexCount(), 0, 0);
         }
     }
 
-    this->shadowRenderer->unbind();
+    //this->shadowRenderer->unbind();
 
-    // background pass
-    {
-        GPUProfiler::ScopedProfile profile("Background");
+    // background
+    Batch *backgroundBatch = radiancePass->addBatch("Background");
+    backgroundBatch->setDepthStencil(this->backgroundDepthState);
+    backgroundBatch->setVertexShader(this->backgroundVertexShader);
+    backgroundBatch->setPixelShader(this->backgroundPixelShader);
+    backgroundBatch->setInputLayout(this->inputLayout, 0, 0);
 
-        /*viewport.Width = (float)width;
-        viewport.Height = (float)height;
-        Device::context->RSSetViewports(1, &viewport);*/
-        Device::context->VSSetShader(backgroundVertexShader, NULL, 0);
-        Device::context->PSSetShader(backgroundPixelShader, NULL, 0);
-        Device::context->OMSetDepthStencilState(this->backgroundDepthState, 0);
-        this->fullscreenQuad->bind();
-        Device::context->DrawIndexed(this->fullscreenQuad->getIndexCount(), 0, 0);
-    }
+    Job *backgroundJob = backgroundBatch->addJob();
+    this->fullscreenQuad->setupJob(backgroundJob);
 
-    this->postProcessor->render(width, height, this->motionTarget);
+    this->postProcessor->render(this->frameGraph, width, height, this->motionTarget);
+
+    this->frameGraph->execute(sceneConstants);
 
     {
-        GPUProfiler::ScopedProfile profile("V-Sync");
+        //GPUProfiler::ScopedProfile profile("V-Sync");
         this->swapChain->Present(0, 0);
     }
 

@@ -1,9 +1,8 @@
-cbuffer StandardMaterialData : register(b1)
+#include "constants/StandardConstants.h"
+
+cbuffer StandardConstants : register(b2)
 {
-    float3 baseColorMultiplier;
-    float metallicOffset;
-    float roughnessOffset;
-    float3 emissive;
+    StandardConstants standardConstants;
 };
 
 Texture2D<float4> baseColorMap: register(t0);

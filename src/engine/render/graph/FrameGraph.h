@@ -9,6 +9,7 @@
 #include <engine/glm/vec4.hpp>
 
 class Pass;
+struct SceneConstants;
 
 /**
  * The FrameGraph manages all the state changes and submits
@@ -25,11 +26,11 @@ class FrameGraph
 
         Pass *addPass(const std::string &name);
 
-        void execute();
+        void execute(const SceneConstants &sceneConstants);
 
     private:
-        void clearAllTargets(ID3D11DeviceContext *context);
-        void executeAllPasses(ID3D11DeviceContext *context);
+        void clearAllTargets();
+        void executeAllPasses();
 
         ID3D11DeviceContext *context;
 
@@ -49,6 +50,9 @@ class FrameGraph
             unsigned char stencil;
         };
         std::vector<ClearDepthTarget> clearDepthTargets;
+
+        ID3D11Buffer *sceneConstantBuffer;
+        ID3D11Buffer *passConstantBuffer;
 
         std::vector<Pass *> passes;
 };

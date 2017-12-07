@@ -1,40 +1,32 @@
 #pragma once
 
 #include <string>
+
+#include <d3d11.h>
+
 #include <engine/glm/vec3.hpp>
 
+#include <engine/render/shaders/constants/StandardConstants.h>
 #include <engine/resource/Resource.h>
 
 class AnimationData;
+class Batch;
 class Texture;
 
 class Material: public Resource
 {
     public:
-        // packed in memory like on GPU, to do a direct copy to cbuffer
-        #pragma pack(push)
-        #pragma pack(16)
-        struct MaterialData
-        {
-            glm::vec3 baseColorMultiplier;
-            float metallicOffset;
-            float roughnessOffset;
-            glm::vec3 emissive;
-        };
-        #pragma pack(pop)
-
         static const std::string resourceClassName;
         static const std::string defaultResourceData;
 
         virtual void load(const unsigned char *buffer, size_t size) override;
         virtual void unload() override;
 
-        const MaterialData &getMaterialData() const { return this->data; }
-
-        void bindTextures() const;
+        void setupBatch(Batch *batch);
 
     private:
-        MaterialData data;
+        StandardConstants constants;
+        ID3D11Buffer *constantBuffer;
 
         Texture *baseColorMap;
         Texture *normalMap;

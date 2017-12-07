@@ -52,10 +52,6 @@ class Renderer
 
         ID3D11InputLayout *inputLayout;
 
-        ID3D11Buffer *cbScene;
-        ID3D11Buffer *cbMaterial;
-        ID3D11Buffer *cbInstance;
-
         RenderList *renderList;
 
         Mesh *fullscreenQuad;

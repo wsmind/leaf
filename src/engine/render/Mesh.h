@@ -7,6 +7,7 @@
 
 #include <engine/glm/vec3.hpp>
 
+class Job;
 class Material;
 
 class Mesh: public Resource
@@ -22,6 +23,8 @@ class Mesh: public Resource
         virtual void unload() override;
 
         void bind() const;
+
+        void setupJob(Job *job) const;
 
         int getIndexCount() const { return this->indexCount; }
         Material *getMaterial() const { return this->material; }

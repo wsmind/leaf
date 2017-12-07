@@ -5,6 +5,9 @@
 #include <engine/render/Mesh.h>
 #include <engine/render/MotionBlurRenderer.h>
 #include <engine/render/RenderTarget.h>
+#include <engine/render/graph/Batch.h>
+#include <engine/render/graph/FrameGraph.h>
+#include <engine/render/graph/Pass.h>
 #include <engine/resource/ResourceManager.h>
 
 #include <shaders/fxaa.vs.hlsl.h>
@@ -52,37 +55,49 @@ PostProcessor::~PostProcessor()
     delete this->motionBlurRenderer;
 }
 
-void PostProcessor::render(int width, int height, RenderTarget *motionTarget)
+void PostProcessor::render(FrameGraph *frameGraph, int width, int height, RenderTarget *motionTarget)
 {
-    GPUProfiler::ScopedProfile profile("PostProcess");
-
     this->fullscreenQuad->bind();
 
-    Device::context->VSSetShader(postprocessVertexShader, NULL, 0);
+    //Device::context->VSSetShader(postprocessVertexShader, NULL, 0);
 
-    this->motionBlurRenderer->render(this->targets[0], motionTarget, this->targets[1]);
+    //this->motionBlurRenderer->render(this->targets[0], motionTarget, this->targets[1]);
 
     ID3D11RenderTargetView *target0 = this->targets[0]->getTarget();
     ID3D11RenderTargetView *target1 = this->targets[1]->getTarget();
 
     // tone mapping and gamma correction
-    Device::context->OMSetRenderTargets(1, &target0, nullptr);
+    Pass *toneMappingPass = frameGraph->addPass("ToneMapping");
+    toneMappingPass->setTargets({ this->targets[0]->getTarget() }, nullptr);
+    // need viewport
 
-    Device::context->PSSetShader(postprocessPixelShader, NULL, 0);
+    Batch *toneMappingBatch = toneMappingPass->addBatch("");
+    toneMappingBatch->setResources({ this->targets[1]->getSRV() });
+    toneMappingBatch->setVertexShader(postprocessVertexShader);
+    toneMappingBatch->setPixelShader(postprocessPixelShader);
 
-    ID3D11SamplerState *radianceSamplerState = this->targets[1]->getSamplerState();
-    ID3D11ShaderResourceView *radianceSRV = this->targets[1]->getSRV();
-    Device::context->PSSetSamplers(0, 1, &radianceSamplerState);
-    Device::context->PSSetShaderResources(0, 1, &radianceSRV);
+    Job *toneMappingJob = toneMappingBatch->addJob();
+    this->fullscreenQuad->setupJob(toneMappingJob);
 
-    Device::context->DrawIndexed(this->fullscreenQuad->getIndexCount(), 0, 0);
+    //Device::context->OMSetRenderTargets(1, &target0, nullptr);
 
-    ID3D11SamplerState *nullSampler = nullptr;
+    //Device::context->PSSetShader(postprocessPixelShader, NULL, 0);
+
+    //ID3D11SamplerState *radianceSamplerState = this->targets[1]->getSamplerState();
+    //ID3D11ShaderResourceView *radianceSRV = this->targets[1]->getSRV();
+    //Device::context->PSSetSamplers(0, 1, &radianceSamplerState);
+    //Device::context->PSSetShaderResources(0, 1, &radianceSRV);
+
+    //Device::context->DrawIndexed(this->fullscreenQuad->getIndexCount(), 0, 0);
+
+    /*ID3D11SamplerState *nullSampler = nullptr;
     ID3D11ShaderResourceView *nullSRV = nullptr;
     Device::context->PSSetSamplers(0, 1, &nullSampler);
-    Device::context->PSSetShaderResources(0, 1, &nullSRV);
+    Device::context->PSSetShaderResources(0, 1, &nullSRV);*/
 
     // fxaa pass and blit to backbuffer
+    Pass *fxaaPass = frameGraph->addPass("FXAA");
+    fxaaPass->setTargets({ this->backBufferTarget }, nullptr);
 
     D3D11_VIEWPORT viewport;
     viewport.Width = (float)width;
@@ -91,20 +106,18 @@ void PostProcessor::render(int width, int height, RenderTarget *motionTarget)
     viewport.MaxDepth = 1.0f;
     viewport.TopLeftX = 0;
     viewport.TopLeftY = 0;
-    Device::context->RSSetViewports(1, &viewport);
+    fxaaPass->setViewport(viewport, glm::mat4(), glm::mat4());
 
-    Device::context->OMSetRenderTargets(1, &this->backBufferTarget, nullptr);
+    Batch *fxaaBatch = toneMappingPass->addBatch("");
+    fxaaBatch->setResources({ this->targets[0]->getSRV() });
+    fxaaBatch->setVertexShader(fxaaVertexShader);
+    fxaaBatch->setPixelShader(fxaaPixelShader);
 
-    Device::context->VSSetShader(fxaaVertexShader, NULL, 0);
-    Device::context->PSSetShader(fxaaPixelShader, NULL, 0);
+    Job *fxaaJob = fxaaBatch->addJob();
+    this->fullscreenQuad->setupJob(fxaaJob);
 
-    ID3D11SamplerState *target1SamplerState = this->targets[0]->getSamplerState();
-    ID3D11ShaderResourceView *target1SRV = this->targets[0]->getSRV();
-    Device::context->PSSetSamplers(0, 1, &target1SamplerState);
-    Device::context->PSSetShaderResources(0, 1, &target1SRV);
+    //ID3D11SamplerState *target1SamplerState = this->targets[0]->getSamplerState();
+    //Device::context->PSSetSamplers(0, 1, &target1SamplerState);
 
-    Device::context->DrawIndexed(this->fullscreenQuad->getIndexCount(), 0, 0);
-
-    Device::context->PSSetSamplers(0, 1, &nullSampler);
-    Device::context->PSSetShaderResources(0, 1, &nullSRV);
+    //Device::context->DrawIndexed(this->fullscreenQuad->getIndexCount(), 0, 0);
 }
