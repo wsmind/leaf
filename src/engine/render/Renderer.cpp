@@ -153,7 +153,7 @@ Renderer::Renderer(HWND hwnd, int backbufferWidth, int backbufferHeight, bool ca
     //for (int i = 0; i < GBUFFER_PLANE_COUNT; i++)
     //    this->gBuffer[i] = new RenderTarget(this->backbufferWidth, this->backbufferHeight, DXGI_FORMAT_R16G16B16A16_FLOAT);
 
-    this->postProcessor = new PostProcessor(this->renderTarget);
+    this->postProcessor = new PostProcessor(this->renderTarget, backbufferWidth, backbufferHeight);
     this->shadowRenderer = new ShadowRenderer(2048);
 
     this->motionTarget = new RenderTarget(backbufferWidth, backbufferHeight, DXGI_FORMAT_R16G16B16A16_FLOAT);

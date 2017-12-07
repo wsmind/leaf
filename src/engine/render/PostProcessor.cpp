@@ -15,29 +15,23 @@
 #include <shaders/postprocess.vs.hlsl.h>
 #include <shaders/postprocess.ps.hlsl.h>
 
-PostProcessor::PostProcessor(ID3D11RenderTargetView *backBufferTarget)
+PostProcessor::PostProcessor(ID3D11RenderTargetView *backbufferTarget, int backbufferWidth, int backbufferHeight)
+	: backbufferTarget(backbufferTarget)
+	, backbufferWidth(backbufferWidth)
+	, backbufferHeight(backbufferHeight)
 {
-    this->backBufferTarget = backBufferTarget;
-
-    ID3D11Resource *backBufferResource;
-    ID3D11Texture2D *backBufferTexture;
-    D3D11_TEXTURE2D_DESC backBufferDesc;
-    backBufferTarget->GetResource(&backBufferResource);
-    backBufferResource->QueryInterface(__uuidof(ID3D11Texture2D), (LPVOID *)&backBufferTexture);
-    backBufferTexture->GetDesc(&backBufferDesc);
-
     HRESULT res;
     res = Device::device->CreateVertexShader(postprocessVS, sizeof(postprocessVS), NULL, &postprocessVertexShader); CHECK_HRESULT(res);
     res = Device::device->CreatePixelShader(postprocessPS, sizeof(postprocessPS), NULL, &postprocessPixelShader); CHECK_HRESULT(res);
     res = Device::device->CreateVertexShader(fxaaVS, sizeof(fxaaVS), NULL, &fxaaVertexShader); CHECK_HRESULT(res);
     res = Device::device->CreatePixelShader(fxaaPS, sizeof(fxaaPS), NULL, &fxaaPixelShader); CHECK_HRESULT(res);
 
-    this->targets[0] = new RenderTarget(backBufferDesc.Width, backBufferDesc.Height, DXGI_FORMAT_R16G16B16A16_FLOAT);
-    this->targets[1] = new RenderTarget(backBufferDesc.Width, backBufferDesc.Height, DXGI_FORMAT_R16G16B16A16_FLOAT);
+    this->targets[0] = new RenderTarget(this->backbufferWidth, this->backbufferHeight, DXGI_FORMAT_R16G16B16A16_FLOAT);
+    this->targets[1] = new RenderTarget(this->backbufferWidth, this->backbufferHeight, DXGI_FORMAT_R16G16B16A16_FLOAT);
 
     this->fullscreenQuad = ResourceManager::getInstance()->requestResource<Mesh>("__fullscreenQuad");
 
-    this->motionBlurRenderer = new MotionBlurRenderer(backBufferDesc.Width, backBufferDesc.Height, 40);
+    this->motionBlurRenderer = new MotionBlurRenderer(this->backbufferWidth, this->backbufferHeight, 40);
 }
 
 PostProcessor::~PostProcessor()
@@ -69,7 +63,15 @@ void PostProcessor::render(FrameGraph *frameGraph, int width, int height, Render
     // tone mapping and gamma correction
     Pass *toneMappingPass = frameGraph->addPass("ToneMapping");
     toneMappingPass->setTargets({ this->targets[0]->getTarget() }, nullptr);
-    // need viewport
+
+	D3D11_VIEWPORT viewport;
+	viewport.Width = (float)this->backbufferWidth;
+	viewport.Height = (float)this->backbufferHeight;
+	viewport.MinDepth = 0.0f;
+	viewport.MaxDepth = 1.0f;
+	viewport.TopLeftX = 0;
+	viewport.TopLeftY = 0;
+	toneMappingPass->setViewport(viewport, glm::mat4(), glm::mat4());
 
     Batch *toneMappingBatch = toneMappingPass->addBatch("");
     toneMappingBatch->setResources({ this->targets[1]->getSRV() });
@@ -97,18 +99,18 @@ void PostProcessor::render(FrameGraph *frameGraph, int width, int height, Render
 
     // fxaa pass and blit to backbuffer
     Pass *fxaaPass = frameGraph->addPass("FXAA");
-    fxaaPass->setTargets({ this->backBufferTarget }, nullptr);
+    fxaaPass->setTargets({ this->backbufferTarget }, nullptr);
 
-    D3D11_VIEWPORT viewport;
-    viewport.Width = (float)width;
-    viewport.Height = (float)height;
-    viewport.MinDepth = 0.0f;
-    viewport.MaxDepth = 1.0f;
-    viewport.TopLeftX = 0;
-    viewport.TopLeftY = 0;
-    fxaaPass->setViewport(viewport, glm::mat4(), glm::mat4());
+    D3D11_VIEWPORT outputViewport;
+	outputViewport.Width = (float)width;
+	outputViewport.Height = (float)height;
+	outputViewport.MinDepth = 0.0f;
+	outputViewport.MaxDepth = 1.0f;
+	outputViewport.TopLeftX = 0;
+	outputViewport.TopLeftY = 0;
+    fxaaPass->setViewport(outputViewport, glm::mat4(), glm::mat4());
 
-    Batch *fxaaBatch = toneMappingPass->addBatch("");
+    Batch *fxaaBatch = fxaaPass->addBatch("");
     fxaaBatch->setResources({ this->targets[0]->getSRV() });
     fxaaBatch->setVertexShader(fxaaVertexShader);
     fxaaBatch->setPixelShader(fxaaPixelShader);
