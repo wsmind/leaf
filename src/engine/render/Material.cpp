@@ -73,26 +73,6 @@ void Material::unload()
     this->constantBuffer->Release();
 }
 
-/*void Material::bindTextures() const
-{
-    ID3D11SamplerState *samplers[] = {
-        this->baseColorMap->getSamplerState(),
-        this->normalMap->getSamplerState(),
-        this->metallicMap->getSamplerState(),
-        this->roughnessMap->getSamplerState()
-    };
-
-    ID3D11ShaderResourceView *srvs[] = {
-        this->baseColorMap->getSRV(),
-        this->normalMap->getSRV(),
-        this->metallicMap->getSRV(),
-        this->roughnessMap->getSRV()
-    };
-
-    Device::context->PSSetSamplers(0, 4, samplers);
-    Device::context->PSSetShaderResources(0, 4, srvs);
-}*/
-
 void Material::setupBatch(Batch *batch)
 {
     D3D11_MAPPED_SUBRESOURCE mappedResource;
@@ -107,4 +87,11 @@ void Material::setupBatch(Batch *batch)
         this->metallicMap->getSRV(),
         this->roughnessMap->getSRV()
     });
+
+	batch->setSamplers({
+		this->baseColorMap->getSamplerState(),
+		this->normalMap->getSamplerState(),
+		this->metallicMap->getSamplerState(),
+		this->roughnessMap->getSamplerState()
+	});
 }

@@ -175,7 +175,7 @@ void ShadowRenderer::render(const Scene *scene, const RenderList *renderList)
             if (currentMesh != job.mesh)
             {
                 currentMesh = job.mesh;
-                currentMesh->bind();
+                //currentMesh->bind();
             }
 
             D3D11_MAPPED_SUBRESOURCE mappedResource;
@@ -189,7 +189,7 @@ void ShadowRenderer::render(const Scene *scene, const RenderList *renderList)
             Device::context->VSSetConstantBuffers(0, 1, allConstantBuffers);
             Device::context->PSSetConstantBuffers(0, 1, allConstantBuffers);
 
-            Device::context->DrawIndexed(currentMesh->getIndexCount(), 0, 0);
+            //Device::context->DrawIndexed(currentMesh->getIndexCount(), 0, 0);
         }
     }
 

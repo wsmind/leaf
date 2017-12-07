@@ -126,17 +126,6 @@ void Mesh::unload()
     ResourceManager::getInstance()->releaseResource(this->material);
 }
 
-void Mesh::bind() const
-{
-    assert(this->vertexBuffer != nullptr);
-
-    UINT stride = sizeof(float) * (3 /* pos */ + 3 /* normal */ + 4 /* tangent */ + 2 /* uv */);
-    UINT offset = 0;
-    Device::context->IASetVertexBuffers(0, 1, &this->vertexBuffer, &stride, &offset);
-    Device::context->IASetIndexBuffer(this->indexBuffer, DXGI_FORMAT_R32_UINT, 0);
-    Device::context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-}
-
 void Mesh::setupJob(Job *job) const
 {
     assert(this->vertexBuffer != nullptr);

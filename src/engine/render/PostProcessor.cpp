@@ -51,8 +51,6 @@ PostProcessor::~PostProcessor()
 
 void PostProcessor::render(FrameGraph *frameGraph, int width, int height, RenderTarget *motionTarget)
 {
-    this->fullscreenQuad->bind();
-
     //this->motionBlurRenderer->render(this->targets[0], motionTarget, this->targets[1]);
 
     ID3D11RenderTargetView *target0 = this->targets[0]->getTarget();
@@ -73,6 +71,7 @@ void PostProcessor::render(FrameGraph *frameGraph, int width, int height, Render
 
     Batch *toneMappingBatch = toneMappingPass->addBatch("");
     toneMappingBatch->setResources({ this->targets[1]->getSRV() });
+	toneMappingBatch->setSamplers({ this->targets[1]->getSamplerState() });
     toneMappingBatch->setVertexShader(postprocessVertexShader);
     toneMappingBatch->setPixelShader(postprocessPixelShader);
 
@@ -94,7 +93,8 @@ void PostProcessor::render(FrameGraph *frameGraph, int width, int height, Render
 
     Batch *fxaaBatch = fxaaPass->addBatch("");
     fxaaBatch->setResources({ this->targets[0]->getSRV() });
-    fxaaBatch->setVertexShader(fxaaVertexShader);
+	fxaaBatch->setSamplers({ this->targets[0]->getSamplerState() });
+	fxaaBatch->setVertexShader(fxaaVertexShader);
     fxaaBatch->setPixelShader(fxaaPixelShader);
 
     Job *fxaaJob = fxaaBatch->addJob();
