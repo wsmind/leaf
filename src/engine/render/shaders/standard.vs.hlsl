@@ -10,6 +10,7 @@ struct VS_INPUT
     float4 tangent: TANGENT;
     float2 uv: TEXCOORD;
 	float4x4 modelMatrix: MODELMATRIX;
+	float4x4 worldToPreviousFrameClipSpaceMatrix: WORLDTOPREVIOUSFRAMECLIPSPACE;
 	float3x3 normalMatrix: NORMALMATRIX;
 };
 
@@ -31,6 +32,8 @@ STANDARD_PS_INPUT main(VS_INPUT input)
     output.tangent = float4(mul(input.normalMatrix, input.tangent.xyz), input.tangent.w);
     output.uv = float2(input.uv.x, 1.0 - input.uv.y);
     output.clipPosition = output.position;
+
+	output.worldToPreviousFrameClipSpaceMatrix = input.worldToPreviousFrameClipSpaceMatrix;
 
     return output;
 }

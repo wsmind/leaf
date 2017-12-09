@@ -2,8 +2,14 @@
 
 #include <engine/render/Device.h>
 #include <engine/render/graph/GPUProfiler.h>
+#include <engine/render/Mesh.h>
 #include <engine/render/RenderTarget.h>
+#include <engine/render/graph/Batch.h>
+#include <engine/render/graph/FrameGraph.h>
+#include <engine/render/graph/Job.h>
+#include <engine/render/graph/Pass.h>
 
+#include <shaders/motionblur.vs.hlsl.h>
 #include <shaders/motionblur.ps.hlsl.h>
 #include <shaders/tilemax.cs.hlsl.h>
 
@@ -14,7 +20,8 @@ MotionBlurRenderer::MotionBlurRenderer(int backbufferWidth, int backbufferHeight
     this->tileCountY = backbufferHeight / tileSize;
 
     HRESULT res;
-    res = Device::device->CreatePixelShader(motionblurPS, sizeof(motionblurPS), NULL, &this->motionblurPixelShader); CHECK_HRESULT(res);
+	res = Device::device->CreateVertexShader(motionblurVS, sizeof(motionblurVS), NULL, &this->motionblurVertexShader); CHECK_HRESULT(res);
+	res = Device::device->CreatePixelShader(motionblurPS, sizeof(motionblurPS), NULL, &this->motionblurPixelShader); CHECK_HRESULT(res);
 
     res = Device::device->CreateComputeShader(tileMaxCS, sizeof(tileMaxCS), NULL, &this->tileMaxComputeShader); CHECK_HRESULT(res);
 
@@ -37,6 +44,19 @@ MotionBlurRenderer::MotionBlurRenderer(int backbufferWidth, int backbufferHeight
 
     res = Device::device->CreateUnorderedAccessView(this->tileMaxTexture, NULL, &this->tileMaxUAV);
     CHECK_HRESULT(res);
+
+	D3D11_SAMPLER_DESC samplerDesc;
+	ZeroMemory(&samplerDesc, sizeof(samplerDesc));
+	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
+	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
+	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
+	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
+	samplerDesc.MipLODBias = 0;
+	samplerDesc.MinLOD = 0;
+	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
+
+	res = Device::device->CreateSamplerState(&samplerDesc, &this->tileMaxSampler);
+	CHECK_HRESULT(res);
 }
 
 MotionBlurRenderer::~MotionBlurRenderer()
@@ -45,38 +65,40 @@ MotionBlurRenderer::~MotionBlurRenderer()
     this->tileMaxComputeShader->Release();
 
     this->tileMaxTexture->Release();
+	this->tileMaxSampler->Release();
     this->tileMaxSRV->Release();
     this->tileMaxUAV->Release();
 }
 
-void MotionBlurRenderer::render(RenderTarget *radianceTarget, RenderTarget *motionTarget, RenderTarget *outputTarget)
+void MotionBlurRenderer::render(FrameGraph *frameGraph, RenderTarget *radianceTarget, RenderTarget *motionTarget, RenderTarget *outputTarget, int width, int height, Mesh *quad)
 {
-    GPUProfiler::ScopedProfile profile("MotionBlur");
+	Pass *tileMaxPass = frameGraph->addPass("TileMax");
 
-    ID3D11SamplerState *nullSamplers[] = { nullptr, nullptr, nullptr };
-    ID3D11ShaderResourceView *nullSRVs[] = { nullptr, nullptr, nullptr };
-    ID3D11UnorderedAccessView *nullUAVs[] = { nullptr, nullptr, nullptr };
+	Batch *tileMaxBatch = tileMaxPass->addBatch("");
+	tileMaxBatch->setResources({ motionTarget->getSRV() });
+	tileMaxBatch->setUnorderedResources({ this->tileMaxUAV });
+	tileMaxBatch->setComputeShader(this->tileMaxComputeShader);
+	tileMaxBatch->addJob()->addDispatch(this->tileCountX, this->tileCountY, 1);
 
-    ID3D11RenderTargetView *outputTargetView = outputTarget->getTarget();
-    Device::context->OMSetRenderTargets(1, &outputTargetView, nullptr);
+	Pass *blurPass = frameGraph->addPass("MotionBlur");
+	blurPass->setTargets({ outputTarget->getTarget() }, nullptr);
 
-    Device::context->PSSetShader(this->motionblurPixelShader, nullptr, 0);
+	D3D11_VIEWPORT viewport;
+	viewport.Width = (float)width;
+	viewport.Height = (float)height;
+	viewport.MinDepth = 0.0f;
+	viewport.MaxDepth = 1.0f;
+	viewport.TopLeftX = 0;
+	viewport.TopLeftY = 0;
+	blurPass->setViewport(viewport, glm::mat4(), glm::mat4());
 
-    ID3D11ShaderResourceView *motionSRV = motionTarget->getSRV();
-    Device::context->CSSetShaderResources(0, 1, &motionSRV);
-    Device::context->CSSetUnorderedAccessViews(0, 1, &this->tileMaxUAV, nullptr);
-    Device::context->CSSetShader(this->tileMaxComputeShader, nullptr, 0);
-    Device::context->Dispatch(this->tileCountX, this->tileCountY, 1);
-    Device::context->CSSetShaderResources(0, 1, nullSRVs);
-    Device::context->CSSetUnorderedAccessViews(0, 1, nullUAVs, nullptr);
+	Batch *blurBatch = blurPass->addBatch("");
+	blurBatch->setResources({ radianceTarget->getSRV(), motionTarget->getSRV(), this->tileMaxSRV });
+	blurBatch->setSamplers({ radianceTarget->getSamplerState(), motionTarget->getSamplerState(), this->tileMaxSampler });
+	blurBatch->setVertexShader(this->motionblurVertexShader);
+	blurBatch->setPixelShader(this->motionblurPixelShader);
 
-    ID3D11SamplerState *samplerStates[] = { radianceTarget->getSamplerState(), motionTarget->getSamplerState() };
-    ID3D11ShaderResourceView *srvs[] = { radianceTarget->getSRV(), motionTarget->getSRV(), this->tileMaxSRV };
-    Device::context->PSSetSamplers(0, 2, samplerStates);
-    Device::context->PSSetShaderResources(0, 3, srvs);
-
-    Device::context->DrawIndexed(6, 0, 0);
-
-    Device::context->PSSetSamplers(0, 2, nullSamplers);
-    Device::context->PSSetShaderResources(0, 3, nullSRVs);
+	Job *blurJob = blurBatch->addJob();
+	quad->setupJob(blurJob);
+	blurJob->addInstance();
 }

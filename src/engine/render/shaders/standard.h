@@ -27,6 +27,7 @@ struct STANDARD_PS_INPUT
     float4 tangent : TANGENT;
     float2 uv : TEXCOORD0;
     float4 clipPosition : TEXCOORD1;
+	float4x4 worldToPreviousFrameClipSpaceMatrix : TEXCOORD2;
 };
 
 struct STANDARD_PS_OUTPUT

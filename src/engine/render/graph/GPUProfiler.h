@@ -46,7 +46,7 @@ class GPUProfiler
 
         // queries are preallocated and used dynamically during frames
         // (only D3D11_QUERY_TIMESTAMP queries are pooled)
-        static const unsigned int QUERY_POOL_SIZE = 200;
+        static const unsigned int QUERY_POOL_SIZE = 2000;
         std::vector<ID3D11Query *> queryPool;
 
         struct ProfilePoint

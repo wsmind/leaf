@@ -52,7 +52,7 @@ PostProcessor::~PostProcessor()
 
 void PostProcessor::render(FrameGraph *frameGraph, int width, int height, RenderTarget *motionTarget)
 {
-    //this->motionBlurRenderer->render(this->targets[0], motionTarget, this->targets[1]);
+    this->motionBlurRenderer->render(frameGraph, this->targets[0], motionTarget, this->targets[1], this->backbufferWidth, this->backbufferHeight, this->fullscreenQuad);
 
     ID3D11RenderTargetView *target0 = this->targets[0]->getTarget();
     ID3D11RenderTargetView *target1 = this->targets[1]->getTarget();

@@ -1,4 +1,4 @@
-#include "instance.h"
+//#include "instance.h"
 #include "pass.h"
 #include "scene.h"
 #include "shadows.h"
@@ -174,7 +174,7 @@ STANDARD_PS_OUTPUT main(STANDARD_PS_INPUT input)
     output.radiance = float4(lerp(sceneConstants.ambientColor, radiance, transmittance) + inScattering, 1.0);
 
     // estimate pixel movement from last frame
-    float4 previousFrameClipSpacePosition = mul(worldToPreviousFrameClipSpaceMatrix, float4(input.worldPosition, 1.0));
+    float4 previousFrameClipSpacePosition = mul(input.worldToPreviousFrameClipSpaceMatrix, float4(input.worldPosition, 1.0));
     float2 frameMovement = (input.clipPosition.xy / input.clipPosition.w) - (previousFrameClipSpacePosition.xy / previousFrameClipSpacePosition.w);
     float2 motion = 0.5 * frameMovement * sceneConstants.motionSpeedFactor;
     if (abs(motion.x) > sceneConstants.motionMaximum.x) motion *= sceneConstants.motionMaximum.x / abs(motion.x);

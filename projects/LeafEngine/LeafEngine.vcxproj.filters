@@ -282,6 +282,9 @@
     <FxCompile Include="..\..\src\engine\render\shaders\tilemax.cs.hlsl">
       <Filter>render\shaders</Filter>
     </FxCompile>
+    <FxCompile Include="..\..\src\engine\render\shaders\motionblur.vs.hlsl">
+      <Filter>render\shaders</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="blender-addon">

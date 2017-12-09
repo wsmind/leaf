@@ -15,6 +15,7 @@ class Batch
         void setDepthStencil(ID3D11DepthStencilState *depthStencil) { this->depthStencil = depthStencil; }
 
         void setResources(const std::vector<ID3D11ShaderResourceView *> &resources) { this->resources = resources; }
+		void setUnorderedResources(const std::vector<ID3D11UnorderedAccessView *> &resources) { this->unorderedResources = resources; }
 		void setSamplers(const std::vector<ID3D11SamplerState *> &samplers) { this->samplers = samplers; }
 		void setShaderConstants(ID3D11Buffer *shaderConstantBuffer) { this->shaderConstantBuffer = shaderConstantBuffer; }
 
@@ -38,6 +39,7 @@ class Batch
 
         ID3D11DepthStencilState *depthStencil = nullptr;
         std::vector<ID3D11ShaderResourceView *> resources;
+		std::vector<ID3D11UnorderedAccessView *> unorderedResources;
 		std::vector<ID3D11SamplerState *> samplers;
 		ID3D11Buffer *shaderConstantBuffer = nullptr;
 

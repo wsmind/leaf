@@ -13,7 +13,7 @@ class PostProcessor
         PostProcessor(ID3D11RenderTargetView *backbufferTarget, int backbufferWidth, int backbufferHeight);
         ~PostProcessor();
 
-        RenderTarget *getRadianceTarget() const { return this->targets[1]; }
+        RenderTarget *getRadianceTarget() const { return this->targets[0]; }
 
         void render(FrameGraph *frameGraph, int width, int height, RenderTarget *motionTarget);
 
