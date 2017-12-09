@@ -23,12 +23,7 @@ class Batch
         void setPixelShader(ID3D11PixelShader *pixelShader) { this->pixelShader = pixelShader; }
         void setComputeShader(ID3D11ComputeShader *computeShader) { this->computeShader = computeShader; }
 
-        void setInputLayout(ID3D11InputLayout *inputLayout, int vertexStride, int instanceStride)
-        {
-            this->inputLayout = inputLayout;
-            this->vertexStride = vertexStride;
-            this->instanceStride = instanceStride;
-        }
+        void setInputLayout(ID3D11InputLayout *inputLayout) { this->inputLayout = inputLayout; }
 
         Job *addJob();
 
@@ -48,8 +43,6 @@ class Batch
         ID3D11ComputeShader *computeShader = nullptr;
 
         ID3D11InputLayout *inputLayout = nullptr;
-        int vertexStride = 0;
-        int instanceStride = 0;
 
         std::vector<Job *> jobs;
 };

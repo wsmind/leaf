@@ -27,7 +27,17 @@ PostProcessor::PostProcessor(ID3D11RenderTargetView *backbufferTarget, int backb
     res = Device::device->CreateVertexShader(fxaaVS, sizeof(fxaaVS), NULL, &fxaaVertexShader); CHECK_HRESULT(res);
     res = Device::device->CreatePixelShader(fxaaPS, sizeof(fxaaPS), NULL, &fxaaPixelShader); CHECK_HRESULT(res);
 
-    this->targets[0] = new RenderTarget(this->backbufferWidth, this->backbufferHeight, DXGI_FORMAT_R16G16B16A16_FLOAT);
+	D3D11_INPUT_ELEMENT_DESC layout[] =
+	{
+		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "TANGENT", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 24, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 40, D3D11_INPUT_PER_VERTEX_DATA, 0 }
+	};
+	res = Device::device->CreateInputLayout(layout, 4, postprocessVS, sizeof(postprocessVS), &this->inputLayout);
+	CHECK_HRESULT(res);
+
+	this->targets[0] = new RenderTarget(this->backbufferWidth, this->backbufferHeight, DXGI_FORMAT_R16G16B16A16_FLOAT);
     this->targets[1] = new RenderTarget(this->backbufferWidth, this->backbufferHeight, DXGI_FORMAT_R16G16B16A16_FLOAT);
 
     this->fullscreenQuad = ResourceManager::getInstance()->requestResource<Mesh>("__fullscreenQuad");
@@ -41,6 +51,8 @@ PostProcessor::~PostProcessor()
     this->postprocessPixelShader->Release();
     this->fxaaVertexShader->Release();
     this->fxaaPixelShader->Release();
+
+	this->inputLayout->Release();
 
     delete this->targets[0];
     delete this->targets[1];
@@ -75,6 +87,7 @@ void PostProcessor::render(FrameGraph *frameGraph, int width, int height, Render
 	toneMappingBatch->setSamplers({ this->targets[1]->getSamplerState() });
     toneMappingBatch->setVertexShader(postprocessVertexShader);
     toneMappingBatch->setPixelShader(postprocessPixelShader);
+	toneMappingBatch->setInputLayout(this->inputLayout);
 
     Job *toneMappingJob = toneMappingBatch->addJob();
     this->fullscreenQuad->setupJob(toneMappingJob);
@@ -98,6 +111,7 @@ void PostProcessor::render(FrameGraph *frameGraph, int width, int height, Render
 	fxaaBatch->setSamplers({ this->targets[0]->getSamplerState() });
 	fxaaBatch->setVertexShader(fxaaVertexShader);
     fxaaBatch->setPixelShader(fxaaPixelShader);
+	fxaaBatch->setInputLayout(this->inputLayout);
 
     Job *fxaaJob = fxaaBatch->addJob();
     this->fullscreenQuad->setupJob(fxaaJob);

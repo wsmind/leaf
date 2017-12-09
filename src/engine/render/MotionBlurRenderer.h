@@ -23,7 +23,9 @@ class MotionBlurRenderer
 		ID3D11PixelShader *motionblurPixelShader;
         ID3D11ComputeShader *tileMaxComputeShader;
 
-        ID3D11Texture2D *tileMaxTexture;
+		ID3D11InputLayout *inputLayout;
+
+		ID3D11Texture2D *tileMaxTexture;
 		ID3D11SamplerState *tileMaxSampler;
         ID3D11ShaderResourceView *tileMaxSRV;
         ID3D11UnorderedAccessView *tileMaxUAV;

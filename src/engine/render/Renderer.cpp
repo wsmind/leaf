@@ -389,7 +389,7 @@ void Renderer::render(const Scene *scene, int width, int height, bool overrideCa
                 currentBatch->setDepthStencil(this->gBufferDepthState);
                 currentBatch->setVertexShader(standardVertexShader);
                 currentBatch->setPixelShader(standardPixelShader);
-                currentBatch->setInputLayout(this->inputLayout, 0, 0);
+                currentBatch->setInputLayout(this->inputLayout);
 
                 currentMaterial->setupBatch(currentBatch);
             }
@@ -418,7 +418,7 @@ void Renderer::render(const Scene *scene, int width, int height, bool overrideCa
     backgroundBatch->setDepthStencil(this->backgroundDepthState);
     backgroundBatch->setVertexShader(this->backgroundVertexShader);
     backgroundBatch->setPixelShader(this->backgroundPixelShader);
-    backgroundBatch->setInputLayout(this->inputLayout, 0, 0);
+    backgroundBatch->setInputLayout(this->inputLayout);
 
     Job *backgroundJob = backgroundBatch->addJob();
     this->fullscreenQuad->setupJob(backgroundJob);

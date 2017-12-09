@@ -30,6 +30,8 @@ class PostProcessor
         ID3D11VertexShader *fxaaVertexShader;
         ID3D11PixelShader *fxaaPixelShader;
 
+		ID3D11InputLayout *inputLayout;
+
         Mesh *fullscreenQuad;
 
         MotionBlurRenderer *motionBlurRenderer;

@@ -25,7 +25,17 @@ MotionBlurRenderer::MotionBlurRenderer(int backbufferWidth, int backbufferHeight
 
     res = Device::device->CreateComputeShader(tileMaxCS, sizeof(tileMaxCS), NULL, &this->tileMaxComputeShader); CHECK_HRESULT(res);
 
-    D3D11_TEXTURE2D_DESC textureDesc;
+	D3D11_INPUT_ELEMENT_DESC layout[] =
+	{
+		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "TANGENT", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 24, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 40, D3D11_INPUT_PER_VERTEX_DATA, 0 }
+	};
+	res = Device::device->CreateInputLayout(layout, 4, motionblurVS, sizeof(motionblurVS), &this->inputLayout);
+	CHECK_HRESULT(res);
+
+	D3D11_TEXTURE2D_DESC textureDesc;
     ZeroMemory(&textureDesc, sizeof(textureDesc));
     textureDesc.Width = this->tileCountX;
     textureDesc.Height = this->tileCountY;
@@ -64,6 +74,8 @@ MotionBlurRenderer::~MotionBlurRenderer()
     this->motionblurPixelShader->Release();
     this->tileMaxComputeShader->Release();
 
+	this->inputLayout->Release();
+
     this->tileMaxTexture->Release();
 	this->tileMaxSampler->Release();
     this->tileMaxSRV->Release();
@@ -97,6 +109,7 @@ void MotionBlurRenderer::render(FrameGraph *frameGraph, RenderTarget *radianceTa
 	blurBatch->setSamplers({ radianceTarget->getSamplerState(), motionTarget->getSamplerState(), this->tileMaxSampler });
 	blurBatch->setVertexShader(this->motionblurVertexShader);
 	blurBatch->setPixelShader(this->motionblurPixelShader);
+	blurBatch->setInputLayout(this->inputLayout);
 
 	Job *blurJob = blurBatch->addJob();
 	quad->setupJob(blurJob);
