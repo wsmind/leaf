@@ -94,6 +94,7 @@ void FrameGraph::execute(const SceneConstants &sceneConstants)
     ID3D11Buffer *commonConstantBuffers[] = { this->sceneConstantBuffer, this->passConstantBuffer };
     Device::context->VSSetConstantBuffers(0, 2, commonConstantBuffers);
     Device::context->PSSetConstantBuffers(0, 2, commonConstantBuffers);
+	Device::context->CSSetConstantBuffers(0, 2, commonConstantBuffers);
 
     this->clearAllTargets();
     this->executeAllPasses();
@@ -102,6 +103,7 @@ void FrameGraph::execute(const SceneConstants &sceneConstants)
     ID3D11Buffer *nullConstantBuffers[] = { nullptr, nullptr };
     Device::context->VSSetConstantBuffers(0, 2, nullConstantBuffers);
     Device::context->PSSetConstantBuffers(0, 2, nullConstantBuffers);
+	Device::context->CSSetConstantBuffers(0, 2, nullConstantBuffers);
 
 	Job::resetInstanceBufferPosition();
 

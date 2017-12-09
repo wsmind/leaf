@@ -13,6 +13,12 @@ Job::Job()
 
 void Job::execute(ID3D11DeviceContext *context)
 {
+	if (this->dispatchSizeX > 0)
+	{
+		context->Dispatch(this->dispatchSizeX, this->dispatchSizeY, this->dispatchSizeZ);
+		return;
+	}
+
 	ID3D11Buffer *buffers[] = { this->vertexBuffer, Job::instanceBuffer };
 	UINT strides[] = { sizeof(float) * (3 /* pos */ + 3 /* normal */ + 4 /* tangent */ + 2 /* uv */), (UINT)this->instanceDataSize };
 	UINT offsets[] = { 0, (UINT)this->instanceBufferOffset };
@@ -20,7 +26,12 @@ void Job::execute(ID3D11DeviceContext *context)
     context->IASetIndexBuffer(this->indexBuffer, DXGI_FORMAT_R32_UINT, 0);
     context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-    context->DrawIndexed(this->indexCount, 0, 0);
+    context->DrawIndexedInstanced(this->indexCount, this->instanceCount, 0, 0, 0);
+
+	buffers[0] = nullptr;
+	buffers[1] = nullptr;
+	context->IASetVertexBuffers(0, 2, buffers, strides, offsets);
+	context->IASetIndexBuffer(nullptr, DXGI_FORMAT_R32_UINT, 0);
 }
 
 void Job::createInstanceBuffer(int size)

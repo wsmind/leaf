@@ -81,6 +81,8 @@ void Material::setupBatch(Batch *batch)
     memcpy(mappedResource.pData, &constants, sizeof(constants));
     Device::context->Unmap(this->constantBuffer, 0);
 
+	batch->setShaderConstants(this->constantBuffer);
+
     batch->setResources({
         this->baseColorMap->getSRV(),
         this->normalMap->getSRV(),

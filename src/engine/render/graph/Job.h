@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cassert>
 #include <vector>
 
 #include <d3d11.h>
@@ -18,6 +19,15 @@ class Job
 
 		template <typename InstanceData>
 		void addInstance(const InstanceData &instanceData);
+
+		void addInstance() { assert(this->instanceDataSize == 0);  this->instanceCount++; }
+
+		void addDispatch(int x, int y, int z)
+		{
+			this->dispatchSizeX = x;
+			this->dispatchSizeY = y;
+			this->dispatchSizeZ = z;
+		}
 
         void execute(ID3D11DeviceContext *context);
 		
@@ -39,11 +49,17 @@ class Job
 		int instanceBufferOffset = 0;
 		int instanceBufferSlice = 0;
 		int instanceDataSize = 0;
+
+		int dispatchSizeX = 0;
+		int dispatchSizeY = 0;
+		int dispatchSizeZ = 0;
 };
 
 template <typename InstanceData>
 void Job::addInstance(const InstanceData &instanceData)
 {
+	assert((this->instanceCount == 0) || (this->instanceDataSize == sizeof(InstanceData)));
+
 	if (Job::instanceBufferPosition + sizeof(InstanceData) > &Job::instanceBufferData[0] + Job::instanceBufferData.size())
 	{
 		printf("Too many instances for this frame\n");
@@ -55,4 +71,5 @@ void Job::addInstance(const InstanceData &instanceData)
 
 	this->instanceDataSize = sizeof(InstanceData);
 	this->instanceBufferSlice += this->instanceDataSize;
+	Job::instanceBufferPosition += this->instanceDataSize;
 }

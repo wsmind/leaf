@@ -408,16 +408,6 @@ void Renderer::render(const Scene *scene, int width, int height, bool overrideCa
 			instanceData.normalMatrix = glm::mat3x4(glm::inverseTranspose(glm::mat3(job.transform)));
 		
 			currentJob->addInstance(instanceData);
-
-			/*HRESULT res = Device::context->Map(this->cbInstance, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-            CHECK_HRESULT(res);
-            InstanceData *instanceData = (InstanceData *)mappedResource.pData;
-            instanceData->modelMatrix = job.transform;
-            instanceData->worldToPreviousFrameClipSpaceMatrix = this->previousFrameViewProjectionMatrix * job.previousFrameTransform * glm::inverse(job.transform);
-            instanceData->normalMatrix = glm::mat3x4(glm::inverseTranspose(glm::mat3(job.transform)));
-            Device::context->Unmap(this->cbInstance, 0);*/
-
-            //Device::context->DrawIndexed(currentMesh->getIndexCount(), 0, 0);
         }
     }
 
@@ -432,6 +422,7 @@ void Renderer::render(const Scene *scene, int width, int height, bool overrideCa
 
     Job *backgroundJob = backgroundBatch->addJob();
     this->fullscreenQuad->setupJob(backgroundJob);
+	backgroundJob->addInstance();
 
     this->postProcessor->render(this->frameGraph, width, height, this->motionTarget);
 

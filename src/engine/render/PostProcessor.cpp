@@ -7,6 +7,7 @@
 #include <engine/render/RenderTarget.h>
 #include <engine/render/graph/Batch.h>
 #include <engine/render/graph/FrameGraph.h>
+#include <engine/render/graph/Job.h>
 #include <engine/render/graph/Pass.h>
 #include <engine/resource/ResourceManager.h>
 
@@ -77,6 +78,7 @@ void PostProcessor::render(FrameGraph *frameGraph, int width, int height, Render
 
     Job *toneMappingJob = toneMappingBatch->addJob();
     this->fullscreenQuad->setupJob(toneMappingJob);
+	toneMappingJob->addInstance();
 
     // fxaa pass and blit to backbuffer
     Pass *fxaaPass = frameGraph->addPass("FXAA");
@@ -99,4 +101,5 @@ void PostProcessor::render(FrameGraph *frameGraph, int width, int height, Render
 
     Job *fxaaJob = fxaaBatch->addJob();
     this->fullscreenQuad->setupJob(fxaaJob);
+	fxaaJob->addInstance();
 }
