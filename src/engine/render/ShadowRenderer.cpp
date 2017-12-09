@@ -3,26 +3,21 @@
 #include <engine/render/Device.h>
 #include <engine/render/graph/GPUProfiler.h>
 #include <engine/render/RenderList.h>
+#include <engine/render/graph/Batch.h>
+#include <engine/render/graph/FrameGraph.h>
+#include <engine/render/graph/Job.h>
+#include <engine/render/graph/Pass.h>
 #include <engine/scene/Scene.h>
+
+#include <engine/render/shaders/constants/StandardConstants.h>
 
 #include <shaders/depthonly.vs.hlsl.h>
 #include <shaders/depthonly.ps.hlsl.h>
 
-#pragma pack(push)
-#pragma pack(16)
-struct DepthOnlyConstants
+struct DepthOnlyInstanceData
 {
     glm::mat4 transformMatrix;
 };
-#pragma pack(pop)
-
-#pragma pack(push)
-#pragma pack(16)
-struct ShadowConstants
-{
-    glm::mat4 lightMatrix[16];
-};
-#pragma pack(pop)
 
 ShadowRenderer::ShadowRenderer(int resolution)
 {
@@ -87,20 +82,15 @@ ShadowRenderer::ShadowRenderer(int resolution)
     res = Device::device->CreateVertexShader(depthonlyVS, sizeof(depthonlyVS), NULL, &this->depthOnlyVertexShader); CHECK_HRESULT(res);
     res = Device::device->CreatePixelShader(depthonlyPS, sizeof(depthonlyPS), NULL, &this->depthOnlyPixelShader); CHECK_HRESULT(res);
 
-    D3D11_BUFFER_DESC cbDesc;
-    cbDesc.Usage = D3D11_USAGE_DYNAMIC;
-    cbDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-    cbDesc.StructureByteStride = 0;
-    cbDesc.MiscFlags = 0;
-    cbDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-
-    cbDesc.ByteWidth = sizeof(DepthOnlyConstants);
-    res = Device::device->CreateBuffer(&cbDesc, NULL, &this->cbDepthOnly);
-    CHECK_HRESULT(res);
-
-    cbDesc.ByteWidth = sizeof(ShadowConstants);
-    res = Device::device->CreateBuffer(&cbDesc, NULL, &this->cbShadows);
-    CHECK_HRESULT(res);
+	D3D11_INPUT_ELEMENT_DESC layout[] =
+	{
+		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "TANGENT", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 24, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 40, D3D11_INPUT_PER_VERTEX_DATA, 0 }
+	};
+	res = Device::device->CreateInputLayout(layout, 4, depthonlyVS, sizeof(depthonlyVS), &this->inputLayout);
+	CHECK_HRESULT(res);
 }
 
 ShadowRenderer::~ShadowRenderer()
@@ -114,106 +104,74 @@ ShadowRenderer::~ShadowRenderer()
     this->depthOnlyVertexShader->Release();
     this->depthOnlyPixelShader->Release();
 
-    this->cbDepthOnly->Release();
-    this->cbShadows->Release();
+	this->inputLayout->Release();
 }
 
-void ShadowRenderer::render(const Scene *scene, const RenderList *renderList)
+void ShadowRenderer::render(FrameGraph *frameGraph, const Scene *scene, const RenderList *renderList, ShadowConstants *shadowConstants)
 {
-    Device::context->OMSetRenderTargets(0, nullptr, this->target);
     const std::vector<RenderList::Job> &jobs = renderList->getJobs();
     const std::vector<RenderList::Light> &lights = renderList->getLights();
 
-    Device::context->ClearDepthStencilView(this->target, D3D11_CLEAR_DEPTH, 1.0f, 0);
-
-    D3D11_MAPPED_SUBRESOURCE mappedShadowResource;
-    HRESULT res = Device::context->Map(this->cbShadows, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedShadowResource);
-    CHECK_HRESULT(res);
-    ShadowConstants *shadowConstants = (ShadowConstants *)mappedShadowResource.pData;
+	frameGraph->addClearTarget(this->target, 1.0f, 0);
 
     int shadowCount = 0;
-    for (int i = 0; i < lights.size(); i++)
-    {
-        // only spotlights cast shadows
-        if (!lights[i].spot || shadowCount >= 16)
-            continue;
+	for (int i = 0; i < lights.size(); i++)
+	{
+		// only spotlights cast shadows
+		if (!lights[i].spot || shadowCount >= 16)
+			continue;
 
-        int index = shadowCount++;
+		int index = shadowCount++;
 
-        // apply NDC [-1, 1] to texture space [0, 1] to atlas rect
-        /*glm::vec3 scale = glm::vec3(0.5f, 0.5f, 1.0f);
-        glm::vec3 offset = glm::vec3(0.5f, 0.5f, 0.0f);
-        //glm::vec3 scale = glm::vec3(0.125f, 0.125f, 1.0f);
-        //glm::vec3 offset = glm::vec3(0.125f + 0.25f * (float)(index % 4), 0.125f + 0.25f * (float)(index / 4), 0.0f);
-        glm::mat4 biasMatrix(
-            scale.x, 0.0f, 0.0f, offset.x,
-            0.0f, scale.y, 0.0f, offset.y,
-            0.0f, 0.0f, scale.z, offset.z,
-            0.0f, 0.0f, 0.0f, 1.0f
-        );*/
-        shadowConstants->lightMatrix[index] = lights[i].shadowTransform;
+		// apply NDC [-1, 1] to texture space [0, 1] to atlas rect
+		/*glm::vec3 scale = glm::vec3(0.5f, 0.5f, 1.0f);
+		glm::vec3 offset = glm::vec3(0.5f, 0.5f, 0.0f);
+		//glm::vec3 scale = glm::vec3(0.125f, 0.125f, 1.0f);
+		//glm::vec3 offset = glm::vec3(0.125f + 0.25f * (float)(index % 4), 0.125f + 0.25f * (float)(index / 4), 0.0f);
+		glm::mat4 biasMatrix(
+			scale.x, 0.0f, 0.0f, offset.x,
+			0.0f, scale.y, 0.0f, offset.y,
+			0.0f, 0.0f, scale.z, offset.z,
+			0.0f, 0.0f, 0.0f, 1.0f
+		);*/
+		shadowConstants->lightMatrix[index] = lights[i].shadowTransform;
 
-        GPUProfiler::ScopedProfile profile("Shadow");
+		GPUProfiler::ScopedProfile profile("Shadow");
 
-        D3D11_VIEWPORT viewport;
+		Pass *shadowPass = frameGraph->addPass("ShadowMap");
+		shadowPass->setTargets({}, this->target);
+
+		D3D11_VIEWPORT viewport;
         viewport.Width = (float)this->resolution;
         viewport.Height = (float)this->resolution;
         viewport.MinDepth = 0.0f;
         viewport.MaxDepth = 1.0f;
         viewport.TopLeftX = 0.0f; // (float)((index % 4) * this->resolution);
         viewport.TopLeftY = 0.0f; // (float)((3 - (index / 4)) * this->resolution);
-        Device::context->RSSetViewports(1, &viewport);
+        shadowPass->setViewport(viewport, glm::mat4(), glm::mat4());
 
-        Device::context->OMSetDepthStencilState(this->depthState, 0);
+		Batch *batch = shadowPass->addBatch("Light");
+		batch->setDepthStencil(this->depthState);
+		batch->setVertexShader(this->depthOnlyVertexShader);
+		batch->setPixelShader(this->depthOnlyPixelShader);
+		batch->setInputLayout(this->inputLayout);
 
-        Device::context->VSSetShader(this->depthOnlyVertexShader, NULL, 0);
-        Device::context->PSSetShader(this->depthOnlyPixelShader, NULL, 0);
-
-        Mesh * currentMesh = nullptr;
+        Mesh *currentMesh = nullptr;
+		Job *currentJob = nullptr;
         for (const auto &job : jobs)
         {
             if (currentMesh != job.mesh)
             {
                 currentMesh = job.mesh;
-                //currentMesh->bind();
-            }
 
-            D3D11_MAPPED_SUBRESOURCE mappedResource;
-            HRESULT res = Device::context->Map(this->cbDepthOnly, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-            CHECK_HRESULT(res);
-            DepthOnlyConstants *constants = (DepthOnlyConstants *)mappedResource.pData;
-            constants->transformMatrix = lights[i].shadowTransform * job.transform;
-            Device::context->Unmap(this->cbDepthOnly, 0);
+				currentJob = batch->addJob();
+				currentMesh->setupJob(currentJob);
+			}
 
-            ID3D11Buffer *allConstantBuffers[] = { this->cbDepthOnly };
-            Device::context->VSSetConstantBuffers(0, 1, allConstantBuffers);
-            Device::context->PSSetConstantBuffers(0, 1, allConstantBuffers);
-
-            //Device::context->DrawIndexed(currentMesh->getIndexCount(), 0, 0);
-        }
+			DepthOnlyInstanceData instanceData;
+			instanceData.transformMatrix = lights[i].shadowTransform * job.transform;
+	
+			currentJob->addInstance(instanceData);
+		}
     }
-
-    Device::context->Unmap(this->cbShadows, 0);
-    Device::context->OMSetRenderTargets(0, nullptr, nullptr);
-}
-
-void ShadowRenderer::bind()
-{
-    Device::context->VSSetConstantBuffers(4, 1, &this->cbShadows);
-    Device::context->PSSetConstantBuffers(4, 1, &this->cbShadows);
-
-    Device::context->PSSetShaderResources(4, 1, &this->srv);
-    Device::context->PSSetSamplers(4, 1, &this->sampler);
-}
-
-void ShadowRenderer::unbind()
-{
-    ID3D11Buffer *nullConstants = nullptr;
-    Device::context->VSSetConstantBuffers(4, 1, &nullConstants);
-    Device::context->PSSetConstantBuffers(4, 1, &nullConstants);
-
-    ID3D11SamplerState *nullSampler = nullptr;
-    ID3D11ShaderResourceView *nullSRV = nullptr;
-    Device::context->PSSetSamplers(4, 1, &nullSampler);
-    Device::context->PSSetShaderResources(4, 1, &nullSRV);
 }

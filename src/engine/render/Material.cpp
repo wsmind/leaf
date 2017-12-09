@@ -73,8 +73,10 @@ void Material::unload()
     this->constantBuffer->Release();
 }
 
-void Material::setupBatch(Batch *batch)
+void Material::setupBatch(Batch *batch, ID3D11ShaderResourceView *shadowSRV, ID3D11SamplerState *shadowSampler, ShadowConstants *shadowConstants)
 {
+	this->constants.shadows = *shadowConstants;
+
     D3D11_MAPPED_SUBRESOURCE mappedResource;
     HRESULT res = Device::context->Map(this->constantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
     CHECK_HRESULT(res);
@@ -87,13 +89,15 @@ void Material::setupBatch(Batch *batch)
         this->baseColorMap->getSRV(),
         this->normalMap->getSRV(),
         this->metallicMap->getSRV(),
-        this->roughnessMap->getSRV()
-    });
+        this->roughnessMap->getSRV(),
+		shadowSRV
+	});
 
 	batch->setSamplers({
 		this->baseColorMap->getSamplerState(),
 		this->normalMap->getSamplerState(),
 		this->metallicMap->getSamplerState(),
-		this->roughnessMap->getSamplerState()
+		this->roughnessMap->getSamplerState(),
+		shadowSampler
 	});
 }

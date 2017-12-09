@@ -22,7 +22,7 @@ class Material: public Resource
         virtual void load(const unsigned char *buffer, size_t size) override;
         virtual void unload() override;
 
-        void setupBatch(Batch *batch);
+        void setupBatch(Batch *batch, ID3D11ShaderResourceView *shadowSRV, ID3D11SamplerState *shadowSampler, ShadowConstants *shadowConstants);
 
     private:
         StandardConstants constants;

@@ -311,7 +311,8 @@ void Renderer::render(const Scene *scene, int width, int height, bool overrideCa
     this->renderList->sort();
 
     // shadow maps
-    //this->shadowRenderer->render(scene, this->renderList);
+	ShadowConstants shadowConstants;
+    this->shadowRenderer->render(this->frameGraph, scene, this->renderList, &shadowConstants);
 
     SceneConstants sceneConstants;
     sceneConstants.ambientColor = scene->getAmbientColor();
@@ -391,7 +392,7 @@ void Renderer::render(const Scene *scene, int width, int height, bool overrideCa
                 currentBatch->setPixelShader(standardPixelShader);
                 currentBatch->setInputLayout(this->inputLayout);
 
-                currentMaterial->setupBatch(currentBatch);
+                currentMaterial->setupBatch(currentBatch, this->shadowRenderer->getSRV(), this->shadowRenderer->getSampler(), &shadowConstants);
             }
 
             if (currentMesh != job.mesh)

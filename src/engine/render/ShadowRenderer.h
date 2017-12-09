@@ -2,8 +2,10 @@
 
 #include <d3d11.h>
 
+class FrameGraph;
 class RenderList;
 class Scene;
+struct ShadowConstants;
 
 class ShadowRenderer
 {
@@ -11,10 +13,10 @@ class ShadowRenderer
         ShadowRenderer(int resolution);
         ~ShadowRenderer();
 
-        void render(const Scene *scene, const RenderList *renderList);
+        void render(FrameGraph *frameGraph, const Scene *scene, const RenderList *renderList, ShadowConstants *shadowConstants);
 
-        void bind();
-        void unbind();
+		ID3D11ShaderResourceView *getSRV() const { return this->srv; }
+		ID3D11SamplerState *getSampler() const { return this->sampler; }
 
     private:
         int resolution;
@@ -27,6 +29,7 @@ class ShadowRenderer
         ID3D11VertexShader *depthOnlyVertexShader;
         ID3D11PixelShader *depthOnlyPixelShader;
 
-        ID3D11Buffer *cbDepthOnly;
+		ID3D11InputLayout *inputLayout;
+
         ID3D11Buffer *cbShadows;
 };
