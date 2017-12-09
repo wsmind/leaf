@@ -1,10 +1,14 @@
 #pragma once
 
+#include <vector>
+
 #include <d3d11.h>
 
 class Job
 {
     public:
+		Job::Job();
+
         void setBuffers(ID3D11Buffer *vertexBuffer, ID3D11Buffer *indexBuffer, int indexCount)
         {
             this->vertexBuffer = vertexBuffer;
@@ -12,10 +16,43 @@ class Job
             this->indexCount = indexCount;
         }
 
+		template <typename InstanceData>
+		void addInstance(const InstanceData &instanceData);
+
         void execute(ID3D11DeviceContext *context);
+		
+		static void createInstanceBuffer(int size);
+		static void destroyInstanceBuffer();
+
+		static void resetInstanceBufferPosition();
+		static void applyInstanceBuffer();
 
     private:
-        ID3D11Buffer * vertexBuffer = nullptr;
+		static std::vector<unsigned char> instanceBufferData;
+		static ID3D11Buffer *instanceBuffer;
+		static unsigned char *instanceBufferPosition;
+
+		ID3D11Buffer *vertexBuffer = nullptr;
         ID3D11Buffer *indexBuffer = nullptr;
         int indexCount = 0;
+		int instanceCount = 0;
+		int instanceBufferOffset = 0;
+		int instanceBufferSlice = 0;
+		int instanceDataSize = 0;
 };
+
+template <typename InstanceData>
+void Job::addInstance(const InstanceData &instanceData)
+{
+	if (Job::instanceBufferPosition + sizeof(InstanceData) > &Job::instanceBufferData[0] + Job::instanceBufferData.size())
+	{
+		printf("Too many instances for this frame\n");
+		return;
+	}
+
+	memcpy(Job::instanceBufferPosition, &instanceData, sizeof(InstanceData));
+	this->instanceCount++;
+
+	this->instanceDataSize = sizeof(InstanceData);
+	this->instanceBufferSlice += this->instanceDataSize;
+}

@@ -2,6 +2,7 @@
 
 #include <engine/render/Device.h>
 #include <engine/render/graph/GPUProfiler.h>
+#include <engine/render/graph/Job.h>
 #include <engine/render/graph/Pass.h>
 #include <engine/render/shaders/constants/SceneConstants.h>
 #include <engine/render/shaders/constants/PassConstants.h>
@@ -30,6 +31,8 @@ FrameGraph::FrameGraph(const std::string &profileFilename)
 	res = this->context->QueryInterface(__uuidof(this->annotation), (void **)&this->annotation);
 	CHECK_HRESULT(res);
 
+	Job::createInstanceBuffer(1 * 1024 * 1024);
+
     this->profileFilename = profileFilename;
 
     GPUProfiler::create(!this->profileFilename.empty(), this->context);
@@ -41,7 +44,9 @@ FrameGraph::~FrameGraph()
     GPUProfiler::getInstance()->endJsonCapture(this->profileFilename);
     GPUProfiler::destroy();
 
-    this->context->Release();
+	Job::destroyInstanceBuffer();
+
+	this->context->Release();
 	this->annotation->Release();
 
     this->sceneConstantBuffer->Release();
@@ -76,6 +81,8 @@ void FrameGraph::execute(const SceneConstants &sceneConstants)
 {
     GPUProfiler::getInstance()->beginFrame();
 
+	Job::applyInstanceBuffer();
+
     // upload scene constants to GPU
     D3D11_MAPPED_SUBRESOURCE mappedResource;
     HRESULT res = this->context->Map(this->sceneConstantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
@@ -96,7 +103,9 @@ void FrameGraph::execute(const SceneConstants &sceneConstants)
     Device::context->VSSetConstantBuffers(0, 2, nullConstantBuffers);
     Device::context->PSSetConstantBuffers(0, 2, nullConstantBuffers);
 
-    GPUProfiler::getInstance()->endFrame();
+	Job::resetInstanceBufferPosition();
+
+	GPUProfiler::getInstance()->endFrame();
 }
 
 void FrameGraph::clearAllTargets()

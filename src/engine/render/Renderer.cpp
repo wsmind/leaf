@@ -21,6 +21,7 @@
 #include <engine/render/Texture.h>
 #include <engine/render/graph/Batch.h>
 #include <engine/render/graph/FrameGraph.h>
+#include <engine/render/graph/Job.h>
 #include <engine/render/graph/Pass.h>
 #include <engine/render/shaders/constants/SceneConstants.h>
 #include <engine/resource/ResourceManager.h>
@@ -187,9 +188,20 @@ Renderer::Renderer(HWND hwnd, int backbufferWidth, int backbufferHeight, bool ca
         { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
         { "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
         { "TANGENT", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 24, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-        { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 40, D3D11_INPUT_PER_VERTEX_DATA, 0 }
-    };
-    res = Device::device->CreateInputLayout(layout, 4, basicVS, sizeof(basicVS), &inputLayout);
+        { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 40, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "MODELMATRIX", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 0, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
+		{ "MODELMATRIX", 1, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 16, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
+		{ "MODELMATRIX", 2, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 32, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
+		{ "MODELMATRIX", 3, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 48, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
+		{ "WORLDTOPREVIOUSFRAMECLIPSPACE", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 64, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
+		{ "WORLDTOPREVIOUSFRAMECLIPSPACE", 1, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 80, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
+		{ "WORLDTOPREVIOUSFRAMECLIPSPACE", 2, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 96, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
+		{ "WORLDTOPREVIOUSFRAMECLIPSPACE", 3, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 112, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
+		{ "NORMALMATRIX", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 128, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
+		{ "NORMALMATRIX", 1, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 144, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
+		{ "NORMALMATRIX", 2, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 160, D3D11_INPUT_PER_INSTANCE_DATA, 1 }
+	};
+    res = Device::device->CreateInputLayout(layout, 15, standardVS, sizeof(standardVS), &inputLayout);
     CHECK_HRESULT(res);
 
     // built-in rendering resources
@@ -390,7 +402,14 @@ void Renderer::render(const Scene *scene, int width, int height, bool overrideCa
                 currentMesh->setupJob(currentJob);
             }
 
-            /*HRESULT res = Device::context->Map(this->cbInstance, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+			InstanceData instanceData;
+			instanceData.modelMatrix = job.transform;
+			instanceData.worldToPreviousFrameClipSpaceMatrix = this->previousFrameViewProjectionMatrix * job.previousFrameTransform * glm::inverse(job.transform);
+			instanceData.normalMatrix = glm::mat3x4(glm::inverseTranspose(glm::mat3(job.transform)));
+		
+			currentJob->addInstance(instanceData);
+
+			/*HRESULT res = Device::context->Map(this->cbInstance, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
             CHECK_HRESULT(res);
             InstanceData *instanceData = (InstanceData *)mappedResource.pData;
             instanceData->modelMatrix = job.transform;
