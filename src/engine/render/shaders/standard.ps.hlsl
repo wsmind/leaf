@@ -180,7 +180,7 @@ STANDARD_PS_OUTPUT main(STANDARD_PS_INPUT input)
 
 	// clamp motion to tile size
 	float2 screenSpaceMotion = clipSpaceMotion * passConstants.viewportSize.xy;
-	screenSpaceMotion *= max(1.0, sceneConstants.motionBlurTileSize / (length(screenSpaceMotion) + 0.1));
+	screenSpaceMotion /= max(1.0, length(screenSpaceMotion) / sceneConstants.motionBlurTileSize);
 	clipSpaceMotion = screenSpaceMotion * passConstants.viewportSize.zw;
 
 	// convert to texture space

@@ -6,8 +6,8 @@ SamplerState radianceSampler: register(s0);
 Texture2D<float4> motionTexture: register(t1);
 SamplerState motionSampler: register(s1);
 
-Texture2D<float4> tileMaxTexture: register(t2);
-SamplerState tileMaxSampler: register(s2);
+Texture2D<float4> neighborMaxTexture: register(t2);
+SamplerState neighborMaxSampler: register(s2);
 
 struct MOTIONBLUR_PS_OUTPUT
 {
@@ -20,7 +20,7 @@ MOTIONBLUR_PS_OUTPUT main(POSTPROCESS_PS_INPUT input)
 
     float3 radiance = radianceTexture.Sample(radianceSampler, input.uv).rgb;
     //float2 motion = motionTexture.Sample(motionSampler, input.uv).rg;
-    float2 motion = tileMaxTexture.Sample(tileMaxSampler, input.uv).rg;
+    float2 motion = neighborMaxTexture.Sample(neighborMaxSampler, input.uv).rg;
 
     for (float n = 0.1f; n <= 1.0f; n += 0.1f)
     {

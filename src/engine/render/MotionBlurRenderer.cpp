@@ -11,6 +11,7 @@
 
 #include <shaders/motionblur.vs.hlsl.h>
 #include <shaders/motionblur.ps.hlsl.h>
+#include <shaders/neighbormax.cs.hlsl.h>
 #include <shaders/tilemax.cs.hlsl.h>
 
 MotionBlurRenderer::MotionBlurRenderer(int backbufferWidth, int backbufferHeight, int tileSize)
@@ -24,6 +25,7 @@ MotionBlurRenderer::MotionBlurRenderer(int backbufferWidth, int backbufferHeight
 	res = Device::device->CreatePixelShader(motionblurPS, sizeof(motionblurPS), NULL, &this->motionblurPixelShader); CHECK_HRESULT(res);
 
     res = Device::device->CreateComputeShader(tileMaxCS, sizeof(tileMaxCS), NULL, &this->tileMaxComputeShader); CHECK_HRESULT(res);
+	res = Device::device->CreateComputeShader(neighborMaxCS, sizeof(neighborMaxCS), NULL, &this->neighborMaxComputeShader); CHECK_HRESULT(res);
 
 	D3D11_INPUT_ELEMENT_DESC layout[] =
 	{
@@ -55,6 +57,15 @@ MotionBlurRenderer::MotionBlurRenderer(int backbufferWidth, int backbufferHeight
     res = Device::device->CreateUnorderedAccessView(this->tileMaxTexture, NULL, &this->tileMaxUAV);
     CHECK_HRESULT(res);
 
+	res = Device::device->CreateTexture2D(&textureDesc, NULL, &this->neighborMaxTexture);
+	CHECK_HRESULT(res);
+
+	res = Device::device->CreateShaderResourceView(this->neighborMaxTexture, NULL, &this->neighborMaxSRV);
+	CHECK_HRESULT(res);
+
+	res = Device::device->CreateUnorderedAccessView(this->neighborMaxTexture, NULL, &this->neighborMaxUAV);
+	CHECK_HRESULT(res);
+
 	D3D11_SAMPLER_DESC samplerDesc;
 	ZeroMemory(&samplerDesc, sizeof(samplerDesc));
 	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
@@ -65,21 +76,29 @@ MotionBlurRenderer::MotionBlurRenderer(int backbufferWidth, int backbufferHeight
 	samplerDesc.MinLOD = 0;
 	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
 
-	res = Device::device->CreateSamplerState(&samplerDesc, &this->tileMaxSampler);
+	res = Device::device->CreateSamplerState(&samplerDesc, &this->neighborMaxSampler);
 	CHECK_HRESULT(res);
 }
 
 MotionBlurRenderer::~MotionBlurRenderer()
 {
-    this->motionblurPixelShader->Release();
-    this->tileMaxComputeShader->Release();
+	this->motionblurVertexShader->Release();
+	this->motionblurPixelShader->Release();
+    
+	this->tileMaxComputeShader->Release();
+	this->neighborMaxComputeShader->Release();
 
 	this->inputLayout->Release();
 
     this->tileMaxTexture->Release();
-	this->tileMaxSampler->Release();
     this->tileMaxSRV->Release();
     this->tileMaxUAV->Release();
+
+	this->neighborMaxTexture->Release();
+	this->neighborMaxSRV->Release();
+	this->neighborMaxUAV->Release();
+
+	this->neighborMaxSampler->Release();
 }
 
 void MotionBlurRenderer::render(FrameGraph *frameGraph, RenderTarget *radianceTarget, RenderTarget *motionTarget, RenderTarget *outputTarget, int width, int height, Mesh *quad)
@@ -92,13 +111,21 @@ void MotionBlurRenderer::render(FrameGraph *frameGraph, RenderTarget *radianceTa
 	tileMaxBatch->setComputeShader(this->tileMaxComputeShader);
 	tileMaxBatch->addJob()->addDispatch(this->tileCountX, this->tileCountY, 1);
 
+	Pass *neighborMaxPass = frameGraph->addPass("NeighborMax");
+
+	Batch *neighborMaxBatch = neighborMaxPass->addBatch("");
+	neighborMaxBatch->setResources({ this->tileMaxSRV });
+	neighborMaxBatch->setUnorderedResources({ this->neighborMaxUAV });
+	neighborMaxBatch->setComputeShader(this->neighborMaxComputeShader);
+	neighborMaxBatch->addJob()->addDispatch(this->tileCountX, this->tileCountY, 1);
+
 	Pass *blurPass = frameGraph->addPass("MotionBlur");
 	blurPass->setTargets({ outputTarget->getTarget() }, nullptr);
 	blurPass->setViewport((float)width, (float)height, glm::mat4(), glm::mat4());
 
 	Batch *blurBatch = blurPass->addBatch("");
-	blurBatch->setResources({ radianceTarget->getSRV(), motionTarget->getSRV(), this->tileMaxSRV });
-	blurBatch->setSamplers({ radianceTarget->getSamplerState(), motionTarget->getSamplerState(), this->tileMaxSampler });
+	blurBatch->setResources({ radianceTarget->getSRV(), motionTarget->getSRV(), this->neighborMaxSRV });
+	blurBatch->setSamplers({ radianceTarget->getSamplerState(), motionTarget->getSamplerState(), this->neighborMaxSampler });
 	blurBatch->setVertexShader(this->motionblurVertexShader);
 	blurBatch->setPixelShader(this->motionblurPixelShader);
 	blurBatch->setInputLayout(this->inputLayout);

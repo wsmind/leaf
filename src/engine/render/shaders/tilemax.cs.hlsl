@@ -16,13 +16,14 @@ float2 vmax(float2 v1, float2 v2)
 void main(uint3 dispatchThreadId: SV_DispatchThreadID)
 {
 	int tileSize = int(sceneConstants.motionBlurTileSize);
+	uint2 tileStart = dispatchThreadId.xy * tileSize;
 
     float2 tileMotion = float2(0.0, 0.0);
     for (int y = 0; y < tileSize; y++)
     {
         for (int x = 0; x < tileSize; x++)
         {
-            float2 motionSample = motionTexture.Load(uint3(dispatchThreadId.xy * tileSize + uint2(x, y), 0)).xy;
+            float2 motionSample = motionTexture.Load(uint3(tileStart + uint2(x, y), 0)).xy;
             tileMotion = vmax(tileMotion, motionSample);
         }
     }
