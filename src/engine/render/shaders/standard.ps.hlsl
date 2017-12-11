@@ -171,7 +171,7 @@ STANDARD_PS_OUTPUT main(STANDARD_PS_INPUT input)
 
     float transmittance = exp(input.viewPosition.z * sceneConstants.mist);
     
-    output.radiance = float4(lerp(sceneConstants.ambientColor, radiance, transmittance) + inScattering, 1.0);
+    output.radiance = float4(lerp(sceneConstants.ambientColor, radiance, transmittance) + inScattering, input.viewPosition.z);
 
     // estimate pixel movement from last frame
     float4 previousFrameClipSpacePosition = mul(input.worldToPreviousFrameClipSpaceMatrix, float4(input.worldPosition, 1.0));
