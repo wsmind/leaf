@@ -356,19 +356,11 @@ void Renderer::render(const Scene *scene, int width, int height, bool overrideCa
     this->frameGraph->addClearTarget(this->motionTarget->getTarget(), glm::vec4(0.0f, 0.0f, 0.0f, 0.0f));
     this->frameGraph->addClearTarget(this->depthTarget, 1.0, 0);
 
-    D3D11_VIEWPORT viewport;
-    viewport.Width = (float)backbufferWidth;
-    viewport.Height = (float)backbufferHeight;
-    viewport.MinDepth = 0.0f;
-    viewport.MaxDepth = 1.0f;
-    viewport.TopLeftX = 0;
-    viewport.TopLeftY = 0;
-
     RenderTarget *radianceTarget = this->postProcessor->getRadianceTarget();
 
     Pass *radiancePass = this->frameGraph->addPass("Radiance");
     radiancePass->setTargets({ radianceTarget->getTarget(), this->motionTarget->getTarget() }, this->depthTarget);
-    radiancePass->setViewport(viewport, viewMatrix, projectionMatrix);
+	radiancePass->setViewport((float)this->backbufferWidth, (float)this->backbufferHeight, viewMatrix, projectionMatrix);
 
     //this->shadowRenderer->bind();
 

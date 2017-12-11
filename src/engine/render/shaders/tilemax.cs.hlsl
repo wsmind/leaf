@@ -2,13 +2,6 @@ Texture2D<float4> motionTexture: register(t0);
 
 RWTexture2D<float4> tileMax: register(u0);
 
-SamplerState PointSampler
-{
-    Filter = MIN_MAG_POINT;
-    AddressU = Clamp;
-    AddressV = Clamp;
-};
-
 float2 vmax(float2 v1, float2 v2)
 {
     if (dot(v1, v1) > dot(v2, v2))

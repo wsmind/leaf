@@ -94,15 +94,7 @@ void MotionBlurRenderer::render(FrameGraph *frameGraph, RenderTarget *radianceTa
 
 	Pass *blurPass = frameGraph->addPass("MotionBlur");
 	blurPass->setTargets({ outputTarget->getTarget() }, nullptr);
-
-	D3D11_VIEWPORT viewport;
-	viewport.Width = (float)width;
-	viewport.Height = (float)height;
-	viewport.MinDepth = 0.0f;
-	viewport.MaxDepth = 1.0f;
-	viewport.TopLeftX = 0;
-	viewport.TopLeftY = 0;
-	blurPass->setViewport(viewport, glm::mat4(), glm::mat4());
+	blurPass->setViewport((float)width, (float)height, glm::mat4(), glm::mat4());
 
 	Batch *blurBatch = blurPass->addBatch("");
 	blurBatch->setResources({ radianceTarget->getSRV(), motionTarget->getSRV(), this->tileMaxSRV });

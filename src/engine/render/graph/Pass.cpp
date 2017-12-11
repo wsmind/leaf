@@ -32,6 +32,20 @@ void Pass::setViewport(D3D11_VIEWPORT viewport, const glm::mat4 &viewMatrix, con
     this->passConstants.cameraPosition = glm::vec3(viewMatrixInverse[3][0], viewMatrixInverse[3][1], viewMatrixInverse[3][2]);
 }
 
+void Pass::setViewport(float width, float height, const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix)
+{
+	// user defaults for other viewport parameters
+	D3D11_VIEWPORT viewport;
+	viewport.Width = width;
+	viewport.Height = height;
+	viewport.MinDepth = 0.0f;
+	viewport.MaxDepth = 1.0f;
+	viewport.TopLeftX = 0;
+	viewport.TopLeftY = 0;
+
+	this->setViewport(viewport, viewMatrix, projectionMatrix);
+}
+
 Batch *Pass::addBatch(const std::string &name)
 {
     Batch *batch = new Batch(name);

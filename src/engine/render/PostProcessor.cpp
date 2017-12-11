@@ -72,15 +72,7 @@ void PostProcessor::render(FrameGraph *frameGraph, int width, int height, Render
     // tone mapping and gamma correction
     Pass *toneMappingPass = frameGraph->addPass("ToneMapping");
     toneMappingPass->setTargets({ this->targets[0]->getTarget() }, nullptr);
-
-	D3D11_VIEWPORT viewport;
-	viewport.Width = (float)this->backbufferWidth;
-	viewport.Height = (float)this->backbufferHeight;
-	viewport.MinDepth = 0.0f;
-	viewport.MaxDepth = 1.0f;
-	viewport.TopLeftX = 0;
-	viewport.TopLeftY = 0;
-	toneMappingPass->setViewport(viewport, glm::mat4(), glm::mat4());
+	toneMappingPass->setViewport((float)this->backbufferWidth, (float)this->backbufferHeight, glm::mat4(), glm::mat4());
 
     Batch *toneMappingBatch = toneMappingPass->addBatch("");
     toneMappingBatch->setResources({ this->targets[1]->getSRV() });
@@ -96,15 +88,7 @@ void PostProcessor::render(FrameGraph *frameGraph, int width, int height, Render
     // fxaa pass and blit to backbuffer
     Pass *fxaaPass = frameGraph->addPass("FXAA");
     fxaaPass->setTargets({ this->backbufferTarget }, nullptr);
-
-    D3D11_VIEWPORT outputViewport;
-	outputViewport.Width = (float)width;
-	outputViewport.Height = (float)height;
-	outputViewport.MinDepth = 0.0f;
-	outputViewport.MaxDepth = 1.0f;
-	outputViewport.TopLeftX = 0;
-	outputViewport.TopLeftY = 0;
-    fxaaPass->setViewport(outputViewport, glm::mat4(), glm::mat4());
+	fxaaPass->setViewport((float)width, (float)height, glm::mat4(), glm::mat4());
 
     Batch *fxaaBatch = fxaaPass->addBatch("");
     fxaaBatch->setResources({ this->targets[0]->getSRV() });

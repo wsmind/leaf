@@ -25,6 +25,7 @@ class Pass
         }
 
         void setViewport(D3D11_VIEWPORT viewport, const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix);
+		void setViewport(float width, float height, const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix);
 
         Batch *addBatch(const std::string &name);
 
