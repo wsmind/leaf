@@ -32,13 +32,10 @@ struct SceneConstants
 {
     float3 ambientColor;
 	float motionSpeedFactor; // shutter speed / delta time
-	float2 motionMaximum; // hardcoded to 0.5 * 40px / resolution
+	float motionBlurTileSize; // in pixels
     float mist;
     int pointLightCount;
-    PointLightData pointLights[MAX_LIGHT];
+	int spotLightCount;
+	PointLightData pointLights[MAX_LIGHT];
 	SpotLightData spotLights[MAX_LIGHT];
-    int spotLightCount;
-    float _padding0;
-    float _padding1;
-    float _padding2;
 };

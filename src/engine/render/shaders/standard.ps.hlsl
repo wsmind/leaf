@@ -176,12 +176,15 @@ STANDARD_PS_OUTPUT main(STANDARD_PS_INPUT input)
     // estimate pixel movement from last frame
     float4 previousFrameClipSpacePosition = mul(input.worldToPreviousFrameClipSpaceMatrix, float4(input.worldPosition, 1.0));
     float2 frameMovement = (input.clipPosition.xy / input.clipPosition.w) - (previousFrameClipSpacePosition.xy / previousFrameClipSpacePosition.w);
-    float2 motion = 0.5 * frameMovement * sceneConstants.motionSpeedFactor;
-    if (abs(motion.x) > sceneConstants.motionMaximum.x) motion *= sceneConstants.motionMaximum.x / abs(motion.x);
-    if (abs(motion.y) > sceneConstants.motionMaximum.y) motion *= sceneConstants.motionMaximum.y / abs(motion.y);
-    /*motion *= max(1.0, motionMaximum.x / (abs(motion.x) + 0.001));
-    motion *= max(1.0, motionMaximum.y / (abs(motion.y) + 0.001));*/
-    motion = 0.5 * float2(motion.x, -motion.y); // convert to texture space
+    float2 clipSpaceMotion = frameMovement * sceneConstants.motionSpeedFactor;
+
+	// clamp motion to tile size
+	float2 screenSpaceMotion = clipSpaceMotion * passConstants.viewportSize.xy;
+	screenSpaceMotion *= max(1.0, sceneConstants.motionBlurTileSize / (length(screenSpaceMotion) + 0.1));
+	clipSpaceMotion = screenSpaceMotion * passConstants.viewportSize.zw;
+
+	// convert to texture space
+    float2 motion = 0.5 * 0.5 * float2(clipSpaceMotion.x, -clipSpaceMotion.y);
     output.motion = float4(motion, 0.0, 0.0);
 
 	return output;

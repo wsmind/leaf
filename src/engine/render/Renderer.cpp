@@ -318,7 +318,7 @@ void Renderer::render(const Scene *scene, int width, int height, bool overrideCa
     sceneConstants.ambientColor = scene->getAmbientColor();
     sceneConstants.mist = scene->getMist();
     sceneConstants.motionSpeedFactor = shutterSpeed / deltaTime;
-    sceneConstants.motionMaximum = glm::vec2(20.0f) / glm::vec2((float)this->backbufferWidth, (float)this->backbufferHeight);
+    sceneConstants.motionBlurTileSize = 40.0f;
 
     const std::vector<RenderList::Light> &lights = this->renderList->getLights();
     sceneConstants.pointLightCount = 0;
