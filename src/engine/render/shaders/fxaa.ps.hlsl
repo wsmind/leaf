@@ -1,3 +1,4 @@
+#include "pass.h"
 #include "postprocess.h"
 
 #define FXAA_PC 1
@@ -27,7 +28,7 @@ POSTPROCESS_PS_OUTPUT main(POSTPROCESS_PS_INPUT input)
         tex,
         tex,
         tex,
-        1.0 / FxaaFloat2(1920.0, 1080.0),
+        passConstants.viewportSize.zw, // = 1.0 / resolution
         FxaaFloat4(0.0, 0.0, 0.0, 0.0),
         FxaaFloat4(0.0, 0.0, 0.0, 0.0),
         FxaaFloat4(0.0, 0.0, 0.0, 0.0),

@@ -13,4 +13,5 @@ struct PassConstants
 	float4x4 viewProjectionInverseMatrix;
 	float3 cameraPosition;
     float _padding;
+	float4 viewportSize; // .xy = size; .zw = 1.0 / size
 };

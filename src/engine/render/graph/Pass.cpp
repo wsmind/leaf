@@ -20,7 +20,10 @@ Pass::Pass(const std::string &name)
 
 void Pass::setViewport(D3D11_VIEWPORT viewport, const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix)
 {
-    this->viewport = viewport;
+	assert(viewport.Width > 0.0f);
+	assert(viewport.Height > 0.0f);
+
+	this->viewport = viewport;
 
     // derive secondary info from matrices
     glm::mat4 viewMatrixInverse = glm::inverse(viewMatrix);
@@ -30,6 +33,7 @@ void Pass::setViewport(D3D11_VIEWPORT viewport, const glm::mat4 &viewMatrix, con
     this->passConstants.projectionMatrixInverse = glm::inverse(projectionMatrix);
     this->passConstants.viewProjectionInverseMatrix = glm::inverse(projectionMatrix * viewMatrix);
     this->passConstants.cameraPosition = glm::vec3(viewMatrixInverse[3][0], viewMatrixInverse[3][1], viewMatrixInverse[3][2]);
+	this->passConstants.viewportSize = glm::vec4(viewport.Width, viewport.Height, 1.0f / viewport.Width, 1.0f / viewport.Height);
 }
 
 void Pass::setViewport(float width, float height, const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix)
