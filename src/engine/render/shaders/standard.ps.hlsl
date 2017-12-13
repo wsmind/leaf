@@ -79,6 +79,11 @@ float sampleShadowMap(int index, float3 worldPosition)
     return shadowFactor;
 }
 
+float rand(float2 uv)
+{
+	return frac(sin(dot(uv.xy, float2(12.9898, 78.233)) * 43758.5453));
+}
+
 STANDARD_PS_OUTPUT main(STANDARD_PS_INPUT input)
 {
     STANDARD_PS_OUTPUT output;
@@ -125,7 +130,9 @@ STANDARD_PS_OUTPUT main(STANDARD_PS_INPUT input)
         radiance += computeShading(surface, light, eye);
     }
 
-    // spot lights
+	float jitter = rand(input.uv);
+
+	// spot lights
     float3 inScattering = float3(0.0, 0.0, 0.0);
     float stepLength = length(input.marchingStep);
     for (int i = 0; i < sceneConstants.spotLightCount; i++)
@@ -149,19 +156,19 @@ STANDARD_PS_OUTPUT main(STANDARD_PS_INPUT input)
         if (sceneConstants.spotLights[i].scattering == 0.0)
             continue;
 
-        float3 samplePosition = passConstants.cameraPosition;
+		float3 samplePosition = passConstants.cameraPosition + input.marchingStep * jitter;
         float3 sampledScattering = float3(0.0, 0.0, 0.0);
         for (int k = 0; k < MARCHING_ITERATIONS; k++)
         {
             float3 lightVector2 = sceneConstants.spotLights[i].position - samplePosition;
             float lightDistance2 = length(lightVector2);
-            float opticalDepth = /*distance(cameraPosition, samplePosition) +*/ lightDistance2;
+            float opticalDepth = distance(passConstants.cameraPosition, samplePosition) + lightDistance2;
             float angleFalloff2 = saturate(dot(-lightVector2 / lightDistance2, sceneConstants.spotLights[i].direction) * sceneConstants.spotLights[i].cosAngleScale + sceneConstants.spotLights[i].cosAngleOffset);
             angleFalloff2 *= angleFalloff2; // more natural square attenuation
             float shadowFactor2 = sampleShadowMap(i, samplePosition);
             float3 radiance2 = sceneConstants.spotLights[i].color * computeLightFalloff(lightDistance, sceneConstants.spotLights[i].radius) * angleFalloff2 * shadowFactor2;
 
-            sampledScattering += stepLength * radiance2 * exp(-opticalDepth);
+            sampledScattering += stepLength * radiance2 * exp(-opticalDepth * 0.1);
 
             samplePosition += input.marchingStep;
         }
