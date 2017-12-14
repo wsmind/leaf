@@ -1,5 +1,6 @@
 #include "pass.h"
 #include "postprocess.h"
+#include "scene.h"
 
 // sources:
 // http://casual-effects.com/research/McGuire2012Blur/McGuire12Blur.pdf
@@ -53,6 +54,13 @@ MOTIONBLUR_PS_OUTPUT main(POSTPROCESS_PS_INPUT input)
 	float centerMotionLength = length(centerMotion);
 
 	float2 maxMotion = neighborMaxTexture.Sample(neighborMaxSampler, input.uv).rg;
+	float2 maxMotionDirection = normalize(maxMotion);
+
+	float2 normalDirection = float2(maxMotionDirection.y, -maxMotionDirection.x);
+	if (dot(normalDirection, centerMotion) < 0)
+		normalDirection = -normalDirection;
+
+	float2 mixedDirection = normalize(lerp(centerMotion, normalDirection, (centerMotionLength - 0.5) / sceneConstants.motionBlurTileSize));
 
 	// early out if nothing is moving around this pixel
 	if (length(maxMotion) < 0.5)
@@ -65,17 +73,18 @@ MOTIONBLUR_PS_OUTPUT main(POSTPROCESS_PS_INPUT input)
 
 	const float sampleCount = 20.0;
 
-	float totalWeight = 1.0 / max(length(centerMotion), 0.5);
+	float totalWeight = 1.0;// sampleCount / length(centerMotion);
 	float3 totalRadiance = totalWeight * centerSample.rgb;
 
 	for (float i = 0.0; i < sampleCount; i += 1.0)
 	{
 		float t = lerp(-1.0, 1.0, (i + jitter + 1.0) / (sampleCount + 1.0));
 
-		float2 offset = maxMotion * t;
+		float2 offset = lerp(maxMotion, centerMotion, i % 2.0) * t;
+
 		float2 currentUv = input.uv + screenToTextureSpace(offset);
-		float4 currentSample = radianceTexture.Sample(radianceSampler, currentUv).rgba; // packed color + depth
-		float2 currentMotion = motionTexture.Sample(motionSampler, currentUv).rg;
+		float4 currentSample = radianceTexture.SampleLevel(radianceSampler, currentUv, 0).rgba; // packed color + depth
+		float2 currentMotion = motionTexture.SampleLevel(motionSampler, currentUv, 0).rg;
 
 		float foreground = softDepthCompare(centerSample.a, currentSample.a);
 		float background = softDepthCompare(currentSample.a, centerSample.a);
@@ -83,13 +92,19 @@ MOTIONBLUR_PS_OUTPUT main(POSTPROCESS_PS_INPUT input)
 		float sampleDistance = length(offset);
 		float currentMotionLength = length(currentMotion);
 
+		float wA = dot(normalize(offset), mixedDirection);
+		float wB = dot(offset, currentMotion);
+
 		float weight = 0.0;
-		weight += foreground * cone(sampleDistance, currentMotionLength);
-		weight += background * cone(sampleDistance, centerMotionLength);
-		weight += 2.0 * cylinder(sampleDistance, currentMotionLength) * cylinder(sampleDistance, centerMotionLength);
+		weight += foreground * cone(sampleDistance, currentMotionLength) * wB;
+		//weight += background * cone(sampleDistance, centerMotionLength) * wA;
+		//weight += 2.0 * cylinder(sampleDistance, min(currentMotionLength, centerMotionLength)) * max(wA, wB);
 
 		totalWeight += weight;
 		totalRadiance += weight * currentSample.rgb;
+
+		totalWeight = 1.0;
+		totalRadiance = currentSample.rgb;
 	}
 
 	output.color = float4(totalRadiance / totalWeight, 1.0);
