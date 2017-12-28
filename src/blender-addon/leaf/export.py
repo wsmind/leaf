@@ -42,7 +42,11 @@ def export_data(output_file, updated_only=False):
     for mesh in list(bpy.data.meshes):
         if mesh.is_updated or not updated_only:
             print("exporting mesh: " + mesh.name)
-            data["Mesh"][mesh.name] = export_mesh(mesh)
+            mesh_data = export_mesh(mesh)
+            if mesh_data is not None:
+                data["Mesh"][mesh.name] = mesh_data
+            else:
+                print("failed to export mesh " + mesh.name)
 
     data["Action"] = {}
     for action in list(bpy.data.actions):
@@ -251,6 +255,9 @@ def export_mesh(mesh):
             indices.append(face.loop_indices[i + 1])
             indices.append(face.loop_indices[i + 2])
             indexCount += 3
+
+    if vertexCount == 0:
+        return None
 
     data = {
         "vertices": vertices,
