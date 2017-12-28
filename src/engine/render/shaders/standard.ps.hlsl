@@ -94,7 +94,7 @@ STANDARD_PS_OUTPUT main(STANDARD_PS_INPUT input)
     const float3 eye = normalize(view);
     const float3 normal = normalize(input.normal);
     const float3 tangent = normalize(input.tangent.xyz);
-    const float3 bitangent = normalize(input.tangent.w * cross(normal, tangent));
+    const float3 bitangent = normalize(-input.tangent.w * cross(normal, tangent));
 
     // compute TBN frame for normal mapping
     float3x3 TBN = float3x3(tangent, bitangent, normal);
