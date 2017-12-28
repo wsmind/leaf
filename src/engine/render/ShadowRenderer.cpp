@@ -27,8 +27,8 @@ ShadowRenderer::ShadowRenderer(int resolution)
 
     D3D11_TEXTURE2D_DESC shadowMapDesc;
     ZeroMemory(&shadowMapDesc, sizeof(shadowMapDesc));
-    shadowMapDesc.Width = resolution;// *4;
-    shadowMapDesc.Height = resolution;// *4;
+    shadowMapDesc.Width = resolution * 2;
+    shadowMapDesc.Height = resolution * 2;
     shadowMapDesc.MipLevels = 1;
     shadowMapDesc.ArraySize = 1;
     shadowMapDesc.Format = DXGI_FORMAT_R24G8_TYPELESS;
@@ -122,7 +122,7 @@ void ShadowRenderer::render(FrameGraph *frameGraph, const Scene *scene, const Re
 	for (int i = 0; i < lights.size(); i++)
 	{
 		// only spotlights cast shadows
-		if (!lights[i].spot || shadowCount >= 16)
+		if (!lights[i].spot || shadowCount >= 4)
 			continue;
 
 		int index = shadowCount++;
@@ -150,8 +150,8 @@ void ShadowRenderer::render(FrameGraph *frameGraph, const Scene *scene, const Re
         viewport.Height = (float)this->resolution;
         viewport.MinDepth = 0.0f;
         viewport.MaxDepth = 1.0f;
-        viewport.TopLeftX = 0.0f; // (float)((index % 4) * this->resolution);
-        viewport.TopLeftY = 0.0f; // (float)((3 - (index / 4)) * this->resolution);
+        viewport.TopLeftX = (float)((index % 2) * this->resolution);
+        viewport.TopLeftY = (float)((index / 2) * this->resolution);
         shadowPass->setViewport(viewport, glm::mat4(), glm::mat4());
 
 		Batch *batch = shadowPass->addBatch("Light");
