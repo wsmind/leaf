@@ -80,7 +80,7 @@ MOTIONBLUR_PS_OUTPUT main(POSTPROCESS_PS_INPUT input)
 
 		float sampleDistance = length(offset);
 
-		float weight = abs(dot(normalize(currentMotion), normalize(centerMotion))) * step(0, currentMotionLength - sampleDistance);
+		float weight = max(abs(dot(normalize(currentMotion), normalize(centerMotion))), step(0, currentMotionLength - sampleDistance));
 
 		totalWeight += weight;
 		totalRadiance += weight * currentSample.rgb;

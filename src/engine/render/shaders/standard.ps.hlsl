@@ -88,7 +88,7 @@ STANDARD_PS_OUTPUT main(STANDARD_PS_INPUT input)
 {
     STANDARD_PS_OUTPUT output;
 
-    float3 radiance = sceneConstants.ambientColor + standardConstants.emissive;
+    float3 radiance = standardConstants.emissive;
 
     const float3 view = passConstants.cameraPosition - input.worldPosition;
     const float3 eye = normalize(view);
@@ -116,6 +116,8 @@ STANDARD_PS_OUTPUT main(STANDARD_PS_INPUT input)
     surface.normal = perturbedNormal;
     surface.specularColor = specularColor;
     surface.roughness = roughness;
+
+	radiance += sceneConstants.ambientColor * surface.albedo;
 
     // point lights
     for (int i = 0; i < sceneConstants.pointLightCount; i++)
@@ -168,7 +170,8 @@ STANDARD_PS_OUTPUT main(STANDARD_PS_INPUT input)
             float shadowFactor2 = sampleShadowMap(i, samplePosition);
             float3 radiance2 = sceneConstants.spotLights[i].color * computeLightFalloff(lightDistance, sceneConstants.spotLights[i].radius) * angleFalloff2 * shadowFactor2;
 
-            sampledScattering += stepLength * radiance2 * exp(-opticalDepth * 0.1);
+			//float density = exp(-samplePosition.z * 10.0);
+            sampledScattering += stepLength * radiance2 * exp(-opticalDepth * 0.01);
 
             samplePosition += input.marchingStep;
         }
