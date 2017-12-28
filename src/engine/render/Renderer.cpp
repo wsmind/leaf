@@ -421,15 +421,12 @@ void Renderer::render(const Scene *scene, int width, int height, bool overrideCa
 
     this->frameGraph->execute(sceneConstants);
 
-    {
-        //GPUProfiler::ScopedProfile profile("V-Sync");
-        this->swapChain->Present(0, 0);
-    }
+	if (this->capture)
+		Device::context->CopyResource(this->captureBuffer, this->backBuffer);
+
+    this->swapChain->Present(0, 0);
 
     this->previousFrameViewProjectionMatrix = projectionMatrix * viewMatrix;
-
-    if (this->capture)
-        Device::context->CopyResource(this->captureBuffer, this->backBuffer);
 }
 
 void Renderer::renderBlenderViewport(const Scene *scene, int width, int height, const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix)
