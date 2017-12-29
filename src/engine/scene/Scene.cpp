@@ -10,7 +10,7 @@
 #include <engine/glm/gtc/matrix_transform.hpp>
 
 const std::string Scene::resourceClassName = "Scene";
-const std::string Scene::defaultResourceData = "{\"activeCamera\": 0, \"nodes\": [], \"markers\": [], \"ambientColor\": [0.0, 0.0, 0.0], \"mist\": 0.0}";
+const std::string Scene::defaultResourceData = "{\"activeCamera\": 0, \"nodes\": [], \"markers\": [], \"ambientColor\": [0.0, 0.0, 0.0], \"mist\": 0.0, \"bloom\": {\"threshold\": 1.0, \"intensity\": 1.0, \"debug\": false}}";
 
 void Scene::load(const unsigned char *buffer, size_t size)
 {
@@ -57,8 +57,13 @@ void Scene::load(const unsigned char *buffer, size_t size)
     }
 
     cJSON *ambientJson = cJSON_GetObjectItem(json, "ambientColor");
-    this->ambientColor = glm::vec3(cJSON_GetArrayItem(ambientJson, 0)->valuedouble, cJSON_GetArrayItem(ambientJson, 1)->valuedouble, cJSON_GetArrayItem(ambientJson, 2)->valuedouble);
-    this->mist = (float)cJSON_GetObjectItem(json, "mist")->valuedouble;
+    this->renderSettings.environment.ambientColor = glm::vec3(cJSON_GetArrayItem(ambientJson, 0)->valuedouble, cJSON_GetArrayItem(ambientJson, 1)->valuedouble, cJSON_GetArrayItem(ambientJson, 2)->valuedouble);
+    this->renderSettings.environment.mist = (float)cJSON_GetObjectItem(json, "mist")->valuedouble;
+
+	cJSON *bloomJson = cJSON_GetObjectItem(json, "bloom");
+	this->renderSettings.bloom.threshold = (float)cJSON_GetObjectItem(bloomJson, "threshold")->valuedouble;
+	this->renderSettings.bloom.intensity = (float)cJSON_GetObjectItem(bloomJson, "intensity")->valuedouble;
+	this->renderSettings.bloom.debug = (cJSON_GetObjectItem(bloomJson, "debug")->type == cJSON_True);
 
     cJSON_Delete(json);
 

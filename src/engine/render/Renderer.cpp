@@ -289,6 +289,8 @@ Renderer::~Renderer()
 
 void Renderer::render(const Scene *scene, int width, int height, bool overrideCamera, const glm::mat4 &viewMatrixOverride, const glm::mat4 &projectionMatrixOverride, float deltaTime)
 {
+	const RenderSettings &settings = scene->getRenderSettings();
+
     glm::mat4 viewMatrix;
     glm::mat4 projectionMatrix;
     float shutterSpeed;
@@ -315,8 +317,8 @@ void Renderer::render(const Scene *scene, int width, int height, bool overrideCa
     this->shadowRenderer->render(this->frameGraph, scene, this->renderList, &shadowConstants);
 
     SceneConstants sceneConstants;
-    sceneConstants.ambientColor = scene->getAmbientColor();
-    sceneConstants.mist = scene->getMist();
+    sceneConstants.ambientColor = settings.environment.ambientColor;
+    sceneConstants.mist = settings.environment.mist;
     sceneConstants.motionSpeedFactor = shutterSpeed / deltaTime;
     sceneConstants.motionBlurTileSize = 40.0f;
 

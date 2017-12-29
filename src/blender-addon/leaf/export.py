@@ -83,6 +83,8 @@ def export_data(output_file, updated_only=False):
             output_file.write(blob)
 
 def export_scene(scene):
+    leaf_scene = scene.leaf
+
     markers = [marker for marker in scene.timeline_markers if marker.camera]
     markers = sorted(markers, key = lambda m: m.frame)
 
@@ -102,7 +104,12 @@ def export_scene(scene):
         "markers": [export_marker(marker, objects) for marker in markers],
         "activeCamera": objects.index(scene.camera) if scene.camera else 0,
         "ambientColor": ambient,
-        "mist": mist
+        "mist": mist,
+        "bloom": {
+            "threshold": leaf_scene.bloom_threshold,
+            "intensity": leaf_scene.bloom_intensity,
+            "debug": leaf_scene.bloom_debug
+        }
     }
 
     return json.dumps(data).encode("utf-8")

@@ -9,6 +9,7 @@
 #include <engine/render/Camera.h>
 #include <engine/render/Light.h>
 #include <engine/render/Mesh.h>
+#include <engine/render/RenderSettings.h>
 #include <engine/resource/Resource.h>
 #include <engine/scene/SceneNode.h>
 
@@ -33,8 +34,7 @@ class Scene : public Resource
     void fillRenderList(RenderList *renderList) const;
     void setupCamera(glm::mat4 &viewMatrix, glm::mat4 &projectionMatrix, float &shutterSpeed, float aspect) const;
 
-    glm::vec3 getAmbientColor() const { return this->ambientColor; }
-    float getMist() const { return this->mist; }
+	const RenderSettings &getRenderSettings() const { return this->renderSettings; }
 
     private:
         int findCurrentCamera(float time);
@@ -58,6 +58,5 @@ class Scene : public Resource
         int currentCamera; // computed through markers, defaults to activeCamera if no markers
         int activeCamera; // active camera at the time of export
 
-        glm::vec3 ambientColor;
-        float mist;
+		RenderSettings renderSettings;
 };

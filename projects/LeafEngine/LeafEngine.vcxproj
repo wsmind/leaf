@@ -210,6 +210,7 @@
     <ClInclude Include="..\..\src\engine\render\PostProcessor.h" />
     <ClInclude Include="..\..\src\engine\render\Renderer.h" />
     <ClInclude Include="..\..\src\engine\render\RenderList.h" />
+    <ClInclude Include="..\..\src\engine\render\RenderSettings.h" />
     <ClInclude Include="..\..\src\engine\render\RenderTarget.h" />
     <ClInclude Include="..\..\src\engine\render\shaders\constants\PassConstants.h" />
     <ClInclude Include="..\..\src\engine\render\shaders\constants\SceneConstants.h" />

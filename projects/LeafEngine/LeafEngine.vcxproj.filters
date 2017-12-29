@@ -226,6 +226,9 @@
     <ClInclude Include="..\..\src\engine\render\graph\Job.h">
       <Filter>render\graph</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\engine\render\RenderSettings.h">
+      <Filter>render</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\..\src\engine\render\shaders\plop.vs.hlsl">
