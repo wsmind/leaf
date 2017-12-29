@@ -21,6 +21,8 @@ class BloomRenderer
 
 		ID3D11VertexShader *bloomVertexShader;
 		ID3D11PixelShader *bloomThresholdPixelShader;
+		ID3D11PixelShader *bloomDownsamplePixelShader;
+		ID3D11PixelShader *bloomAccumulationPixelShader;
 
 		ID3D11InputLayout *inputLayout;
 

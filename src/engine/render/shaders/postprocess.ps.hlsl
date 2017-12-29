@@ -21,10 +21,8 @@ POSTPROCESS_PS_OUTPUT main(POSTPROCESS_PS_INPUT input)
     // tone mapping (also applies gamma correction)
     float3 color = filmicToneMapping(radiance);
 
-    float luminance = dot(color, float3(0.299, 0.587, 0.114));
-
     // the FXAA pass requires luminance to be stored in the alpha channel
-    output.color = float4(color, luminance);
+    output.color = float4(color, computeLuminance(color));
 
 	return output;
 }

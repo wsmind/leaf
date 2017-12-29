@@ -10,6 +10,8 @@
 
 #include <shaders/bloom.vs.hlsl.h>
 #include <shaders/bloomThreshold.ps.hlsl.h>
+#include <shaders/bloomDownsample.ps.hlsl.h>
+#include <shaders/bloomAccumulation.ps.hlsl.h>
 
 BloomRenderer::BloomRenderer(int backbufferWidth, int backbufferHeight)
 {
@@ -19,6 +21,8 @@ BloomRenderer::BloomRenderer(int backbufferWidth, int backbufferHeight)
     HRESULT res;
 	res = Device::device->CreateVertexShader(bloomVS, sizeof(bloomVS), NULL, &this->bloomVertexShader); CHECK_HRESULT(res);
 	res = Device::device->CreatePixelShader(bloomThresholdPS, sizeof(bloomThresholdPS), NULL, &this->bloomThresholdPixelShader); CHECK_HRESULT(res);
+	res = Device::device->CreatePixelShader(bloomDownsamplePS, sizeof(bloomDownsamplePS), NULL, &this->bloomDownsamplePixelShader); CHECK_HRESULT(res);
+	res = Device::device->CreatePixelShader(bloomAccumulationPS, sizeof(bloomAccumulationPS), NULL, &this->bloomAccumulationPixelShader); CHECK_HRESULT(res);
 
 	D3D11_INPUT_ELEMENT_DESC layout[] =
 	{
@@ -39,42 +43,14 @@ BloomRenderer::BloomRenderer(int backbufferWidth, int backbufferHeight)
 
 		this->downsampleTargets[i] = new RenderTarget(width, height, DXGI_FORMAT_R16G16B16A16_FLOAT);
 	}
-
-	/*D3D11_TEXTURE2D_DESC textureDesc;
-    ZeroMemory(&textureDesc, sizeof(textureDesc));
-    textureDesc.Width = this->tileCountX;
-    textureDesc.Height = this->tileCountY;
-    textureDesc.MipLevels = 1;
-    textureDesc.ArraySize = 1;
-    textureDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
-    textureDesc.SampleDesc.Count = 1;
-    textureDesc.SampleDesc.Quality = 0;
-    textureDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS;
-
-    res = Device::device->CreateTexture2D(&textureDesc, NULL, &this->tileMaxTexture);
-    CHECK_HRESULT(res);
-
-    res = Device::device->CreateShaderResourceView(this->tileMaxTexture, NULL, &this->tileMaxSRV);
-    CHECK_HRESULT(res);
-
-	D3D11_SAMPLER_DESC samplerDesc;
-	ZeroMemory(&samplerDesc, sizeof(samplerDesc));
-	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
-	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
-	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
-	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
-	samplerDesc.MipLODBias = 0;
-	samplerDesc.MinLOD = 0;
-	samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
-
-	res = Device::device->CreateSamplerState(&samplerDesc, &this->neighborMaxSampler);
-	CHECK_HRESULT(res);*/
 }
 
 BloomRenderer::~BloomRenderer()
 {
 	this->bloomVertexShader->Release();
 	this->bloomThresholdPixelShader->Release();
+	this->bloomDownsamplePixelShader->Release();
+	this->bloomAccumulationPixelShader->Release();
 
 	this->inputLayout->Release();
 
@@ -115,7 +91,7 @@ void BloomRenderer::render(FrameGraph *frameGraph, const RenderSettings &setting
 		batch->setResources({ source->getSRV() });
 		batch->setSamplers({ source->getSamplerState() });
 		batch->setVertexShader(this->bloomVertexShader);
-		batch->setPixelShader(this->bloomThresholdPixelShader);
+		batch->setPixelShader(this->bloomDownsamplePixelShader);
 		batch->setInputLayout(this->inputLayout);
 
 		Job *job = batch->addJob();
@@ -132,7 +108,7 @@ void BloomRenderer::render(FrameGraph *frameGraph, const RenderSettings &setting
 	accumulationBatch->setResources({ inputTarget->getSRV(), this->downsampleTargets[0]->getSRV(), this->downsampleTargets[1]->getSRV(), this->downsampleTargets[2]->getSRV(), this->downsampleTargets[3]->getSRV() });
 	accumulationBatch->setSamplers({ inputTarget->getSamplerState(), this->downsampleTargets[0]->getSamplerState(), this->downsampleTargets[1]->getSamplerState(), this->downsampleTargets[2]->getSamplerState(), this->downsampleTargets[3]->getSamplerState() });
 	accumulationBatch->setVertexShader(this->bloomVertexShader);
-	accumulationBatch->setPixelShader(this->bloomThresholdPixelShader);
+	accumulationBatch->setPixelShader(this->bloomAccumulationPixelShader);
 	accumulationBatch->setInputLayout(this->inputLayout);
 
 	Job *accumulationJob = accumulationBatch->addJob();

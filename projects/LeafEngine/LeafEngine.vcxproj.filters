@@ -303,6 +303,12 @@
     <FxCompile Include="..\..\src\engine\render\shaders\bloomthreshold.ps.hlsl">
       <Filter>render\shaders</Filter>
     </FxCompile>
+    <FxCompile Include="..\..\src\engine\render\shaders\bloomdownsample.ps.hlsl">
+      <Filter>render\shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\src\engine\render\shaders\bloomaccumulation.hlsl">
+      <Filter>render\shaders</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="blender-addon">
