@@ -1,7 +1,6 @@
 #include <engine/render/MotionBlurRenderer.h>
 
 #include <engine/render/Device.h>
-#include <engine/render/graph/GPUProfiler.h>
 #include <engine/render/Mesh.h>
 #include <engine/render/RenderTarget.h>
 #include <engine/render/graph/Batch.h>

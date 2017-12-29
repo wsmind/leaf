@@ -4,6 +4,9 @@
 
 RenderTarget::RenderTarget(int width, int height, DXGI_FORMAT format, bool msaa)
 {
+	this->width = width;
+	this->height = height;
+
     D3D11_TEXTURE2D_DESC textureDesc;
     ZeroMemory(&textureDesc, sizeof(textureDesc));
     textureDesc.Width = width;

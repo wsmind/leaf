@@ -419,7 +419,7 @@ void Renderer::render(const Scene *scene, int width, int height, bool overrideCa
     this->fullscreenQuad->setupJob(backgroundJob);
 	backgroundJob->addInstance();
 
-    this->postProcessor->render(this->frameGraph, width, height, this->motionTarget);
+    this->postProcessor->render(this->frameGraph, settings, width, height, this->motionTarget);
 
     this->frameGraph->execute(sceneConstants);
 

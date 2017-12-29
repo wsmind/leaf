@@ -87,6 +87,9 @@
     <ClCompile Include="..\..\src\engine\render\graph\Job.cpp">
       <Filter>render\graph</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\engine\render\BloomRenderer.cpp">
+      <Filter>render</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\engine\api.h" />
@@ -229,6 +232,9 @@
     <ClInclude Include="..\..\src\engine\render\RenderSettings.h">
       <Filter>render</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\engine\render\BloomRenderer.h">
+      <Filter>render</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\..\src\engine\render\shaders\plop.vs.hlsl">
@@ -289,6 +295,12 @@
       <Filter>render\shaders</Filter>
     </FxCompile>
     <FxCompile Include="..\..\src\engine\render\shaders\neighbormax.hlsl">
+      <Filter>render\shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\src\engine\render\shaders\bloom.vs.hlsl">
+      <Filter>render\shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\src\engine\render\shaders\bloomthreshold.ps.hlsl">
       <Filter>render\shaders</Filter>
     </FxCompile>
   </ItemGroup>

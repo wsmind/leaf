@@ -2,9 +2,11 @@
 
 #include <d3d11.h>
 
+class BloomRenderer;
 class FrameGraph;
 class Mesh;
 class MotionBlurRenderer;
+struct RenderSettings;
 class RenderTarget;
 
 class PostProcessor
@@ -15,7 +17,7 @@ class PostProcessor
 
         RenderTarget *getRadianceTarget() const { return this->targets[0]; }
 
-        void render(FrameGraph *frameGraph, int width, int height, RenderTarget *motionTarget);
+        void render(FrameGraph *frameGraph, const RenderSettings &settings, int width, int height, RenderTarget *motionTarget);
 
     private:
         ID3D11RenderTargetView *backbufferTarget;
@@ -35,4 +37,5 @@ class PostProcessor
         Mesh *fullscreenQuad;
 
         MotionBlurRenderer *motionBlurRenderer;
+		BloomRenderer *bloomRenderer;
 };

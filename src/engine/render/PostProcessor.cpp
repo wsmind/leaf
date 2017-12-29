@@ -1,5 +1,6 @@
 #include <engine/render/PostProcessor.h>
 
+#include <engine/render/BloomRenderer.h>
 #include <engine/render/Device.h>
 #include <engine/render/graph/GPUProfiler.h>
 #include <engine/render/Mesh.h>
@@ -43,6 +44,7 @@ PostProcessor::PostProcessor(ID3D11RenderTargetView *backbufferTarget, int backb
     this->fullscreenQuad = ResourceManager::getInstance()->requestResource<Mesh>("__fullscreenQuad");
 
     this->motionBlurRenderer = new MotionBlurRenderer(this->backbufferWidth, this->backbufferHeight, 40);
+	this->bloomRenderer = new BloomRenderer(this->backbufferWidth, this->backbufferHeight);
 }
 
 PostProcessor::~PostProcessor()
@@ -60,23 +62,23 @@ PostProcessor::~PostProcessor()
     ResourceManager::getInstance()->releaseResource(this->fullscreenQuad);
 
     delete this->motionBlurRenderer;
+	delete this->bloomRenderer;
 }
 
-void PostProcessor::render(FrameGraph *frameGraph, int width, int height, RenderTarget *motionTarget)
+void PostProcessor::render(FrameGraph *frameGraph, const RenderSettings &settings, int width, int height, RenderTarget *motionTarget)
 {
     this->motionBlurRenderer->render(frameGraph, this->targets[0], motionTarget, this->targets[1], this->backbufferWidth, this->backbufferHeight, this->fullscreenQuad);
 
-    ID3D11RenderTargetView *target0 = this->targets[0]->getTarget();
-    ID3D11RenderTargetView *target1 = this->targets[1]->getTarget();
+	this->bloomRenderer->render(frameGraph, settings, this->targets[1], this->targets[0], this->fullscreenQuad);
 
     // tone mapping and gamma correction
     Pass *toneMappingPass = frameGraph->addPass("ToneMapping");
-    toneMappingPass->setTargets({ this->targets[0]->getTarget() }, nullptr);
+    toneMappingPass->setTargets({ this->targets[1]->getTarget() }, nullptr);
 	toneMappingPass->setViewport((float)this->backbufferWidth, (float)this->backbufferHeight, glm::mat4(), glm::mat4());
 
     Batch *toneMappingBatch = toneMappingPass->addBatch("");
-    toneMappingBatch->setResources({ this->targets[1]->getSRV() });
-	toneMappingBatch->setSamplers({ this->targets[1]->getSamplerState() });
+    toneMappingBatch->setResources({ this->targets[0]->getSRV() });
+	toneMappingBatch->setSamplers({ this->targets[0]->getSamplerState() });
     toneMappingBatch->setVertexShader(postprocessVertexShader);
     toneMappingBatch->setPixelShader(postprocessPixelShader);
 	toneMappingBatch->setInputLayout(this->inputLayout);
@@ -91,8 +93,8 @@ void PostProcessor::render(FrameGraph *frameGraph, int width, int height, Render
 	fxaaPass->setViewport((float)width, (float)height, glm::mat4(), glm::mat4());
 
     Batch *fxaaBatch = fxaaPass->addBatch("");
-    fxaaBatch->setResources({ this->targets[0]->getSRV() });
-	fxaaBatch->setSamplers({ this->targets[0]->getSamplerState() });
+    fxaaBatch->setResources({ this->targets[1]->getSRV() });
+	fxaaBatch->setSamplers({ this->targets[1]->getSamplerState() });
 	fxaaBatch->setVertexShader(fxaaVertexShader);
     fxaaBatch->setPixelShader(fxaaPixelShader);
 	fxaaBatch->setInputLayout(this->inputLayout);
