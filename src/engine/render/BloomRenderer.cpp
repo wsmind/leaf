@@ -128,7 +128,7 @@ void BloomRenderer::render(FrameGraph *frameGraph, const RenderSettings &setting
 	accumulationPass->setTargets({ outputTarget->getTarget() }, nullptr);
 	accumulationPass->setViewport((float)this->backbufferWidth, (float)this->backbufferHeight, glm::mat4(), glm::mat4());
 
-	Batch *accumulationBatch = thresholdPass->addBatch("");
+	Batch *accumulationBatch = accumulationPass->addBatch("");
 	accumulationBatch->setResources({ inputTarget->getSRV(), this->downsampleTargets[0]->getSRV(), this->downsampleTargets[1]->getSRV(), this->downsampleTargets[2]->getSRV(), this->downsampleTargets[3]->getSRV() });
 	accumulationBatch->setSamplers({ inputTarget->getSamplerState(), this->downsampleTargets[0]->getSamplerState(), this->downsampleTargets[1]->getSamplerState(), this->downsampleTargets[2]->getSamplerState(), this->downsampleTargets[3]->getSamplerState() });
 	accumulationBatch->setVertexShader(this->bloomVertexShader);
