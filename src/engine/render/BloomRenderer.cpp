@@ -84,7 +84,7 @@ void BloomRenderer::render(FrameGraph *frameGraph, const RenderSettings &setting
 	thresholdBatch->setResources({ inputTarget->getSRV() });
 	thresholdBatch->setSamplers({ inputTarget->getSamplerState() });
 	thresholdBatch->setVertexShader(this->bloomVertexShader);
-	thresholdBatch->setPixelShader(this->bloomDownsamplePixelShader);
+	thresholdBatch->setPixelShader(this->bloomThresholdPixelShader);
 	thresholdBatch->setInputLayout(this->inputLayout);
 
 	Job *thresholdJob = thresholdBatch->addJob();
@@ -113,50 +113,6 @@ void BloomRenderer::render(FrameGraph *frameGraph, const RenderSettings &setting
 		job->addInstance();
 	}
 
-	// horizontal blur
-	/*for (int i = 0; i < DOWNSAMPLE_LEVELS; i++)
-	{
-		RenderTarget *source = this->downsampleTargets[i];
-		RenderTarget *destination = this->blurTargets[i];
-
-		Pass *pass = frameGraph->addPass("BloomBlurH");
-		pass->setTargets({ destination->getTarget() }, nullptr);
-		pass->setViewport((float)destination->getWidth(), (float)destination->getHeight(), glm::mat4(), glm::mat4());
-
-		Batch *batch = pass->addBatch("");
-		batch->setResources({ source->getSRV() });
-		batch->setSamplers({ source->getSamplerState() });
-		batch->setVertexShader(this->gaussianBlurVertexShader);
-		batch->setPixelShader(this->gaussianBlurHPixelShader);
-		batch->setInputLayout(this->inputLayout);
-
-		Job *job = batch->addJob();
-		quad->setupJob(job);
-		job->addInstance();
-	}
-
-	// vertical blur
-	for (int i = 0; i < DOWNSAMPLE_LEVELS; i++)
-	{
-		RenderTarget *source = this->blurTargets[i];
-		RenderTarget *destination = this->downsampleTargets[i];
-
-		Pass *pass = frameGraph->addPass("BloomBlurV");
-		pass->setTargets({ destination->getTarget() }, nullptr);
-		pass->setViewport((float)destination->getWidth(), (float)destination->getHeight(), glm::mat4(), glm::mat4());
-
-		Batch *batch = pass->addBatch("");
-		batch->setResources({ source->getSRV() });
-		batch->setSamplers({ source->getSamplerState() });
-		batch->setVertexShader(this->gaussianBlurVertexShader);
-		batch->setPixelShader(this->gaussianBlurVPixelShader);
-		batch->setInputLayout(this->inputLayout);
-
-		Job *job = batch->addJob();
-		quad->setupJob(job);
-		job->addInstance();
-	}*/
-
 	// upsample, blur and accumulate
 	for (int i = DOWNSAMPLE_LEVELS - 2; i >= 0; i--)
 	{
@@ -179,36 +135,4 @@ void BloomRenderer::render(FrameGraph *frameGraph, const RenderSettings &setting
 		quad->setupJob(job);
 		job->addInstance();
 	}
-
-	// accumulate all blur levels into result
-	/*Pass *accumulationPass = frameGraph->addPass("BloomAccumulation");
-	accumulationPass->setTargets({ outputTarget->getTarget() }, nullptr);
-	accumulationPass->setViewport((float)this->backbufferWidth, (float)this->backbufferHeight, glm::mat4(), glm::mat4());
-
-	Batch *accumulationBatch = accumulationPass->addBatch("");
-	accumulationBatch->setResources({
-		inputTarget->getSRV(),
-		this->downsampleTargets[0]->getSRV(),
-		this->downsampleTargets[1]->getSRV(),
-		this->downsampleTargets[2]->getSRV(),
-		this->downsampleTargets[3]->getSRV(),
-		this->downsampleTargets[4]->getSRV(),
-		this->downsampleTargets[5]->getSRV()
-	});
-	accumulationBatch->setSamplers({
-		inputTarget->getSamplerState(),
-		this->downsampleTargets[0]->getSamplerState(),
-		this->downsampleTargets[1]->getSamplerState(),
-		this->downsampleTargets[2]->getSamplerState(),
-		this->downsampleTargets[3]->getSamplerState(),
-		this->downsampleTargets[4]->getSamplerState(),
-		this->downsampleTargets[5]->getSamplerState()
-	});
-	accumulationBatch->setVertexShader(this->bloomVertexShader);
-	accumulationBatch->setPixelShader(this->bloomAccumulationPixelShader);
-	accumulationBatch->setInputLayout(this->inputLayout);
-
-	Job *accumulationJob = accumulationBatch->addJob();
-	quad->setupJob(accumulationJob);
-	accumulationJob->addInstance();*/
 }
