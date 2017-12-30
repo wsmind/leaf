@@ -157,8 +157,31 @@ void BloomRenderer::render(FrameGraph *frameGraph, const RenderSettings &setting
 		job->addInstance();
 	}*/
 
+	// upsample, blur and accumulate
+	for (int i = DOWNSAMPLE_LEVELS - 2; i >= 0; i--)
+	{
+		RenderTarget *accumulator = (i == DOWNSAMPLE_LEVELS - 2) ? this->downsampleTargets[i + 1] : this->blurTargets[i + 1];
+		RenderTarget *source = this->downsampleTargets[i];
+		RenderTarget *destination = (i == 0) ? outputTarget : this->blurTargets[i];
+
+		Pass *pass = frameGraph->addPass("BloomUpsample");
+		pass->setTargets({ destination->getTarget() }, nullptr);
+		pass->setViewport((float)destination->getWidth(), (float)destination->getHeight(), glm::mat4(), glm::mat4());
+
+		Batch *batch = pass->addBatch("");
+		batch->setResources({ source->getSRV(), accumulator->getSRV() });
+		batch->setSamplers({ source->getSamplerState(), accumulator->getSamplerState() });
+		batch->setVertexShader(this->bloomVertexShader);
+		batch->setPixelShader(this->bloomAccumulationPixelShader);
+		batch->setInputLayout(this->inputLayout);
+
+		Job *job = batch->addJob();
+		quad->setupJob(job);
+		job->addInstance();
+	}
+
 	// accumulate all blur levels into result
-	Pass *accumulationPass = frameGraph->addPass("BloomAccumulation");
+	/*Pass *accumulationPass = frameGraph->addPass("BloomAccumulation");
 	accumulationPass->setTargets({ outputTarget->getTarget() }, nullptr);
 	accumulationPass->setViewport((float)this->backbufferWidth, (float)this->backbufferHeight, glm::mat4(), glm::mat4());
 
@@ -187,5 +210,5 @@ void BloomRenderer::render(FrameGraph *frameGraph, const RenderSettings &setting
 
 	Job *accumulationJob = accumulationBatch->addJob();
 	quad->setupJob(accumulationJob);
-	accumulationJob->addInstance();
+	accumulationJob->addInstance();*/
 }
