@@ -46,11 +46,11 @@ BloomRenderer::BloomRenderer(int backbufferWidth, int backbufferHeight)
 	int height = backbufferHeight;
 	for (int i = 0; i < DOWNSAMPLE_LEVELS; i++)
 	{
-		this->downsampleTargets[i] = new RenderTarget(width, height, DXGI_FORMAT_R16G16B16A16_FLOAT);
-		this->blurTargets[i] = new RenderTarget(width, height, DXGI_FORMAT_R16G16B16A16_FLOAT);
-
 		width >>= 1;
 		height >>= 1;
+
+		this->downsampleTargets[i] = new RenderTarget(width, height, DXGI_FORMAT_R16G16B16A16_FLOAT);
+		this->blurTargets[i] = new RenderTarget(width, height, DXGI_FORMAT_R16G16B16A16_FLOAT);
 	}
 }
 
@@ -84,7 +84,7 @@ void BloomRenderer::render(FrameGraph *frameGraph, const RenderSettings &setting
 	thresholdBatch->setResources({ inputTarget->getSRV() });
 	thresholdBatch->setSamplers({ inputTarget->getSamplerState() });
 	thresholdBatch->setVertexShader(this->bloomVertexShader);
-	thresholdBatch->setPixelShader(this->bloomThresholdPixelShader);
+	thresholdBatch->setPixelShader(this->bloomDownsamplePixelShader);
 	thresholdBatch->setInputLayout(this->inputLayout);
 
 	Job *thresholdJob = thresholdBatch->addJob();
@@ -114,7 +114,7 @@ void BloomRenderer::render(FrameGraph *frameGraph, const RenderSettings &setting
 	}
 
 	// horizontal blur
-	for (int i = 0; i < DOWNSAMPLE_LEVELS; i++)
+	/*for (int i = 0; i < DOWNSAMPLE_LEVELS; i++)
 	{
 		RenderTarget *source = this->downsampleTargets[i];
 		RenderTarget *destination = this->blurTargets[i];
@@ -155,7 +155,7 @@ void BloomRenderer::render(FrameGraph *frameGraph, const RenderSettings &setting
 		Job *job = batch->addJob();
 		quad->setupJob(job);
 		job->addInstance();
-	}
+	}*/
 
 	// accumulate all blur levels into result
 	Pass *accumulationPass = frameGraph->addPass("BloomAccumulation");
@@ -170,9 +170,7 @@ void BloomRenderer::render(FrameGraph *frameGraph, const RenderSettings &setting
 		this->downsampleTargets[2]->getSRV(),
 		this->downsampleTargets[3]->getSRV(),
 		this->downsampleTargets[4]->getSRV(),
-		this->downsampleTargets[5]->getSRV(),
-		this->downsampleTargets[6]->getSRV(),
-		this->downsampleTargets[7]->getSRV()
+		this->downsampleTargets[5]->getSRV()
 	});
 	accumulationBatch->setSamplers({
 		inputTarget->getSamplerState(),
@@ -181,9 +179,7 @@ void BloomRenderer::render(FrameGraph *frameGraph, const RenderSettings &setting
 		this->downsampleTargets[2]->getSamplerState(),
 		this->downsampleTargets[3]->getSamplerState(),
 		this->downsampleTargets[4]->getSamplerState(),
-		this->downsampleTargets[5]->getSamplerState(),
-		this->downsampleTargets[6]->getSamplerState(),
-		this->downsampleTargets[7]->getSamplerState()
+		this->downsampleTargets[5]->getSamplerState()
 	});
 	accumulationBatch->setVertexShader(this->bloomVertexShader);
 	accumulationBatch->setPixelShader(this->bloomAccumulationPixelShader);

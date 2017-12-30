@@ -20,7 +20,7 @@ PixelOutput main(POSTPROCESS_PS_INPUT input)
 	float3 color = inputTexture.Sample(inputSampler, input.uv).rgb;
 
 	[unroll]
-	for (int i = 0; i < 8; i++)
+	for (int i = 0; i < 6; i++)
 	{
 		color += downsampledTexture[i].Sample(downsampledSampler[i], input.uv).rgb;
 	}
