@@ -309,6 +309,15 @@
     <FxCompile Include="..\..\src\engine\render\shaders\bloomaccumulation.hlsl">
       <Filter>render\shaders</Filter>
     </FxCompile>
+    <FxCompile Include="..\..\src\engine\render\shaders\gaussianblurh.ps.hlsl">
+      <Filter>render\shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\src\engine\render\shaders\gaussianblur.vs.hlsl">
+      <Filter>render\shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\src\engine\render\shaders\gaussianblurv.hlsl">
+      <Filter>render\shaders</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="blender-addon">

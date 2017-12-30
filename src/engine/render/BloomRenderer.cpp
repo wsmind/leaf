@@ -9,9 +9,13 @@
 #include <engine/render/graph/Pass.h>
 
 #include <shaders/bloom.vs.hlsl.h>
-#include <shaders/bloomThreshold.ps.hlsl.h>
-#include <shaders/bloomDownsample.ps.hlsl.h>
-#include <shaders/bloomAccumulation.ps.hlsl.h>
+#include <shaders/bloomthreshold.ps.hlsl.h>
+#include <shaders/bloomdownsample.ps.hlsl.h>
+#include <shaders/bloomaccumulation.ps.hlsl.h>
+
+#include <shaders/gaussianblur.vs.hlsl.h>
+#include <shaders/gaussianblurh.ps.hlsl.h>
+#include <shaders/gaussianblurv.ps.hlsl.h>
 
 BloomRenderer::BloomRenderer(int backbufferWidth, int backbufferHeight)
 {
@@ -23,6 +27,10 @@ BloomRenderer::BloomRenderer(int backbufferWidth, int backbufferHeight)
 	res = Device::device->CreatePixelShader(bloomThresholdPS, sizeof(bloomThresholdPS), NULL, &this->bloomThresholdPixelShader); CHECK_HRESULT(res);
 	res = Device::device->CreatePixelShader(bloomDownsamplePS, sizeof(bloomDownsamplePS), NULL, &this->bloomDownsamplePixelShader); CHECK_HRESULT(res);
 	res = Device::device->CreatePixelShader(bloomAccumulationPS, sizeof(bloomAccumulationPS), NULL, &this->bloomAccumulationPixelShader); CHECK_HRESULT(res);
+
+	res = Device::device->CreateVertexShader(gaussianBlurVS, sizeof(gaussianBlurVS), NULL, &this->gaussianBlurVertexShader); CHECK_HRESULT(res);
+	res = Device::device->CreatePixelShader(gaussianBlurHPS, sizeof(gaussianBlurHPS), NULL, &this->gaussianBlurHPixelShader); CHECK_HRESULT(res);
+	res = Device::device->CreatePixelShader(gaussianBlurVPS, sizeof(gaussianBlurVPS), NULL, &this->gaussianBlurVPixelShader); CHECK_HRESULT(res);
 
 	D3D11_INPUT_ELEMENT_DESC layout[] =
 	{
@@ -38,10 +46,11 @@ BloomRenderer::BloomRenderer(int backbufferWidth, int backbufferHeight)
 	int height = backbufferHeight;
 	for (int i = 0; i < DOWNSAMPLE_LEVELS; i++)
 	{
+		this->downsampleTargets[i] = new RenderTarget(width, height, DXGI_FORMAT_R16G16B16A16_FLOAT);
+		this->blurTargets[i] = new RenderTarget(width, height, DXGI_FORMAT_R16G16B16A16_FLOAT);
+
 		width >>= 1;
 		height >>= 1;
-
-		this->downsampleTargets[i] = new RenderTarget(width, height, DXGI_FORMAT_R16G16B16A16_FLOAT);
 	}
 }
 
@@ -52,11 +61,16 @@ BloomRenderer::~BloomRenderer()
 	this->bloomDownsamplePixelShader->Release();
 	this->bloomAccumulationPixelShader->Release();
 
+	this->gaussianBlurVertexShader->Release();
+	this->gaussianBlurHPixelShader->Release();
+	this->gaussianBlurVPixelShader->Release();
+
 	this->inputLayout->Release();
 
 	for (int i = 0; i < DOWNSAMPLE_LEVELS; i++)
 	{
 		delete this->downsampleTargets[i];
+		delete this->blurTargets[i];
 	}
 }
 
@@ -77,7 +91,7 @@ void BloomRenderer::render(FrameGraph *frameGraph, const RenderSettings &setting
 	quad->setupJob(thresholdJob);
 	thresholdJob->addInstance();
 
-	// downsample and blur
+	// downsample
 	for (int i = 1; i < DOWNSAMPLE_LEVELS; i++)
 	{
 		RenderTarget *source = this->downsampleTargets[i - 1];
@@ -99,14 +113,78 @@ void BloomRenderer::render(FrameGraph *frameGraph, const RenderSettings &setting
 		job->addInstance();
 	}
 
+	// horizontal blur
+	for (int i = 0; i < DOWNSAMPLE_LEVELS; i++)
+	{
+		RenderTarget *source = this->downsampleTargets[i];
+		RenderTarget *destination = this->blurTargets[i];
+
+		Pass *pass = frameGraph->addPass("BloomBlurH");
+		pass->setTargets({ destination->getTarget() }, nullptr);
+		pass->setViewport((float)destination->getWidth(), (float)destination->getHeight(), glm::mat4(), glm::mat4());
+
+		Batch *batch = pass->addBatch("");
+		batch->setResources({ source->getSRV() });
+		batch->setSamplers({ source->getSamplerState() });
+		batch->setVertexShader(this->gaussianBlurVertexShader);
+		batch->setPixelShader(this->gaussianBlurHPixelShader);
+		batch->setInputLayout(this->inputLayout);
+
+		Job *job = batch->addJob();
+		quad->setupJob(job);
+		job->addInstance();
+	}
+
+	// vertical blur
+	for (int i = 0; i < DOWNSAMPLE_LEVELS; i++)
+	{
+		RenderTarget *source = this->blurTargets[i];
+		RenderTarget *destination = this->downsampleTargets[i];
+
+		Pass *pass = frameGraph->addPass("BloomBlurV");
+		pass->setTargets({ destination->getTarget() }, nullptr);
+		pass->setViewport((float)destination->getWidth(), (float)destination->getHeight(), glm::mat4(), glm::mat4());
+
+		Batch *batch = pass->addBatch("");
+		batch->setResources({ source->getSRV() });
+		batch->setSamplers({ source->getSamplerState() });
+		batch->setVertexShader(this->gaussianBlurVertexShader);
+		batch->setPixelShader(this->gaussianBlurVPixelShader);
+		batch->setInputLayout(this->inputLayout);
+
+		Job *job = batch->addJob();
+		quad->setupJob(job);
+		job->addInstance();
+	}
+
 	// accumulate all blur levels into result
 	Pass *accumulationPass = frameGraph->addPass("BloomAccumulation");
 	accumulationPass->setTargets({ outputTarget->getTarget() }, nullptr);
 	accumulationPass->setViewport((float)this->backbufferWidth, (float)this->backbufferHeight, glm::mat4(), glm::mat4());
 
 	Batch *accumulationBatch = accumulationPass->addBatch("");
-	accumulationBatch->setResources({ inputTarget->getSRV(), this->downsampleTargets[0]->getSRV(), this->downsampleTargets[1]->getSRV(), this->downsampleTargets[2]->getSRV(), this->downsampleTargets[3]->getSRV() });
-	accumulationBatch->setSamplers({ inputTarget->getSamplerState(), this->downsampleTargets[0]->getSamplerState(), this->downsampleTargets[1]->getSamplerState(), this->downsampleTargets[2]->getSamplerState(), this->downsampleTargets[3]->getSamplerState() });
+	accumulationBatch->setResources({
+		inputTarget->getSRV(),
+		this->downsampleTargets[0]->getSRV(),
+		this->downsampleTargets[1]->getSRV(),
+		this->downsampleTargets[2]->getSRV(),
+		this->downsampleTargets[3]->getSRV(),
+		this->downsampleTargets[4]->getSRV(),
+		this->downsampleTargets[5]->getSRV(),
+		this->downsampleTargets[6]->getSRV(),
+		this->downsampleTargets[7]->getSRV()
+	});
+	accumulationBatch->setSamplers({
+		inputTarget->getSamplerState(),
+		this->downsampleTargets[0]->getSamplerState(),
+		this->downsampleTargets[1]->getSamplerState(),
+		this->downsampleTargets[2]->getSamplerState(),
+		this->downsampleTargets[3]->getSamplerState(),
+		this->downsampleTargets[4]->getSamplerState(),
+		this->downsampleTargets[5]->getSamplerState(),
+		this->downsampleTargets[6]->getSamplerState(),
+		this->downsampleTargets[7]->getSamplerState()
+	});
 	accumulationBatch->setVertexShader(this->bloomVertexShader);
 	accumulationBatch->setPixelShader(this->bloomAccumulationPixelShader);
 	accumulationBatch->setInputLayout(this->inputLayout);
