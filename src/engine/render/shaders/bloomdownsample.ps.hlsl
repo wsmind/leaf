@@ -14,7 +14,7 @@ PixelOutput main(POSTPROCESS_PS_INPUT input)
 {
 	PixelOutput output;
 
-	float3 color = inputTexture.Sample(inputSampler, input.uv + passConstants.viewportSize.zw * 0.25).rgb;
+	float3 color = inputTexture.Sample(inputSampler, input.uv).rgb;
 
 	output.color = float4(color, 1.0);
 
