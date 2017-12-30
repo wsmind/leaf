@@ -235,6 +235,12 @@
     <ClInclude Include="..\..\src\engine\render\BloomRenderer.h">
       <Filter>render</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\engine\render\shaders\constants\BloomConstants.h">
+      <Filter>render\shaders\constants</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\engine\render\shaders\bloom.h">
+      <Filter>render\shaders</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\..\src\engine\render\shaders\plop.vs.hlsl">

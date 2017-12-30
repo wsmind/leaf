@@ -2,11 +2,13 @@
 
 #include <engine/render/Device.h>
 #include <engine/render/Mesh.h>
+#include <engine/render/RenderSettings.h>
 #include <engine/render/RenderTarget.h>
 #include <engine/render/graph/Batch.h>
 #include <engine/render/graph/FrameGraph.h>
 #include <engine/render/graph/Job.h>
 #include <engine/render/graph/Pass.h>
+#include <engine/render/shaders/constants/BloomConstants.h>
 
 #include <shaders/bloom.vs.hlsl.h>
 #include <shaders/bloomthreshold.ps.hlsl.h>
@@ -52,6 +54,17 @@ BloomRenderer::BloomRenderer(int backbufferWidth, int backbufferHeight)
 		this->downsampleTargets[i] = new RenderTarget(width, height, DXGI_FORMAT_R16G16B16A16_FLOAT);
 		this->blurTargets[i] = new RenderTarget(width, height, DXGI_FORMAT_R16G16B16A16_FLOAT);
 	}
+
+	D3D11_BUFFER_DESC cbDesc;
+	cbDesc.Usage = D3D11_USAGE_DYNAMIC;
+	cbDesc.ByteWidth = sizeof(BloomConstants);
+	cbDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	cbDesc.StructureByteStride = 0;
+	cbDesc.MiscFlags = 0;
+	cbDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+
+	res = Device::device->CreateBuffer(&cbDesc, nullptr, &this->constantBuffer);
+	CHECK_HRESULT(res);
 }
 
 BloomRenderer::~BloomRenderer()
@@ -72,15 +85,28 @@ BloomRenderer::~BloomRenderer()
 		delete this->downsampleTargets[i];
 		delete this->blurTargets[i];
 	}
+
+	this->constantBuffer->Release();
 }
 
 void BloomRenderer::render(FrameGraph *frameGraph, const RenderSettings &settings, RenderTarget *inputTarget, RenderTarget *outputTarget, Mesh *quad)
 {
+	BloomConstants bloomConstants;
+	bloomConstants.threshold = settings.bloom.threshold;
+	bloomConstants.intensity = settings.bloom.intensity;
+
+	D3D11_MAPPED_SUBRESOURCE mappedResource;
+	HRESULT res = Device::context->Map(this->constantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	CHECK_HRESULT(res);
+	memcpy(mappedResource.pData, &bloomConstants, sizeof(bloomConstants));
+	Device::context->Unmap(this->constantBuffer, 0);
+
 	Pass *thresholdPass = frameGraph->addPass("BloomThreshold");
 	thresholdPass->setTargets({ this->downsampleTargets[0]->getTarget() }, nullptr);
 	thresholdPass->setViewport((float)this->downsampleTargets[0]->getWidth(), (float)this->downsampleTargets[0]->getHeight(), glm::mat4(), glm::mat4());
 
 	Batch *thresholdBatch = thresholdPass->addBatch("");
+	thresholdBatch->setShaderConstants(this->constantBuffer);
 	thresholdBatch->setResources({ inputTarget->getSRV() });
 	thresholdBatch->setSamplers({ inputTarget->getSamplerState() });
 	thresholdBatch->setVertexShader(this->bloomVertexShader);
@@ -102,6 +128,7 @@ void BloomRenderer::render(FrameGraph *frameGraph, const RenderSettings &setting
 		pass->setViewport((float)destination->getWidth(), (float)destination->getHeight(), glm::mat4(), glm::mat4());
 
 		Batch *batch = pass->addBatch("");
+		batch->setShaderConstants(this->constantBuffer);
 		batch->setResources({ source->getSRV() });
 		batch->setSamplers({ source->getSamplerState() });
 		batch->setVertexShader(this->bloomVertexShader);
@@ -117,7 +144,7 @@ void BloomRenderer::render(FrameGraph *frameGraph, const RenderSettings &setting
 	for (int i = DOWNSAMPLE_LEVELS - 2; i >= 0; i--)
 	{
 		RenderTarget *accumulator = (i == DOWNSAMPLE_LEVELS - 2) ? this->downsampleTargets[i + 1] : this->blurTargets[i + 1];
-		RenderTarget *source = this->downsampleTargets[i];
+		RenderTarget *source = (i == 0) ? inputTarget : this->downsampleTargets[i];
 		RenderTarget *destination = (i == 0) ? outputTarget : this->blurTargets[i];
 
 		Pass *pass = frameGraph->addPass("BloomUpsample");
@@ -125,6 +152,7 @@ void BloomRenderer::render(FrameGraph *frameGraph, const RenderSettings &setting
 		pass->setViewport((float)destination->getWidth(), (float)destination->getHeight(), glm::mat4(), glm::mat4());
 
 		Batch *batch = pass->addBatch("");
+		batch->setShaderConstants(this->constantBuffer);
 		batch->setResources({ source->getSRV(), accumulator->getSRV() });
 		batch->setSamplers({ source->getSamplerState(), accumulator->getSamplerState() });
 		batch->setVertexShader(this->bloomVertexShader);

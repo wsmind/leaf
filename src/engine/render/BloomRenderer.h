@@ -33,4 +33,6 @@ class BloomRenderer
 		static const int DOWNSAMPLE_LEVELS = 6;
 		RenderTarget *downsampleTargets[DOWNSAMPLE_LEVELS];
 		RenderTarget *blurTargets[DOWNSAMPLE_LEVELS];
+
+		ID3D11Buffer *constantBuffer;
 };

@@ -1,3 +1,4 @@
+#include "bloom.h"
 #include "pass.h"
 #include "postprocess.h"
 #include "scene.h"
@@ -67,8 +68,10 @@ PixelOutput main(POSTPROCESS_PS_INPUT input)
 	for (int i = 0; i < SAMPLE_COUNT; i++)
 	{
 		float3 colorSample = inputTexture.Sample(inputSampler, input.uv + offsets[i] * passConstants.viewportSize.zw).rgb;
-		float luminanceWeight = 1.0 / (1.0 + computeLuminance(colorSample));
-		color += weights[i] * colorSample * luminanceWeight;
+		float luminance = computeLuminance(colorSample);
+		float luminanceWeight = 1.0 / (1.0 + luminance);
+		float thresholdWeight = smoothstep(0.0, bloomConstants.threshold, luminance);
+		color += weights[i] * colorSample * luminanceWeight * thresholdWeight;
 	}
 
 	output.color = float4(color, 1.0);

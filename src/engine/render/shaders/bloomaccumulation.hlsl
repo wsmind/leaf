@@ -1,3 +1,4 @@
+#include "bloom.h"
 #include "pass.h"
 #include "postprocess.h"
 #include "scene.h"
@@ -59,7 +60,7 @@ PixelOutput main(POSTPROCESS_PS_INPUT input)
 	[unroll]
 	for (int i = 0; i < SAMPLE_COUNT; i++)
 	{
-		color += weights[i] * accumulatorTexture.Sample(accumulatorSampler, input.uv + offsets[i] * radius * passConstants.viewportSize.zw).rgb;
+		color += bloomConstants.intensity * weights[i] * accumulatorTexture.Sample(accumulatorSampler, input.uv + offsets[i] * radius * passConstants.viewportSize.zw).rgb;
 	}
 
 	output.color = float4(color, 1.0);
