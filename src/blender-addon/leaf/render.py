@@ -89,11 +89,12 @@ class LeafRenderSettings(bpy.types.PropertyGroup):
         )
         cls.bloom_threshold = FloatProperty(
             name="Bloom threshold",
+            min=0.0, max=100.0,
             default=1.0
         )
         cls.bloom_intensity = FloatProperty(
             name="Bloom intensity",
-            min=0.0, max=1.0,
+            min=0.0, max=2.0,
             default=1.0
         )
         cls.bloom_debug = BoolProperty(
@@ -147,6 +148,8 @@ class LeafRender_PT_bloom(LeafRenderButtonsPanel, Panel):
         rd = context.scene.render
         lrd = context.scene.leaf
 
-        layout.prop(lrd, "bloom_threshold", text="Threshold")
+        row = layout.row()
+        row.prop(lrd, "bloom_threshold", text="Threshold")
+        row.prop(lrd, "bloom_debug", text="Debug")
+
         layout.prop(lrd, "bloom_intensity", text="Intensity")
-        layout.prop(lrd, "bloom_debug", text="Display threshold debug")

@@ -14,10 +14,7 @@
 #include <shaders/bloomthreshold.ps.hlsl.h>
 #include <shaders/bloomdownsample.ps.hlsl.h>
 #include <shaders/bloomaccumulation.ps.hlsl.h>
-
-#include <shaders/gaussianblur.vs.hlsl.h>
-#include <shaders/gaussianblurh.ps.hlsl.h>
-#include <shaders/gaussianblurv.ps.hlsl.h>
+#include <shaders/bloomdebug.ps.hlsl.h>
 
 BloomRenderer::BloomRenderer(int backbufferWidth, int backbufferHeight)
 {
@@ -29,10 +26,7 @@ BloomRenderer::BloomRenderer(int backbufferWidth, int backbufferHeight)
 	res = Device::device->CreatePixelShader(bloomThresholdPS, sizeof(bloomThresholdPS), NULL, &this->bloomThresholdPixelShader); CHECK_HRESULT(res);
 	res = Device::device->CreatePixelShader(bloomDownsamplePS, sizeof(bloomDownsamplePS), NULL, &this->bloomDownsamplePixelShader); CHECK_HRESULT(res);
 	res = Device::device->CreatePixelShader(bloomAccumulationPS, sizeof(bloomAccumulationPS), NULL, &this->bloomAccumulationPixelShader); CHECK_HRESULT(res);
-
-	res = Device::device->CreateVertexShader(gaussianBlurVS, sizeof(gaussianBlurVS), NULL, &this->gaussianBlurVertexShader); CHECK_HRESULT(res);
-	res = Device::device->CreatePixelShader(gaussianBlurHPS, sizeof(gaussianBlurHPS), NULL, &this->gaussianBlurHPixelShader); CHECK_HRESULT(res);
-	res = Device::device->CreatePixelShader(gaussianBlurVPS, sizeof(gaussianBlurVPS), NULL, &this->gaussianBlurVPixelShader); CHECK_HRESULT(res);
+	res = Device::device->CreatePixelShader(bloomDebugPS, sizeof(bloomDebugPS), NULL, &this->bloomDebugPixelShader); CHECK_HRESULT(res);
 
 	D3D11_INPUT_ELEMENT_DESC layout[] =
 	{
@@ -73,10 +67,7 @@ BloomRenderer::~BloomRenderer()
 	this->bloomThresholdPixelShader->Release();
 	this->bloomDownsamplePixelShader->Release();
 	this->bloomAccumulationPixelShader->Release();
-
-	this->gaussianBlurVertexShader->Release();
-	this->gaussianBlurHPixelShader->Release();
-	this->gaussianBlurVPixelShader->Release();
+	this->bloomDebugPixelShader->Release();
 
 	this->inputLayout->Release();
 
@@ -100,6 +91,28 @@ void BloomRenderer::render(FrameGraph *frameGraph, const RenderSettings &setting
 	CHECK_HRESULT(res);
 	memcpy(mappedResource.pData, &bloomConstants, sizeof(bloomConstants));
 	Device::context->Unmap(this->constantBuffer, 0);
+
+	// early out with a simpler pass for debug
+	if (settings.bloom.debug)
+	{
+		Pass *pass = frameGraph->addPass("BloomDebug");
+		pass->setTargets({ outputTarget->getTarget() }, nullptr);
+		pass->setViewport((float)outputTarget->getWidth(), (float)outputTarget->getHeight(), glm::mat4(), glm::mat4());
+
+		Batch *batch = pass->addBatch("");
+		batch->setShaderConstants(this->constantBuffer);
+		batch->setResources({ inputTarget->getSRV() });
+		batch->setSamplers({ inputTarget->getSamplerState() });
+		batch->setVertexShader(this->bloomVertexShader);
+		batch->setPixelShader(this->bloomDebugPixelShader);
+		batch->setInputLayout(this->inputLayout);
+
+		Job *job = batch->addJob();
+		quad->setupJob(job);
+		job->addInstance();
+
+		return;
+	}
 
 	Pass *thresholdPass = frameGraph->addPass("BloomThreshold");
 	thresholdPass->setTargets({ this->downsampleTargets[0]->getTarget() }, nullptr);

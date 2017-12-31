@@ -324,6 +324,9 @@
     <FxCompile Include="..\..\src\engine\render\shaders\gaussianblurv.hlsl">
       <Filter>render\shaders</Filter>
     </FxCompile>
+    <FxCompile Include="..\..\src\engine\render\shaders\bloomdebug.ps.hlsl">
+      <Filter>render\shaders</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="blender-addon">
