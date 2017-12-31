@@ -50,7 +50,7 @@ MOTIONBLUR_PS_OUTPUT main(POSTPROCESS_PS_INPUT input)
     MOTIONBLUR_PS_OUTPUT output;
 
 	float4 centerSample = radianceTexture.Sample(radianceSampler, input.uv).rgba; // packed color + depth
-	/*float2 centerMotion = motionTexture.Sample(motionSampler, input.uv).rg;
+	float2 centerMotion = motionTexture.Sample(motionSampler, input.uv).rg;
 	float centerMotionLength = length(centerMotion);
 
 	float2 maxMotion = neighborMaxTexture.Sample(neighborMaxSampler, input.uv).rg;
@@ -86,11 +86,10 @@ MOTIONBLUR_PS_OUTPUT main(POSTPROCESS_PS_INPUT input)
 		totalRadiance += weight * currentSample.rgb;
 	}
 
-	output.color = float4(totalRadiance / totalWeight, 1.0);*/
+	output.color = float4(totalRadiance / totalWeight, 1.0);
 
-	if (!isfinite(centerSample.r) || !isfinite(centerSample.g) || !isfinite(centerSample.b))
-		centerSample = 0.0;
+	if (!isfinite(output.color.r) || !isfinite(output.color.g) || !isfinite(output.color.b))
+		output.color = 0.0;
 
-	output.color = float4(centerSample.rgb, 1.0);
 	return output;
 }
