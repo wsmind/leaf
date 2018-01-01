@@ -41,6 +41,7 @@ float3 computeShading(SurfaceProperties surface, LightProperties light, float3 e
 
     float alpha = surface.roughness * surface.roughness;
     float alphaSquared = alpha * alpha;
+	alphaSquared = max(0.0000001, alphaSquared); // avoid division by zero
 
     // GGX normal distribution
     float denominator = dotNH * dotNH * (alphaSquared - 1.0) + 1.0;

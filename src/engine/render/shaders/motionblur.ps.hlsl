@@ -88,8 +88,5 @@ MOTIONBLUR_PS_OUTPUT main(POSTPROCESS_PS_INPUT input)
 
 	output.color = float4(totalRadiance / totalWeight, 1.0);
 
-	if (!isfinite(output.color.r) || !isfinite(output.color.g) || !isfinite(output.color.b))
-		output.color = 0.0;
-
 	return output;
 }
