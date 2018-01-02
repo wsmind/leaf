@@ -153,7 +153,7 @@ void Scene::fillRenderList(RenderList *renderList) const
     });
 }
 
-void Scene::setupCamera(glm::mat4 &viewMatrix, glm::mat4 &projectionMatrix, float &shutterSpeed, float aspect) const
+void Scene::setupCamera(glm::mat4 &viewMatrix, glm::mat4 &projectionMatrix, float &shutterSpeed, float &focusDistance, float aspect) const
 {
     if (this->currentCamera >= (int)this->nodes.size())
         return;
@@ -164,6 +164,7 @@ void Scene::setupCamera(glm::mat4 &viewMatrix, glm::mat4 &projectionMatrix, floa
     viewMatrix = glm::inverse(node->computeViewTransform());
     camera->computeProjectionMatrix(projectionMatrix, aspect);
     shutterSpeed = camera->getShutterSpeed();
+	focusDistance = camera->getFocusDistance();
 }
 
 int Scene::findCurrentCamera(float time)

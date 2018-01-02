@@ -32,7 +32,7 @@ class Scene : public Resource
     void updateTransforms();
 
     void fillRenderList(RenderList *renderList) const;
-    void setupCamera(glm::mat4 &viewMatrix, glm::mat4 &projectionMatrix, float &shutterSpeed, float aspect) const;
+    void setupCamera(glm::mat4 &viewMatrix, glm::mat4 &projectionMatrix, float &shutterSpeed, float &focusDistance, float aspect) const;
 
 	const RenderSettings &getRenderSettings() const { return this->renderSettings; }
 

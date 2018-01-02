@@ -294,6 +294,7 @@ void Renderer::render(const Scene *scene, int width, int height, bool overrideCa
     glm::mat4 viewMatrix;
     glm::mat4 projectionMatrix;
     float shutterSpeed;
+	float focusDistance = 1.0f;
 
     if (overrideCamera)
     {
@@ -305,7 +306,7 @@ void Renderer::render(const Scene *scene, int width, int height, bool overrideCa
     else
     {
         // get camera from scene
-        scene->setupCamera(viewMatrix, projectionMatrix, shutterSpeed, (float)width / (float)height);
+        scene->setupCamera(viewMatrix, projectionMatrix, shutterSpeed, focusDistance, (float)width / (float)height);
     }
 
     this->renderList->clear();
@@ -321,6 +322,7 @@ void Renderer::render(const Scene *scene, int width, int height, bool overrideCa
     sceneConstants.mist = settings.environment.mist;
     sceneConstants.motionSpeedFactor = shutterSpeed / deltaTime;
     sceneConstants.motionBlurTileSize = 40.0f;
+	sceneConstants.focusDistance = focusDistance;
 
     const std::vector<RenderList::Light> &lights = this->renderList->getLights();
     sceneConstants.pointLightCount = 0;

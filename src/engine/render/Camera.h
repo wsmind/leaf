@@ -25,7 +25,8 @@ class Camera: public Resource
 
         void computeProjectionMatrix(glm::mat4 &projectionMatrix, float aspect) const;
 
-        float getShutterSpeed() const { return this->shutterSpeed; }
+		float getFocusDistance() const { return this->focusDistance; }
+		float getShutterSpeed() const { return this->shutterSpeed; }
     
     private:
         AnimationData *animation = nullptr;
@@ -34,6 +35,7 @@ class Camera: public Resource
         float ortho_scale;
         float clipStart;
         float clipEnd;
+		float focusDistance;
         float sensorHeight;
         float type; // 0 = PERSP, 1 = ORTHO, 2 = PANO
         float shutterSpeed;
