@@ -5,6 +5,7 @@
 #include <engine/render/graph/GPUProfiler.h>
 #include <engine/render/Mesh.h>
 #include <engine/render/MotionBlurRenderer.h>
+#include <engine/render/RenderSettings.h>
 #include <engine/render/RenderTarget.h>
 #include <engine/render/graph/Batch.h>
 #include <engine/render/graph/FrameGraph.h>
@@ -65,7 +66,7 @@ PostProcessor::~PostProcessor()
 	delete this->bloomRenderer;
 }
 
-void PostProcessor::render(FrameGraph *frameGraph, const RenderSettings &settings, int width, int height, RenderTarget *motionTarget)
+void PostProcessor::render(FrameGraph *frameGraph, const RenderSettings &settings, RenderTarget *motionTarget)
 {
     this->motionBlurRenderer->render(frameGraph, this->targets[0], motionTarget, this->targets[1], this->backbufferWidth, this->backbufferHeight, this->fullscreenQuad);
 
@@ -90,7 +91,7 @@ void PostProcessor::render(FrameGraph *frameGraph, const RenderSettings &setting
     // fxaa pass and blit to backbuffer
     Pass *fxaaPass = frameGraph->addPass("FXAA");
     fxaaPass->setTargets({ this->backbufferTarget }, nullptr);
-	fxaaPass->setViewport((float)width, (float)height, glm::mat4(), glm::mat4());
+	fxaaPass->setViewport((float)settings.frameWidth, (float)settings.frameHeight, glm::mat4(), glm::mat4());
 
     Batch *fxaaBatch = fxaaPass->addBatch("");
     fxaaBatch->setResources({ this->targets[1]->getSRV() });

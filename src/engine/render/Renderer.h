@@ -11,6 +11,7 @@ class FrameGraph;
 class Mesh;
 class PostProcessor;
 class RenderList;
+struct RenderSettings;
 class RenderTarget;
 class Scene;
 class ShadowRenderer;
@@ -21,8 +22,8 @@ class Renderer
         Renderer(HWND hwnd, int backbufferWidth, int backbufferHeight, bool capture, const std::string &profileFilename);
         ~Renderer();
 
-        void render(const Scene *scene, int width, int height, bool overrideCamera, const glm::mat4 &viewMatrixOverride, const glm::mat4 &projectionMatrixOverride, float deltaTime);
-        void renderBlenderViewport(const Scene *scene, int width, int height, const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix);
+        void render(const Scene *scene, const RenderSettings &settings, float deltaTime);
+        void renderBlenderViewport(const Scene *scene, const RenderSettings &settings);
 
     private:
         int backbufferWidth;

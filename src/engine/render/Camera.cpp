@@ -7,8 +7,10 @@
 #include <engine/animation/AnimationPlayer.h>
 #include <engine/animation/PropertyMapping.h>
 
+#include <engine/render/RenderSettings.h>
+
 const std::string Camera::resourceClassName = "Camera";
-const std::string Camera::defaultResourceData = "{\"lens\": 2.0, \"ortho_scale\": 1.0, \"clip_start\": 0.1, \"clip_end\": 100.0, \"dof_distance\": 1.0, \"sensor_height\": 35.0, \"type\": 0, \"shutter_speed\": 0.01}";
+const std::string Camera::defaultResourceData = "{\"lens\": 2.0, \"ortho_scale\": 1.0, \"clip_start\": 0.1, \"clip_end\": 100.0, \"dof_blades\": 6.0, \"dof_distance\": 1.0, \"dof_fstop\": 16.0, \"sensor_height\": 35.0, \"type\": 0, \"shutter_speed\": 0.01}";
 
 void Camera::load(const unsigned char *buffer, size_t size)
 {
@@ -18,7 +20,9 @@ void Camera::load(const unsigned char *buffer, size_t size)
     this->ortho_scale = (float)cJSON_GetObjectItem(json, "ortho_scale")->valuedouble;
     this->clipStart = (float)cJSON_GetObjectItem(json, "clip_start")->valuedouble;
     this->clipEnd = (float)cJSON_GetObjectItem(json, "clip_end")->valuedouble;
+	this->lensBlades = (float)cJSON_GetObjectItem(json, "dof_blades")->valuedouble;
 	this->focusDistance = (float)cJSON_GetObjectItem(json, "dof_distance")->valuedouble;
+	this->fstop = (float)cJSON_GetObjectItem(json, "dof_fstop")->valuedouble;
 	this->sensorHeight = (float)cJSON_GetObjectItem(json, "sensor_height")->valuedouble;
     this->type = (float)cJSON_GetObjectItem(json, "type")->valuedouble;
     this->shutterSpeed = (float)cJSON_GetObjectItem(json, "shutter_speed")->valuedouble;
@@ -31,7 +35,9 @@ void Camera::load(const unsigned char *buffer, size_t size)
         properties.add("ortho_scale", &this->ortho_scale);
         properties.add("clip_start", &this->clipStart);
         properties.add("clip_end", &this->clipEnd);
+		properties.add("gpu_dof.blades", &this->lensBlades);
 		properties.add("dof_distance", &this->focusDistance);
+		properties.add("gpu_dof.fstop", &this->fstop);
 		properties.add("type", &this->type);
         properties.add("leaf.shutter_speed", &this->shutterSpeed);
 
@@ -50,6 +56,13 @@ void Camera::unload()
         delete this->animation;
         this->animation = nullptr;
     }
+}
+
+void Camera::updateSettings(CameraSettings *settings, float aspect)
+{
+	this->computeProjectionMatrix(settings->projectionMatrix, aspect);
+	settings->shutterSpeed = this->shutterSpeed;
+	settings->focusDistance = this->focusDistance;
 }
 
 void Camera::computeProjectionMatrix(glm::mat4 &projectionMatrix, float aspect) const

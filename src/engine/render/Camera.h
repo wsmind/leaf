@@ -6,6 +6,7 @@
 #include <engine/resource/Resource.h>
 
 class AnimationData;
+struct CameraSettings;
 
 class Camera: public Resource
 {
@@ -23,19 +24,20 @@ class Camera: public Resource
         virtual void load(const unsigned char *buffer, size_t size) override;
         virtual void unload() override;
 
-        void computeProjectionMatrix(glm::mat4 &projectionMatrix, float aspect) const;
-
-		float getFocusDistance() const { return this->focusDistance; }
-		float getShutterSpeed() const { return this->shutterSpeed; }
+		void updateSettings(CameraSettings *settings, float aspect);
     
     private:
-        AnimationData *animation = nullptr;
+		void computeProjectionMatrix(glm::mat4 &projectionMatrix, float aspect) const;
+
+		AnimationData *animation = nullptr;
 
         float lens; // mm
         float ortho_scale;
         float clipStart;
         float clipEnd;
+		float lensBlades;
 		float focusDistance;
+		float fstop;
         float sensorHeight;
         float type; // 0 = PERSP, 1 = ORTHO, 2 = PANO
         float shutterSpeed;

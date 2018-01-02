@@ -287,28 +287,9 @@ Renderer::~Renderer()
     Device::device->Release();
 }
 
-void Renderer::render(const Scene *scene, int width, int height, bool overrideCamera, const glm::mat4 &viewMatrixOverride, const glm::mat4 &projectionMatrixOverride, float deltaTime)
+//void Renderer::render(const Scene *scene, int width, int height, bool overrideCamera, const glm::mat4 &viewMatrixOverride, const glm::mat4 &projectionMatrixOverride, float deltaTime)
+void Renderer::render(const Scene *scene, const RenderSettings &settings, float deltaTime)
 {
-	const RenderSettings &settings = scene->getRenderSettings();
-
-    glm::mat4 viewMatrix;
-    glm::mat4 projectionMatrix;
-    float shutterSpeed;
-	float focusDistance = 1.0f;
-
-    if (overrideCamera)
-    {
-        // use the provided camera parameters
-        viewMatrix = viewMatrixOverride;
-        projectionMatrix = projectionMatrixOverride;
-        shutterSpeed = 0.01f; // hardcoded shutter speed for edition camera
-    }
-    else
-    {
-        // get camera from scene
-        scene->setupCamera(viewMatrix, projectionMatrix, shutterSpeed, focusDistance, (float)width / (float)height);
-    }
-
     this->renderList->clear();
     scene->fillRenderList(this->renderList);
     this->renderList->sort();
@@ -320,9 +301,9 @@ void Renderer::render(const Scene *scene, int width, int height, bool overrideCa
     SceneConstants sceneConstants;
     sceneConstants.ambientColor = settings.environment.ambientColor;
     sceneConstants.mist = settings.environment.mist;
-    sceneConstants.motionSpeedFactor = shutterSpeed / deltaTime;
+    sceneConstants.motionSpeedFactor = settings.camera.shutterSpeed / deltaTime;
     sceneConstants.motionBlurTileSize = 40.0f;
-	sceneConstants.focusDistance = focusDistance;
+	sceneConstants.focusDistance = settings.camera.focusDistance;
 
     const std::vector<RenderList::Light> &lights = this->renderList->getLights();
     sceneConstants.pointLightCount = 0;
@@ -364,7 +345,7 @@ void Renderer::render(const Scene *scene, int width, int height, bool overrideCa
 
     Pass *radiancePass = this->frameGraph->addPass("Radiance");
     radiancePass->setTargets({ radianceTarget->getTarget(), this->motionTarget->getTarget() }, this->depthTarget);
-	radiancePass->setViewport((float)this->backbufferWidth, (float)this->backbufferHeight, viewMatrix, projectionMatrix);
+	radiancePass->setViewport((float)this->backbufferWidth, (float)this->backbufferHeight, settings.camera.viewMatrix, settings.camera.projectionMatrix);
 
     //this->shadowRenderer->bind();
 
@@ -421,7 +402,7 @@ void Renderer::render(const Scene *scene, int width, int height, bool overrideCa
     this->fullscreenQuad->setupJob(backgroundJob);
 	backgroundJob->addInstance();
 
-    this->postProcessor->render(this->frameGraph, settings, width, height, this->motionTarget);
+    this->postProcessor->render(this->frameGraph, settings, this->motionTarget);
 
     this->frameGraph->execute(sceneConstants);
 
@@ -430,14 +411,14 @@ void Renderer::render(const Scene *scene, int width, int height, bool overrideCa
 
     this->swapChain->Present(0, 0);
 
-    this->previousFrameViewProjectionMatrix = projectionMatrix * viewMatrix;
+    this->previousFrameViewProjectionMatrix = settings.camera.projectionMatrix * settings.camera.viewMatrix;
 }
 
-void Renderer::renderBlenderViewport(const Scene *scene, int width, int height, const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix)
+void Renderer::renderBlenderViewport(const Scene *scene, const RenderSettings &settings)
 {
     assert(this->capture);
 
-    this->render(scene, width, height, true, viewMatrix, projectionMatrix, 1.0f / 60.0f);
+    this->render(scene, settings, 1.0f / 60.0f);
 
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
@@ -447,7 +428,7 @@ void Renderer::renderBlenderViewport(const Scene *scene, int width, int height, 
     CHECK_HRESULT(res);
 
     // direct copy from D3D mapped memory to GL backbuffer :)
-    glRasterPos2i(0, height - 1);
+    glRasterPos2i(0, settings.frameHeight - 1);
     glPixelZoom(1, -1);
     glDrawPixels(this->backbufferWidth, this->backbufferHeight - 1, GL_RGBA, GL_UNSIGNED_BYTE, mappedCaptureBuffer.pData);
     glPixelZoom(1, 1);

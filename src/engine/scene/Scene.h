@@ -32,12 +32,12 @@ class Scene : public Resource
     void updateTransforms();
 
     void fillRenderList(RenderList *renderList) const;
-    void setupCamera(glm::mat4 &viewMatrix, glm::mat4 &projectionMatrix, float &shutterSpeed, float &focusDistance, float aspect) const;
 
-	const RenderSettings &getRenderSettings() const { return this->renderSettings; }
+	const RenderSettings &updateRenderSettings(int width, int height, bool overrideCamera = false, const glm::mat4 &viewMatrixOverride = glm::mat4(), const glm::mat4 &projectionMatrixOverride = glm::mat4());
 
     private:
-        int findCurrentCamera(float time);
+		void updateCameraSettings(bool overrideCamera, const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix, float aspect);
+		int findCurrentCamera(float time);
 
         std::vector<SceneNode *> nodes;
 

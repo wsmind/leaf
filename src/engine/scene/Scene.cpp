@@ -105,6 +105,17 @@ void Scene::updateTransforms()
     });
 }
 
+const RenderSettings &Scene::updateRenderSettings(int width, int height, bool overrideCamera, const glm::mat4 &viewMatrixOverride, const glm::mat4 &projectionMatrixOverride)
+{
+	this->renderSettings.frameWidth = width;
+	this->renderSettings.frameHeight = height;
+
+	float aspect = (float)width / (float)height;
+	this->updateCameraSettings(overrideCamera, viewMatrixOverride, projectionMatrixOverride, aspect);
+
+	return this->renderSettings;
+}
+
 void Scene::fillRenderList(RenderList *renderList) const
 {
     std::for_each(this->meshNodes.begin(), this->meshNodes.end(), [&](const SceneNode *node)
@@ -153,18 +164,26 @@ void Scene::fillRenderList(RenderList *renderList) const
     });
 }
 
-void Scene::setupCamera(glm::mat4 &viewMatrix, glm::mat4 &projectionMatrix, float &shutterSpeed, float &focusDistance, float aspect) const
+void Scene::updateCameraSettings(bool overrideCamera, const glm::mat4 &viewMatrixOverride, const glm::mat4 &projectionMatrixOverride, float aspect)
 {
-    if (this->currentCamera >= (int)this->nodes.size())
-        return;
+	CameraSettings *settings = &this->renderSettings.camera;
 
-    SceneNode *node = this->nodes[this->currentCamera];
-    Camera *camera = node->getData<Camera>();
+	if (overrideCamera || (this->currentCamera >= (int)this->nodes.size()))
+	{
+		// use the provided camera parameters (or default)
+		settings->viewMatrix = viewMatrixOverride;
+		settings->projectionMatrix = projectionMatrixOverride;
+		settings->shutterSpeed = 0.01f; // hardcoded shutter speed for edition camera
+		settings->focusDistance = 1.0f;
+	}
+	else
+	{
+		// get camera from scene
+		SceneNode *node = this->nodes[this->currentCamera];
+		settings->viewMatrix = glm::inverse(node->computeViewTransform());
 
-    viewMatrix = glm::inverse(node->computeViewTransform());
-    camera->computeProjectionMatrix(projectionMatrix, aspect);
-    shutterSpeed = camera->getShutterSpeed();
-	focusDistance = camera->getFocusDistance();
+		node->getData<Camera>()->updateSettings(settings, aspect);
+	}
 }
 
 int Scene::findCurrentCamera(float time)

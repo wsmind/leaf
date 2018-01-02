@@ -342,7 +342,9 @@ def export_camera(camera):
         "ortho_scale": camera.ortho_scale,
         "clip_start": camera.clip_start,
         "clip_end": camera.clip_end,
+        "dof_blades": camera.gpu_dof.blades,
         "dof_distance": camera.dof_distance,
+        "dof_fstop": camera.gpu_dof.fstop,
         "sensor_height": camera.sensor_height,
         "type": export_camera_type(camera.type),
         "shutter_speed": camera.leaf.shutter_speed

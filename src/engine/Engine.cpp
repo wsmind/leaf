@@ -99,7 +99,9 @@ void Engine::render(int width, int height, float deltaTime)
     ResourceManager::getInstance()->update();
 
     this->scene->updateTransforms();
-    this->renderer->render(this->scene, width, height, false, glm::mat4(), glm::mat4(), deltaTime);
+
+	const RenderSettings &renderSettings = this->scene->updateRenderSettings(width, height);
+    this->renderer->render(this->scene, renderSettings, deltaTime);
 }
 
 void Engine::renderBlenderViewport(int width, int height, const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix)
@@ -107,5 +109,7 @@ void Engine::renderBlenderViewport(int width, int height, const glm::mat4 &viewM
     ResourceManager::getInstance()->update();
 
     this->scene->updateTransforms();
-    this->renderer->renderBlenderViewport(this->scene, width, height, viewMatrix, projectionMatrix);
+
+	const RenderSettings &renderSettings = this->scene->updateRenderSettings(width, height, true, viewMatrix, projectionMatrix);
+	this->renderer->renderBlenderViewport(this->scene, renderSettings);
 }
