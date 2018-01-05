@@ -166,21 +166,23 @@ void Scene::fillRenderList(RenderList *renderList) const
 
 void Scene::updateCameraSettings(bool overrideCamera, const glm::mat4 &viewMatrixOverride, const glm::mat4 &projectionMatrixOverride, float aspect)
 {
-	CameraSettings *settings = &this->renderSettings.camera;
+	CameraSettings &settings = this->renderSettings.camera;
 
 	if (overrideCamera || (this->currentCamera >= (int)this->nodes.size()))
 	{
 		// use the provided camera parameters (or default)
-		settings->viewMatrix = viewMatrixOverride;
-		settings->projectionMatrix = projectionMatrixOverride;
-		settings->shutterSpeed = 0.01f; // hardcoded shutter speed for edition camera
-		settings->focusDistance = 1.0f;
+		settings.viewMatrix = viewMatrixOverride;
+		settings.projectionMatrix = projectionMatrixOverride;
+		settings.shutterSpeed = 0.01f; // hardcoded shutter speed for edition camera
+		settings.focusDistance = 1.0f;
+		settings.focalLength = 35.0f;
+		settings.fstop = 16.0f;
 	}
 	else
 	{
 		// get camera from scene
 		SceneNode *node = this->nodes[this->currentCamera];
-		settings->viewMatrix = glm::inverse(node->computeViewTransform());
+		settings.viewMatrix = glm::inverse(node->computeViewTransform());
 
 		node->getData<Camera>()->updateSettings(settings, aspect);
 	}

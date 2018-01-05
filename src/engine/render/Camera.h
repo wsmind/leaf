@@ -24,7 +24,7 @@ class Camera: public Resource
         virtual void load(const unsigned char *buffer, size_t size) override;
         virtual void unload() override;
 
-		void updateSettings(CameraSettings *settings, float aspect);
+		void updateSettings(CameraSettings &settings, float aspect);
     
     private:
 		void computeProjectionMatrix(glm::mat4 &projectionMatrix, float aspect) const;

@@ -8,6 +8,8 @@ struct CameraSettings
 	glm::mat4 projectionMatrix = glm::mat4();
 	float shutterSpeed = 0.01f;
 	float focusDistance = 1.0f;
+	float focalLength = 35.0f;
+	float fstop = 16.0f;
 };
 
 struct EnvironmentSettings

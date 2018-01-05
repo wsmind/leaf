@@ -58,11 +58,13 @@ void Camera::unload()
     }
 }
 
-void Camera::updateSettings(CameraSettings *settings, float aspect)
+void Camera::updateSettings(CameraSettings &settings, float aspect)
 {
-	this->computeProjectionMatrix(settings->projectionMatrix, aspect);
-	settings->shutterSpeed = this->shutterSpeed;
-	settings->focusDistance = this->focusDistance;
+	this->computeProjectionMatrix(settings.projectionMatrix, aspect);
+	settings.shutterSpeed = this->shutterSpeed;
+	settings.focusDistance = this->focusDistance;
+	settings.focalLength = this->lens;
+	settings.fstop = this->fstop;
 }
 
 void Camera::computeProjectionMatrix(glm::mat4 &projectionMatrix, float aspect) const
