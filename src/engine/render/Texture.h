@@ -24,7 +24,8 @@ class Texture: public Resource
     private:
         enum TextureType
         {
-            TextureType_Image
+            TextureType_Image,
+            TextureType_EnvironmentMap
         };
         TextureType type;
 

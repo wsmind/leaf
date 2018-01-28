@@ -95,9 +95,11 @@ def export_scene(scene):
     ambient = [0.0, 0.0, 0.0]
     mist = 0.0
     world = scene.world
+    environmentMap = "__default"
     if world:
         ambient = [world.ambient_color.r, world.ambient_color.g, world.ambient_color.b]
         mist = world.mist_settings.intensity
+        environmentMap = world.active_texture.name if world.active_texture else "__default"
 
     data = {
         "nodes": [export_scene_node(obj, objects) for obj in objects],
@@ -182,7 +184,7 @@ def export_material(mtl):
 
 def export_texture(tex):
     # filter out unsupported types
-    if tex.type not in ["IMAGE"]:
+    if tex.type not in ["IMAGE", "ENVIRONMENT_MAP"]:
         data = {
             "type": "IMAGE",
             "image": "__default"
@@ -195,6 +197,8 @@ def export_texture(tex):
 
     if tex.type == "IMAGE":
         output["image"] = tex.image.name if tex.image else "__default"
+    if tex.type == "ENVIRONMENT_MAP":
+        output["environmentMap"] = tex.image.name if tex.image else "__default"
 
     return json.dumps(output).encode("utf-8")
 
@@ -202,7 +206,8 @@ def export_image(img):
     options = {
         "cuda": bpy.context.user_preferences.addons[__package__].preferences.cuda_enabled,
         "linear": img.colorspace_settings.name == "Linear",
-        "normal_map": img.leaf.is_normal_map
+        "normal_map": img.leaf.is_normal_map,
+        "hdr": img.filepath[-4:] == ".hdr"
     }
 
     return cooking.cooker.cook("image", img.filepath, options)

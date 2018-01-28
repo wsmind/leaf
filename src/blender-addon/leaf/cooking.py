@@ -92,6 +92,8 @@ class ImageProcessor():
         if options["normal_map"]:
             args.append("-normal")
             args.append("-bc1n")
+        elif options["hdr"]:
+            args.append("-bc6")
         else:
             args.append("-bc1")
 

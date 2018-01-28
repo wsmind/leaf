@@ -98,6 +98,8 @@ class EngineWrapper:
         os.remove(self.loaded_dll_name)
 
 compatible_panels = [
+    bpy.types.TEXTURE_PT_context_texture,
+    bpy.types.TEXTURE_PT_envmap,
     bpy.types.TEXTURE_PT_image,
     bpy.types.DATA_PT_context_mesh,
     bpy.types.DATA_PT_lens,

@@ -14,6 +14,7 @@ void Texture::load(const unsigned char *buffer, size_t size)
 
     std::string typeString = cJSON_GetObjectItem(json, "type")->valuestring;
     if (typeString == "IMAGE") this->type = TextureType_Image;
+    else if (typeString == "ENVIRONMENT_MAP") this->type = TextureType_EnvironmentMap;
     else assert(0);
 
     D3D11_SAMPLER_DESC samplerDesc;
