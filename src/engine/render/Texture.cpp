@@ -1,5 +1,6 @@
 #include <engine/render/Texture.h>
 
+#include <engine/render/EnvironmentMap.h>
 #include <engine/render/Image.h>
 #include <engine/resource/ResourceManager.h>
 
@@ -35,6 +36,13 @@ void Texture::load(const unsigned char *buffer, size_t size)
         {
             std::string imageName = cJSON_GetObjectItem(json, "image")->valuestring;
             this->image = ResourceManager::getInstance()->requestResource<Image>(imageName);
+            break;
+        }
+
+        case TextureType_EnvironmentMap:
+        {
+            std::string imageName = cJSON_GetObjectItem(json, "environmentMap")->valuestring;
+            this->environmentMap = ResourceManager::getInstance()->requestResource<EnvironmentMap>(imageName);
             break;
         }
     }

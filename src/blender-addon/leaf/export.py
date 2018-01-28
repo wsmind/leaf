@@ -107,6 +107,7 @@ def export_scene(scene):
         "activeCamera": objects.index(scene.camera) if scene.camera else 0,
         "ambientColor": ambient,
         "mist": mist,
+        "environmentMap": environmentMap,
         "bloom": {
             "threshold": leaf_scene.bloom_threshold,
             "intensity": leaf_scene.bloom_intensity,

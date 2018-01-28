@@ -2,6 +2,8 @@
 
 #include <engine/glm/glm.hpp>
 
+class Texture;
+
 struct CameraSettings
 {
 	glm::mat4 viewMatrix = glm::mat4();
@@ -16,6 +18,7 @@ struct EnvironmentSettings
 {
 	glm::vec3 ambientColor = glm::vec3(0.0f);
 	float mist = 0.0f;
+    Texture *environmentMap = nullptr;
 };
 
 struct BloomSettings

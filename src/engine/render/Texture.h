@@ -5,6 +5,7 @@
 #include <engine/render/Device.h>
 #include <engine/resource/Resource.h>
 
+class EnvironmentMap;
 class Image;
 
 class Texture: public Resource
@@ -13,7 +14,7 @@ class Texture: public Resource
         static const std::string resourceClassName;
         static const std::string defaultResourceData;
 
-        Texture(): image(nullptr) {}
+        Texture(): image(nullptr), environmentMap(nullptr) {}
 
         virtual void load(const unsigned char *buffer, size_t size) override;
         virtual void unload() override;
@@ -33,4 +34,5 @@ class Texture: public Resource
 
         // type-specific data
         Image *image;
+        EnvironmentMap *environmentMap;
 };

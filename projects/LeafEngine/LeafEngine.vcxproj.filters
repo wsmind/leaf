@@ -90,6 +90,9 @@
     <ClCompile Include="..\..\src\engine\render\BloomRenderer.cpp">
       <Filter>render</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\engine\render\EnvironmentMap.cpp">
+      <Filter>render</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\engine\api.h" />
@@ -240,6 +243,9 @@
     </ClInclude>
     <ClInclude Include="..\..\src\engine\render\shaders\bloom.h">
       <Filter>render\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\engine\render\EnvironmentMap.h">
+      <Filter>render</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
