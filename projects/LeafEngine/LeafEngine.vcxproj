@@ -170,7 +170,6 @@
     <ClCompile Include="..\..\src\engine\render\BloomRenderer.cpp" />
     <ClCompile Include="..\..\src\engine\render\Camera.cpp" />
     <ClCompile Include="..\..\src\engine\render\Device.cpp" />
-    <ClCompile Include="..\..\src\engine\render\EnvironmentMap.cpp" />
     <ClCompile Include="..\..\src\engine\render\graph\Batch.cpp" />
     <ClCompile Include="..\..\src\engine\render\graph\FrameGraph.cpp" />
     <ClCompile Include="..\..\src\engine\render\graph\GPUProfiler.cpp" />
@@ -200,7 +199,6 @@
     <ClInclude Include="..\..\src\engine\render\BloomRenderer.h" />
     <ClInclude Include="..\..\src\engine\render\Camera.h" />
     <ClInclude Include="..\..\src\engine\render\Device.h" />
-    <ClInclude Include="..\..\src\engine\render\EnvironmentMap.h" />
     <ClInclude Include="..\..\src\engine\render\graph\Batch.h" />
     <ClInclude Include="..\..\src\engine\render\graph\FrameGraph.h" />
     <ClInclude Include="..\..\src\engine\render\graph\GPUProfiler.h" />

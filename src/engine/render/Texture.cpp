@@ -1,6 +1,5 @@
 #include <engine/render/Texture.h>
 
-#include <engine/render/EnvironmentMap.h>
 #include <engine/render/Image.h>
 #include <engine/resource/ResourceManager.h>
 
@@ -41,8 +40,8 @@ void Texture::load(const unsigned char *buffer, size_t size)
 
         case TextureType_EnvironmentMap:
         {
-            std::string imageName = cJSON_GetObjectItem(json, "environmentMap")->valuestring;
-            this->environmentMap = ResourceManager::getInstance()->requestResource<EnvironmentMap>(imageName);
+            std::string imageName = cJSON_GetObjectItem(json, "image")->valuestring;
+            this->environmentMap = ResourceManager::getInstance()->requestResource<Image>(imageName);
             break;
         }
     }
@@ -63,6 +62,13 @@ void Texture::unload()
             this->image = nullptr;
             break;
         }
+
+        case TextureType_EnvironmentMap:
+        {
+            ResourceManager::getInstance()->releaseResource(this->environmentMap);
+            this->environmentMap = nullptr;
+            break;
+        }
     }
 }
 
@@ -71,6 +77,7 @@ ID3D11ShaderResourceView *Texture::getSRV() const
     switch (this->type)
     {
         case TextureType_Image: return this->image->getSRV(); break;
+        case TextureType_EnvironmentMap: return this->environmentMap->getSRV(); break;
     }
 
     assert(0);

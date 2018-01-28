@@ -199,7 +199,7 @@ def export_texture(tex):
     if tex.type == "IMAGE":
         output["image"] = tex.image.name if tex.image else "__default"
     if tex.type == "ENVIRONMENT_MAP":
-        output["environmentMap"] = tex.image.name if tex.image else "__default"
+        output["image"] = tex.image.name if tex.image else "__default"
 
     return json.dumps(output).encode("utf-8")
 

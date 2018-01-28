@@ -5,7 +5,6 @@
 #include <engine/render/Device.h>
 #include <engine/resource/Resource.h>
 
-class EnvironmentMap;
 class Image;
 
 class Texture: public Resource
@@ -34,5 +33,5 @@ class Texture: public Resource
 
         // type-specific data
         Image *image;
-        EnvironmentMap *environmentMap;
+        Image *environmentMap;
 };

@@ -287,7 +287,6 @@ Renderer::~Renderer()
     Device::device->Release();
 }
 
-//void Renderer::render(const Scene *scene, int width, int height, bool overrideCamera, const glm::mat4 &viewMatrixOverride, const glm::mat4 &projectionMatrixOverride, float deltaTime)
 void Renderer::render(const Scene *scene, const RenderSettings &settings, float deltaTime)
 {
     this->renderList->clear();
@@ -393,7 +392,9 @@ void Renderer::render(const Scene *scene, const RenderSettings &settings, float 
 
     // background
     Batch *backgroundBatch = radiancePass->addBatch("Background");
-    backgroundBatch->setDepthStencil(this->backgroundDepthState);
+    backgroundBatch->setDepthStencil(this->gBufferDepthState);
+    backgroundBatch->setResources({ settings.environment.environmentMap->getSRV() });
+    backgroundBatch->setSamplers({ settings.environment.environmentMap->getSamplerState() });
     backgroundBatch->setVertexShader(this->backgroundVertexShader);
     backgroundBatch->setPixelShader(this->backgroundPixelShader);
     backgroundBatch->setInputLayout(this->inputLayout);
