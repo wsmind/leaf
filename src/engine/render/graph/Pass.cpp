@@ -74,7 +74,7 @@ void Pass::execute(ID3D11DeviceContext *context, ID3D11Buffer *passConstantBuffe
     context->RSSetViewports(1, &this->viewport);
 
     if ((this->colorTargets.size() > 0) || (this->depthStencilTarget != nullptr))
-        context->OMSetRenderTargets((UINT)this->colorTargets.size(), this->colorTargets.size() ? &this->colorTargets[0] : nullptr, this->depthStencilTarget);
+        context->OMSetRenderTargets((UINT)this->colorTargets.size(), this->colorTargets.data(), this->depthStencilTarget);
 
     // render batches
     for (auto *batch : this->batches)

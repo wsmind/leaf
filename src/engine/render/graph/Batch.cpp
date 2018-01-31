@@ -17,12 +17,8 @@ namespace
     {
         context->VSSetShader(shader, nullptr, 0);
         context->VSSetConstantBuffers(2, 1, &shaderConstantBuffer);
-
-        if (resources.size() > 0)
-            context->VSSetShaderResources(0, (UINT)resources.size(), &resources[0]);
-
-		if (samplers.size() > 0)
-			context->VSSetSamplers(0, (UINT)samplers.size(), &samplers[0]);
+        context->VSSetShaderResources(0, (UINT)resources.size(), resources.data());
+        context->VSSetSamplers(0, (UINT)samplers.size(), samplers.data());
     }
 
     template <>
@@ -30,12 +26,8 @@ namespace
     {
         context->PSSetShader(shader, nullptr, 0);
         context->PSSetConstantBuffers(2, 1, &shaderConstantBuffer);
-
-        if (resources.size() > 0)
-            context->PSSetShaderResources(0, (UINT)resources.size(), &resources[0]);
-
-		if (samplers.size() > 0)
-			context->PSSetSamplers(0, (UINT)samplers.size(), &samplers[0]);
+        context->PSSetShaderResources(0, (UINT)resources.size(), resources.data());
+        context->PSSetSamplers(0, (UINT)samplers.size(), samplers.data());
 	}
 
     template <>
@@ -43,15 +35,9 @@ namespace
     {
         context->CSSetShader(shader, nullptr, 0);
         context->CSSetConstantBuffers(2, 1, &shaderConstantBuffer);
-
-        if (resources.size() > 0)
-            context->CSSetShaderResources(0, (UINT)resources.size(), &resources[0]);
-
-		if (uavs.size() > 0)
-			context->CSSetUnorderedAccessViews(0, (UINT)uavs.size(), &uavs[0], nullptr);
-
-		if (samplers.size() > 0)
-			context->CSSetSamplers(0, (UINT)samplers.size(), &samplers[0]);
+        context->CSSetShaderResources(0, (UINT)resources.size(), resources.data());
+		context->CSSetUnorderedAccessViews(0, (UINT)uavs.size(), uavs.data(), nullptr);
+		context->CSSetSamplers(0, (UINT)samplers.size(), samplers.data());
 	}
 }
 
