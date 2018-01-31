@@ -1,5 +1,7 @@
 #include <engine/resource/ResourceManager.h>
 
+#include <engine/resource/ResourceWatcher.h>
+
 ResourceManager *ResourceManager::instance = nullptr;
 
 ResourceManager::ResourceManager()
@@ -80,4 +82,10 @@ void ResourceManager::dumpAllResources(bool loadedOnly) const
 
         printf("  %s (%d users, %d bytes%s)\n", name.c_str(), (int)descriptor.users, (int)descriptor.size, descriptor.pendingUnload ? ", pending unload" : "");
     }
+}
+
+void ResourceManager::notifyWatchers(const ResourceDescriptor &descriptor) const
+{
+    for (auto watcher : descriptor.watchers)
+        watcher->onResourceUpdated(descriptor.resource);
 }

@@ -1,6 +1,7 @@
 #include <engine/render/Texture.h>
 
 #include <engine/render/Image.h>
+#include <engine/render/graph/FrameGraph.h>
 #include <engine/resource/ResourceManager.h>
 
 #include <engine/cJSON/cJSON.h>
@@ -41,7 +42,7 @@ void Texture::load(const unsigned char *buffer, size_t size)
         case TextureType_EnvironmentMap:
         {
             std::string imageName = cJSON_GetObjectItem(json, "image")->valuestring;
-            this->environmentMap = ResourceManager::getInstance()->requestResource<Image>(imageName);
+            this->environmentMap = ResourceManager::getInstance()->requestResource<Image>(imageName, this);
             break;
         }
     }
@@ -65,10 +66,25 @@ void Texture::unload()
 
         case TextureType_EnvironmentMap:
         {
-            ResourceManager::getInstance()->releaseResource(this->environmentMap);
+            ResourceManager::getInstance()->releaseResource(this->environmentMap, this);
             this->environmentMap = nullptr;
             break;
         }
+    }
+}
+
+void Texture::onResourceUpdated(Resource *resource)
+{
+    this->environmentMapDirty = true;
+}
+
+void Texture::update(FrameGraph *frameGraph)
+{
+    if (environmentMapDirty)
+    {
+        environmentMapDirty = false;
+
+        // do stuff
     }
 }
 

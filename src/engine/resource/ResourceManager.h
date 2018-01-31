@@ -3,8 +3,10 @@
 #include <cassert>
 #include <string>
 #include <map>
+#include <vector>
 
 class Resource;
+class ResourceWatcher;
 
 class ResourceManager
 {
@@ -15,9 +17,9 @@ class ResourceManager
         void updateResourceData(const std::string &name, const unsigned char *buffer, size_t size);
 
         template <class ResourceType>
-        ResourceType *requestResource(const std::string &name);
+        ResourceType *requestResource(const std::string &name, ResourceWatcher *watcher = nullptr);
 
-        inline void releaseResource(Resource *resource);
+        inline void releaseResource(Resource *resource, ResourceWatcher *watcher = nullptr);
 
         void update();
 
@@ -47,6 +49,7 @@ class ResourceManager
             unsigned char *buffer;
             size_t size;
             int users; // refcount, in blender terms
+            std::vector<ResourceWatcher *> watchers;
 
             // resources are not unloaded right away, to avoid fast unload/load cycles
             // ttl is the number of frames left before the actual unload
@@ -60,6 +63,8 @@ class ResourceManager
         // if not found, creates a new one
         template <class ResourceType>
         ResourceDescriptor &findDescriptor(const std::string &name);
+
+        void notifyWatchers(const ResourceDescriptor &descriptor) const;
 
         typedef std::map<std::string, ResourceDescriptor> DescriptorMap;
         DescriptorMap descriptors;

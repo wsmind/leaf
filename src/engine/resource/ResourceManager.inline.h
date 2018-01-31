@@ -3,6 +3,7 @@
 #include <algorithm>
 
 #include <engine/resource/Resource.h>
+#include <engine/resource/ResourceWatcher.h>
 
 template <class ResourceType>
 void ResourceManager::updateResourceData(const std::string &name, const unsigned char *buffer, size_t size)
@@ -23,16 +24,24 @@ void ResourceManager::updateResourceData(const std::string &name, const unsigned
         const unsigned char *newBuffer = descriptor.buffer; // calling unload() could indirectly move descriptors in memory, so we keep a copy of that pointer
         resource->unload();
         resource->load(newBuffer, size);
+
+        this->notifyWatchers(descriptor);
     }
 }
 
 template <class ResourceType>
-ResourceType *ResourceManager::requestResource(const std::string &name)
+ResourceType *ResourceManager::requestResource(const std::string &name, ResourceWatcher *watcher)
 {
     ResourceDescriptor &descriptor = findDescriptor<ResourceType>(name);
     ResourceType *resource = static_cast<ResourceType *>(descriptor.resource);
 
     descriptor.users++;
+
+    if (watcher != nullptr)
+    {
+        assert(std::find(descriptor.watchers.begin(), descriptor.watchers.end(), watcher) == descriptor.watchers.end());
+        descriptor.watchers.push_back(watcher);
+    }
 
     // load if needed
     if (descriptor.pendingUnload)
@@ -40,10 +49,14 @@ ResourceType *ResourceManager::requestResource(const std::string &name)
     else if (descriptor.users == 1)
         resource->load(descriptor.buffer, descriptor.size);
 
+    // always notify a new watcher
+    if (watcher != nullptr)
+        watcher->onResourceUpdated(resource);
+
     return resource;
 }
 
-void ResourceManager::releaseResource(Resource *resource)
+void ResourceManager::releaseResource(Resource *resource, ResourceWatcher *watcher)
 {
     auto it = std::find_if(this->descriptors.begin(), this->descriptors.end(), [resource](const std::pair<std::string, ResourceDescriptor> &tuple) -> bool
     {
@@ -54,6 +67,14 @@ void ResourceManager::releaseResource(Resource *resource)
     ResourceDescriptor &descriptor = it->second;
 
     descriptor.users--;
+
+    if (watcher != nullptr)
+    {
+        auto it = std::find(descriptor.watchers.begin(), descriptor.watchers.end(), watcher);
+        assert(it != descriptor.watchers.end());
+
+        descriptor.watchers.erase(it);
+    }
 
     // unload if needed
     if (descriptor.users == 0)
