@@ -4,6 +4,7 @@
 #include <engine/animation/AnimationPlayer.h>
 #include <engine/animation/PropertyMapping.h>
 #include <engine/render/Device.h>
+#include <engine/render/RenderSettings.h>
 #include <engine/render/Texture.h>
 #include <engine/render/graph/Batch.h>
 #include <engine/resource/ResourceManager.h>
@@ -73,7 +74,7 @@ void Material::unload()
     this->constantBuffer->Release();
 }
 
-void Material::setupBatch(Batch *batch, ID3D11ShaderResourceView *shadowSRV, ID3D11SamplerState *shadowSampler, ShadowConstants *shadowConstants)
+void Material::setupBatch(Batch *batch, const RenderSettings &settings, ID3D11ShaderResourceView *shadowSRV, ID3D11SamplerState *shadowSampler, ShadowConstants *shadowConstants)
 {
 	this->constants.shadows = *shadowConstants;
 
@@ -90,7 +91,8 @@ void Material::setupBatch(Batch *batch, ID3D11ShaderResourceView *shadowSRV, ID3
         this->normalMap->getSRV(),
         this->metallicMap->getSRV(),
         this->roughnessMap->getSRV(),
-		shadowSRV
+		shadowSRV,
+        settings.environment.environmentMap->getSRV()
 	});
 
 	batch->setSamplers({
@@ -98,6 +100,7 @@ void Material::setupBatch(Batch *batch, ID3D11ShaderResourceView *shadowSRV, ID3
 		this->normalMap->getSamplerState(),
 		this->metallicMap->getSamplerState(),
 		this->roughnessMap->getSamplerState(),
-		shadowSampler
+		shadowSampler,
+        this->baseColorMap->getSamplerState() // uase base color sampler for envmap
 	});
 }

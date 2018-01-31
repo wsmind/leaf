@@ -20,6 +20,9 @@ SamplerState roughnessSampler : register(s3);
 Texture2D shadowMap: register(t4);
 SamplerState shadowMapSampler: register(s4);
 
+Texture2D<float4> environmentMap: register(t5);
+SamplerState environmentSampler : register(s5);
+
 struct STANDARD_PS_INPUT
 {
     float4 position : SV_POSITION;

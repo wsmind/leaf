@@ -289,6 +289,9 @@ Renderer::~Renderer()
 
 void Renderer::render(const Scene *scene, const RenderSettings &settings, float deltaTime)
 {
+    // rebake environment when needed
+    settings.environment.environmentMap->update(this->frameGraph);
+
     this->renderList->clear();
     scene->fillRenderList(this->renderList);
     this->renderList->sort();
@@ -368,7 +371,7 @@ void Renderer::render(const Scene *scene, const RenderSettings &settings, float 
                 currentBatch->setPixelShader(standardPixelShader);
                 currentBatch->setInputLayout(this->inputLayout);
 
-                currentMaterial->setupBatch(currentBatch, this->shadowRenderer->getSRV(), this->shadowRenderer->getSampler(), &shadowConstants);
+                currentMaterial->setupBatch(currentBatch, settings, this->shadowRenderer->getSRV(), this->shadowRenderer->getSampler(), &shadowConstants);
             }
 
             if (currentMesh != job.mesh)

@@ -220,6 +220,7 @@
     <ClInclude Include="..\..\src\engine\render\shaders\constants\SceneConstants.h" />
     <ClInclude Include="..\..\src\engine\render\shaders\constants\ShaderTypes.h" />
     <ClInclude Include="..\..\src\engine\render\shaders\constants\StandardConstants.h" />
+    <ClInclude Include="..\..\src\engine\render\shaders\equirectangular.h" />
     <ClInclude Include="..\..\src\engine\render\shaders\pass.h" />
     <ClInclude Include="..\..\src\engine\render\ShadowRenderer.h" />
     <ClInclude Include="..\..\src\engine\render\Texture.h" />

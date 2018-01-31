@@ -1,4 +1,4 @@
-//#include "instance.h"
+#include "equirectangular.h"
 #include "pass.h"
 #include "scene.h"
 #include "shadows.h"
@@ -85,6 +85,13 @@ float rand(float2 uv)
 	return frac(sin(dot(uv.xy, float2(12.9898, 78.233)) * 43758.5453));
 }
 
+float3 computeEnvironmentRadiance(SurfaceProperties surface, float3 eye)
+{
+    float3 direction = reflect(-eye, surface.normal);
+    float2 uv = directionToEquirectangularUV(direction);
+    return environmentMap.Sample(environmentSampler, uv);
+}
+
 STANDARD_PS_OUTPUT main(STANDARD_PS_INPUT input)
 {
     STANDARD_PS_OUTPUT output;
@@ -119,6 +126,8 @@ STANDARD_PS_OUTPUT main(STANDARD_PS_INPUT input)
     surface.roughness = roughness;
 
 	radiance += sceneConstants.ambientColor * surface.albedo;
+
+    radiance += computeEnvironmentRadiance(surface, eye);
 
     // point lights
     for (int i = 0; i < sceneConstants.pointLightCount; i++)

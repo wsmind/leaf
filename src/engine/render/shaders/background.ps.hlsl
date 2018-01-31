@@ -1,3 +1,4 @@
+#include "equirectangular.h"
 #include "shared.h"
 
 Texture2D<float4> environmentTexture: register(t0);
@@ -13,12 +14,8 @@ PS_OUTPUT main(BACKGROUND_PS_INPUT input)
 	PS_OUTPUT output;
 
     float3 direction = normalize(input.worldPosition);
-
-    // convert ray to equirectangular coordinates
-    float x = (atan2(direction.y, -direction.x) / 3.141592) * 0.5 + 0.5;
-    float y = (asin(-direction.z) / 1.570796) * 0.5 + 0.5;
-
-    output.color = environmentTexture.Sample(environmentSampler, float2(x, y));
+    float2 uv = directionToEquirectangularUV(direction);
+    output.color = environmentTexture.Sample(environmentSampler, uv);
 
 	return output;
 }
