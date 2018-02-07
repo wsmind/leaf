@@ -16,7 +16,7 @@ class Mesh: public Resource
         static const std::string resourceClassName;
         static const std::string defaultResourceData;
 
-        Mesh(): vertexBuffer(nullptr), vertexCount(0) {}
+        Mesh(): vertexBuffer(nullptr), vertexCount(0), indexBuffer(nullptr), indexCount(0), material(nullptr) {}
         virtual ~Mesh() {}
 
         virtual void load(const unsigned char *buffer, size_t size) override;

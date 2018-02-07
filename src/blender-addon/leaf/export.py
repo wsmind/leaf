@@ -3,6 +3,7 @@ import math
 import mathutils
 import ctypes
 import json
+import io
 import struct
 import os.path
 import subprocess
@@ -215,74 +216,99 @@ def export_image(img):
 
 
 def export_mesh(mesh):
-    vertices = []
-    vertexCount = 0
+    #min_bound = (math.inf, math.inf, math.inf)
+    #max_bound = (-math.inf, -math.inf, -math.inf)
 
-    indices = []
-    indexCount = 0
-
-    min_bound = (math.inf, math.inf, math.inf)
-    max_bound = (-math.inf, -math.inf, -math.inf)
-
-    uv_layer = None
-
+    uv_layer_data = None
+    
+    import time
+    t0 = time.perf_counter()
+    
     if len(mesh.uv_layers) > 0 and len(mesh.uv_layers[0].data) > 0:
-        uv_layer = mesh.uv_layers[0]
+        uv_layer_data = mesh.uv_layers[0].data
 
         # will also compute split tangents according to sharp edges
         mesh.calc_tangents()
 
-    def output_vertex(loop_index):
-        nonlocal vertices
-        nonlocal min_bound
-        nonlocal max_bound
+    t1 = time.perf_counter()
 
-        loop = mesh.loops[loop_index]
-        vertex = mesh.vertices[loop.vertex_index]
-        uv = uv_layer.data[loop_index].uv if uv_layer else (vertex.co.x, vertex.co.y + vertex.co.z)
-        vertices.append(vertex.co.x)
-        vertices.append(vertex.co.y)
-        vertices.append(vertex.co.z)
-        vertices.append(loop.normal.x)
-        vertices.append(loop.normal.y)
-        vertices.append(loop.normal.z)
-        vertices.append(loop.tangent.x)
-        vertices.append(loop.tangent.y)
-        vertices.append(loop.tangent.z)
-        vertices.append(loop.bitangent_sign)
-        vertices.append(uv[0])
-        vertices.append(uv[1])
-
-        min_bound = min(min_bound[0], vertex.co.x), min(min_bound[1], vertex.co.y), min(min_bound[2], vertex.co.y)
-        max_bound = max(max_bound[0], vertex.co.x), max(max_bound[1], vertex.co.y), max(max_bound[2], vertex.co.y)
-
-    # export all loops
-    for i in range(len(mesh.loops)):
-        output_vertex(i)
-        vertexCount += 1
-
-    # build triangles out of n-gons
-    for face in mesh.polygons:
-        for i in range(len(face.loop_indices) - 2):
-            indices.append(face.loop_indices[0])
-            indices.append(face.loop_indices[i + 1])
-            indices.append(face.loop_indices[i + 2])
-            indexCount += 3
-
+    vertexCount = len(mesh.loops)
     if vertexCount == 0:
         return None
 
-    data = {
-        "vertices": vertices,
-        "vertexCount": vertexCount,
-        "indices": indices,
-        "indexCount": indexCount,
-        "material": mesh.materials[0].name if (len(mesh.materials) > 0 and mesh.materials[0]) else "__default",
-        "minBound": min_bound,
-        "maxBound": max_bound
-    }
+    output = io.BytesIO()
 
-    return json.dumps(data).encode("utf-8")
+    # vertex (loop) count
+    output.write(struct.pack("=I", len(mesh.loops)))
+
+    # export all loops
+    default_uv = (0.0, 0.0)
+    vertices = mesh.vertices[:]
+    for loop in mesh.loops:
+        vertex = vertices[loop.vertex_index]
+        uv = uv_layer_data[loop.index].uv if uv_layer_data else default_uv
+
+        #min_bound = min(min_bound[0], vertex.co.x), min(min_bound[1], vertex.co.y), min(min_bound[2], vertex.co.y)
+        #max_bound = max(max_bound[0], vertex.co.x), max(max_bound[1], vertex.co.y), max(max_bound[2], vertex.co.y)
+        
+        position = vertex.co.to_3d()
+        normal = loop.normal.to_3d()
+        tangent = loop.tangent.to_3d()
+        
+        output.write(struct.pack(
+            "=ffffffffffff",
+            position[0],
+            position[1],
+            position[2],
+            normal[0],
+            normal[1],
+            normal[2],
+            tangent[0],
+            tangent[1],
+            tangent[2],
+            loop.bitangent_sign,
+            uv[0],
+            uv[1]
+        ))
+
+    t2 = time.perf_counter()
+
+    polygons = mesh.polygons
+
+    # count triangles
+    triangle_count = 0
+    for face in polygons:
+        triangle_count += len(face.loop_indices) - 2
+
+    # index count
+    output.write(struct.pack("=I", triangle_count * 3))
+
+    # build triangles out of n-gons
+    for face in polygons:
+        face_indices = face.loop_indices
+        for i in range(len(face_indices) - 2):
+            output.write(struct.pack(
+                "=III",
+                face_indices[0],
+                face_indices[i + 1],
+                face_indices[i + 2]
+            ))
+
+    t3 = time.perf_counter()
+
+    # material name
+    material_name = mesh.materials[0].name if (len(mesh.materials) > 0 and mesh.materials[0]) else "__default"
+    material_name_bytes = material_name.encode("utf-8")
+    output.write(struct.pack("=I", len(material_name_bytes)))
+    output.write(material_name_bytes)
+
+    print("Mesh export timings (seconds):")
+    print("  Tangents  " + str(t1 - t0))
+    print("  Vertices  " + str(t2 - t1))
+    print("  Indices   " + str(t3 - t2))
+    print("  Total     " + str(t3 - t0))
+
+    return output.getvalue()
 
 def export_action(action):
     data = {
