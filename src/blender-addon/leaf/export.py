@@ -287,18 +287,19 @@ def export_mesh(mesh):
                 indices[material_index].append(face_indices[i + 2])
     
     # output each material as a separate index buffer
+    output.write(struct.pack("=I", len(mesh.materials)))
     for material_index, material in enumerate(mesh.materials):
         index_list = indices[material_index]
-
-        # index buffer
-        output.write(struct.pack("=I", len(index_list)))
-        for index in index_list:
-            output.write(struct.pack("=I", index))
 
         # material name
         material_name_bytes = material.name.encode("utf-8")
         output.write(struct.pack("=I", len(material_name_bytes)))
         output.write(material_name_bytes)
+
+        # index buffer
+        output.write(struct.pack("=I", len(index_list)))
+        for index in index_list:
+            output.write(struct.pack("=I", index))
 
     t3 = time.perf_counter()
 

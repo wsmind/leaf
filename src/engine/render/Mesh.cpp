@@ -41,6 +41,18 @@ void Mesh::load(const unsigned char *buffer, size_t size)
 
     readPosition += vbDesc.ByteWidth;
 
+    unsigned int materialCount = *(unsigned int *)readPosition;
+    readPosition += sizeof(unsigned int);
+
+    // material
+    unsigned int materialNameSize = *(unsigned int *)readPosition;
+    readPosition += sizeof(unsigned int);
+
+    std::string materialName((const char *)readPosition, materialNameSize);
+    readPosition += materialNameSize;
+
+    this->material = ResourceManager::getInstance()->requestResource<Material>(materialName);
+
     // index buffer
 
     this->indexCount = *(unsigned int *)readPosition;
@@ -63,15 +75,6 @@ void Mesh::load(const unsigned char *buffer, size_t size)
     CHECK_HRESULT(res);
 
     readPosition += ibDesc.ByteWidth;
-
-    // material
-    unsigned int materialNameSize = *(unsigned int *)readPosition;
-    readPosition += sizeof(unsigned int);
-
-    std::string materialName((const char *)readPosition, materialNameSize);
-    readPosition += materialNameSize;
-
-    this->material = ResourceManager::getInstance()->requestResource<Material>(materialName);
 }
 
 void Mesh::unload()
