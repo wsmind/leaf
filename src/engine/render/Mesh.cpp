@@ -44,6 +44,9 @@ void Mesh::load(const unsigned char *buffer, size_t size)
     unsigned int materialCount = *(unsigned int *)readPosition;
     readPosition += sizeof(unsigned int);
 
+    if (materialCount == 0)
+        return;
+
     // material
     unsigned int materialNameSize = *(unsigned int *)readPosition;
     readPosition += sizeof(unsigned int);

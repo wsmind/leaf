@@ -5,6 +5,7 @@ import ctypes
 import json
 import io
 import struct
+import sys
 import os.path
 import subprocess
 import tempfile
@@ -228,7 +229,10 @@ def export_mesh(mesh):
         uv_layer_data = mesh.uv_layers[0].data
 
         # will also compute split tangents according to sharp edges
-        mesh.calc_tangents()
+        try:
+            mesh.calc_tangents()
+        except:
+            print("Failed to compute tangents for mesh '%s': %s" % (mesh.name, sys.exc_info()[0]))
 
     t1 = time.perf_counter()
 
@@ -292,7 +296,7 @@ def export_mesh(mesh):
         index_list = indices[material_index]
 
         # material name
-        material_name_bytes = material.name.encode("utf-8")
+        material_name_bytes = material.name.encode("utf-8") if material else "__default".encode("utf-8")
         output.write(struct.pack("=I", len(material_name_bytes)))
         output.write(material_name_bytes)
 
@@ -302,12 +306,6 @@ def export_mesh(mesh):
             output.write(struct.pack("=I", index))
 
     t3 = time.perf_counter()
-
-    # material name
-    material_name = mesh.materials[0].name if (len(mesh.materials) > 0 and mesh.materials[0]) else "__default"
-    material_name_bytes = material_name.encode("utf-8")
-    output.write(struct.pack("=I", len(material_name_bytes)))
-    output.write(material_name_bytes)
 
     print("Mesh export timings (seconds):")
     print("  Tangents  " + str(t1 - t0))

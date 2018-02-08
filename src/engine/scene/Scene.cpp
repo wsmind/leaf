@@ -133,7 +133,9 @@ void Scene::fillRenderList(RenderList *renderList) const
             job.transform = node->getCurrentTransform();
             job.previousFrameTransform = node->getPreviousFrameTransform();
             job.material = mesh->getMaterial();
-            renderList->addJob(job);
+
+            if (job.material != nullptr)
+                renderList->addJob(job);
         }
     });
 
