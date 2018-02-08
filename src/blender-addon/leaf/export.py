@@ -274,25 +274,31 @@ def export_mesh(mesh):
     t2 = time.perf_counter()
 
     polygons = mesh.polygons
+    
+    # build per-material index lists
+    indices = []
+    for material_index in range(len(mesh.materials)):
+        indices.append([])
+        for face in (polygon for polygon in polygons if polygon.material_index == material_index):
+            face_indices = face.loop_indices
+            for i in range(len(face_indices) - 2):
+                indices[material_index].append(face_indices[0])
+                indices[material_index].append(face_indices[i + 1])
+                indices[material_index].append(face_indices[i + 2])
+    
+    # output each material as a separate index buffer
+    for material_index, material in enumerate(mesh.materials):
+        index_list = indices[material_index]
 
-    # count triangles
-    triangle_count = 0
-    for face in polygons:
-        triangle_count += len(face.loop_indices) - 2
+        # index buffer
+        output.write(struct.pack("=I", len(index_list)))
+        for index in index_list:
+            output.write(struct.pack("=I", index))
 
-    # index count
-    output.write(struct.pack("=I", triangle_count * 3))
-
-    # build triangles out of n-gons
-    for face in polygons:
-        face_indices = face.loop_indices
-        for i in range(len(face_indices) - 2):
-            output.write(struct.pack(
-                "=III",
-                face_indices[0],
-                face_indices[i + 1],
-                face_indices[i + 2]
-            ))
+        # material name
+        material_name_bytes = material.name.encode("utf-8")
+        output.write(struct.pack("=I", len(material_name_bytes)))
+        output.write(material_name_bytes)
 
     t3 = time.perf_counter()
 
