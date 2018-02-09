@@ -160,17 +160,17 @@ void ShadowRenderer::render(FrameGraph *frameGraph, const Scene *scene, const Re
 		batch->setPixelShader(this->depthOnlyPixelShader);
 		batch->setInputLayout(this->inputLayout);
 
-        Mesh *currentMesh = nullptr;
+        const Mesh::SubMesh *currentSubMesh = nullptr;
 		Job *currentJob = nullptr;
         for (const auto &job : jobs)
         {
-            if (currentMesh != job.mesh)
+            if (currentSubMesh != job.subMesh)
             {
-                currentMesh = job.mesh;
+                currentSubMesh = job.subMesh;
 
 				currentJob = batch->addJob();
-				currentMesh->setupJob(currentJob);
-			}
+                currentJob->setBuffers(currentSubMesh->vertexBuffer, currentSubMesh->indexBuffer, currentSubMesh->indexCount);
+            }
 
 			DepthOnlyInstanceData instanceData;
 			instanceData.transformMatrix = lights[i].shadowTransform * job.transform;

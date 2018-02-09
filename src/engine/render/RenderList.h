@@ -3,9 +3,9 @@
 #include <vector>
 
 #include <engine/glm/glm.hpp>
+#include <engine/render/Mesh.h>
 
 class Material;
-class Mesh;
 
 class RenderList
 {
@@ -13,7 +13,7 @@ class RenderList
         struct Job
         {
             Material *material;
-            Mesh *mesh;
+            const Mesh::SubMesh *subMesh;
             glm::mat4 transform;
             glm::mat4 previousFrameTransform;
         };

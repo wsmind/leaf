@@ -80,7 +80,7 @@ BloomRenderer::~BloomRenderer()
 	this->constantBuffer->Release();
 }
 
-void BloomRenderer::render(FrameGraph *frameGraph, const RenderSettings &settings, RenderTarget *inputTarget, RenderTarget *outputTarget, Mesh *quad)
+void BloomRenderer::render(FrameGraph *frameGraph, const RenderSettings &settings, RenderTarget *inputTarget, RenderTarget *outputTarget, const Mesh::SubMesh &quadSubMesh)
 {
 	BloomConstants bloomConstants;
 	bloomConstants.threshold = settings.bloom.threshold;
@@ -108,8 +108,8 @@ void BloomRenderer::render(FrameGraph *frameGraph, const RenderSettings &setting
 		batch->setInputLayout(this->inputLayout);
 
 		Job *job = batch->addJob();
-		quad->setupJob(job);
-		job->addInstance();
+        job->setBuffers(quadSubMesh.vertexBuffer, quadSubMesh.indexBuffer, quadSubMesh.indexCount);
+        job->addInstance();
 
 		return;
 	}
@@ -126,9 +126,9 @@ void BloomRenderer::render(FrameGraph *frameGraph, const RenderSettings &setting
 	thresholdBatch->setPixelShader(this->bloomThresholdPixelShader);
 	thresholdBatch->setInputLayout(this->inputLayout);
 
-	Job *thresholdJob = thresholdBatch->addJob();
-	quad->setupJob(thresholdJob);
-	thresholdJob->addInstance();
+    Job *thresholdJob = thresholdBatch->addJob();
+    thresholdJob->setBuffers(quadSubMesh.vertexBuffer, quadSubMesh.indexBuffer, quadSubMesh.indexCount);
+    thresholdJob->addInstance();
 
 	// downsample
 	for (int i = 1; i < DOWNSAMPLE_LEVELS; i++)
@@ -149,8 +149,8 @@ void BloomRenderer::render(FrameGraph *frameGraph, const RenderSettings &setting
 		batch->setInputLayout(this->inputLayout);
 
 		Job *job = batch->addJob();
-		quad->setupJob(job);
-		job->addInstance();
+        job->setBuffers(quadSubMesh.vertexBuffer, quadSubMesh.indexBuffer, quadSubMesh.indexCount);
+        job->addInstance();
 	}
 
 	// upsample, blur and accumulate
@@ -173,7 +173,7 @@ void BloomRenderer::render(FrameGraph *frameGraph, const RenderSettings &setting
 		batch->setInputLayout(this->inputLayout);
 
 		Job *job = batch->addJob();
-		quad->setupJob(job);
-		job->addInstance();
+        job->setBuffers(quadSubMesh.vertexBuffer, quadSubMesh.indexBuffer, quadSubMesh.indexCount);
+        job->addInstance();
 	}
 }

@@ -100,7 +100,7 @@ MotionBlurRenderer::~MotionBlurRenderer()
 	this->neighborMaxSampler->Release();
 }
 
-void MotionBlurRenderer::render(FrameGraph *frameGraph, RenderTarget *radianceTarget, RenderTarget *motionTarget, RenderTarget *outputTarget, int width, int height, Mesh *quad)
+void MotionBlurRenderer::render(FrameGraph *frameGraph, RenderTarget *radianceTarget, RenderTarget *motionTarget, RenderTarget *outputTarget, int width, int height, const Mesh::SubMesh &quadSubMesh)
 {
 	Pass *tileMaxPass = frameGraph->addPass("TileMax");
 
@@ -130,6 +130,6 @@ void MotionBlurRenderer::render(FrameGraph *frameGraph, RenderTarget *radianceTa
 	blurBatch->setInputLayout(this->inputLayout);
 
 	Job *blurJob = blurBatch->addJob();
-	quad->setupJob(blurJob);
-	blurJob->addInstance();
+    blurJob->setBuffers(quadSubMesh.vertexBuffer, quadSubMesh.indexBuffer, quadSubMesh.indexCount);
+    blurJob->addInstance();
 }

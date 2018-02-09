@@ -128,14 +128,16 @@ void Scene::fillRenderList(RenderList *renderList) const
         {
             Mesh *mesh = node->getData<Mesh>();
 
-            RenderList::Job job;
-            job.mesh = mesh;
-            job.transform = node->getCurrentTransform();
-            job.previousFrameTransform = node->getPreviousFrameTransform();
-            job.material = mesh->getMaterial();
+            for (auto &subMesh : mesh->getSubMeshes())
+            {
+                RenderList::Job job;
+                job.subMesh = &subMesh;
+                job.transform = node->getCurrentTransform();
+                job.previousFrameTransform = node->getPreviousFrameTransform();
+                job.material = subMesh.material;
 
-            if (job.material != nullptr)
                 renderList->addJob(job);
+            }
         }
     });
 

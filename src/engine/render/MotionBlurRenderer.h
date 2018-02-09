@@ -2,8 +2,9 @@
 
 #include <d3d11.h>
 
+#include <engine/render/Mesh.h>
+
 class FrameGraph;
-class Mesh;
 class RenderTarget;
 
 class MotionBlurRenderer
@@ -12,7 +13,7 @@ class MotionBlurRenderer
         MotionBlurRenderer(int backbufferWidth, int backbufferHeight, int tileSize);
         ~MotionBlurRenderer();
 
-        void render(FrameGraph *frameGraph, RenderTarget *radianceTarget, RenderTarget *motionTarget, RenderTarget *outputTarget, int width, int height, Mesh *quad);
+        void render(FrameGraph *frameGraph, RenderTarget *radianceTarget, RenderTarget *motionTarget, RenderTarget *outputTarget, int width, int height, const Mesh::SubMesh &quadSubMesh);
 
     private:
         int tileSize;

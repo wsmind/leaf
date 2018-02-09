@@ -365,7 +365,7 @@ void Renderer::render(const Scene *scene, const RenderSettings &settings, float 
     {
         //GPUProfiler::ScopedProfile profile("Geometry");
         Material *currentMaterial = nullptr;
-        Mesh *currentMesh = nullptr;
+        const Mesh::SubMesh *currentSubMesh = nullptr;
         Batch *currentBatch = nullptr;
         Job *currentJob = nullptr;
         for (const auto &job : jobs)
@@ -383,12 +383,12 @@ void Renderer::render(const Scene *scene, const RenderSettings &settings, float 
                 currentMaterial->setupBatch(currentBatch, settings, this->shadowRenderer->getSRV(), this->shadowRenderer->getSampler(), &shadowConstants);
             }
 
-            if (currentMesh != job.mesh)
+            if (currentSubMesh != job.subMesh)
             {
-                currentMesh = job.mesh;
+                currentSubMesh = job.subMesh;
 
                 currentJob = currentBatch->addJob();
-                currentMesh->setupJob(currentJob);
+                currentJob->setBuffers(currentSubMesh->vertexBuffer, currentSubMesh->indexBuffer, currentSubMesh->indexCount);
             }
 
 			InstanceData instanceData;
@@ -411,8 +411,10 @@ void Renderer::render(const Scene *scene, const RenderSettings &settings, float 
     backgroundBatch->setPixelShader(this->backgroundPixelShader);
     backgroundBatch->setInputLayout(this->inputLayout);
 
+    const Mesh::SubMesh &quadSubMesh = this->fullscreenQuad->getSubMeshes()[0];
+
     Job *backgroundJob = backgroundBatch->addJob();
-    this->fullscreenQuad->setupJob(backgroundJob);
+    backgroundJob->setBuffers(quadSubMesh.vertexBuffer, quadSubMesh.indexBuffer, quadSubMesh.indexCount);
 	backgroundJob->addInstance();
 
     this->postProcessor->render(this->frameGraph, settings, this->motionTarget);

@@ -68,9 +68,11 @@ PostProcessor::~PostProcessor()
 
 void PostProcessor::render(FrameGraph *frameGraph, const RenderSettings &settings, RenderTarget *motionTarget)
 {
-    this->motionBlurRenderer->render(frameGraph, this->targets[0], motionTarget, this->targets[1], this->backbufferWidth, this->backbufferHeight, this->fullscreenQuad);
+    const Mesh::SubMesh &quadSubMesh = this->fullscreenQuad->getSubMeshes()[0];
 
-	this->bloomRenderer->render(frameGraph, settings, this->targets[1], this->targets[0], this->fullscreenQuad);
+    this->motionBlurRenderer->render(frameGraph, this->targets[0], motionTarget, this->targets[1], this->backbufferWidth, this->backbufferHeight, quadSubMesh);
+
+	this->bloomRenderer->render(frameGraph, settings, this->targets[1], this->targets[0], quadSubMesh);
 
     // tone mapping and gamma correction
     Pass *toneMappingPass = frameGraph->addPass("ToneMapping");
@@ -85,7 +87,7 @@ void PostProcessor::render(FrameGraph *frameGraph, const RenderSettings &setting
 	toneMappingBatch->setInputLayout(this->inputLayout);
 
     Job *toneMappingJob = toneMappingBatch->addJob();
-    this->fullscreenQuad->setupJob(toneMappingJob);
+    toneMappingJob->setBuffers(quadSubMesh.vertexBuffer, quadSubMesh.indexBuffer, quadSubMesh.indexCount);
 	toneMappingJob->addInstance();
 
     // fxaa pass and blit to backbuffer
@@ -101,6 +103,6 @@ void PostProcessor::render(FrameGraph *frameGraph, const RenderSettings &setting
 	fxaaBatch->setInputLayout(this->inputLayout);
 
     Job *fxaaJob = fxaaBatch->addJob();
-    this->fullscreenQuad->setupJob(fxaaJob);
-	fxaaJob->addInstance();
+    fxaaJob->setBuffers(quadSubMesh.vertexBuffer, quadSubMesh.indexBuffer, quadSubMesh.indexCount);
+    fxaaJob->addInstance();
 }

@@ -44,40 +44,45 @@ void Mesh::load(const unsigned char *buffer, size_t size)
     unsigned int materialCount = *(unsigned int *)readPosition;
     readPosition += sizeof(unsigned int);
 
-    if (materialCount == 0)
-        return;
+    for (unsigned int i = 0; i < materialCount; i++)
+    {
+        this->subMeshes.emplace_back();
+        SubMesh &subMesh = this->subMeshes.at(i);
 
-    // material
-    unsigned int materialNameSize = *(unsigned int *)readPosition;
-    readPosition += sizeof(unsigned int);
+        subMesh.vertexBuffer = this->vertexBuffer;
 
-    std::string materialName((const char *)readPosition, materialNameSize);
-    readPosition += materialNameSize;
+        // material
+        unsigned int materialNameSize = *(unsigned int *)readPosition;
+        readPosition += sizeof(unsigned int);
 
-    this->material = ResourceManager::getInstance()->requestResource<Material>(materialName);
+        std::string materialName((const char *)readPosition, materialNameSize);
+        readPosition += materialNameSize;
 
-    // index buffer
+        subMesh.material = ResourceManager::getInstance()->requestResource<Material>(materialName);
 
-    this->indexCount = *(unsigned int *)readPosition;
-    readPosition += sizeof(unsigned int);
+        // index buffer
 
-    D3D11_BUFFER_DESC ibDesc;
-    ibDesc.Usage = D3D11_USAGE_IMMUTABLE;
-    ibDesc.ByteWidth = sizeof(uint32_t) * this->indexCount;
-    ibDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
-    ibDesc.StructureByteStride = 0;
-    ibDesc.MiscFlags = 0;
-    ibDesc.CPUAccessFlags = 0;
+        subMesh.indexCount = *(unsigned int *)readPosition;
+        readPosition += sizeof(unsigned int);
 
-    D3D11_SUBRESOURCE_DATA indexData;
-    indexData.pSysMem = readPosition;
-    indexData.SysMemPitch = 0;
-    indexData.SysMemSlicePitch = 0;
+        D3D11_BUFFER_DESC ibDesc;
+        ibDesc.Usage = D3D11_USAGE_IMMUTABLE;
+        ibDesc.ByteWidth = sizeof(uint32_t) * subMesh.indexCount;
+        ibDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+        ibDesc.StructureByteStride = 0;
+        ibDesc.MiscFlags = 0;
+        ibDesc.CPUAccessFlags = 0;
 
-    res = Device::device->CreateBuffer(&ibDesc, &indexData, &this->indexBuffer);
-    CHECK_HRESULT(res);
+        D3D11_SUBRESOURCE_DATA indexData;
+        indexData.pSysMem = readPosition;
+        indexData.SysMemPitch = 0;
+        indexData.SysMemSlicePitch = 0;
 
-    readPosition += ibDesc.ByteWidth;
+        res = Device::device->CreateBuffer(&ibDesc, &indexData, &subMesh.indexBuffer);
+        CHECK_HRESULT(res);
+
+        readPosition += ibDesc.ByteWidth;
+    }
 }
 
 void Mesh::unload()
@@ -90,25 +95,11 @@ void Mesh::unload()
 
     this->vertexCount = 0;
 
-    if (this->indexBuffer != nullptr)
+    for (auto &subMesh : this->subMeshes)
     {
-        this->indexBuffer->Release();
-        this->indexBuffer = nullptr;
+        subMesh.indexBuffer->Release();
+        ResourceManager::getInstance()->releaseResource(subMesh.material);
     }
 
-    this->indexCount = 0;
-
-    if (this->material != nullptr)
-    {
-        ResourceManager::getInstance()->releaseResource(this->material);
-        this->material = nullptr;
-    }
-}
-
-void Mesh::setupJob(Job *job) const
-{
-    if (this->vertexBuffer == nullptr)
-        return;
-
-    job->setBuffers(this->vertexBuffer, this->indexBuffer, this->indexCount);
+    this->subMeshes.clear();
 }

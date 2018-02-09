@@ -2,8 +2,9 @@
 
 #include <d3d11.h>
 
+#include <engine/render/Mesh.h>
+
 class FrameGraph;
-class Mesh;
 struct RenderSettings;
 class RenderTarget;
 
@@ -13,7 +14,7 @@ class BloomRenderer
         BloomRenderer(int backbufferWidth, int backbufferHeight);
         ~BloomRenderer();
 
-        void render(FrameGraph *frameGraph, const RenderSettings &settings, RenderTarget *inputTarget, RenderTarget *outputTarget, Mesh *quad);
+        void render(FrameGraph *frameGraph, const RenderSettings &settings, RenderTarget *inputTarget, RenderTarget *outputTarget, const Mesh::SubMesh &quadSubMesh);
 
     private:
 		int backbufferWidth;
