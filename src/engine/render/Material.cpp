@@ -101,6 +101,6 @@ void Material::setupBatch(Batch *batch, const RenderSettings &settings, ID3D11Sh
 		this->metallicMap->getSamplerState(),
 		this->roughnessMap->getSamplerState(),
 		shadowSampler,
-        this->baseColorMap->getSamplerState() // uase base color sampler for envmap
+        this->baseColorMap->getSamplerState() // use base color sampler for envmap
 	});
 }

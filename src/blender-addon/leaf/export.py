@@ -174,16 +174,25 @@ def export_material(mtl):
         "emissive": [lmtl.emissive.r, lmtl.emissive.g, lmtl.emissive.b],
         "metallicOffset": lmtl.metallic_offset,
         "roughnessOffset": lmtl.roughness_offset,
-        "baseColorMap": mtl.texture_slots[0].name if mtl.texture_slots[0] and mtl.texture_slots[0].use else "__default_white",
-        "normalMap": mtl.texture_slots[1].name if mtl.texture_slots[1] and mtl.texture_slots[1].use else "__default_normal",
-        "metallicMap": mtl.texture_slots[2].name if mtl.texture_slots[2] and mtl.texture_slots[2].use else "__default_black",
-        "roughnessMap": mtl.texture_slots[3].name if mtl.texture_slots[3] and mtl.texture_slots[3].use else "__default_black"
+        "baseColorMap": export_texture_slot(mtl, 0, "__default_white"),
+        "normalMap": export_texture_slot(mtl, 1, "__default_normal"),
+        "metallicMap": export_texture_slot(mtl, 2, "__default_black"),
+        "roughnessMap": export_texture_slot(mtl, 3, "__default_black")
     }
 
     if mtl.animation_data:
         data["animation"] = export_animation(mtl.animation_data)
 
     return json.dumps(data).encode("utf-8")
+
+def export_texture_slot(mtl, slot_index, default):
+    slot = mtl.texture_slots[slot_index]
+
+    if not slot: return default
+    if not slot.use: return default
+    if not slot.texture: return default
+
+    return slot.texture.name
 
 def export_texture(tex):
     # filter out unsupported types

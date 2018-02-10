@@ -16,6 +16,14 @@ class LeafMaterialSettings(bpy.types.PropertyGroup):
             description="Leaf material settings",
             type=cls,
         )
+        cls.bsdf = EnumProperty(
+            name="Shading",
+            items=(
+                ("STANDARD", "Standard", "Standard PBR Metallic/Roughness"),
+                ("UNLIT", "Unlit", "Pure emissive")
+            ),
+            default="STANDARD"
+        )
         cls.metallic_offset = FloatProperty(
             name="Metallic Offset",
             description="0: dielectric, 1: metal",
@@ -110,8 +118,9 @@ class LeafMaterial_PT_context(LeafMaterialButtonsPanel, Panel):
             split.template_ID(space, "pin_id")
             split.separator()
 
-class LeafMaterial_PT_surface(LeafMaterialButtonsPanel, Panel):
-    bl_label = "Surface"
+class LeafMaterial_PT_common(LeafMaterialButtonsPanel, Panel):
+    bl_label = ""
+    bl_options = {'HIDE_HEADER'}
 
     @classmethod
     def poll(cls, context):
@@ -122,7 +131,106 @@ class LeafMaterial_PT_surface(LeafMaterialButtonsPanel, Panel):
         mat = context.material
         lmat = context.material.leaf
 
-        layout.prop(mat, "diffuse_color", text="Base Color")
-        layout.prop(lmat, "emissive")
+        layout.prop(lmat, "bsdf")
+
+class LeafMaterialBSDFPanel(LeafMaterialButtonsPanel):
+    @classmethod
+    def poll(cls, context, bsdf):
+        return context.material and LeafMaterialButtonsPanel.poll(context) and context.material.leaf.bsdf == bsdf
+
+    def texture_picker(self, material, slot_index):
+        slot = material.texture_slots[slot_index] or material.texture_slots.create(slot_index)
+
+        row = self.layout.row()
+        row.prop(slot, "use", text="")
+        row.template_ID(slot, "texture", new="texture.new")
+
+###############################################################################
+# Standard BSDF
+###############################################################################
+
+class LeafMaterial_PT_Standard_BaseColor(LeafMaterialBSDFPanel, Panel):
+    bl_label = "Base Color"
+
+    @classmethod
+    def poll(cls, context):
+        return LeafMaterialBSDFPanel.poll(context, "STANDARD")
+
+    def draw(self, context):
+        layout = self.layout
+        mat = context.material
+
+        layout.prop(mat, "diffuse_color", text="")
+        self.texture_picker(mat, 0)
+
+class LeafMaterial_PT_Standard_Emissive(LeafMaterialBSDFPanel, Panel):
+    bl_label = "Emissive"
+
+    @classmethod
+    def poll(cls, context):
+        return LeafMaterialBSDFPanel.poll(context, "STANDARD")
+
+    def draw(self, context):
+        layout = self.layout
+        lmat = context.material.leaf
+
+        layout.prop(lmat, "emissive", text="")
+
+class LeafMaterial_PT_Standard_Normals(LeafMaterialBSDFPanel, Panel):
+    bl_label = "Normals"
+
+    @classmethod
+    def poll(cls, context):
+        return LeafMaterialBSDFPanel.poll(context, "STANDARD")
+
+    def draw(self, context):
+        self.texture_picker(context.material, 1)
+
+class LeafMaterial_PT_Standard_Metallic(LeafMaterialBSDFPanel, Panel):
+    bl_label = "Metallic"
+
+    @classmethod
+    def poll(cls, context):
+        return LeafMaterialBSDFPanel.poll(context, "STANDARD")
+
+    def draw(self, context):
+        layout = self.layout
+        mat = context.material
+        lmat = context.material.leaf
+
+        self.texture_picker(mat, 2)
         layout.prop(lmat, "metallic_offset")
+
+class LeafMaterial_PT_Standard_Roughness(LeafMaterialBSDFPanel, Panel):
+    bl_label = "Roughness"
+
+    @classmethod
+    def poll(cls, context):
+        return LeafMaterialBSDFPanel.poll(context, "STANDARD")
+
+    def draw(self, context):
+        layout = self.layout
+        mat = context.material
+        lmat = context.material.leaf
+
+        self.texture_picker(mat, 3)
         layout.prop(lmat, "roughness_offset")
+
+###############################################################################
+# Unlit BSDF
+###############################################################################
+
+class LeafMaterial_PT_Unlit_Emissive(LeafMaterialBSDFPanel, Panel):
+    bl_label = "Emissive"
+
+    @classmethod
+    def poll(cls, context):
+        return LeafMaterialBSDFPanel.poll(context, "UNLIT")
+
+    def draw(self, context):
+        layout = self.layout
+        mat = context.material
+        lmat = context.material.leaf
+
+        layout.prop(lmat, "emissive", text="")
+        self.texture_picker(mat, 0)
