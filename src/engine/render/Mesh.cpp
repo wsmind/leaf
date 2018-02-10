@@ -46,8 +46,7 @@ void Mesh::load(const unsigned char *buffer, size_t size)
 
     for (unsigned int i = 0; i < materialCount; i++)
     {
-        this->subMeshes.emplace_back();
-        SubMesh &subMesh = this->subMeshes.at(i);
+        SubMesh subMesh;
 
         subMesh.vertexBuffer = this->vertexBuffer;
 
@@ -64,6 +63,10 @@ void Mesh::load(const unsigned char *buffer, size_t size)
 
         subMesh.indexCount = *(unsigned int *)readPosition;
         readPosition += sizeof(unsigned int);
+
+        // skip empty submeshes
+        if (subMesh.indexCount == 0)
+            continue;
 
         D3D11_BUFFER_DESC ibDesc;
         ibDesc.Usage = D3D11_USAGE_IMMUTABLE;
@@ -82,6 +85,8 @@ void Mesh::load(const unsigned char *buffer, size_t size)
         CHECK_HRESULT(res);
 
         readPosition += ibDesc.ByteWidth;
+
+        this->subMeshes.push_back(subMesh);
     }
 }
 
