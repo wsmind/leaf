@@ -19,8 +19,6 @@
 
 #define HAVE_MAYA
 
-#define HAVE_CUDA
-
 // missing class used in CudaUtils.cpp
 #define WIN32_LEAN_AND_MEAN
 #define WIN32_EXTRA_LEAN
