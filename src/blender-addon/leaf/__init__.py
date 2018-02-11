@@ -109,6 +109,7 @@ compatible_panels = [
     bpy.types.DATA_PT_camera_safe_areas,
     bpy.types.DATA_PT_lamp,
     bpy.types.DATA_PT_normals,
+    bpy.types.MATERIAL_PT_preview,
     bpy.types.RENDER_PT_dimensions,
     bpy.types.WORLD_PT_world,
     bpy.types.WORLD_PT_mist

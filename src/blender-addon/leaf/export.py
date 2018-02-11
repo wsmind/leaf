@@ -358,7 +358,7 @@ def export_interpolation(interpolation):
 
 def export_animation(anim_data):
     return {
-        "action": anim_data.action.name
+        "action": anim_data.action.name if anim_data.action else "__default"
     }
 
 def export_light(light):
