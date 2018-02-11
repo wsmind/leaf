@@ -5,17 +5,22 @@
 #include <engine/animation/PropertyMapping.h>
 #include <engine/render/Bsdf.h>
 #include <engine/render/StandardBsdf.h>
+#include <engine/render/UnlitBsdf.h>
 
 #include <engine/cJSON/cJSON.h>
 
 const std::string Material::resourceClassName = "Material";
-const std::string Material::defaultResourceData = "{\"baseColorMultiplier\": [1.0, 1.0, 1.0], \"emissive\": [0.0, 0.0, 0.0], \"metallicOffset\": 0.0, \"roughnessOffset\": 0.0, \"baseColorMap\": \"__default\", \"normalMap\": \"__default\", \"metallicMap\": \"__default\", \"roughnessMap\": \"__default\"}";
+const std::string Material::defaultResourceData = "{\"bsdf\": \"UNLIT\", \"emissive\": [4.0, 0.0, 3.0], \"emissiveMap\": \"__default_white\"}";
 
 void Material::load(const unsigned char *buffer, size_t size)
 {
     cJSON *json = cJSON_Parse((const char *)buffer);
 
-    this->bsdf = new StandardBsdf(json);
+    const char *bsdfName = cJSON_GetObjectItem(json, "bsdf")->valuestring;
+
+    if (!strcmp(bsdfName, "STANDARD")) this->bsdf = new StandardBsdf(json);
+    if (!strcmp(bsdfName, "UNLIT")) this->bsdf = new UnlitBsdf(json);
+    assert(this->bsdf != nullptr);
 
     cJSON *animation = cJSON_GetObjectItem(json, "animation");
     if (animation)

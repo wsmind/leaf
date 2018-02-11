@@ -7,4 +7,5 @@
 struct UnlitConstants
 {
     float3 emissive;
+    float _padding;
 };

@@ -188,6 +188,7 @@
     <ClCompile Include="..\..\src\engine\render\ShadowRenderer.cpp" />
     <ClCompile Include="..\..\src\engine\render\StandardBsdf.cpp" />
     <ClCompile Include="..\..\src\engine\render\Texture.cpp" />
+    <ClCompile Include="..\..\src\engine\render\UnlitBsdf.cpp" />
     <ClCompile Include="..\..\src\engine\resource\ResourceManager.cpp" />
     <ClCompile Include="..\..\src\engine\scene\Scene.cpp" />
     <ClCompile Include="..\..\src\engine\scene\SceneNode.cpp" />
@@ -231,6 +232,7 @@
     <ClInclude Include="..\..\src\engine\render\ShadowRenderer.h" />
     <ClInclude Include="..\..\src\engine\render\StandardBsdf.h" />
     <ClInclude Include="..\..\src\engine\render\Texture.h" />
+    <ClInclude Include="..\..\src\engine\render\UnlitBsdf.h" />
     <ClInclude Include="..\..\src\engine\resource\Resource.h" />
     <ClInclude Include="..\..\src\engine\resource\ResourceManager.h" />
     <ClInclude Include="..\..\src\engine\resource\ResourceManager.inline.h" />

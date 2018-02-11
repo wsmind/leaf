@@ -349,8 +349,6 @@ void Renderer::render(const Scene *scene, const RenderSettings &settings, float 
 
                 currentBatch = radiancePass->addBatch(std::string("Material"));
                 currentBatch->setDepthStencil(this->gBufferDepthState);
-                currentBatch->setVertexShader(Shaders::vertex.standard);
-                currentBatch->setPixelShader(Shaders::pixel.standard);
                 currentBatch->setInputLayout(this->inputLayout);
 
                 currentMaterial->setupBatch(currentBatch, settings, this->shadowRenderer->getSRV(), this->shadowRenderer->getSampler(), &shadowConstants);

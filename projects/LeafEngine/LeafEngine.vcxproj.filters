@@ -96,6 +96,9 @@
     <ClCompile Include="..\..\src\engine\render\StandardBsdf.cpp">
       <Filter>render</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\engine\render\UnlitBsdf.cpp">
+      <Filter>render</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\engine\api.h" />
@@ -266,6 +269,9 @@
       <Filter>render</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\engine\render\StandardBsdf.h">
+      <Filter>render</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\engine\render\UnlitBsdf.h">
       <Filter>render</Filter>
     </ClInclude>
   </ItemGroup>

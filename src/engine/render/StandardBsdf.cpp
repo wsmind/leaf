@@ -5,6 +5,7 @@
 #include <engine/animation/PropertyMapping.h>
 #include <engine/render/Device.h>
 #include <engine/render/RenderSettings.h>
+#include <engine/render/Shaders.h>
 #include <engine/render/Texture.h>
 #include <engine/render/graph/Batch.h>
 #include <engine/resource/ResourceManager.h>
@@ -65,7 +66,10 @@ void StandardBsdf::setupBatch(Batch *batch, const RenderSettings &settings, ID3D
     memcpy(mappedResource.pData, &constants, sizeof(constants));
     Device::context->Unmap(this->constantBuffer, 0);
 
-	batch->setShaderConstants(this->constantBuffer);
+    batch->setVertexShader(Shaders::vertex.standard);
+    batch->setPixelShader(Shaders::pixel.standard);
+
+    batch->setShaderConstants(this->constantBuffer);
 
     batch->setResources({
         this->baseColorMap->getSRV(),
