@@ -26,9 +26,6 @@ class ShadowRenderer
         ID3D11SamplerState *sampler;
         ID3D11DepthStencilState *depthState;
 
-        ID3D11VertexShader *depthOnlyVertexShader;
-        ID3D11PixelShader *depthOnlyPixelShader;
-
 		ID3D11InputLayout *inputLayout;
 
         ID3D11Buffer *cbShadows;

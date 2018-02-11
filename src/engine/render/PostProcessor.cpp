@@ -7,16 +7,14 @@
 #include <engine/render/MotionBlurRenderer.h>
 #include <engine/render/RenderSettings.h>
 #include <engine/render/RenderTarget.h>
+#include <engine/render/Shaders.h>
 #include <engine/render/graph/Batch.h>
 #include <engine/render/graph/FrameGraph.h>
 #include <engine/render/graph/Job.h>
 #include <engine/render/graph/Pass.h>
 #include <engine/resource/ResourceManager.h>
 
-#include <shaders/fxaa.vs.hlsl.h>
-#include <shaders/fxaa.ps.hlsl.h>
 #include <shaders/postprocess.vs.hlsl.h>
-#include <shaders/postprocess.ps.hlsl.h>
 
 PostProcessor::PostProcessor(ID3D11RenderTargetView *backbufferTarget, int backbufferWidth, int backbufferHeight)
 	: backbufferTarget(backbufferTarget)
@@ -24,11 +22,6 @@ PostProcessor::PostProcessor(ID3D11RenderTargetView *backbufferTarget, int backb
 	, backbufferHeight(backbufferHeight)
 {
     HRESULT res;
-    res = Device::device->CreateVertexShader(postprocessVS, sizeof(postprocessVS), NULL, &postprocessVertexShader); CHECK_HRESULT(res);
-    res = Device::device->CreatePixelShader(postprocessPS, sizeof(postprocessPS), NULL, &postprocessPixelShader); CHECK_HRESULT(res);
-    res = Device::device->CreateVertexShader(fxaaVS, sizeof(fxaaVS), NULL, &fxaaVertexShader); CHECK_HRESULT(res);
-    res = Device::device->CreatePixelShader(fxaaPS, sizeof(fxaaPS), NULL, &fxaaPixelShader); CHECK_HRESULT(res);
-
 	D3D11_INPUT_ELEMENT_DESC layout[] =
 	{
 		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
@@ -50,11 +43,6 @@ PostProcessor::PostProcessor(ID3D11RenderTargetView *backbufferTarget, int backb
 
 PostProcessor::~PostProcessor()
 {
-    this->postprocessVertexShader->Release();
-    this->postprocessPixelShader->Release();
-    this->fxaaVertexShader->Release();
-    this->fxaaPixelShader->Release();
-
 	this->inputLayout->Release();
 
     delete this->targets[0];
@@ -82,8 +70,8 @@ void PostProcessor::render(FrameGraph *frameGraph, const RenderSettings &setting
     Batch *toneMappingBatch = toneMappingPass->addBatch("");
     toneMappingBatch->setResources({ this->targets[0]->getSRV() });
 	toneMappingBatch->setSamplers({ this->targets[0]->getSamplerState() });
-    toneMappingBatch->setVertexShader(postprocessVertexShader);
-    toneMappingBatch->setPixelShader(postprocessPixelShader);
+    toneMappingBatch->setVertexShader(Shaders::vertex.postprocess);
+    toneMappingBatch->setPixelShader(Shaders::pixel.postprocess);
 	toneMappingBatch->setInputLayout(this->inputLayout);
 
     Job *toneMappingJob = toneMappingBatch->addJob();
@@ -98,8 +86,8 @@ void PostProcessor::render(FrameGraph *frameGraph, const RenderSettings &setting
     Batch *fxaaBatch = fxaaPass->addBatch("");
     fxaaBatch->setResources({ this->targets[1]->getSRV() });
 	fxaaBatch->setSamplers({ this->targets[1]->getSamplerState() });
-	fxaaBatch->setVertexShader(fxaaVertexShader);
-    fxaaBatch->setPixelShader(fxaaPixelShader);
+	fxaaBatch->setVertexShader(Shaders::vertex.fxaa);
+    fxaaBatch->setPixelShader(Shaders::pixel.fxaa);
 	fxaaBatch->setInputLayout(this->inputLayout);
 
     Job *fxaaJob = fxaaBatch->addJob();

@@ -20,12 +20,6 @@ class BloomRenderer
 		int backbufferWidth;
 		int backbufferHeight;
 
-		ID3D11VertexShader *bloomVertexShader;
-		ID3D11PixelShader *bloomThresholdPixelShader;
-		ID3D11PixelShader *bloomDownsamplePixelShader;
-		ID3D11PixelShader *bloomAccumulationPixelShader;
-		ID3D11PixelShader *bloomDebugPixelShader;
-
 		ID3D11InputLayout *inputLayout;
 
 		static const int DOWNSAMPLE_LEVELS = 6;

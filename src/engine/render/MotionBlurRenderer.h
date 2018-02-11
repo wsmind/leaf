@@ -20,11 +20,6 @@ class MotionBlurRenderer
         int tileCountX;
         int tileCountY;
 
-		ID3D11VertexShader *motionblurVertexShader;
-		ID3D11PixelShader *motionblurPixelShader;
-        ID3D11ComputeShader *tileMaxComputeShader;
-		ID3D11ComputeShader *neighborMaxComputeShader;
-
 		ID3D11InputLayout *inputLayout;
 
 		ID3D11Texture2D *tileMaxTexture;

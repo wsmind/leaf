@@ -26,12 +26,6 @@ class PostProcessor
 
         RenderTarget *targets[2]; // two is enough to ping-pong between the targets
 
-        ID3D11VertexShader *postprocessVertexShader;
-        ID3D11PixelShader *postprocessPixelShader;
-
-        ID3D11VertexShader *fxaaVertexShader;
-        ID3D11PixelShader *fxaaPixelShader;
-
 		ID3D11InputLayout *inputLayout;
 
         Mesh *fullscreenQuad;

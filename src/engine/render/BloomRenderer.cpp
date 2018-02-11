@@ -4,6 +4,7 @@
 #include <engine/render/Mesh.h>
 #include <engine/render/RenderSettings.h>
 #include <engine/render/RenderTarget.h>
+#include <engine/render/Shaders.h>
 #include <engine/render/graph/Batch.h>
 #include <engine/render/graph/FrameGraph.h>
 #include <engine/render/graph/Job.h>
@@ -11,22 +12,11 @@
 #include <engine/render/shaders/constants/BloomConstants.h>
 
 #include <shaders/bloom.vs.hlsl.h>
-#include <shaders/bloomthreshold.ps.hlsl.h>
-#include <shaders/bloomdownsample.ps.hlsl.h>
-#include <shaders/bloomaccumulation.ps.hlsl.h>
-#include <shaders/bloomdebug.ps.hlsl.h>
 
 BloomRenderer::BloomRenderer(int backbufferWidth, int backbufferHeight)
 {
 	this->backbufferWidth = backbufferWidth;
 	this->backbufferHeight = backbufferHeight;
-
-    HRESULT res;
-	res = Device::device->CreateVertexShader(bloomVS, sizeof(bloomVS), NULL, &this->bloomVertexShader); CHECK_HRESULT(res);
-	res = Device::device->CreatePixelShader(bloomThresholdPS, sizeof(bloomThresholdPS), NULL, &this->bloomThresholdPixelShader); CHECK_HRESULT(res);
-	res = Device::device->CreatePixelShader(bloomDownsamplePS, sizeof(bloomDownsamplePS), NULL, &this->bloomDownsamplePixelShader); CHECK_HRESULT(res);
-	res = Device::device->CreatePixelShader(bloomAccumulationPS, sizeof(bloomAccumulationPS), NULL, &this->bloomAccumulationPixelShader); CHECK_HRESULT(res);
-	res = Device::device->CreatePixelShader(bloomDebugPS, sizeof(bloomDebugPS), NULL, &this->bloomDebugPixelShader); CHECK_HRESULT(res);
 
 	D3D11_INPUT_ELEMENT_DESC layout[] =
 	{
@@ -35,7 +25,7 @@ BloomRenderer::BloomRenderer(int backbufferWidth, int backbufferHeight)
 		{ "TANGENT", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 24, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 40, D3D11_INPUT_PER_VERTEX_DATA, 0 }
 	};
-	res = Device::device->CreateInputLayout(layout, 4, bloomVS, sizeof(bloomVS), &this->inputLayout);
+	HRESULT res = Device::device->CreateInputLayout(layout, 4, bloomVS, sizeof(bloomVS), &this->inputLayout);
 	CHECK_HRESULT(res);
 
 	int width = backbufferWidth;
@@ -63,12 +53,6 @@ BloomRenderer::BloomRenderer(int backbufferWidth, int backbufferHeight)
 
 BloomRenderer::~BloomRenderer()
 {
-	this->bloomVertexShader->Release();
-	this->bloomThresholdPixelShader->Release();
-	this->bloomDownsamplePixelShader->Release();
-	this->bloomAccumulationPixelShader->Release();
-	this->bloomDebugPixelShader->Release();
-
 	this->inputLayout->Release();
 
 	for (int i = 0; i < DOWNSAMPLE_LEVELS; i++)
@@ -103,8 +87,8 @@ void BloomRenderer::render(FrameGraph *frameGraph, const RenderSettings &setting
 		batch->setShaderConstants(this->constantBuffer);
 		batch->setResources({ inputTarget->getSRV() });
 		batch->setSamplers({ inputTarget->getSamplerState() });
-		batch->setVertexShader(this->bloomVertexShader);
-		batch->setPixelShader(this->bloomDebugPixelShader);
+		batch->setVertexShader(Shaders::vertex.bloom);
+		batch->setPixelShader(Shaders::pixel.bloomDebug);
 		batch->setInputLayout(this->inputLayout);
 
 		Job *job = batch->addJob();
@@ -122,8 +106,8 @@ void BloomRenderer::render(FrameGraph *frameGraph, const RenderSettings &setting
 	thresholdBatch->setShaderConstants(this->constantBuffer);
 	thresholdBatch->setResources({ inputTarget->getSRV() });
 	thresholdBatch->setSamplers({ inputTarget->getSamplerState() });
-	thresholdBatch->setVertexShader(this->bloomVertexShader);
-	thresholdBatch->setPixelShader(this->bloomThresholdPixelShader);
+	thresholdBatch->setVertexShader(Shaders::vertex.bloom);
+	thresholdBatch->setPixelShader(Shaders::pixel.bloomThreshold);
 	thresholdBatch->setInputLayout(this->inputLayout);
 
     Job *thresholdJob = thresholdBatch->addJob();
@@ -144,8 +128,8 @@ void BloomRenderer::render(FrameGraph *frameGraph, const RenderSettings &setting
 		batch->setShaderConstants(this->constantBuffer);
 		batch->setResources({ source->getSRV() });
 		batch->setSamplers({ source->getSamplerState() });
-		batch->setVertexShader(this->bloomVertexShader);
-		batch->setPixelShader(this->bloomDownsamplePixelShader);
+		batch->setVertexShader(Shaders::vertex.bloom);
+		batch->setPixelShader(Shaders::pixel.bloomDownsample);
 		batch->setInputLayout(this->inputLayout);
 
 		Job *job = batch->addJob();
@@ -168,8 +152,8 @@ void BloomRenderer::render(FrameGraph *frameGraph, const RenderSettings &setting
 		batch->setShaderConstants(this->constantBuffer);
 		batch->setResources({ source->getSRV(), accumulator->getSRV() });
 		batch->setSamplers({ source->getSamplerState(), accumulator->getSamplerState() });
-		batch->setVertexShader(this->bloomVertexShader);
-		batch->setPixelShader(this->bloomAccumulationPixelShader);
+		batch->setVertexShader(Shaders::vertex.bloom);
+		batch->setPixelShader(Shaders::pixel.bloomAccumulation);
 		batch->setInputLayout(this->inputLayout);
 
 		Job *job = batch->addJob();

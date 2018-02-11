@@ -1,10 +1,11 @@
 #include <engine/render/ShadowRenderer.h>
 
 #include <engine/render/Device.h>
-#include <engine/render/graph/GPUProfiler.h>
 #include <engine/render/RenderList.h>
+#include <engine/render/Shaders.h>
 #include <engine/render/graph/Batch.h>
 #include <engine/render/graph/FrameGraph.h>
+#include <engine/render/graph/GPUProfiler.h>
 #include <engine/render/graph/Job.h>
 #include <engine/render/graph/Pass.h>
 #include <engine/scene/Scene.h>
@@ -12,7 +13,6 @@
 #include <engine/render/shaders/constants/StandardConstants.h>
 
 #include <shaders/depthonly.vs.hlsl.h>
-#include <shaders/depthonly.ps.hlsl.h>
 
 struct DepthOnlyInstanceData
 {
@@ -79,9 +79,6 @@ ShadowRenderer::ShadowRenderer(int resolution)
     res = Device::device->CreateDepthStencilState(&depthStateDesc, &this->depthState);
     CHECK_HRESULT(res);
 
-    res = Device::device->CreateVertexShader(depthonlyVS, sizeof(depthonlyVS), NULL, &this->depthOnlyVertexShader); CHECK_HRESULT(res);
-    res = Device::device->CreatePixelShader(depthonlyPS, sizeof(depthonlyPS), NULL, &this->depthOnlyPixelShader); CHECK_HRESULT(res);
-
 	D3D11_INPUT_ELEMENT_DESC layout[] =
 	{
 		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
@@ -104,9 +101,6 @@ ShadowRenderer::~ShadowRenderer()
     this->srv->Release();
     this->sampler->Release();
     this->depthState->Release();
-
-    this->depthOnlyVertexShader->Release();
-    this->depthOnlyPixelShader->Release();
 
 	this->inputLayout->Release();
 }
@@ -156,8 +150,8 @@ void ShadowRenderer::render(FrameGraph *frameGraph, const Scene *scene, const Re
 
 		Batch *batch = shadowPass->addBatch("Light");
 		batch->setDepthStencil(this->depthState);
-		batch->setVertexShader(this->depthOnlyVertexShader);
-		batch->setPixelShader(this->depthOnlyPixelShader);
+		batch->setVertexShader(Shaders::vertex.depthOnly);
+		batch->setPixelShader(Shaders::pixel.depthOnly);
 		batch->setInputLayout(this->inputLayout);
 
         const Mesh::SubMesh *currentSubMesh = nullptr;

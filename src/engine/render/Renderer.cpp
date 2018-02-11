@@ -17,6 +17,7 @@
 #include <engine/render/PostProcessor.h>
 #include <engine/render/RenderList.h>
 #include <engine/render/RenderTarget.h>
+#include <engine/render/Shaders.h>
 #include <engine/render/ShadowRenderer.h>
 #include <engine/render/Texture.h>
 #include <engine/render/graph/Batch.h>
@@ -27,16 +28,7 @@
 #include <engine/resource/ResourceManager.h>
 #include <engine/scene/Scene.h>
 
-#include <shaders/background.vs.hlsl.h>
-#include <shaders/background.ps.hlsl.h>
-#include <shaders/basic.vs.hlsl.h>
-#include <shaders/basic.ps.hlsl.h>
-#include <shaders/gbuffer.vs.hlsl.h>
-#include <shaders/gbuffer.ps.hlsl.h>
-#include <shaders/plop.vs.hlsl.h>
-#include <shaders/plop.ps.hlsl.h>
 #include <shaders/standard.vs.hlsl.h>
-#include <shaders/standard.ps.hlsl.h>
 
 static const unsigned char blackDDS[] = { 68, 68, 83, 32, 124, 0, 0, 0, 7, 16, 2, 0, 4, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 85, 86, 69, 82, 0, 0, 0, 0, 78, 86, 84, 84, 0, 1, 2, 0, 32, 0, 0, 0, 4, 0, 0, 0, 68, 88, 49, 48, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 16, 64, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 71, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 170, 170, 170, 170, 0, 0, 0, 0, 170, 170, 170, 170, 0, 0, 0, 0, 170, 170, 170, 170 };
 static const unsigned char whiteDDS[] = { 68, 68, 83, 32, 124, 0, 0, 0, 7, 16, 2, 0, 4, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 85, 86, 69, 82, 0, 0, 0, 0, 78, 86, 84, 84, 0, 1, 2, 0, 32, 0, 0, 0, 4, 0, 0, 0, 68, 88, 49, 48, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 16, 64, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 71, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 255, 255, 255, 255, 170, 170, 170, 170, 255, 255, 255, 255, 170, 170, 170, 170, 255, 255, 255, 255, 170, 170, 170, 170 };
@@ -171,17 +163,7 @@ Renderer::Renderer(HWND hwnd, int backbufferWidth, int backbufferHeight, bool ca
         CHECK_HRESULT(res);
     }
 
-    res = Device::device->CreateVertexShader(backgroundVS, sizeof(backgroundVS), NULL, &backgroundVertexShader); CHECK_HRESULT(res);
-    res = Device::device->CreateVertexShader(basicVS, sizeof(basicVS), NULL, &basicVertexShader); CHECK_HRESULT(res);
-    res = Device::device->CreateVertexShader(gbufferVS, sizeof(gbufferVS), NULL, &gbufferVertexShader); CHECK_HRESULT(res);
-    res = Device::device->CreateVertexShader(plopVS, sizeof(plopVS), NULL, &plopVertexShader); CHECK_HRESULT(res);
-    res = Device::device->CreateVertexShader(standardVS, sizeof(standardVS), NULL, &standardVertexShader); CHECK_HRESULT(res);
-
-    res = Device::device->CreatePixelShader(backgroundPS, sizeof(backgroundPS), NULL, &backgroundPixelShader); CHECK_HRESULT(res);
-    res = Device::device->CreatePixelShader(basicPS, sizeof(basicPS), NULL, &basicPixelShader); CHECK_HRESULT(res);
-    res = Device::device->CreatePixelShader(gbufferPS, sizeof(gbufferPS), NULL, &gbufferPixelShader); CHECK_HRESULT(res);
-    res = Device::device->CreatePixelShader(plopPS, sizeof(plopPS), NULL, &plopPixelShader); CHECK_HRESULT(res);
-    res = Device::device->CreatePixelShader(standardPS, sizeof(standardPS), NULL, &standardPixelShader); CHECK_HRESULT(res);
+    Shaders::loadShaders();
 
     D3D11_INPUT_ELEMENT_DESC layout[] =
     {
@@ -259,17 +241,7 @@ Renderer::~Renderer()
     this->renderTarget->Release();
     this->depthTarget->Release();
 
-    this->backgroundVertexShader->Release();
-    this->basicVertexShader->Release();
-    this->gbufferVertexShader->Release();
-    this->plopVertexShader->Release();
-    this->standardVertexShader->Release();
-
-    this->backgroundPixelShader->Release();
-    this->basicPixelShader->Release();
-    this->gbufferPixelShader->Release();
-    this->plopPixelShader->Release();
-    this->standardPixelShader->Release();
+    Shaders::unloadShaders();
 
     this->inputLayout->Release();
 
@@ -376,8 +348,8 @@ void Renderer::render(const Scene *scene, const RenderSettings &settings, float 
 
                 currentBatch = radiancePass->addBatch(std::string("Material"));
                 currentBatch->setDepthStencil(this->gBufferDepthState);
-                currentBatch->setVertexShader(standardVertexShader);
-                currentBatch->setPixelShader(standardPixelShader);
+                currentBatch->setVertexShader(Shaders::vertex.standard);
+                currentBatch->setPixelShader(Shaders::pixel.standard);
                 currentBatch->setInputLayout(this->inputLayout);
 
                 currentMaterial->setupBatch(currentBatch, settings, this->shadowRenderer->getSRV(), this->shadowRenderer->getSampler(), &shadowConstants);
@@ -407,8 +379,8 @@ void Renderer::render(const Scene *scene, const RenderSettings &settings, float 
     backgroundBatch->setDepthStencil(this->gBufferDepthState);
     backgroundBatch->setResources({ settings.environment.environmentMap->getSRV() });
     backgroundBatch->setSamplers({ settings.environment.environmentMap->getSamplerState() });
-    backgroundBatch->setVertexShader(this->backgroundVertexShader);
-    backgroundBatch->setPixelShader(this->backgroundPixelShader);
+    backgroundBatch->setVertexShader(Shaders::vertex.background);
+    backgroundBatch->setPixelShader(Shaders::pixel.background);
     backgroundBatch->setInputLayout(this->inputLayout);
 
     const Mesh::SubMesh &quadSubMesh = this->fullscreenQuad->getSubMeshes()[0];

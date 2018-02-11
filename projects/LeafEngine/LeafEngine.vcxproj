@@ -184,6 +184,7 @@
     <ClCompile Include="..\..\src\engine\render\Renderer.cpp" />
     <ClCompile Include="..\..\src\engine\render\RenderList.cpp" />
     <ClCompile Include="..\..\src\engine\render\RenderTarget.cpp" />
+    <ClCompile Include="..\..\src\engine\render\Shaders.cpp" />
     <ClCompile Include="..\..\src\engine\render\ShadowRenderer.cpp" />
     <ClCompile Include="..\..\src\engine\render\Texture.cpp" />
     <ClCompile Include="..\..\src\engine\resource\ResourceManager.cpp" />
@@ -214,6 +215,7 @@
     <ClInclude Include="..\..\src\engine\render\RenderList.h" />
     <ClInclude Include="..\..\src\engine\render\RenderSettings.h" />
     <ClInclude Include="..\..\src\engine\render\RenderTarget.h" />
+    <ClInclude Include="..\..\src\engine\render\Shaders.h" />
     <ClInclude Include="..\..\src\engine\render\shaders\bloom.h" />
     <ClInclude Include="..\..\src\engine\render\shaders\constants\BloomConstants.h" />
     <ClInclude Include="..\..\src\engine\render\shaders\constants\PassConstants.h" />
