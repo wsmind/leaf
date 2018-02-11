@@ -93,6 +93,9 @@
     <ClCompile Include="..\..\src\engine\render\Shaders.cpp">
       <Filter>render</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\engine\render\StandardBsdf.cpp">
+      <Filter>render</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\engine\api.h" />
@@ -258,6 +261,12 @@
     </ClInclude>
     <ClInclude Include="..\..\src\engine\render\shaders\constants\UnlitConstants.h">
       <Filter>render\shaders\constants</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\engine\render\Bsdf.h">
+      <Filter>render</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\engine\render\StandardBsdf.h">
+      <Filter>render</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -4,15 +4,13 @@
 
 #include <d3d11.h>
 
-#include <engine/glm/vec3.hpp>
-
-#include <engine/render/shaders/constants/StandardConstants.h>
 #include <engine/resource/Resource.h>
 
 class AnimationData;
 class Batch;
+class Bsdf;
 struct RenderSettings;
-class Texture;
+struct ShadowConstants;
 
 class Material: public Resource
 {
@@ -26,13 +24,6 @@ class Material: public Resource
         void setupBatch(Batch *batch, const RenderSettings &settings, ID3D11ShaderResourceView *shadowSRV, ID3D11SamplerState *shadowSampler, ShadowConstants *shadowConstants);
 
     private:
-        StandardConstants constants;
-        ID3D11Buffer *constantBuffer;
-
-        Texture *baseColorMap;
-        Texture *normalMap;
-        Texture *metallicMap;
-        Texture *roughnessMap;
-
         AnimationData *animation = nullptr;
+        Bsdf *bsdf = nullptr;
 };

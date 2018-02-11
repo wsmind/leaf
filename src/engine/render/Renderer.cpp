@@ -25,6 +25,7 @@
 #include <engine/render/graph/Job.h>
 #include <engine/render/graph/Pass.h>
 #include <engine/render/shaders/constants/SceneConstants.h>
+#include <engine/render/shaders/constants/StandardConstants.h>
 #include <engine/resource/ResourceManager.h>
 #include <engine/scene/Scene.h>
 
