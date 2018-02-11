@@ -14,6 +14,7 @@ struct VertexShaderList
     ID3D11VertexShader *plop;
     ID3D11VertexShader *postprocess;
     ID3D11VertexShader *standard;
+    ID3D11VertexShader *unlit;
 };
 
 struct PixelShaderList
@@ -31,6 +32,7 @@ struct PixelShaderList
     ID3D11PixelShader *plop;
     ID3D11PixelShader *postprocess;
     ID3D11PixelShader *standard;
+    ID3D11PixelShader *unlit;
 };
 
 struct ComputeShaderList

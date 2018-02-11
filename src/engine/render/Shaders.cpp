@@ -13,6 +13,7 @@
 #include <shaders/plop.vs.hlsl.h>
 #include <shaders/postprocess.vs.hlsl.h>
 #include <shaders/standard.vs.hlsl.h>
+#include <shaders/unlit.vs.hlsl.h>
 
 // pixel
 #include <shaders/background.ps.hlsl.h>
@@ -28,6 +29,7 @@
 #include <shaders/plop.ps.hlsl.h>
 #include <shaders/postprocess.ps.hlsl.h>
 #include <shaders/standard.ps.hlsl.h>
+#include <shaders/unlit.ps.hlsl.h>
 
 // compute
 #include <shaders/neighbormax.cs.hlsl.h>
@@ -51,6 +53,7 @@ void Shaders::loadShaders()
     res = Device::device->CreateVertexShader(plopVS, sizeof(plopVS), NULL, &vertex.plop); CHECK_HRESULT(res);
     res = Device::device->CreateVertexShader(postprocessVS, sizeof(postprocessVS), NULL, &vertex.postprocess); CHECK_HRESULT(res);
     res = Device::device->CreateVertexShader(standardVS, sizeof(standardVS), NULL, &vertex.standard); CHECK_HRESULT(res);
+    res = Device::device->CreateVertexShader(unlitVS, sizeof(unlitVS), NULL, &vertex.unlit); CHECK_HRESULT(res);
 
     res = Device::device->CreatePixelShader(backgroundPS, sizeof(backgroundPS), NULL, &pixel.background); CHECK_HRESULT(res);
     res = Device::device->CreatePixelShader(basicPS, sizeof(basicPS), NULL, &pixel.basic); CHECK_HRESULT(res);
@@ -65,6 +68,7 @@ void Shaders::loadShaders()
     res = Device::device->CreatePixelShader(plopPS, sizeof(plopPS), NULL, &pixel.plop); CHECK_HRESULT(res);
     res = Device::device->CreatePixelShader(postprocessPS, sizeof(postprocessPS), NULL, &pixel.postprocess); CHECK_HRESULT(res);
     res = Device::device->CreatePixelShader(standardPS, sizeof(standardPS), NULL, &pixel.standard); CHECK_HRESULT(res);
+    res = Device::device->CreatePixelShader(unlitPS, sizeof(unlitPS), NULL, &pixel.unlit); CHECK_HRESULT(res);
 
     res = Device::device->CreateComputeShader(tileMaxCS, sizeof(tileMaxCS), NULL, &compute.tileMax); CHECK_HRESULT(res);
     res = Device::device->CreateComputeShader(neighborMaxCS, sizeof(neighborMaxCS), NULL, &compute.neighborMax); CHECK_HRESULT(res);
@@ -82,6 +86,7 @@ void Shaders::unloadShaders()
     vertex.plop->Release();
     vertex.postprocess->Release();
     vertex.standard->Release();
+    vertex.unlit->Release();
 
     pixel.background->Release();
     pixel.basic->Release();
@@ -96,6 +101,7 @@ void Shaders::unloadShaders()
     pixel.plop->Release();
     pixel.postprocess->Release();
     pixel.standard->Release();
+    pixel.unlit->Release();
 
     compute.tileMax->Release();
     compute.neighborMax->Release();

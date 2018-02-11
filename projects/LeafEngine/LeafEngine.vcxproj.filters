@@ -253,6 +253,12 @@
     <ClInclude Include="..\..\src\engine\render\Shaders.h">
       <Filter>render</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\engine\render\shaders\unlit.h">
+      <Filter>render\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\engine\render\shaders\constants\UnlitConstants.h">
+      <Filter>render\shaders\constants</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\..\src\engine\render\shaders\plop.vs.hlsl">
@@ -337,6 +343,12 @@
       <Filter>render\shaders</Filter>
     </FxCompile>
     <FxCompile Include="..\..\src\engine\render\shaders\bloomdebug.ps.hlsl">
+      <Filter>render\shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\src\engine\render\shaders\unlit.ps.hlsl">
+      <Filter>render\shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\src\engine\render\shaders\unlit.vs.hlsl">
       <Filter>render\shaders</Filter>
     </FxCompile>
   </ItemGroup>
