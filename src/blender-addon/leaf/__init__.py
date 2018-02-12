@@ -74,6 +74,14 @@ class LeafRenderEngine(bpy.types.RenderEngine):
         global engine
         engine.dll.leaf_render_blender_viewport(context.region.width, context.region.height, view_matrix, projection_matrix)
 
+    def render(self, scene):
+        green = [[0.0, 1.0, 0.0, 1.0]] * scene.render.resolution_x * scene.render.resolution_y
+
+        result = self.begin_result(0, 0, scene.render.resolution_x, scene.render.resolution_y)
+        layer = result.layers[0].passes["Combined"]
+        layer.rect = green
+        self.end_result(result)
+
 class EngineWrapper:
     def __init__(self):
         self.handle = None
