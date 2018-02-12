@@ -169,7 +169,23 @@ def export_marker(marker, camera_objects):
 
 def export_material(mtl):
     lmtl = mtl.leaf
-    data = {
+
+    export_bsdf_function = {
+        "STANDARD": export_bsdf_standard,
+        "UNLIT": export_bsdf_unlit
+    }
+    data = export_bsdf_function[lmtl.bsdf](mtl)
+
+    data["bsdf"] = lmtl.bsdf
+
+    if mtl.animation_data:
+        data["animation"] = export_animation(mtl.animation_data)
+
+    return json.dumps(data).encode("utf-8")
+
+def export_bsdf_standard(mtl):
+    lmtl = mtl.leaf
+    return {
         "baseColorMultiplier": [mtl.diffuse_color.r, mtl.diffuse_color.g, mtl.diffuse_color.b],
         "emissive": [lmtl.emissive.r, lmtl.emissive.g, lmtl.emissive.b],
         "metallicOffset": lmtl.metallic_offset,
@@ -180,10 +196,12 @@ def export_material(mtl):
         "roughnessMap": export_texture_slot(mtl, 3, "__default_black")
     }
 
-    if mtl.animation_data:
-        data["animation"] = export_animation(mtl.animation_data)
-
-    return json.dumps(data).encode("utf-8")
+def export_bsdf_unlit(mtl):
+    lmtl = mtl.leaf
+    return {
+        "emissive": [lmtl.emissive.r, lmtl.emissive.g, lmtl.emissive.b],
+        "emissiveMap": export_texture_slot(mtl, 0, "__default_white")
+    }
 
 def export_texture_slot(mtl, slot_index, default):
     slot = mtl.texture_slots[slot_index]
