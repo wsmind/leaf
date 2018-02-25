@@ -74,12 +74,14 @@ class LeafRenderEngine(bpy.types.RenderEngine):
         global engine
         engine.dll.leaf_render_blender_viewport(context.region.width, context.region.height, view_matrix, projection_matrix)
 
-    def render(self, scene):
-        green = [[0.0, 1.0, 0.0, 1.0]] * scene.render.resolution_x * scene.render.resolution_y
+    def update(self, data, scene):
+        self.view_update(None)
 
+    def render(self, scene):
         result = self.begin_result(0, 0, scene.render.resolution_x, scene.render.resolution_y)
         layer = result.layers[0].passes["Combined"]
-        layer.rect = green
+        global engine
+        engine.dll.leaf_render_blender_frame(ctypes.cast(layer.as_pointer(), ctypes.POINTER(ctypes.c_float)), ctypes.c_float(scene.frame_current))
         self.end_result(result)
 
 class EngineWrapper:
@@ -118,7 +120,9 @@ compatible_panels = [
     bpy.types.DATA_PT_lamp,
     bpy.types.DATA_PT_normals,
     bpy.types.MATERIAL_PT_preview,
+    bpy.types.RENDER_PT_render,
     bpy.types.RENDER_PT_dimensions,
+    bpy.types.RENDER_PT_output,
     bpy.types.WORLD_PT_world,
     bpy.types.WORLD_PT_mist
 ]

@@ -15,7 +15,7 @@ PS_OUTPUT main(BACKGROUND_PS_INPUT input)
 
     float3 direction = normalize(input.worldPosition);
     float2 uv = directionToEquirectangularUV(direction);
-    output.color = environmentTexture.Sample(environmentSampler, uv);
+    output.color = float4(environmentTexture.Sample(environmentSampler, uv).rgb, 1.0);
 
 	return output;
 }

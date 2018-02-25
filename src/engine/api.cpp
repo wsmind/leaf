@@ -50,3 +50,31 @@ LEAFENGINE_API void leaf_render_blender_viewport(int width, int height, float vi
         );
     Engine::getInstance()->renderBlenderViewport(width, height, viewMatrix, projectionMatrix);
 }
+
+// memory layout taken from RE_pipeline.h
+struct RenderPass {
+    struct RenderPass *next, *prev;
+    int channels;
+    char name[64];		/* amount defined in openexr_multi.h */
+    char chan_id[8];	/* amount defined in openexr_multi.h */
+    float *rect;
+    int rectx, recty;
+
+    char fullname[64]; /* EXR_PASS_MAXNAME */
+    char view[64];		/* EXR_VIEW_MAXNAME */
+    int view_id;	/* quick lookup */
+
+    int pad;
+};
+
+LEAFENGINE_API void leaf_render_blender_frame(void *pass, float time)
+{
+    // hack; get the pass pointer directly from the blender object,
+    // to be able to copy image data directly
+    RenderPass *renderPass = (RenderPass *)pass;
+
+    // only RGBA renders supported right now
+    assert(renderPass->channels == 4);
+
+    Engine::getInstance()->renderBlenderFrame(renderPass->rectx, renderPass->recty, renderPass->rect, time);
+}

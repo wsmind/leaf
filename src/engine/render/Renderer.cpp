@@ -421,3 +421,37 @@ void Renderer::renderBlenderViewport(const Scene *scene, const RenderSettings &s
 
     Device::context->Unmap(this->captureBuffer, 0);
 }
+
+void Renderer::renderBlenderFrame(const Scene *scene, const RenderSettings &settings, float *outputBuffer, float deltaTime)
+{
+    assert(this->capture);
+
+    this->render(scene, settings, deltaTime);
+
+    D3D11_MAPPED_SUBRESOURCE mappedCaptureBuffer;
+    HRESULT res = Device::context->Map(this->captureBuffer, 0, D3D11_MAP_READ, 0, &mappedCaptureBuffer);
+    CHECK_HRESULT(res);
+
+    unsigned char *byteData = (unsigned char *)mappedCaptureBuffer.pData;
+
+    const float gamma = 2.2f;
+
+    // flip the image vertically and reserve gamma correction
+    byteData += mappedCaptureBuffer.RowPitch * (settings.frameHeight - 1);
+    for (int y = 0; y < settings.frameHeight; y++)
+    {
+        for (int i = 0; i < settings.frameWidth; i++)
+        {
+            // convert unsigned bytes to float values
+            *outputBuffer++ = powf((float)(*byteData++) / 255.0f, gamma);
+            *outputBuffer++ = powf((float)(*byteData++) / 255.0f, gamma);
+            *outputBuffer++ = powf((float)(*byteData++) / 255.0f, gamma);
+            *outputBuffer++ = 1.0f;
+            byteData++;
+        }
+        byteData -= settings.frameWidth * 4 /* RGBA */;
+        byteData -= mappedCaptureBuffer.RowPitch;
+    }
+
+    Device::context->Unmap(this->captureBuffer, 0);
+}

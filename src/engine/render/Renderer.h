@@ -24,6 +24,7 @@ class Renderer
 
         void render(const Scene *scene, const RenderSettings &settings, float deltaTime);
         void renderBlenderViewport(const Scene *scene, const RenderSettings &settings);
+        void renderBlenderFrame(const Scene *scene, const RenderSettings &settings, float *outputBuffer, float deltaTime);
 
     private:
         int backbufferWidth;

@@ -113,3 +113,21 @@ void Engine::renderBlenderViewport(int width, int height, const glm::mat4 &viewM
 	const RenderSettings &renderSettings = this->scene->updateRenderSettings(width, height, true, viewMatrix, projectionMatrix);
 	this->renderer->renderBlenderViewport(this->scene, renderSettings);
 }
+
+void Engine::renderBlenderFrame(int width, int height, float *outputBuffer, float time)
+{
+    ResourceManager::getInstance()->update();
+
+    const float fixedDeltaTime = 1.0f / 60.0f;
+    const float fps = 60.0f; /* hardcoded 60 fps */
+    const RenderSettings &renderSettings = this->scene->updateRenderSettings(width, height);
+
+    // render twice to ensure correct motion blur
+    this->scene->updateAnimation(time - fixedDeltaTime * fps);
+    this->scene->updateTransforms();
+    this->renderer->render(this->scene, renderSettings, fixedDeltaTime);
+
+    this->scene->updateAnimation(time);
+    this->scene->updateTransforms();
+    this->renderer->renderBlenderFrame(this->scene, renderSettings, outputBuffer, fixedDeltaTime);
+}
