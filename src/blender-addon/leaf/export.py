@@ -12,11 +12,14 @@ import tempfile
 
 from . import cooking
 
-def export_data(output_file, updated_only=False):
+def export_data(output_file, updated_only=False, preview_scene=None):
     data = {}
 
     data["Scene"] = {}
-    for scene in list(bpy.data.scenes):
+    scene_list = list(bpy.data.scenes)
+    if preview_scene:
+        scene_list.append(preview_scene)
+    for scene in scene_list:
         #if scene.is_updated or not updated_only:
         if True:
             print("exporting scene: " + scene.name)
@@ -116,6 +119,9 @@ def export_scene(scene):
             "debug": leaf_scene.bloom_debug
         }
     }
+
+    if scene.name == "preview":
+        print(json.dumps(data, indent=2))
 
     return json.dumps(data).encode("utf-8")
 

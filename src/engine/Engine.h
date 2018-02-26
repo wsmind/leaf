@@ -23,7 +23,7 @@ class Engine
 
         void render(int width, int height, float deltaTime);
         void renderBlenderViewport(int width, int height, const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix);
-        void renderBlenderFrame(int width, int height, float *outputBuffer, float time);
+        void renderBlenderFrame(const char *sceneName, int width, int height, float *outputBuffer, float time);
 
     private:
         static Engine *instance;

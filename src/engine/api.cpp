@@ -67,7 +67,7 @@ struct RenderPass {
     int pad;
 };
 
-LEAFENGINE_API void leaf_render_blender_frame(void *pass, float time)
+LEAFENGINE_API void leaf_render_blender_frame(const char *sceneName, void *pass, float time)
 {
     // hack; get the pass pointer directly from the blender object,
     // to be able to copy image data directly
@@ -76,5 +76,5 @@ LEAFENGINE_API void leaf_render_blender_frame(void *pass, float time)
     // only RGBA renders supported right now
     assert(renderPass->channels == 4);
 
-    Engine::getInstance()->renderBlenderFrame(renderPass->rectx, renderPass->recty, renderPass->rect, time);
+    Engine::getInstance()->renderBlenderFrame(sceneName, renderPass->rectx, renderPass->recty, renderPass->rect, time);
 }

@@ -41,16 +41,21 @@ class LeafRenderEngine(bpy.types.RenderEngine):
     bl_idname = "LEAF"
     bl_label = "Leaf"
 
-    # viewport render
-    def view_update(self, context):
+    bl_use_preview = True
+
+    def export(self, preview_scene=None):
         global engine
 
         with io.BytesIO() as f:
-            export.export_data(f, not engine.full_data_send)
+            export.export_data(f, not engine.full_data_send, preview_scene)
             engine.full_data_send = False
 
             data_bytes = f.getvalue()
             engine.dll.leaf_load_data(data_bytes, len(data_bytes))
+
+    # viewport render
+    def view_update(self, context):
+        self.export()
 
     def view_draw(self, context):
         vm = context.region_data.view_matrix.copy()
@@ -75,13 +80,13 @@ class LeafRenderEngine(bpy.types.RenderEngine):
         engine.dll.leaf_render_blender_viewport(context.region.width, context.region.height, view_matrix, projection_matrix)
 
     def update(self, data, scene):
-        self.view_update(None)
+        self.export(scene if self.is_preview else None)
 
     def render(self, scene):
         result = self.begin_result(0, 0, scene.render.resolution_x, scene.render.resolution_y)
         layer = result.layers[0].passes["Combined"]
         global engine
-        engine.dll.leaf_render_blender_frame(ctypes.cast(layer.as_pointer(), ctypes.POINTER(ctypes.c_float)), ctypes.c_float(scene.frame_current))
+        engine.dll.leaf_render_blender_frame(scene.name, ctypes.cast(layer.as_pointer(), ctypes.POINTER(ctypes.c_float)), ctypes.c_float(scene.frame_current))
         self.end_result(result)
 
 class EngineWrapper:
