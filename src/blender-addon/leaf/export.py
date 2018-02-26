@@ -104,7 +104,7 @@ def export_scene(scene):
     if world:
         ambient = [world.ambient_color.r, world.ambient_color.g, world.ambient_color.b]
         mist = world.mist_settings.intensity
-        environmentMap = world.active_texture.name if world.active_texture else "__default"
+        environmentMap = world.active_texture.name if world.active_texture else "__default_black"
 
     data = {
         "nodes": [export_scene_node(obj, objects) for obj in objects],
