@@ -27,6 +27,8 @@ class Renderer
         void renderBlenderFrame(const Scene *scene, const RenderSettings &settings, float *outputBuffer, float deltaTime);
 
     private:
+        void initializeRenderDoc(HWND hwnd, ID3D11Device *device);
+
         int backbufferWidth;
         int backbufferHeight;
         bool capture;

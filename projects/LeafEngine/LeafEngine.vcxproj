@@ -199,6 +199,7 @@
     <ClInclude Include="..\..\src\engine\animation\PropertyMapping.h" />
     <ClInclude Include="..\..\src\engine\cJSON\cJSON.h" />
     <ClInclude Include="..\..\src\engine\DDSTextureLoader\DDSTextureLoader.h" />
+    <ClInclude Include="..\..\src\engine\RenderDoc\renderdoc_app.h" />
     <ClInclude Include="..\..\src\engine\render\BloomRenderer.h" />
     <ClInclude Include="..\..\src\engine\render\Bsdf.h" />
     <ClInclude Include="..\..\src\engine\render\Camera.h" />

@@ -274,6 +274,9 @@
     <ClInclude Include="..\..\src\engine\render\UnlitBsdf.h">
       <Filter>render</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\engine\RenderDoc\renderdoc_app.h">
+      <Filter>RenderDoc</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\..\src\engine\render\shaders\plop.vs.hlsl">
@@ -397,6 +400,9 @@
     </Filter>
     <Filter Include="render\shaders\constants">
       <UniqueIdentifier>{732e4431-2c83-4b86-90d6-e5b78b4b7c34}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="RenderDoc">
+      <UniqueIdentifier>{629b52f0-677f-483a-8d99-1861f151dee1}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

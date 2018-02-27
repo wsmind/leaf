@@ -9,6 +9,8 @@
 #include <engine/glm/glm.hpp>
 #include <engine/glm/gtc/matrix_inverse.hpp>
 
+#include <engine/RenderDoc/renderdoc_app.h>
+
 #include <engine/render/Device.h>
 #include <engine/render/graph/GPUProfiler.h>
 #include <engine/render/Image.h>
@@ -80,6 +82,8 @@ Renderer::Renderer(HWND hwnd, int backbufferWidth, int backbufferHeight, bool ca
     #endif
     HRESULT res = D3D11CreateDeviceAndSwapChain(NULL, D3D_DRIVER_TYPE_HARDWARE, NULL, flags, NULL, 0, D3D11_SDK_VERSION, &swapChainDesc, &this->swapChain, &Device::device, NULL, &Device::context);
     CHECK_HRESULT(res);
+
+    this->initializeRenderDoc(hwnd, Device::device);
 
     res = this->swapChain->GetBuffer(0, __uuidof(this->backBuffer), (void **)&this->backBuffer);
     CHECK_HRESULT(res);
@@ -454,4 +458,25 @@ void Renderer::renderBlenderFrame(const Scene *scene, const RenderSettings &sett
     }
 
     Device::context->Unmap(this->captureBuffer, 0);
+}
+
+void Renderer::initializeRenderDoc(HWND hwnd, ID3D11Device *device)
+{
+    HMODULE renderDocModule = GetModuleHandle("renderdoc.dll");
+    if (renderDocModule != NULL)
+    {
+        printf("RenderDoc found!\n");
+
+        pRENDERDOC_GetAPI renderDocGetApi = (pRENDERDOC_GetAPI)GetProcAddress(renderDocModule, "RENDERDOC_GetAPI");
+
+        RENDERDOC_API_1_1_1 *renderDoc;
+        if (renderDocGetApi(eRENDERDOC_API_Version_1_1_1, (void **)&renderDoc))
+        {
+            renderDoc->SetActiveWindow(device, (void *)hwnd);
+        }
+        else
+        {
+            printf("Failed to load the RenderDoc API\n");
+        }
+    }
 }
