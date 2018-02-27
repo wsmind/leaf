@@ -29,7 +29,8 @@ SceneNode::SceneNode(const cJSON *json, const SceneNode *parent)
         case 1: this->data = ResourceManager::getInstance()->requestResource<Mesh>(dataName); break;
         case 2: this->data = ResourceManager::getInstance()->requestResource<Light>(dataName); break;
     }
-cJSON *position = cJSON_GetObjectItem(json, "position");
+    
+    cJSON *position = cJSON_GetObjectItem(json, "position");
     this->position = glm::vec3(cJSON_GetArrayItem(position, 0)->valuedouble, cJSON_GetArrayItem(position, 1)->valuedouble, cJSON_GetArrayItem(position, 2)->valuedouble);
 
     cJSON *orientation = cJSON_GetObjectItem(json, "orientation");
