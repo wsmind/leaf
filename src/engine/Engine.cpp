@@ -122,16 +122,17 @@ void Engine::renderBlenderFrame(const char *sceneName, int width, int height, fl
 
     const float fixedDeltaTime = 1.0f / 60.0f;
     const float fps = 60.0f; /* hardcoded 60 fps */
-    const RenderSettings &renderSettings = renderScene->updateRenderSettings(width, height);
 
     // render twice to ensure correct motion blur
     renderScene->updateAnimation(time - fixedDeltaTime * fps);
     renderScene->updateTransforms();
+    const RenderSettings &renderSettings = renderScene->updateRenderSettings(width, height);
     this->renderer->render(renderScene, renderSettings, fixedDeltaTime);
 
     renderScene->updateAnimation(time);
     renderScene->updateTransforms();
-    this->renderer->renderBlenderFrame(renderScene, renderSettings, outputBuffer, fixedDeltaTime);
+    const RenderSettings &renderSettings2 = renderScene->updateRenderSettings(width, height);
+    this->renderer->renderBlenderFrame(renderScene, renderSettings2, outputBuffer, fixedDeltaTime);
 
     ResourceManager::getInstance()->releaseResource(renderScene);
 }
