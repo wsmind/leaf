@@ -12,66 +12,36 @@ import tempfile
 
 from . import cooking
 
-def export_data(output_file, updated_only=False, preview_scene=None):
-    data = {}
+def export_data(output_file, data, prefix, updated_only=False):
 
-    data["Scene"] = {}
-    scene_list = list(bpy.data.scenes)
-    if preview_scene:
-        scene_list.append(preview_scene)
-    for scene in scene_list:
-        #if scene.is_updated or not updated_only:
-        if True:
-            print("exporting scene: " + scene.name)
-            data["Scene"][scene.name] = export_scene(scene)
+    data_types = (
+        ("Scene", data.scenes, export_scene),
+        ("Material", data.materials, export_material),
+        ("Texture", data.textures, export_texture),
+        ("Image", data.images, export_image),
+        ("Mesh", data.meshes, export_mesh),
+        ("Action", data.actions, export_action),
+        ("Light", data.lamps, export_light),
+        ("Camera", data.cameras, export_camera)
+    )
 
-    data["Material"] = {}
-    for mtl in list(bpy.data.materials):
-        if mtl.is_updated or not updated_only:
-            print("exporting material: " + mtl.name)
-            data["Material"][mtl.name] = export_material(mtl)
+    def export_data_type(type_name, collection, export_function):
+        exported_blocks = {}
+        for block in collection:
+            if block.is_updated or not updated_only:
+                buffer = export_function(block, lambda ref: prefix + ref.name)
+                if buffer is not None:
+                    exported_blocks[prefix + block.name] = buffer
+                else:
+                    print("Failed to export %s: '%s'" % (type_name, block.name))
+        
+        return exported_blocks
 
-    data["Texture"] = {}
-    for tex in list(bpy.data.textures):
-        if tex.is_updated or not updated_only:
-            print("exporting texture: " + tex.name)
-            data["Texture"][tex.name] = export_texture(tex)
+    output = {
+        type_name: export_data_type(type_name, collection, export_function) for type_name, collection, export_function in data_types
+    }
 
-    data["Image"] = {}
-    for img in list(bpy.data.images):
-        if img.is_updated or not updated_only:
-            print("exporting image: " + img.name)
-            data["Image"][img.name] = export_image(img)
-
-    data["Mesh"] = {}
-    for mesh in list(bpy.data.meshes):
-        if mesh.is_updated or not updated_only:
-            print("exporting mesh: " + mesh.name)
-            mesh_data = export_mesh(mesh)
-            if mesh_data is not None:
-                data["Mesh"][mesh.name] = mesh_data
-            else:
-                print("failed to export mesh " + mesh.name)
-
-    data["Action"] = {}
-    for action in list(bpy.data.actions):
-        if action.is_updated or not updated_only:
-            print("exporting action: " + action.name)
-            data["Action"][action.name] = export_action(action)
-
-    data["Light"] = {}
-    for light in list(bpy.data.lamps):
-        if light.is_updated or not updated_only:
-            print("exporting light: " + light.name)
-            data["Light"][light.name] = export_light(light)
-
-    data["Camera"] = {}
-    for camera in list(bpy.data.cameras):
-        if camera.is_updated or not updated_only:
-            print("exporting camera: " + camera.name)
-            data["Camera"][camera.name] = export_camera(camera)
-
-    for typename, resources in data.items():
+    for typename, resources in output.items():
         typebytes = typename.encode("utf-8")
         for name, blob in resources.items():
             namebytes = name.encode("utf-8")
@@ -87,7 +57,7 @@ def export_data(output_file, updated_only=False, preview_scene=None):
             output_file.write(struct.pack("=I", len(blob)))
             output_file.write(blob)
 
-def export_scene(scene):
+def export_scene(scene, export_reference):
     leaf_scene = scene.leaf
 
     markers = [marker for marker in scene.timeline_markers if marker.camera]
@@ -104,10 +74,10 @@ def export_scene(scene):
     if world:
         ambient = [world.ambient_color.r, world.ambient_color.g, world.ambient_color.b]
         mist = world.mist_settings.intensity
-        environmentMap = world.active_texture.name if world.active_texture else "__default_black"
+        environmentMap = export_reference(world.active_texture) if world.active_texture else "__default_black"
 
     data = {
-        "nodes": [export_scene_node(obj, objects) for obj in objects],
+        "nodes": [export_scene_node(obj, objects, export_reference) for obj in objects],
         "markers": [export_marker(marker, objects) for marker in markers],
         "activeCamera": objects.index(scene.camera) if scene.camera else 0,
         "ambientColor": ambient,
@@ -120,9 +90,6 @@ def export_scene(scene):
         }
     }
 
-    if scene.name == "preview":
-        print(json.dumps(data, indent=2))
-
     return json.dumps(data).encode("utf-8")
 
 def compute_parent_depth(obj):
@@ -133,14 +100,14 @@ def compute_parent_depth(obj):
 
     return depth
 
-def export_scene_node(obj, all_objects):
+def export_scene_node(obj, all_objects, export_reference):
     node = {
         "type": export_object_type(obj.type),
         "position": [obj.location.x, obj.location.y, obj.location.z],
         "orientation": [obj.rotation_euler.x, obj.rotation_euler.y, obj.rotation_euler.z],
         "scale": [obj.scale.x, obj.scale.y, obj.scale.z],
         "hide": float(obj.hide),
-        "data": obj.data.name if obj.data else ""
+        "data": export_reference(obj.data) if obj.data else ""
     }
 
     if obj.parent:
@@ -173,52 +140,52 @@ def export_marker(marker, camera_objects):
         "time": marker.frame
     }
 
-def export_material(mtl):
+def export_material(mtl, export_reference):
     lmtl = mtl.leaf
 
     export_bsdf_function = {
         "STANDARD": export_bsdf_standard,
         "UNLIT": export_bsdf_unlit
     }
-    data = export_bsdf_function[lmtl.bsdf](mtl)
+    data = export_bsdf_function[lmtl.bsdf](mtl, export_reference)
 
     data["bsdf"] = lmtl.bsdf
 
     if mtl.animation_data:
-        data["animation"] = export_animation(mtl.animation_data)
+        data["animation"] = export_animation(mtl.animation_data, export_reference)
 
     return json.dumps(data).encode("utf-8")
 
-def export_bsdf_standard(mtl):
+def export_bsdf_standard(mtl, export_reference):
     lmtl = mtl.leaf
     return {
         "baseColorMultiplier": [mtl.diffuse_color.r, mtl.diffuse_color.g, mtl.diffuse_color.b],
         "emissive": [lmtl.emissive.r, lmtl.emissive.g, lmtl.emissive.b],
         "metallicOffset": lmtl.metallic_offset,
         "roughnessOffset": lmtl.roughness_offset,
-        "baseColorMap": export_texture_slot(mtl, 0, "__default_white"),
-        "normalMap": export_texture_slot(mtl, 1, "__default_normal"),
-        "metallicMap": export_texture_slot(mtl, 2, "__default_black"),
-        "roughnessMap": export_texture_slot(mtl, 3, "__default_black")
+        "baseColorMap": export_texture_slot(mtl, 0, "__default_white", export_reference),
+        "normalMap": export_texture_slot(mtl, 1, "__default_normal", export_reference),
+        "metallicMap": export_texture_slot(mtl, 2, "__default_black", export_reference),
+        "roughnessMap": export_texture_slot(mtl, 3, "__default_black", export_reference)
     }
 
-def export_bsdf_unlit(mtl):
+def export_bsdf_unlit(mtl, export_reference):
     lmtl = mtl.leaf
     return {
         "emissive": [lmtl.emissive.r, lmtl.emissive.g, lmtl.emissive.b],
-        "emissiveMap": export_texture_slot(mtl, 0, "__default_white")
+        "emissiveMap": export_texture_slot(mtl, 0, "__default_white", export_reference)
     }
 
-def export_texture_slot(mtl, slot_index, default):
+def export_texture_slot(mtl, slot_index, default, export_reference):
     slot = mtl.texture_slots[slot_index]
 
     if not slot: return default
     if not slot.use: return default
     if not slot.texture: return default
 
-    return slot.texture.name
+    return export_reference(slot.texture)
 
-def export_texture(tex):
+def export_texture(tex, export_reference):
     # filter out unsupported types
     if tex.type not in ["IMAGE", "ENVIRONMENT_MAP"]:
         data = {
@@ -232,13 +199,13 @@ def export_texture(tex):
     }
 
     if tex.type == "IMAGE":
-        output["image"] = tex.image.name if tex.image else "__default"
+        output["image"] = export_reference(tex.image) if tex.image else "__default"
     if tex.type == "ENVIRONMENT_MAP":
-        output["image"] = tex.image.name if tex.image else "__default"
+        output["image"] = export_reference(tex.image) if tex.image else "__default"
 
     return json.dumps(output).encode("utf-8")
 
-def export_image(img):
+def export_image(img, export_reference):
     options = {
         "cuda": bpy.context.user_preferences.addons[__package__].preferences.cuda_enabled,
         "linear": img.colorspace_settings.name == "Linear",
@@ -249,7 +216,7 @@ def export_image(img):
     return cooking.cooker.cook("image", img.filepath, options)
 
 
-def export_mesh(mesh):
+def export_mesh(mesh, export_reference):
     #min_bound = (math.inf, math.inf, math.inf)
     #max_bound = (-math.inf, -math.inf, -math.inf)
 
@@ -329,7 +296,7 @@ def export_mesh(mesh):
         index_list = indices[material_index]
 
         # material name
-        material_name_bytes = material.name.encode("utf-8") if material else "__default".encode("utf-8")
+        material_name_bytes = export_reference(material).encode("utf-8") if material else "__default".encode("utf-8")
         output.write(struct.pack("=I", len(material_name_bytes)))
         output.write(material_name_bytes)
 
@@ -348,7 +315,7 @@ def export_mesh(mesh):
 
     return output.getvalue()
 
-def export_action(action):
+def export_action(action, export_reference):
     data = {
         "fcurves": [export_fcurve(fcurve) for fcurve in action.fcurves],
     }
@@ -380,12 +347,12 @@ def export_interpolation(interpolation):
     if interpolation == "BEZIER": return 2
     return 0
 
-def export_animation(anim_data):
+def export_animation(anim_data, export_reference):
     return {
-        "action": anim_data.action.name if anim_data.action else "__default"
+        "action": export_reference(anim_data.action) if anim_data.action else "__default"
     }
 
-def export_light(light):
+def export_light(light, export_reference):
     data = {
         "color": [light.color.r, light.color.g, light.color.b],
         "energy": light.energy,
@@ -406,7 +373,7 @@ def export_light_type(type):
     if type == "SPOT": return 1
     return 0
 
-def export_camera(camera):
+def export_camera(camera, export_reference):
     data = {
         "lens": camera.lens,
         "ortho_scale": camera.ortho_scale,

@@ -32,6 +32,7 @@ import _ctypes
 import os
 import shutil
 import io
+import threading
 
 from bpy.app.handlers import persistent
 
@@ -43,21 +44,29 @@ class LeafRenderEngine(bpy.types.RenderEngine):
 
     bl_use_preview = True
 
-    def export(self, preview_scene=None):
+    def export(self, data, prefix=""):
         global engine
 
         with io.BytesIO() as f:
-            export.export_data(f, not engine.full_data_send, preview_scene)
-            engine.full_data_send = False
+            if self.is_preview:
+                export.export_data(f, data, prefix, False)
+            else:
+                export.export_data(f, data, prefix, not engine.full_data_send)
+                engine.full_data_send = False
 
             data_bytes = f.getvalue()
             engine.dll.leaf_load_data(data_bytes, len(data_bytes))
 
     # viewport render
     def view_update(self, context):
-        self.export()
+        global engine
+        engine.acquire()
+        self.export(bpy.data, "")
+        engine.release()
 
     def view_draw(self, context):
+        global engine
+        engine.acquire()
         vm = context.region_data.view_matrix.copy()
         vm.transpose()
         view_matrix = (ctypes.c_float * 16)(
@@ -76,18 +85,23 @@ class LeafRenderEngine(bpy.types.RenderEngine):
             pm[3][0], pm[3][1], pm[3][2], pm[3][3]
         )
 
-        global engine
         engine.dll.leaf_render_blender_viewport(context.region.width, context.region.height, view_matrix, projection_matrix)
+        engine.release()
 
     def update(self, data, scene):
-        self.export(scene if self.is_preview else None)
+        global engine
+        engine.acquire()
+        self.export(data, "preview." if self.is_preview else "")
+        engine.release()
 
     def render(self, scene):
+        global engine
+        engine.acquire()
         result = self.begin_result(0, 0, scene.render.resolution_x, scene.render.resolution_y)
         layer = result.layers[0].passes["Combined"]
-        global engine
-        engine.dll.leaf_render_blender_frame(scene.name, ctypes.cast(layer.as_pointer(), ctypes.POINTER(ctypes.c_float)), ctypes.c_float(scene.frame_current))
+        engine.dll.leaf_render_blender_frame((("preview." if self.is_preview else "") + scene.name).encode("utf-8"), ctypes.cast(layer.as_pointer(), ctypes.POINTER(ctypes.c_float)), ctypes.c_float(scene.frame_current))
         self.end_result(result)
+        engine.release()
 
 class EngineWrapper:
     def __init__(self):
@@ -98,8 +112,10 @@ class EngineWrapper:
         self.dll_name = os.path.join(self.script_dir, "LeafEngine.dll")
         self.loaded_dll_name = os.path.join(bpy.app.tempdir, "LeafEngine-Loaded.dll")
 
+        self.lock = threading.Lock()
+
     def load(self):
-        # copy the dll, to allow how reload after rebuild
+        # copy the dll, to allow hot reload after rebuild
         shutil.copy(self.dll_name, self.loaded_dll_name)
 
         # loading pattern from http://stackoverflow.com/questions/21770419/free-the-opened-ctypes-library-in-python
@@ -111,6 +127,12 @@ class EngineWrapper:
 
         # remove the temp dll
         os.remove(self.loaded_dll_name)
+    
+    def acquire(self):
+        self.lock.acquire()
+
+    def release(self):
+        self.lock.release()
 
 compatible_panels = [
     bpy.types.TEXTURE_PT_context_texture,

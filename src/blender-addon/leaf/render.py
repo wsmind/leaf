@@ -24,7 +24,7 @@ class LEAF_OT_export(Operator):
         # export data
         from . import export
         with open(os.path.join(rd.filepath, "data.bin"), "wb") as f:
-            export.export_data(f)
+            export.export_data(f, bpy.data, "")
 
         # copy engine files in the output folder
         script_dir = os.path.dirname(__file__)
