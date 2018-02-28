@@ -121,7 +121,7 @@ def export_scene_node(obj, all_objects, export_reference):
         ]
 
     if obj.animation_data:
-        node["animation"] = export_animation(obj.animation_data)
+        node["animation"] = export_animation(obj.animation_data, export_reference)
 
     return node
 
@@ -364,7 +364,7 @@ def export_light(light, export_reference):
     }
 
     if light.animation_data:
-        data["animation"] = export_animation(light.animation_data)
+        data["animation"] = export_animation(light.animation_data, export_reference)
 
     return json.dumps(data).encode("utf-8")
 
@@ -388,7 +388,7 @@ def export_camera(camera, export_reference):
     }
 
     if camera.animation_data:
-        data["animation"] = export_animation(camera.animation_data)
+        data["animation"] = export_animation(camera.animation_data, export_reference)
 
     return json.dumps(data).encode("utf-8")
 
