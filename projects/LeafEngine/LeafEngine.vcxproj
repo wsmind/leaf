@@ -190,6 +190,7 @@
     <ClCompile Include="..\..\src\engine\render\Texture.cpp" />
     <ClCompile Include="..\..\src\engine\render\UnlitBsdf.cpp" />
     <ClCompile Include="..\..\src\engine\resource\ResourceManager.cpp" />
+    <ClCompile Include="..\..\src\engine\scene\ParticleSettings.cpp" />
     <ClCompile Include="..\..\src\engine\scene\Scene.cpp" />
     <ClCompile Include="..\..\src\engine\scene\SceneNode.cpp" />
     <ClInclude Include="..\..\src\engine\animation\Action.h" />
@@ -238,6 +239,7 @@
     <ClInclude Include="..\..\src\engine\resource\ResourceManager.h" />
     <ClInclude Include="..\..\src\engine\resource\ResourceManager.inline.h" />
     <ClInclude Include="..\..\src\engine\resource\ResourceWatcher.h" />
+    <ClInclude Include="..\..\src\engine\scene\ParticleSettings.h" />
     <ClInclude Include="..\..\src\engine\scene\Scene.h" />
     <ClInclude Include="..\..\src\engine\scene\SceneNode.h" />
     <ClInclude Include="..\..\src\engine\render\shaders\depthonly.h" />

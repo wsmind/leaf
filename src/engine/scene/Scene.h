@@ -19,21 +19,21 @@ class RenderList;
 class Scene : public Resource
 {
     public:
-    static const std::string resourceClassName;
-    static const std::string defaultResourceData;
+        static const std::string resourceClassName;
+        static const std::string defaultResourceData;
 
-    Scene() : currentCamera(0) {}
+        Scene() : currentCamera(0) {}
 
-    virtual void load(const unsigned char *buffer, size_t size) override;
-    virtual void unload() override;
+        virtual void load(const unsigned char *buffer, size_t size) override;
+        virtual void unload() override;
 
-    void updateAnimation(float time);
+        void updateAnimation(float time);
 
-    void updateTransforms();
+        void updateTransforms();
 
-    void fillRenderList(RenderList *renderList) const;
+        void fillRenderList(RenderList *renderList) const;
 
-	const RenderSettings &updateRenderSettings(int width, int height, bool overrideCamera = false, const glm::mat4 &viewMatrixOverride = glm::mat4(), const glm::mat4 &projectionMatrixOverride = glm::mat4());
+	    const RenderSettings &updateRenderSettings(int width, int height, bool overrideCamera = false, const glm::mat4 &viewMatrixOverride = glm::mat4(), const glm::mat4 &projectionMatrixOverride = glm::mat4());
 
     private:
 		void updateCameraSettings(bool overrideCamera, const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix, float aspect);

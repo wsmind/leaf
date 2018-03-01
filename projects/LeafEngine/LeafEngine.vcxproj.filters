@@ -99,6 +99,9 @@
     <ClCompile Include="..\..\src\engine\render\UnlitBsdf.cpp">
       <Filter>render</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\engine\scene\ParticleSettings.cpp">
+      <Filter>scene</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\engine\api.h" />
@@ -276,6 +279,9 @@
     </ClInclude>
     <ClInclude Include="..\..\src\engine\RenderDoc\renderdoc_app.h">
       <Filter>RenderDoc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\engine\scene\ParticleSettings.h">
+      <Filter>scene</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

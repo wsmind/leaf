@@ -22,7 +22,8 @@ def export_data(output_file, data, prefix, updated_only=False):
         ("Mesh", data.meshes, export_mesh),
         ("Action", data.actions, export_action),
         ("Light", data.lamps, export_light),
-        ("Camera", data.cameras, export_camera)
+        ("Camera", data.cameras, export_camera),
+        ("ParticleSettings", data.particles, export_particle_settings)
     )
 
     def export_data_type(type_name, collection, export_function):
@@ -401,3 +402,14 @@ def export_camera_type(type):
         return 2
 
     return 0
+
+def export_particle_settings(particle_settings, export_reference):
+    data = {
+        "count": particle_settings.count,
+        "frame_start": particle_settings.frame_start,
+        "frame_end": particle_settings.frame_end,
+        "lifetime": particle_settings.lifetime,
+        "lifetime_random": particle_settings.lifetime_random
+    }
+
+    return json.dumps(data).encode("utf-8")
