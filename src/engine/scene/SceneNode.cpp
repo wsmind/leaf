@@ -10,7 +10,6 @@
 #include <engine/render/Camera.h>
 #include <engine/render/Light.h>
 #include <engine/render/Mesh.h>
-#include <engine/scene/ParticleSystem.h>
 #include <engine/resource/ResourceManager.h>
 
 #include <engine/cJSON/cJSON.h>
@@ -82,6 +81,9 @@ SceneNode::~SceneNode()
 
     if (this->data != nullptr)
         ResourceManager::getInstance()->releaseResource(this->data);
+
+    for (auto *particleSystem : this->particleSystems)
+        delete particleSystem;
 }
 
 void SceneNode::registerAnimation(AnimationPlayer *player) const

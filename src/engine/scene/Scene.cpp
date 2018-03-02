@@ -138,6 +138,9 @@ void Scene::fillRenderList(RenderList *renderList) const
 
                 renderList->addJob(job);
             }
+
+            // append particles attached to this node
+            node->fillParticleRenderList(renderList);
         }
     });
 

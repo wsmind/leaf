@@ -4,11 +4,13 @@
 
 #include <engine/glm/glm.hpp>
 
+#include <engine/scene/ParticleSystem.h>
+
 struct cJSON;
 class AnimationData;
 class AnimationPlayer;
-class ParticleSystem;
 class Resource;
+class RenderList;
 
 class SceneNode
 {
@@ -25,14 +27,16 @@ class SceneNode
         // (parent must have been updated before to ensure correctness)
         void updateTransforms();
 
-        glm::mat4 getCurrentTransform() const { return this->currentTransform; }
-        glm::mat4 getPreviousFrameTransform() const { return this->previousFrameTransform; }
+        const glm::mat4 &getCurrentTransform() const { return this->currentTransform; }
+        const glm::mat4 &getPreviousFrameTransform() const { return this->previousFrameTransform; }
 
         // view transform is a special case because cameras need to ignore scaling
         glm::mat4 computeViewTransform() const;
 
         template <typename DataType>
         DataType *getData() const;
+
+        inline void fillParticleRenderList(RenderList *renderList) const;
 
     private:
         // transform
@@ -62,4 +66,10 @@ template <typename DataType>
 DataType *SceneNode::getData() const
 {
     return static_cast<DataType *>(this->data);
+}
+
+void SceneNode::fillParticleRenderList(RenderList *renderList) const
+{
+    for (auto *particleSystem : this->particleSystems)
+        particleSystem->fillRenderList(renderList);
 }
