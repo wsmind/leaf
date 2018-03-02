@@ -1,10 +1,13 @@
 #pragma once
 
+#include <vector>
+
 #include <engine/glm/glm.hpp>
 
 struct cJSON;
 class AnimationData;
 class AnimationPlayer;
+class ParticleSystem;
 class Resource;
 
 class SceneNode
@@ -51,6 +54,8 @@ class SceneNode
 
         // custom data attached to this node
         Resource *data;
+
+        std::vector<ParticleSystem *> particleSystems;
 };
 
 template <typename DataType>

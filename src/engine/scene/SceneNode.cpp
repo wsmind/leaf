@@ -6,10 +6,11 @@
 
 #include <engine/animation/AnimationData.h>
 #include <engine/animation/AnimationPlayer.h>
+#include <engine/animation/PropertyMapping.h>
 #include <engine/render/Camera.h>
 #include <engine/render/Light.h>
 #include <engine/render/Mesh.h>
-#include <engine/animation/PropertyMapping.h>
+#include <engine/scene/ParticleSystem.h>
 #include <engine/resource/ResourceManager.h>
 
 #include <engine/cJSON/cJSON.h>
@@ -40,6 +41,16 @@ SceneNode::SceneNode(const cJSON *json, const SceneNode *parent)
     this->scale = glm::vec3(cJSON_GetArrayItem(scale, 0)->valuedouble, cJSON_GetArrayItem(scale, 1)->valuedouble, cJSON_GetArrayItem(scale, 2)->valuedouble);
 
     this->hide = (float)cJSON_GetObjectItem(json, "hide")->valuedouble;
+
+    cJSON *particleSystems = cJSON_GetObjectItem(json, "particleSystems");
+    if (particleSystems)
+    {
+        for (int i = 0; i < cJSON_GetArraySize(particleSystems); i++)
+        {
+            cJSON *ps = cJSON_GetArrayItem(particleSystems, i);
+            this->particleSystems.push_back(new ParticleSystem(ps));
+        }
+    }
 
     cJSON *animation = cJSON_GetObjectItem(json, "animation");
     if (animation)

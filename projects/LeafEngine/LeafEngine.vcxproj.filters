@@ -102,6 +102,9 @@
     <ClCompile Include="..\..\src\engine\scene\ParticleSettings.cpp">
       <Filter>scene</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\engine\scene\ParticleSystem.cpp">
+      <Filter>scene</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\engine\api.h" />
@@ -281,6 +284,9 @@
       <Filter>RenderDoc</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\engine\scene\ParticleSettings.h">
+      <Filter>scene</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\engine\scene\ParticleSystem.h">
       <Filter>scene</Filter>
     </ClInclude>
   </ItemGroup>

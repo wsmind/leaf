@@ -111,6 +111,9 @@ def export_scene_node(obj, all_objects, export_reference):
         "data": export_reference(obj.data) if obj.data else ""
     }
 
+    if len(obj.particle_systems) > 0:
+        node["particleSystems"] = [export_particle_system(ps, export_reference) for ps in obj.particle_systems]
+
     if obj.parent:
         pm = obj.matrix_parent_inverse
         node["parent"] = all_objects.index(obj.parent)
@@ -134,6 +137,12 @@ def export_object_type(type):
     if type == "LAMP":
         return 2
     return -1
+
+def export_particle_system(ps, export_reference):
+    return {
+        "settings": export_reference(ps.settings),
+        "seed": ps.seed
+    }
 
 def export_marker(marker, camera_objects):
     return {
