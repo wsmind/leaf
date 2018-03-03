@@ -419,6 +419,8 @@ def export_particle_settings(particle_settings, export_reference):
         "frame_end": particle_settings.frame_end,
         "lifetime": particle_settings.lifetime,
         "lifetime_random": particle_settings.lifetime_random,
+        "size": particle_settings.particle_size,
+        "size_random": particle_settings.size_random,
         "duplicate": export_reference(particle_settings.dupli_object.data) if particle_settings.dupli_object.type == "MESH" else "__default"
     }
 

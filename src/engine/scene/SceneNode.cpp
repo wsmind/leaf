@@ -11,6 +11,7 @@
 #include <engine/render/Light.h>
 #include <engine/render/Mesh.h>
 #include <engine/resource/ResourceManager.h>
+#include <engine/scene/ParticleSystem.h>
 
 #include <engine/cJSON/cJSON.h>
 
@@ -140,7 +141,7 @@ glm::mat4 SceneNode::computeViewTransform() const
 void SceneNode::updateParticles(float time)
 {
     for (auto *particleSystem : this->particleSystems)
-        particleSystem->update(time);
+        particleSystem->update(time, this->currentTransform);
 }
 
 void SceneNode::fillParticleRenderList(RenderList *renderList) const

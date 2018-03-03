@@ -1,5 +1,9 @@
 #pragma once
 
+#include <vector>
+
+#include <engine/glm/glm.hpp>
+
 #include <engine/resource/ResourceWatcher.h>
 
 struct cJSON;
@@ -17,7 +21,7 @@ class ParticleSystem: public ResourceWatcher
         virtual void onResourceUpdated(Resource *resource) override;
 
         // step simulation
-        void update(float time);
+        void update(float time, const glm::mat4 &emitterTransform);
 
         // send active particles as render jobs
         void fillRenderList(RenderList *renderList) const;
@@ -26,10 +30,24 @@ class ParticleSystem: public ResourceWatcher
         void createSimulation();
         void destroySimulation();
 
-        void updateSimulation(float step);
+        void stepSimulation(float deltaTime, const glm::mat4 &emitterTransform);
         
         ParticleSettings *settings;
         int seed;
 
-        float currentTime;
+        float simulationTime;
+
+        struct Particle
+        {
+            float startTime;
+            float endTime;
+
+            bool visible;
+
+            glm::vec3 position; // local to emitter before being born, then world space
+            glm::vec3 velocity;
+
+            float size;
+        };
+        std::vector<Particle> particles;
 };

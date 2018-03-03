@@ -4,13 +4,12 @@
 
 #include <engine/glm/glm.hpp>
 
-#include <engine/scene/ParticleSystem.h>
-
 struct cJSON;
 class AnimationData;
 class AnimationPlayer;
 class Resource;
 class RenderList;
+class ParticleSystem;
 
 class SceneNode
 {

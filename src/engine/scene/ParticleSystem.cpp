@@ -2,6 +2,9 @@
 
 #include <engine/cJSON/cJSON.h>
 
+#include <engine/glm/gtc/matrix_transform.hpp>
+#include <engine/glm/gtc/random.hpp>
+
 #include <engine/render/Mesh.h>
 #include <engine/render/RenderList.h>
 #include <engine/scene/ParticleSettings.h>
@@ -28,9 +31,10 @@ void ParticleSystem::onResourceUpdated(Resource *resource)
     this->createSimulation();
 }
 
-void ParticleSystem::update(float time)
+void ParticleSystem::update(float time, const glm::mat4 &emitterTransform)
 {
-
+    // most basic simulation stepping ever
+    this->stepSimulation(time - this->simulationTime, emitterTransform);
 }
 
 void ParticleSystem::fillRenderList(RenderList *renderList) const
@@ -41,23 +45,70 @@ void ParticleSystem::fillRenderList(RenderList *renderList) const
     {
         RenderList::Job job;
         job.subMesh = &subMesh;
-        job.transform = glm::mat4();
-        job.previousFrameTransform = glm::mat4();
         job.material = subMesh.material;
 
-        renderList->addJob(job);
+        for (const auto &particle : this->particles)
+        {
+            if (!particle.visible)
+                continue;
+
+            glm::mat4 transform = glm::translate(glm::mat4(), particle.position) * glm::scale(glm::mat4(), glm::vec3(particle.size));
+            job.transform = transform;
+            job.previousFrameTransform = transform;
+            renderList->addJob(job);
+        }
     }
 }
 
 void ParticleSystem::createSimulation()
 {
-    this->currentTime = 0.0f;
+    this->simulationTime = 0.0f;
+
+    this->particles.resize(this->settings->count);
+    for (int i = 0; i < this->settings->count; i++)
+    {
+        Particle &particle = this->particles[i];
+
+        // spread all particles linearly between start and end times
+        particle.startTime = glm::mix(this->settings->frameStart, this->settings->frameEnd, (float)i / (float)this->settings->count);
+
+        float lifetime = this->settings->lifetime * (1.0f - glm::linearRand(0.0f, this->settings->lifetimeRandom));
+        particle.endTime = particle.startTime + lifetime;
+
+        particle.visible = false;
+        particle.position = glm::ballRand(1.0f);
+        particle.velocity = glm::ballRand(0.1f);
+
+        particle.size = this->settings->size * (1.0f - glm::linearRand(0.0f, this->settings->sizeRandom));
+    }
 }
 
 void ParticleSystem::destroySimulation()
 {
+    this->particles.clear();
 }
 
-void ParticleSystem::updateSimulation(float step)
+void ParticleSystem::stepSimulation(float deltaTime, const glm::mat4 &emitterTransform)
 {
+    this->simulationTime += deltaTime;
+
+    for (auto &particle : this->particles)
+    {
+        bool unborn = this->simulationTime < particle.startTime;
+        bool dead = this->simulationTime > particle.endTime;
+        bool alive = !unborn && !dead;
+
+        particle.visible = alive;
+
+        if (alive)
+        {
+            // basic euler integration
+            particle.velocity.z -= 9.81f * 0.0001f * deltaTime;
+            particle.position += particle.velocity * deltaTime;
+        }
+        else if (unborn)
+        {
+            // move with emitter
+        }
+    }
 }

@@ -22,5 +22,8 @@ struct ParticleSettings : public Resource
     float lifetime;
     float lifetimeRandom;
 
+    float size;
+    float sizeRandom;
+
     Mesh *duplicate;
 };

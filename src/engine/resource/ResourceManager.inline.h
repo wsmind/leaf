@@ -49,10 +49,6 @@ ResourceType *ResourceManager::requestResource(const std::string &name, Resource
     else if (descriptor.users == 1)
         resource->load(descriptor.buffer, descriptor.size);
 
-    // always notify a new watcher
-    if (watcher != nullptr)
-        watcher->onResourceUpdated(resource);
-
     return resource;
 }
 
