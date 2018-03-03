@@ -22,6 +22,10 @@ void RenderList::sort()
 {
     std::sort(this->jobs.begin(), this->jobs.end(), [](const Job &lhs, const Job &rhs)
     {
-        return (lhs.material < rhs.material) && (lhs.subMesh < lhs.subMesh);
+        // if material is the same, sort by mesh data
+        if (lhs.material == rhs.material)
+            return (lhs.subMesh < lhs.subMesh);
+
+        return (lhs.material < rhs.material);
     });
 }
