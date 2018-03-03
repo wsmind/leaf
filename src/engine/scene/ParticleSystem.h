@@ -44,7 +44,12 @@ class ParticleSystem: public ResourceWatcher
 
             bool visible;
 
-            glm::vec3 position; // local to emitter before being born, then world space
+            // local to emitter
+            glm::vec3 spawnPosition;
+            glm::vec3 spawnVelocity;
+
+            // world space
+            glm::vec3 position;
             glm::vec3 velocity;
 
             float size;

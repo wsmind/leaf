@@ -76,8 +76,8 @@ void ParticleSystem::createSimulation()
         particle.endTime = particle.startTime + lifetime;
 
         particle.visible = false;
-        particle.position = glm::ballRand(1.0f);
-        particle.velocity = glm::ballRand(0.1f);
+        particle.spawnPosition = glm::ballRand(1.0f);
+        particle.spawnVelocity = glm::ballRand(0.1f);
 
         particle.size = this->settings->size * (1.0f - glm::linearRand(0.0f, this->settings->sizeRandom));
     }
@@ -109,6 +109,7 @@ void ParticleSystem::stepSimulation(float deltaTime, const glm::mat4 &emitterTra
         else if (unborn)
         {
             // move with emitter
+            particle.position = glm::vec3(emitterTransform * glm::vec4(particle.spawnPosition, 1.0f));
         }
     }
 }
