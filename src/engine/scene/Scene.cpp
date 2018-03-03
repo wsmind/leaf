@@ -75,11 +75,11 @@ void Scene::load(const unsigned char *buffer, size_t size)
 
 void Scene::unload()
 {
-    std::for_each(this->nodes.begin(), this->nodes.end(), [this](SceneNode *node)
+    for (SceneNode *node : this->nodes)
     {
         node->unregisterAnimation(&this->animationPlayer);
         delete node;
-    });
+    }
 
     this->nodes.clear();
 
@@ -99,10 +99,10 @@ void Scene::update(float time)
 
     // nodes are sorted at export by parenting depth, ensuring
     // correctness in the hierarchy transforms
-    std::for_each(this->nodes.begin(), this->nodes.end(), [this](SceneNode *node)
+    for (SceneNode *node : this->nodes)
     {
         node->updateTransforms();
-    });
+    }
 
     // step particle simulations
     for (SceneNode *node : this->particleSystemNodes)
