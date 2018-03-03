@@ -27,9 +27,7 @@ class Scene : public Resource
         virtual void load(const unsigned char *buffer, size_t size) override;
         virtual void unload() override;
 
-        void updateAnimation(float time);
-
-        void updateTransforms();
+        void update(float time);
 
         void fillRenderList(RenderList *renderList) const;
 
@@ -45,6 +43,7 @@ class Scene : public Resource
         std::vector<SceneNode *> meshNodes;
         std::vector<SceneNode *> lightNodes;
         std::vector<SceneNode *> cameraNodes;
+        std::vector<SceneNode *> particleSystemNodes;
 
         AnimationPlayer animationPlayer;
 

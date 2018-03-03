@@ -83,9 +83,11 @@ void Engine::loadData(const void *buffer, size_t size)
     }
 }
 
-void Engine::updateAnimation(float time)
+void Engine::update(float time)
 {
-    this->scene->updateAnimation(time);
+    ResourceManager::getInstance()->update();
+
+    this->scene->update(time);
 }
 
 void Engine::render(int width, int height, float deltaTime)
@@ -98,41 +100,29 @@ void Engine::render(int width, int height, float deltaTime)
         DispatchMessage(&msg);
     }
 
-    ResourceManager::getInstance()->update();
-
-    this->scene->updateTransforms();
-
 	const RenderSettings &renderSettings = this->scene->updateRenderSettings(width, height);
     this->renderer->render(this->scene, renderSettings, deltaTime);
 }
 
 void Engine::renderBlenderViewport(int width, int height, const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix)
 {
-    ResourceManager::getInstance()->update();
-
-    this->scene->updateTransforms();
-
 	const RenderSettings &renderSettings = this->scene->updateRenderSettings(width, height, true, viewMatrix, projectionMatrix);
 	this->renderer->renderBlenderViewport(this->scene, renderSettings);
 }
 
 void Engine::renderBlenderFrame(const char *sceneName, int width, int height, float *outputBuffer, float time)
 {
-    ResourceManager::getInstance()->update();
-
     Scene *renderScene = ResourceManager::getInstance()->requestResource<Scene>(sceneName);
 
     const float fixedDeltaTime = 1.0f / 60.0f;
     const float fps = 60.0f; /* hardcoded 60 fps */
 
     // render twice to ensure correct motion blur
-    renderScene->updateAnimation(time - fixedDeltaTime * fps);
-    renderScene->updateTransforms();
+    this->update(time - fixedDeltaTime * fps);
     const RenderSettings &renderSettings = renderScene->updateRenderSettings(width, height);
     this->renderer->render(renderScene, renderSettings, fixedDeltaTime);
 
-    renderScene->updateAnimation(time);
-    renderScene->updateTransforms();
+    this->update(time);
     const RenderSettings &renderSettings2 = renderScene->updateRenderSettings(width, height);
     this->renderer->renderBlenderFrame(renderScene, renderSettings2, outputBuffer, fixedDeltaTime);
 

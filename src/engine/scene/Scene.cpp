@@ -42,6 +42,9 @@ void Scene::load(const unsigned char *buffer, size_t size)
             case 2: this->lightNodes.push_back(node); break;
         }
 
+        if (node->hasParticleSystems())
+            this->particleSystemNodes.push_back(node);
+
         nodeJson = nodeJson->next;
     }
 
@@ -68,10 +71,6 @@ void Scene::load(const unsigned char *buffer, size_t size)
 	this->renderSettings.bloom.debug = (cJSON_GetObjectItem(bloomJson, "debug")->type == cJSON_True);
 
     cJSON_Delete(json);
-
-    // update current and last frame's transforms
-    this->updateTransforms();
-    this->updateTransforms();
 }
 
 void Scene::unload()
@@ -91,22 +90,25 @@ void Scene::unload()
     ResourceManager::getInstance()->releaseResource(this->renderSettings.environment.environmentMap);
 }
 
-void Scene::updateAnimation(float time)
+void Scene::update(float time)
 {
     this->animationPlayer.update(time);
     AnimationPlayer::globalPlayer.update(time);
 
     this->currentCamera = findCurrentCamera(time);
-}
 
-void Scene::updateTransforms()
-{
     // nodes are sorted at export by parenting depth, ensuring
     // correctness in the hierarchy transforms
     std::for_each(this->nodes.begin(), this->nodes.end(), [this](SceneNode *node)
     {
         node->updateTransforms();
     });
+
+    // step particle simulations
+    for (SceneNode *node : this->particleSystemNodes)
+    {
+        node->updateParticles(time);
+    }
 }
 
 const RenderSettings &Scene::updateRenderSettings(int width, int height, bool overrideCamera, const glm::mat4 &viewMatrixOverride, const glm::mat4 &projectionMatrixOverride)
@@ -122,7 +124,7 @@ const RenderSettings &Scene::updateRenderSettings(int width, int height, bool ov
 
 void Scene::fillRenderList(RenderList *renderList) const
 {
-    std::for_each(this->meshNodes.begin(), this->meshNodes.end(), [&](const SceneNode *node)
+    for (const SceneNode *node : this->meshNodes)
     {
         if (!node->isHidden())
         {
@@ -138,13 +140,16 @@ void Scene::fillRenderList(RenderList *renderList) const
 
                 renderList->addJob(job);
             }
-
-            // append particles attached to this node
-            node->fillParticleRenderList(renderList);
         }
-    });
+    }
 
-    std::for_each(this->lightNodes.begin(), this->lightNodes.end(), [&](const SceneNode *node)
+    for (const SceneNode *node : this->particleSystemNodes)
+    {
+        // append particles attached to this node
+        node->fillParticleRenderList(renderList);
+    }
+
+    for (const SceneNode *node: this->lightNodes)
     {
         if (!node->isHidden())
         {
@@ -172,7 +177,7 @@ void Scene::fillRenderList(RenderList *renderList) const
 
             renderList->addLight(renderLight);
         }
-    });
+    }
 }
 
 void Scene::updateCameraSettings(bool overrideCamera, const glm::mat4 &viewMatrixOverride, const glm::mat4 &projectionMatrixOverride, float aspect)

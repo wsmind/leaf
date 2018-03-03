@@ -136,3 +136,15 @@ glm::mat4 SceneNode::computeViewTransform() const
 
     return transform;
 }
+
+void SceneNode::updateParticles(float time)
+{
+    for (auto *particleSystem : this->particleSystems)
+        particleSystem->update(time);
+}
+
+void SceneNode::fillParticleRenderList(RenderList *renderList) const
+{
+    for (auto *particleSystem : this->particleSystems)
+        particleSystem->fillRenderList(renderList);
+}

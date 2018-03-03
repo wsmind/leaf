@@ -28,6 +28,11 @@ void ParticleSystem::onResourceUpdated(Resource *resource)
     this->createSimulation();
 }
 
+void ParticleSystem::update(float time)
+{
+
+}
+
 void ParticleSystem::fillRenderList(RenderList *renderList) const
 {
     Mesh *mesh = this->settings->duplicate;
@@ -46,8 +51,13 @@ void ParticleSystem::fillRenderList(RenderList *renderList) const
 
 void ParticleSystem::createSimulation()
 {
+    this->currentTime = 0.0f;
 }
 
 void ParticleSystem::destroySimulation()
+{
+}
+
+void ParticleSystem::updateSimulation(float step)
 {
 }

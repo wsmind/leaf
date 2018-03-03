@@ -24,9 +24,9 @@ LEAFENGINE_API void leaf_load_data(const void *buffer, size_t size)
     Engine::getInstance()->loadData(buffer, size);
 }
 
-LEAFENGINE_API void leaf_update_animation(float time)
+LEAFENGINE_API void leaf_update(float time)
 {
-    Engine::getInstance()->updateAnimation(time);
+    Engine::getInstance()->update(time);
 }
 
 LEAFENGINE_API void leaf_render(int width, int height, float deltaTime)

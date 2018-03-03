@@ -88,7 +88,7 @@ int main(int argc, char **argv)
         previousTime = currentTime;
 
         float animationTime = (float)(currentTime - startTime) * 0.001f * fps + startFrame;
-        leaf_update_animation(animationTime);
+        leaf_update(animationTime);
 
         leaf_render(width, height, deltaTime);
     }

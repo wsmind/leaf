@@ -13,8 +13,11 @@ class ParticleSystem: public ResourceWatcher
         ParticleSystem(const cJSON *json);
         ~ParticleSystem();
 
-        // update simulation when the settings change
+        // rebuild simulation when the settings change
         virtual void onResourceUpdated(Resource *resource) override;
+
+        // step simulation
+        void update(float time);
 
         // send active particles as render jobs
         void fillRenderList(RenderList *renderList) const;
@@ -22,7 +25,11 @@ class ParticleSystem: public ResourceWatcher
     private:
         void createSimulation();
         void destroySimulation();
+
+        void updateSimulation(float step);
         
         ParticleSettings *settings;
         int seed;
+
+        float currentTime;
 };

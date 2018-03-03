@@ -62,6 +62,7 @@ class LeafRenderEngine(bpy.types.RenderEngine):
         global engine
         engine.acquire()
         self.export(bpy.data, "")
+        engine.dll.leaf_update(ctypes.c_float(context.scene.frame_current))
         engine.release()
 
     def view_draw(self, context):

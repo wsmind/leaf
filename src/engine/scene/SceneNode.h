@@ -36,7 +36,10 @@ class SceneNode
         template <typename DataType>
         DataType *getData() const;
 
-        inline void fillParticleRenderList(RenderList *renderList) const;
+        bool hasParticleSystems() const { return this->particleSystems.size() > 0; }
+
+        void updateParticles(float time);
+        void fillParticleRenderList(RenderList *renderList) const;
 
     private:
         // transform
@@ -66,10 +69,4 @@ template <typename DataType>
 DataType *SceneNode::getData() const
 {
     return static_cast<DataType *>(this->data);
-}
-
-void SceneNode::fillParticleRenderList(RenderList *renderList) const
-{
-    for (auto *particleSystem : this->particleSystems)
-        particleSystem->fillRenderList(renderList);
 }

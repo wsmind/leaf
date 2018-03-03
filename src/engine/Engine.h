@@ -19,7 +19,7 @@ class Engine
 
         void loadData(const void *buffer, size_t size);
 
-        void updateAnimation(float time);
+        void update(float time);
 
         void render(int width, int height, float deltaTime);
         void renderBlenderViewport(int width, int height, const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix);
