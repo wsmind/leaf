@@ -96,6 +96,9 @@ class LeafRenderEngine(bpy.types.RenderEngine):
         engine.release()
 
     def render(self, scene):
+        # the engine already outputs sRGB, make sure the conversion is not done twice
+        scene.display_settings.display_device = "None"
+
         global engine
         engine.acquire()
         result = self.begin_result(0, 0, scene.render.resolution_x, scene.render.resolution_y)
@@ -178,7 +181,6 @@ def register():
     cooking.cooker.register_processor("image", cooking.ImageProcessor())
 
     # register callbacks
-    bpy.app.handlers.frame_change_pre.append(frame_change_pre)
     bpy.app.handlers.load_post.append(load_post)
 
     bpy.utils.register_module(__name__)
@@ -199,7 +201,6 @@ def unregister():
     cooking.cooker = None
 
     # unregister callbacks
-    bpy.app.handlers.frame_change_pre.remove(frame_change_pre)
     bpy.app.handlers.load_post.remove(load_post)
 
     global engine
@@ -207,11 +208,6 @@ def unregister():
     engine.unload()
     engine = None
     render.engine = None
-
-@persistent
-def frame_change_pre(scene):
-    global engine
-    engine.dll.leaf_update_animation(ctypes.c_float(scene.frame_current))
 
 @persistent
 def load_post(dummy):

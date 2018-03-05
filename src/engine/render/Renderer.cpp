@@ -438,18 +438,16 @@ void Renderer::renderBlenderFrame(const Scene *scene, const RenderSettings &sett
 
     unsigned char *byteData = (unsigned char *)mappedCaptureBuffer.pData;
 
-    const float gamma = 2.2f;
-
-    // flip the image vertically and reserve gamma correction
+    // flip the image vertically
     byteData += mappedCaptureBuffer.RowPitch * (settings.frameHeight - 1);
     for (int y = 0; y < settings.frameHeight; y++)
     {
         for (int i = 0; i < settings.frameWidth; i++)
         {
             // convert unsigned bytes to float values
-            *outputBuffer++ = powf((float)(*byteData++) / 255.0f, gamma);
-            *outputBuffer++ = powf((float)(*byteData++) / 255.0f, gamma);
-            *outputBuffer++ = powf((float)(*byteData++) / 255.0f, gamma);
+            *outputBuffer++ = (float)(*byteData++) / 255.0f;
+            *outputBuffer++ = (float)(*byteData++) / 255.0f;
+            *outputBuffer++ = (float)(*byteData++) / 255.0f;
             *outputBuffer++ = 1.0f;
             byteData++;
         }
