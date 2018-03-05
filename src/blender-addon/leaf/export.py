@@ -421,7 +421,9 @@ def export_particle_settings(particle_settings, export_reference):
         "lifetime_random": particle_settings.lifetime_random,
         "size": particle_settings.particle_size,
         "size_random": particle_settings.size_random,
-        "duplicate": export_reference(particle_settings.dupli_object.data) if particle_settings.dupli_object.type == "MESH" else "__default"
+        "duplicate": export_reference(particle_settings.dupli_object.data) if particle_settings.dupli_object.type == "MESH" else "__default",
+        "show_unborn": particle_settings.show_unborn,
+        "show_dead": particle_settings.use_dead
     }
 
     return json.dumps(data).encode("utf-8")

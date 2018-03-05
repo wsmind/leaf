@@ -145,8 +145,11 @@ void Scene::fillRenderList(RenderList *renderList) const
 
     for (const SceneNode *node : this->particleSystemNodes)
     {
-        // append particles attached to this node
-        node->fillParticleRenderList(renderList);
+        if (!node->isHidden())
+        {
+            // append particles attached to this node
+            node->fillParticleRenderList(renderList);
+        }
     }
 
     for (const SceneNode *node: this->lightNodes)

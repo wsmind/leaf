@@ -6,7 +6,7 @@
 #include <engine/render/Mesh.h>
 
 const std::string ParticleSettings::resourceClassName = "ParticleSettings";
-const std::string ParticleSettings::defaultResourceData = "{\"count\": 0, \"frame_start\": 0.0, \"frame_end\": 10.0, \"lifetime\": 20.0, \"lifetime_random\": 0.5, \"size\": 1.0, \"size_random\": 0.5, \"duplicate\": \"default\"}";
+const std::string ParticleSettings::defaultResourceData = "{\"count\": 0, \"frame_start\": 0.0, \"frame_end\": 10.0, \"lifetime\": 20.0, \"lifetime_random\": 0.5, \"size\": 1.0, \"size_random\": 0.5, \"duplicate\": \"default\", \"show_unborn\": false, \"show_dead\": false}";
 
 void ParticleSettings::load(const unsigned char *buffer, size_t size)
 {
@@ -25,6 +25,9 @@ void ParticleSettings::load(const unsigned char *buffer, size_t size)
 
     std::string duplicateName = cJSON_GetObjectItem(json, "duplicate")->valuestring;
     this->duplicate = ResourceManager::getInstance()->requestResource<Mesh>(duplicateName);
+
+    this->showUnborn = cJSON_GetObjectItem(json, "show_unborn")->valueint != 0;
+    this->showDead = cJSON_GetObjectItem(json, "show_dead")->valueint != 0;
 }
 
 void ParticleSettings::unload()

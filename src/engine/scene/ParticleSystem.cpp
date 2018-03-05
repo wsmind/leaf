@@ -101,7 +101,7 @@ void ParticleSystem::stepSimulation(float deltaTime, const glm::mat4 &emitterTra
         bool dead = this->simulationTime > particle.endTime;
         bool alive = !unborn && !dead;
 
-        particle.visible = alive;
+        particle.visible = alive || (unborn && this->settings->showUnborn) || (dead && this->settings->showDead);
 
         if (alive)
         {

@@ -26,4 +26,7 @@ struct ParticleSettings : public Resource
     float sizeRandom;
 
     Mesh *duplicate;
+
+    bool showUnborn;
+    bool showDead;
 };
