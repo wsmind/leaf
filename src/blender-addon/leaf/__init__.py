@@ -42,7 +42,7 @@ class LeafRenderEngine(bpy.types.RenderEngine):
     bl_idname = "LEAF"
     bl_label = "Leaf"
 
-    bl_use_preview = True
+    #bl_use_preview = True
 
     def export(self, data, prefix=""):
         global engine
