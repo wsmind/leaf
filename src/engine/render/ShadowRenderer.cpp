@@ -14,11 +14,6 @@
 
 #include <shaders/depthonly.vs.hlsl.h>
 
-struct DepthOnlyInstanceData
-{
-    glm::mat4 transformMatrix;
-};
-
 ShadowRenderer::ShadowRenderer(int resolution)
 {
     HRESULT res;

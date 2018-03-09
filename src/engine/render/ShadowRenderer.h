@@ -1,11 +1,17 @@
 #pragma once
 
 #include <d3d11.h>
+#include <engine/glm/glm.hpp>
 
 class FrameGraph;
 class RenderList;
 class Scene;
 struct ShadowConstants;
+
+struct DepthOnlyInstanceData
+{
+    glm::mat4 transformMatrix;
+};
 
 class ShadowRenderer
 {

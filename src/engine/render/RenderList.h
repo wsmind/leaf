@@ -37,7 +37,8 @@ class RenderList
 
         void addJob(const Job &job);
         void addLight(const Light &light);
-        void sort();
+        void sortFrontToBack(const glm::vec3 &cameraDirection);
+        void sortByMaterial();
 
         const std::vector<Job> &getJobs() const { return this->jobs; }
         const std::vector<Light> &getLights() const { return this->lights; }

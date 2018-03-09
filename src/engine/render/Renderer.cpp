@@ -280,7 +280,6 @@ void Renderer::render(const Scene *scene, const RenderSettings &settings, float 
 
     this->renderList->clear();
     scene->fillRenderList(this->renderList);
-    this->renderList->sort();
 
     // shadow maps
 	ShadowConstants shadowConstants;
@@ -329,15 +328,48 @@ void Renderer::render(const Scene *scene, const RenderSettings &settings, float 
     this->frameGraph->addClearTarget(this->motionTarget->getTarget(), glm::vec4(0.0f, 0.0f, 0.0f, 0.0f));
     this->frameGraph->addClearTarget(this->depthTarget, 1.0, 0);
 
+    const std::vector<RenderList::Job> &jobs = this->renderList->getJobs();
+
+    // depth pre-pass
+    glm::vec3 cameraDirection = glm::vec3(settings.camera.viewMatrix * glm::vec4(0.0f, 0.0f, -1.0f, 1.0f));
+    glm::mat4 viewProjectionMatrix = settings.camera.projectionMatrix * settings.camera.viewMatrix;
+    this->renderList->sortFrontToBack(cameraDirection);
+
+    Pass *depthPrePass = this->frameGraph->addPass("DepthPrePass");
+    depthPrePass->setTargets({}, this->depthTarget);
+    depthPrePass->setViewport((float)this->backbufferWidth, (float)this->backbufferHeight, settings.camera.viewMatrix, settings.camera.projectionMatrix);
+
+    Batch *depthBatch = depthPrePass->addBatch("Depth");
+    depthBatch->setVertexShader(Shaders::vertex.depthOnly);
+    depthBatch->setPixelShader(Shaders::pixel.depthOnly);
+    depthBatch->setInputLayout(this->inputLayout);
+
+    const Mesh::SubMesh *currentSubMesh = nullptr;
+    Job *currentJob = nullptr;
+    for (const auto &job : jobs)
+    {
+        if (currentSubMesh != job.subMesh)
+        {
+            currentSubMesh = job.subMesh;
+
+            currentJob = depthBatch->addJob();
+            currentJob->setBuffers(currentSubMesh->vertexBuffer, currentSubMesh->indexBuffer, currentSubMesh->indexCount);
+        }
+
+        DepthOnlyInstanceData instanceData;
+        instanceData.transformMatrix = viewProjectionMatrix * job.transform;
+
+        currentJob->addInstance(instanceData);
+    }
+
+    // main radiance pass
+    this->renderList->sortByMaterial();
+
     RenderTarget *radianceTarget = this->postProcessor->getRadianceTarget();
 
     Pass *radiancePass = this->frameGraph->addPass("Radiance");
     radiancePass->setTargets({ radianceTarget->getTarget(), this->motionTarget->getTarget() }, this->depthTarget);
 	radiancePass->setViewport((float)this->backbufferWidth, (float)this->backbufferHeight, settings.camera.viewMatrix, settings.camera.projectionMatrix);
-
-    //this->shadowRenderer->bind();
-
-    const std::vector<RenderList::Job> &jobs = this->renderList->getJobs();
 
     {
         //GPUProfiler::ScopedProfile profile("Geometry");
@@ -374,8 +406,6 @@ void Renderer::render(const Scene *scene, const RenderSettings &settings, float 
 			currentJob->addInstance(instanceData);
         }
     }
-
-    //this->shadowRenderer->unbind();
 
     // background
     Batch *backgroundBatch = radiancePass->addBatch("Background");
