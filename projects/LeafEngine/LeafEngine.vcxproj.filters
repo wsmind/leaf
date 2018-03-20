@@ -127,9 +127,6 @@
     <ClInclude Include="..\..\src\engine\render\shaders\scene.h">
       <Filter>render\shaders</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\engine\render\shaders\instance.h">
-      <Filter>render\shaders</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\engine\render\shaders\tonemapping.h">
       <Filter>render\shaders</Filter>
     </ClInclude>
@@ -307,12 +304,6 @@
       <Filter>render\shaders</Filter>
     </FxCompile>
     <FxCompile Include="..\..\src\engine\render\shaders\background.vs.hlsl">
-      <Filter>render\shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="..\..\src\engine\render\shaders\gbuffer.ps.hlsl">
-      <Filter>render\shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="..\..\src\engine\render\shaders\gbuffer.vs.hlsl">
       <Filter>render\shaders</Filter>
     </FxCompile>
     <FxCompile Include="..\..\src\engine\render\shaders\postprocess.ps.hlsl">

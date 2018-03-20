@@ -1,4 +1,3 @@
-//#include "instance.h"
 #include "pass.h"
 #include "scene.h"
 #include "standard.h"
