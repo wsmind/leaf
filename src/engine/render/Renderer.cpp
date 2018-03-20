@@ -348,7 +348,6 @@ void Renderer::render(const Scene *scene, const RenderSettings &settings, float 
 
     // depth pre-pass
     glm::vec3 cameraDirection = glm::vec3(settings.camera.viewMatrix * glm::vec4(0.0f, 0.0f, -1.0f, 1.0f));
-    glm::mat4 viewProjectionMatrix = settings.camera.projectionMatrix * settings.camera.viewMatrix;
     this->renderList->sortFrontToBack(cameraDirection);
 
     Pass *depthPrePass = this->frameGraph->addPass("DepthPrePass");
@@ -373,7 +372,7 @@ void Renderer::render(const Scene *scene, const RenderSettings &settings, float 
         }
 
         DepthOnlyInstanceData instanceData;
-        instanceData.transformMatrix = viewProjectionMatrix * job.transform;
+        instanceData.transformMatrix = job.transform;
 
         currentJob->addInstance(instanceData);
     }

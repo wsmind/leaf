@@ -1,4 +1,5 @@
 #include "depthonly.h"
+#include "pass.h"
 
 struct VS_INPUT
 {
@@ -13,7 +14,9 @@ DEPTHONLY_PS_INPUT main(VS_INPUT input)
 {
     DEPTHONLY_PS_INPUT output;
 
-    output.position = mul(input.transformMatrix, float4(input.pos, 1.0));
+    float4 worldPosition = mul(input.transformMatrix, float4(input.pos, 1.0));
+    float4 viewPosition = mul(passConstants.viewMatrix, worldPosition);
+    output.position = mul(passConstants.projectionMatrix, viewPosition);
 
     // hack; GL to DX clip space
     output.position.z = (output.position.z + output.position.w) * 0.5;
