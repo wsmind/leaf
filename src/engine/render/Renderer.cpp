@@ -32,6 +32,7 @@
 #include <engine/scene/Scene.h>
 
 #include <shaders/standard.vs.hlsl.h>
+#include <shaders/depthonly.vs.hlsl.h>
 
 static const unsigned char blackDDS[] = { 68, 68, 83, 32, 124, 0, 0, 0, 7, 16, 2, 0, 4, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 85, 86, 69, 82, 0, 0, 0, 0, 78, 86, 84, 84, 0, 1, 2, 0, 32, 0, 0, 0, 4, 0, 0, 0, 68, 88, 49, 48, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 16, 64, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 71, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 170, 170, 170, 170, 0, 0, 0, 0, 170, 170, 170, 170, 0, 0, 0, 0, 170, 170, 170, 170 };
 static const unsigned char whiteDDS[] = { 68, 68, 83, 32, 124, 0, 0, 0, 7, 16, 2, 0, 4, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 85, 86, 69, 82, 0, 0, 0, 0, 78, 86, 84, 84, 0, 1, 2, 0, 32, 0, 0, 0, 4, 0, 0, 0, 68, 88, 49, 48, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 16, 64, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 71, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 255, 255, 255, 255, 170, 170, 170, 170, 255, 255, 255, 255, 170, 170, 170, 170, 255, 255, 255, 255, 170, 170, 170, 170 };
@@ -188,7 +189,21 @@ Renderer::Renderer(HWND hwnd, int backbufferWidth, int backbufferHeight, bool ca
 		{ "NORMALMATRIX", 1, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 144, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
 		{ "NORMALMATRIX", 2, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 160, D3D11_INPUT_PER_INSTANCE_DATA, 1 }
 	};
-    res = Device::device->CreateInputLayout(layout, 15, standardVS, sizeof(standardVS), &inputLayout);
+    res = Device::device->CreateInputLayout(layout, 15, standardVS, sizeof(standardVS), &this->inputLayout);
+    CHECK_HRESULT(res);
+
+    D3D11_INPUT_ELEMENT_DESC depthOnlyLayout[] =
+    {
+        { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+        { "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+        { "TANGENT", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 24, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+        { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 40, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+        { "TRANSFORM", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 0, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
+        { "TRANSFORM", 1, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 16, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
+        { "TRANSFORM", 2, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 32, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
+        { "TRANSFORM", 3, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 48, D3D11_INPUT_PER_INSTANCE_DATA, 1 }
+    };
+    res = Device::device->CreateInputLayout(depthOnlyLayout, 8, depthonlyVS, sizeof(depthonlyVS), &this->depthOnlyInputLayout);
     CHECK_HRESULT(res);
 
     // built-in rendering resources
@@ -249,6 +264,7 @@ Renderer::~Renderer()
     Shaders::unloadShaders();
 
     this->inputLayout->Release();
+    this->depthOnlyInputLayout->Release();
 
     delete this->renderList;
 
@@ -283,7 +299,7 @@ void Renderer::render(const Scene *scene, const RenderSettings &settings, float 
 
     // shadow maps
 	ShadowConstants shadowConstants;
-    this->shadowRenderer->render(this->frameGraph, scene, this->renderList, &shadowConstants);
+    this->shadowRenderer->render(this->frameGraph, scene, this->renderList, &shadowConstants, this->depthOnlyInputLayout);
 
     SceneConstants sceneConstants;
     sceneConstants.ambientColor = settings.environment.ambientColor;
@@ -342,7 +358,7 @@ void Renderer::render(const Scene *scene, const RenderSettings &settings, float 
     Batch *depthBatch = depthPrePass->addBatch("Depth");
     depthBatch->setVertexShader(Shaders::vertex.depthOnly);
     depthBatch->setPixelShader(Shaders::pixel.depthOnly);
-    depthBatch->setInputLayout(this->inputLayout);
+    depthBatch->setInputLayout(this->depthOnlyInputLayout);
 
     const Mesh::SubMesh *currentSubMesh = nullptr;
     Job *currentJob = nullptr;

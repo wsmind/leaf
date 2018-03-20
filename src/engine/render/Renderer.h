@@ -43,6 +43,7 @@ class Renderer
         ID3D11DepthStencilView *depthTarget;
 
         ID3D11InputLayout *inputLayout;
+        ID3D11InputLayout *depthOnlyInputLayout;
 
         RenderList *renderList;
 

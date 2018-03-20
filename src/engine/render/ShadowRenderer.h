@@ -19,7 +19,7 @@ class ShadowRenderer
         ShadowRenderer(int resolution);
         ~ShadowRenderer();
 
-        void render(FrameGraph *frameGraph, const Scene *scene, const RenderList *renderList, ShadowConstants *shadowConstants);
+        void render(FrameGraph *frameGraph, const Scene *scene, const RenderList *renderList, ShadowConstants *shadowConstants, ID3D11InputLayout *inputLayout);
 
 		ID3D11ShaderResourceView *getSRV() const { return this->srv; }
 		ID3D11SamplerState *getSampler() const { return this->sampler; }
@@ -31,8 +31,6 @@ class ShadowRenderer
         ID3D11ShaderResourceView *srv;
         ID3D11SamplerState *sampler;
         ID3D11DepthStencilState *depthState;
-
-		ID3D11InputLayout *inputLayout;
 
         ID3D11Buffer *cbShadows;
 };

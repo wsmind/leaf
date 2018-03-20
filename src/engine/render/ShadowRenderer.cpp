@@ -12,8 +12,6 @@
 
 #include <engine/render/shaders/constants/StandardConstants.h>
 
-#include <shaders/depthonly.vs.hlsl.h>
-
 ShadowRenderer::ShadowRenderer(int resolution)
 {
     HRESULT res;
@@ -73,20 +71,6 @@ ShadowRenderer::ShadowRenderer(int resolution)
     depthStateDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
     res = Device::device->CreateDepthStencilState(&depthStateDesc, &this->depthState);
     CHECK_HRESULT(res);
-
-	D3D11_INPUT_ELEMENT_DESC layout[] =
-	{
-		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "TANGENT", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 24, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 40, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "TRANSFORM", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 0, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
-		{ "TRANSFORM", 1, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 16, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
-		{ "TRANSFORM", 2, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 32, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
-		{ "TRANSFORM", 3, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 48, D3D11_INPUT_PER_INSTANCE_DATA, 1 }
-	};
-	res = Device::device->CreateInputLayout(layout, 8, depthonlyVS, sizeof(depthonlyVS), &this->inputLayout);
-	CHECK_HRESULT(res);
 }
 
 ShadowRenderer::~ShadowRenderer()
@@ -96,11 +80,9 @@ ShadowRenderer::~ShadowRenderer()
     this->srv->Release();
     this->sampler->Release();
     this->depthState->Release();
-
-	this->inputLayout->Release();
 }
 
-void ShadowRenderer::render(FrameGraph *frameGraph, const Scene *scene, const RenderList *renderList, ShadowConstants *shadowConstants)
+void ShadowRenderer::render(FrameGraph *frameGraph, const Scene *scene, const RenderList *renderList, ShadowConstants *shadowConstants, ID3D11InputLayout *inputLayout)
 {
     const std::vector<RenderList::Job> &jobs = renderList->getJobs();
     const std::vector<RenderList::Light> &lights = renderList->getLights();
@@ -147,7 +129,7 @@ void ShadowRenderer::render(FrameGraph *frameGraph, const Scene *scene, const Re
 		batch->setDepthStencil(this->depthState);
 		batch->setVertexShader(Shaders::vertex.depthOnly);
 		batch->setPixelShader(Shaders::pixel.depthOnly);
-		batch->setInputLayout(this->inputLayout);
+		batch->setInputLayout(inputLayout);
 
         const Mesh::SubMesh *currentSubMesh = nullptr;
 		Job *currentJob = nullptr;
