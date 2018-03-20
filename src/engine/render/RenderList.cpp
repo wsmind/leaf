@@ -20,7 +20,7 @@ void RenderList::addLight(const Light &light)
 
 void RenderList::sortFrontToBack(const glm::vec3 &cameraDirection)
 {
-    std::sort(this->jobs.begin(), this->jobs.end(), [](const Job &lhs, const Job &rhs)[&]
+    std::sort(this->jobs.begin(), this->jobs.end(), [&](const Job &lhs, const Job &rhs)
     {
         glm::vec3 lhsPosition = glm::vec3(lhs.transform[3]);
         glm::vec3 rhsPosition = glm::vec3(lhs.transform[3]);
