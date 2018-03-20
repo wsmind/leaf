@@ -55,9 +55,8 @@ class Renderer
         static const int GBUFFER_PLANE_COUNT = 2;
         RenderTarget *gBuffer[GBUFFER_PLANE_COUNT];
 
-        ID3D11DepthStencilState *gBufferDepthState;
-        ID3D11DepthStencilState *lightingDepthState;
-        ID3D11DepthStencilState *backgroundDepthState;
+        ID3D11DepthStencilState *lessEqualDepthState;
+        ID3D11DepthStencilState *equalDepthState;
 
         PostProcessor *postProcessor;
         ShadowRenderer *shadowRenderer;

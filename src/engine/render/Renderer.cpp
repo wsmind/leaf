@@ -121,17 +121,12 @@ Renderer::Renderer(HWND hwnd, int backbufferWidth, int backbufferHeight, bool ca
     depthStateDesc.DepthEnable = TRUE;
     depthStateDesc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
     depthStateDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
-    Device::device->CreateDepthStencilState(&depthStateDesc, &this->gBufferDepthState);
-
-    depthStateDesc.DepthEnable = TRUE;
-    depthStateDesc.DepthFunc = D3D11_COMPARISON_GREATER;
-    depthStateDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
-    Device::device->CreateDepthStencilState(&depthStateDesc, &this->lightingDepthState);
+    Device::device->CreateDepthStencilState(&depthStateDesc, &this->lessEqualDepthState);
 
     depthStateDesc.DepthEnable = TRUE;
     depthStateDesc.DepthFunc = D3D11_COMPARISON_EQUAL;
     depthStateDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
-    Device::device->CreateDepthStencilState(&depthStateDesc, &this->backgroundDepthState);
+    Device::device->CreateDepthStencilState(&depthStateDesc, &this->equalDepthState);
 
     D3D11_RASTERIZER_DESC rasterizerDesc;
     rasterizerDesc.FillMode = D3D11_FILL_SOLID;
@@ -273,9 +268,8 @@ Renderer::~Renderer()
     //for (int i = 0; i < GBUFFER_PLANE_COUNT; i++)
     //    delete this->gBuffer[i];
 
-    this->gBufferDepthState->Release();
-    this->lightingDepthState->Release();
-    this->backgroundDepthState->Release();
+    this->lessEqualDepthState->Release();
+    this->equalDepthState->Release();
 
     delete this->postProcessor;
     delete this->shadowRenderer;
@@ -355,6 +349,7 @@ void Renderer::render(const Scene *scene, const RenderSettings &settings, float 
     depthPrePass->setViewport((float)this->backbufferWidth, (float)this->backbufferHeight, settings.camera.viewMatrix, settings.camera.projectionMatrix);
 
     Batch *depthBatch = depthPrePass->addBatch("Depth");
+    depthBatch->setDepthStencil(this->lessEqualDepthState);
     depthBatch->setVertexShader(Shaders::vertex.depthOnly);
     depthBatch->setPixelShader(Shaders::pixel.depthOnly);
     depthBatch->setInputLayout(this->depthOnlyInputLayout);
@@ -399,7 +394,7 @@ void Renderer::render(const Scene *scene, const RenderSettings &settings, float 
                 currentMaterial = job.material;
 
                 currentBatch = radiancePass->addBatch(std::string("Material"));
-                currentBatch->setDepthStencil(this->gBufferDepthState);
+                currentBatch->setDepthStencil(this->equalDepthState);
                 currentBatch->setInputLayout(this->inputLayout);
 
                 currentMaterial->setupBatch(currentBatch, settings, this->shadowRenderer->getSRV(), this->shadowRenderer->getSampler(), &shadowConstants);
@@ -424,7 +419,7 @@ void Renderer::render(const Scene *scene, const RenderSettings &settings, float 
 
     // background
     Batch *backgroundBatch = radiancePass->addBatch("Background");
-    backgroundBatch->setDepthStencil(this->gBufferDepthState);
+    backgroundBatch->setDepthStencil(this->equalDepthState);
     backgroundBatch->setResources({ settings.environment.environmentMap->getSRV() });
     backgroundBatch->setSamplers({ settings.environment.environmentMap->getSamplerState() });
     backgroundBatch->setVertexShader(Shaders::vertex.background);
