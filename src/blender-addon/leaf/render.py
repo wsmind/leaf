@@ -97,6 +97,11 @@ class LeafRenderSettings(bpy.types.PropertyGroup):
             min=0.0, max=2.0,
             default=1.0
         )
+        cls.bloom_size = IntProperty(
+            name="Bloom size",
+            min=2, max=8,
+            default=4
+        )
         cls.bloom_debug = BoolProperty(
             name="Bloom debug",
             default=False
@@ -153,3 +158,4 @@ class LeafRender_PT_bloom(LeafRenderButtonsPanel, Panel):
         row.prop(lrd, "bloom_debug", text="Debug")
 
         layout.prop(lrd, "bloom_intensity", text="Intensity")
+        layout.prop(lrd, "bloom_size", text="Size")

@@ -87,6 +87,7 @@ def export_scene(scene, export_reference):
         "bloom": {
             "threshold": leaf_scene.bloom_threshold,
             "intensity": leaf_scene.bloom_intensity,
+            "size": leaf_scene.bloom_size,
             "debug": leaf_scene.bloom_debug
         }
     }

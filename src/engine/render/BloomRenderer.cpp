@@ -115,7 +115,7 @@ void BloomRenderer::render(FrameGraph *frameGraph, const RenderSettings &setting
     thresholdJob->addInstance();
 
 	// downsample
-	for (int i = 1; i < DOWNSAMPLE_LEVELS; i++)
+	for (int i = 1; i < settings.bloom.size; i++)
 	{
 		RenderTarget *source = this->downsampleTargets[i - 1];
 		RenderTarget *destination = this->downsampleTargets[i];
@@ -138,9 +138,9 @@ void BloomRenderer::render(FrameGraph *frameGraph, const RenderSettings &setting
 	}
 
 	// upsample, blur and accumulate
-	for (int i = DOWNSAMPLE_LEVELS - 2; i >= 0; i--)
+	for (int i = settings.bloom.size - 2; i >= 0; i--)
 	{
-		RenderTarget *accumulator = (i == DOWNSAMPLE_LEVELS - 2) ? this->downsampleTargets[i + 1] : this->blurTargets[i + 1];
+		RenderTarget *accumulator = (i == settings.bloom.size - 2) ? this->downsampleTargets[i + 1] : this->blurTargets[i + 1];
 		RenderTarget *source = (i == 0) ? inputTarget : this->downsampleTargets[i];
 		RenderTarget *destination = (i == 0) ? outputTarget : this->blurTargets[i];
 

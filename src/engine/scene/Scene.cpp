@@ -11,7 +11,7 @@
 #include <engine/glm/gtc/matrix_transform.hpp>
 
 const std::string Scene::resourceClassName = "Scene";
-const std::string Scene::defaultResourceData = "{\"activeCamera\": 0, \"nodes\": [], \"markers\": [], \"ambientColor\": [0.0, 0.0, 0.0], \"mist\": 0.0, \"environmentMap\": \"__default\", \"bloom\": {\"threshold\": 1.0, \"intensity\": 1.0, \"debug\": false}}";
+const std::string Scene::defaultResourceData = "{\"activeCamera\": 0, \"nodes\": [], \"markers\": [], \"ambientColor\": [0.0, 0.0, 0.0], \"mist\": 0.0, \"environmentMap\": \"__default\", \"bloom\": {\"threshold\": 1.0, \"intensity\": 1.0, \"size\": 4, \"debug\": false}}";
 
 void Scene::load(const unsigned char *buffer, size_t size)
 {
@@ -68,7 +68,8 @@ void Scene::load(const unsigned char *buffer, size_t size)
 	cJSON *bloomJson = cJSON_GetObjectItem(json, "bloom");
 	this->renderSettings.bloom.threshold = (float)cJSON_GetObjectItem(bloomJson, "threshold")->valuedouble;
 	this->renderSettings.bloom.intensity = (float)cJSON_GetObjectItem(bloomJson, "intensity")->valuedouble;
-	this->renderSettings.bloom.debug = (cJSON_GetObjectItem(bloomJson, "debug")->type == cJSON_True);
+    this->renderSettings.bloom.size = cJSON_GetObjectItem(bloomJson, "size")->valueint;
+    this->renderSettings.bloom.debug = (cJSON_GetObjectItem(bloomJson, "debug")->type == cJSON_True);
 
     cJSON_Delete(json);
 }
