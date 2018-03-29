@@ -31,7 +31,7 @@ FrameGraph::FrameGraph(const std::string &profileFilename)
 	res = this->context->QueryInterface(__uuidof(this->annotation), (void **)&this->annotation);
 	CHECK_HRESULT(res);
 
-	Job::createInstanceBuffer(1 * 1024 * 1024);
+	Job::createInstanceBuffer(10 * 1024 * 1024);
 
     this->profileFilename = profileFilename;
 
