@@ -22,7 +22,7 @@ class BloomRenderer
 
 		ID3D11InputLayout *inputLayout;
 
-		static const int DOWNSAMPLE_LEVELS = 6;
+		static const int DOWNSAMPLE_LEVELS = 8;
 		RenderTarget *downsampleTargets[DOWNSAMPLE_LEVELS];
 		RenderTarget *blurTargets[DOWNSAMPLE_LEVELS];
 
