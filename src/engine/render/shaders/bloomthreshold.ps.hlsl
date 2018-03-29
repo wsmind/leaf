@@ -70,7 +70,7 @@ PixelOutput main(POSTPROCESS_PS_INPUT input)
 		float3 colorSample = inputTexture.Sample(inputSampler, input.uv + offsets[i] * passConstants.viewportSize.zw).rgb;
 		float luminance = computeLuminance(colorSample);
 		float luminanceWeight = 1.0 / (1.0 + luminance);
-		float thresholdWeight = smoothstep(0.0, bloomConstants.threshold, luminance);
+		float thresholdWeight = smoothstep(bloomConstants.threshold - 1.0, bloomConstants.threshold, luminance);
 		color += weights[i] * colorSample * luminanceWeight * thresholdWeight;
 	}
 
