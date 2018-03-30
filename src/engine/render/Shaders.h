@@ -9,7 +9,6 @@ struct VertexShaderList
     ID3D11VertexShader *bloom;
     ID3D11VertexShader *depthOnly;
     ID3D11VertexShader *fxaa;
-    ID3D11VertexShader *gbuffer;
     ID3D11VertexShader *motionBlur;
     ID3D11VertexShader *plop;
     ID3D11VertexShader *postprocess;
@@ -27,7 +26,6 @@ struct PixelShaderList
     ID3D11PixelShader *bloomDebug;
     ID3D11PixelShader *depthOnly;
     ID3D11PixelShader *fxaa;
-    ID3D11PixelShader *gbuffer;
     ID3D11PixelShader *motionBlur;
     ID3D11PixelShader *plop;
     ID3D11PixelShader *postprocess;

@@ -8,7 +8,6 @@
 #include <shaders/bloom.vs.hlsl.h>
 #include <shaders/depthonly.vs.hlsl.h>
 #include <shaders/fxaa.vs.hlsl.h>
-#include <shaders/gbuffer.vs.hlsl.h>
 #include <shaders/motionblur.vs.hlsl.h>
 #include <shaders/plop.vs.hlsl.h>
 #include <shaders/postprocess.vs.hlsl.h>
@@ -24,7 +23,6 @@
 #include <shaders/bloomdebug.ps.hlsl.h>
 #include <shaders/depthonly.ps.hlsl.h>
 #include <shaders/fxaa.ps.hlsl.h>
-#include <shaders/gbuffer.ps.hlsl.h>
 #include <shaders/motionblur.ps.hlsl.h>
 #include <shaders/plop.ps.hlsl.h>
 #include <shaders/postprocess.ps.hlsl.h>
@@ -48,7 +46,6 @@ void Shaders::loadShaders()
     res = Device::device->CreateVertexShader(bloomVS, sizeof(bloomVS), NULL, &vertex.bloom); CHECK_HRESULT(res);
     res = Device::device->CreateVertexShader(depthonlyVS, sizeof(depthonlyVS), NULL, &vertex.depthOnly); CHECK_HRESULT(res);
     res = Device::device->CreateVertexShader(fxaaVS, sizeof(fxaaVS), NULL, &vertex.fxaa); CHECK_HRESULT(res);
-    res = Device::device->CreateVertexShader(gbufferVS, sizeof(gbufferVS), NULL, &vertex.gbuffer); CHECK_HRESULT(res);
     res = Device::device->CreateVertexShader(motionblurVS, sizeof(motionblurVS), NULL, &vertex.motionBlur); CHECK_HRESULT(res);
     res = Device::device->CreateVertexShader(plopVS, sizeof(plopVS), NULL, &vertex.plop); CHECK_HRESULT(res);
     res = Device::device->CreateVertexShader(postprocessVS, sizeof(postprocessVS), NULL, &vertex.postprocess); CHECK_HRESULT(res);
@@ -63,7 +60,6 @@ void Shaders::loadShaders()
     res = Device::device->CreatePixelShader(bloomDebugPS, sizeof(bloomDebugPS), NULL, &pixel.bloomDebug); CHECK_HRESULT(res);
     res = Device::device->CreatePixelShader(depthonlyPS, sizeof(depthonlyPS), NULL, &pixel.depthOnly); CHECK_HRESULT(res);
     res = Device::device->CreatePixelShader(fxaaPS, sizeof(fxaaPS), NULL, &pixel.fxaa); CHECK_HRESULT(res);
-    res = Device::device->CreatePixelShader(gbufferPS, sizeof(gbufferPS), NULL, &pixel.gbuffer); CHECK_HRESULT(res);
     res = Device::device->CreatePixelShader(motionblurPS, sizeof(motionblurPS), NULL, &pixel.motionBlur); CHECK_HRESULT(res);
     res = Device::device->CreatePixelShader(plopPS, sizeof(plopPS), NULL, &pixel.plop); CHECK_HRESULT(res);
     res = Device::device->CreatePixelShader(postprocessPS, sizeof(postprocessPS), NULL, &pixel.postprocess); CHECK_HRESULT(res);
@@ -81,7 +77,6 @@ void Shaders::unloadShaders()
     vertex.bloom->Release();
     vertex.depthOnly->Release();
     vertex.fxaa->Release();
-    vertex.gbuffer->Release();
     vertex.motionBlur->Release();
     vertex.plop->Release();
     vertex.postprocess->Release();
@@ -96,7 +91,6 @@ void Shaders::unloadShaders()
     pixel.bloomDebug->Release();
     pixel.depthOnly->Release();
     pixel.fxaa->Release();
-    pixel.gbuffer->Release();
     pixel.motionBlur->Release();
     pixel.plop->Release();
     pixel.postprocess->Release();
