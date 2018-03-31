@@ -29,7 +29,7 @@ def export_data(output_file, data, prefix, updated_only=False):
     def export_data_type(type_name, collection, export_function):
         exported_blocks = {}
         for block in collection:
-            if block.is_updated or not updated_only:
+            if block.is_updated or not updated_only or type_name == "Scene":
                 buffer = export_function(block, lambda ref: prefix + ref.name)
                 if buffer is not None:
                     exported_blocks[prefix + block.name] = buffer
