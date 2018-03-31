@@ -31,4 +31,6 @@ void Demo::unload()
 {
     for (auto scene : this->scenes)
         ResourceManager::getInstance()->releaseResource(scene);
+
+    this->scenes.clear();
 }
