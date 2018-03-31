@@ -99,3 +99,15 @@ ID3D11ShaderResourceView *Texture::getSRV() const
     assert(0);
     return nullptr;
 }
+
+int Texture::getMipLevels() const
+{
+    switch (this->type)
+    {
+        case TextureType_Image: return this->image->getMipLevels(); break;
+        case TextureType_EnvironmentMap: return this->environmentMap->getMipLevels(); break;
+    }
+
+    assert(0);
+    return 0;
+}

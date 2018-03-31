@@ -29,6 +29,7 @@ class Texture: public Resource, public ResourceWatcher
 
         ID3D11SamplerState *getSamplerState() const { return this->samplerState; }
         ID3D11ShaderResourceView *getSRV() const;
+        int getMipLevels() const;
 
     private:
         enum TextureType

@@ -39,7 +39,7 @@ struct SceneConstants
 	PointLightData pointLights[MAX_LIGHT];
 	SpotLightData spotLights[MAX_LIGHT];
 	float focusDistance;
-	float _padding0;
+	float environmentMipLevels;
 	float _padding1;
 	float _padding2;
 };

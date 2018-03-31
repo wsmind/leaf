@@ -17,8 +17,11 @@ class Image: public Resource
         virtual void unload() override;
 
         ID3D11ShaderResourceView *getSRV() const { return this->srv; }
+        int getMipLevels() const { return this->mipLevels; }
 
     private:
         ID3D11Resource *texture;
         ID3D11ShaderResourceView *srv;
+
+        int mipLevels = 0;
 };

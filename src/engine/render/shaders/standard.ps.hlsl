@@ -89,7 +89,7 @@ float3 computeEnvironmentRadiance(SurfaceProperties surface, float3 eye)
 {
     float3 direction = reflect(-eye, surface.normal);
     float2 uv = directionToEquirectangularUV(direction);
-    return environmentMap.Sample(environmentSampler, uv).rgb;
+    return environmentMap.SampleLevel(environmentSampler, uv, surface.roughness * sceneConstants.environmentMipLevels).rgb;
 }
 
 STANDARD_PS_OUTPUT main(STANDARD_PS_INPUT input)
