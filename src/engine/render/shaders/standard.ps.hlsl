@@ -203,7 +203,7 @@ STANDARD_PS_OUTPUT main(STANDARD_PS_INPUT input)
     float2 clipSpaceMotion = frameMovement * sceneConstants.motionSpeedFactor;
 
 	// clamp motion to tile size
-	float2 screenSpaceMotion = clipSpaceMotion * passConstants.viewportSize.xy * 0.5;
+    float2 screenSpaceMotion = 0.0; // clipSpaceMotion * passConstants.viewportSize.xy * 0.5;
 	screenSpaceMotion /= max(1.0, length(screenSpaceMotion) / sceneConstants.motionBlurTileSize);
 	
 	// store half velocity
