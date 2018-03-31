@@ -122,6 +122,14 @@ void Engine::renderBlenderViewport(int width, int height, const glm::mat4 &viewM
     if (!scene)
         return;
 
+    const float fixedDeltaTime = 1.0f / 60.0f;
+    const float fps = 60.0f; /* hardcoded 60 fps */
+
+    // update twice to improve motion blur
+    float time = this->currentTime;
+    this->update(time - fixedDeltaTime * fps);
+    this->update(time);
+
     const RenderSettings &renderSettings = scene->updateRenderSettings(width, height, true, viewMatrix, projectionMatrix);
 	this->renderer->renderBlenderViewport(scene, renderSettings);
 }
