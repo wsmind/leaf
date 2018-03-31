@@ -88,7 +88,7 @@ float rand(float2 uv)
 float3 computeEnvironmentIrradiance(SurfaceProperties surface)
 {
     float2 uv = directionToEquirectangularUV(surface.normal);
-    return environmentMap.SampleLevel(environmentSampler, uv, sceneConstants.environmentMipLevels - 3.0).rgb * 100.0;
+    return environmentMap.SampleLevel(environmentSampler, uv, sceneConstants.environmentMipLevels - 3.0).rgb;
 }
 
 float3 computeEnvironmentRadiance(SurfaceProperties surface, float3 eye)
