@@ -301,7 +301,7 @@ void Renderer::render(const Scene *scene, const RenderSettings &settings, float 
     sceneConstants.motionSpeedFactor = settings.camera.shutterSpeed / deltaTime;
     sceneConstants.motionBlurTileSize = 40.0f;
 	sceneConstants.focusDistance = settings.camera.focusDistance;
-    sceneConstants.environmentMipLevels = (float)settings.environment.environmentMap->getMipLevels();
+    sceneConstants.environmentMipLevels = (float)settings.environment.environmentMap->getMipLevels() - 1;
 
     const std::vector<RenderList::Light> &lights = this->renderList->getLights();
     sceneConstants.pointLightCount = 0;
