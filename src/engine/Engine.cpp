@@ -5,6 +5,7 @@
 #include <windows.h>
 #include <mmsystem.h>
 
+#include <engine/Demo.h>
 #include <engine/animation/Action.h>
 #include <engine/render/Camera.h>
 #include <engine/render/Image.h>
@@ -28,14 +29,14 @@ void Engine::initialize(int backbufferWidth, int backbufferHeight, bool capture,
     this->hwnd = CreateWindow("static", "Leaf", WS_POPUP | (capture ? 0 : WS_VISIBLE), 0, 0, backbufferWidth, backbufferHeight, NULL, NULL, NULL, 0);
 
     this->renderer = new Renderer(hwnd, backbufferWidth, backbufferHeight, capture, profileFilename);
-    this->scene = ResourceManager::getInstance()->requestResource<Scene>("Scene");
+    this->demo = ResourceManager::getInstance()->requestResource<Demo>("demo");
 }
 
 void Engine::shutdown()
 {
     printf("LeafEngine stopped\n");
 
-    ResourceManager::getInstance()->releaseResource(this->scene);
+    ResourceManager::getInstance()->releaseResource(this->demo);
 
     delete this->renderer;
     this->renderer = nullptr;
@@ -78,6 +79,7 @@ void Engine::loadData(const void *buffer, size_t size)
         if (typeName == "Mesh") ResourceManager::getInstance()->updateResourceData<Mesh>(resourceName, readPosition, blobSize);
         if (typeName == "ParticleSettings") ResourceManager::getInstance()->updateResourceData<ParticleSettings>(resourceName, readPosition, blobSize);
         if (typeName == "Scene") ResourceManager::getInstance()->updateResourceData<Scene>(resourceName, readPosition, blobSize);
+        if (typeName == "Demo") ResourceManager::getInstance()->updateResourceData<Demo>(resourceName, readPosition, blobSize);
 
         readPosition += blobSize;
     }
@@ -85,9 +87,15 @@ void Engine::loadData(const void *buffer, size_t size)
 
 void Engine::update(float time)
 {
+    this->currentTime = time;
+
     ResourceManager::getInstance()->update();
 
-    this->scene->update(time);
+    Scene *scene = Scene::findCurrentScene(time);
+    if (!scene)
+        return;
+
+    scene->update(time);
 }
 
 void Engine::render(int width, int height, float deltaTime)
@@ -100,14 +108,22 @@ void Engine::render(int width, int height, float deltaTime)
         DispatchMessage(&msg);
     }
 
-	const RenderSettings &renderSettings = this->scene->updateRenderSettings(width, height);
-    this->renderer->render(this->scene, renderSettings, deltaTime);
+    Scene *scene = Scene::findCurrentScene(this->currentTime);
+    if (!scene)
+        return;
+
+    const RenderSettings &renderSettings = scene->updateRenderSettings(width, height);
+    this->renderer->render(scene, renderSettings, deltaTime);
 }
 
 void Engine::renderBlenderViewport(int width, int height, const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix)
 {
-	const RenderSettings &renderSettings = this->scene->updateRenderSettings(width, height, true, viewMatrix, projectionMatrix);
-	this->renderer->renderBlenderViewport(this->scene, renderSettings);
+    Scene *scene = Scene::findCurrentScene(this->currentTime);
+    if (!scene)
+        return;
+
+    const RenderSettings &renderSettings = scene->updateRenderSettings(width, height, true, viewMatrix, projectionMatrix);
+	this->renderer->renderBlenderViewport(scene, renderSettings);
 }
 
 void Engine::renderBlenderFrame(const char *sceneName, int width, int height, float *outputBuffer, float time)

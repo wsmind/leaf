@@ -11,7 +11,9 @@
 #include <engine/glm/gtc/matrix_transform.hpp>
 
 const std::string Scene::resourceClassName = "Scene";
-const std::string Scene::defaultResourceData = "{\"activeCamera\": 0, \"nodes\": [], \"markers\": [], \"ambientColor\": [0.0, 0.0, 0.0], \"mist\": 0.0, \"environmentMap\": \"__default\", \"bloom\": {\"threshold\": 1.0, \"intensity\": 1.0, \"size\": 4, \"debug\": false}}";
+const std::string Scene::defaultResourceData = "{\"activeCamera\": 0, \"nodes\": [], \"markers\": [], \"frame_start\": 0.0, \"frame_end\": 10.0, \"ambientColor\": [0.0, 0.0, 0.0], \"mist\": 0.0, \"environmentMap\": \"__default\", \"bloom\": {\"threshold\": 1.0, \"intensity\": 1.0, \"size\": 4, \"debug\": false}}";
+
+std::vector<Scene *> Scene::allScenes;
 
 void Scene::load(const unsigned char *buffer, size_t size)
 {
@@ -60,6 +62,9 @@ void Scene::load(const unsigned char *buffer, size_t size)
         markerJson = markerJson->next;
     }
 
+    this->frameStart = (float)cJSON_GetObjectItem(json, "frame_start")->valuedouble;
+    this->frameEnd = (float)cJSON_GetObjectItem(json, "frame_end")->valuedouble;
+
     cJSON *ambientJson = cJSON_GetObjectItem(json, "ambientColor");
     this->renderSettings.environment.ambientColor = glm::vec3(cJSON_GetArrayItem(ambientJson, 0)->valuedouble, cJSON_GetArrayItem(ambientJson, 1)->valuedouble, cJSON_GetArrayItem(ambientJson, 2)->valuedouble);
     this->renderSettings.environment.mist = (float)cJSON_GetObjectItem(json, "mist")->valuedouble;
@@ -72,10 +77,14 @@ void Scene::load(const unsigned char *buffer, size_t size)
     this->renderSettings.bloom.debug = (cJSON_GetObjectItem(bloomJson, "debug")->type == cJSON_True);
 
     cJSON_Delete(json);
+
+    Scene::allScenes.push_back(this);
 }
 
 void Scene::unload()
 {
+    Scene::allScenes.erase(std::remove(Scene::allScenes.begin(), Scene::allScenes.end(), this), Scene::allScenes.end());
+
     for (SceneNode *node : this->nodes)
     {
         node->unregisterAnimation(&this->animationPlayer);
@@ -221,4 +230,17 @@ int Scene::findCurrentCamera(float time)
         index++;
 
     return this->markers[index - 1].cameraIndex;
+}
+
+Scene *Scene::findCurrentScene(float time)
+{
+    for (auto scene : Scene::allScenes)
+    {
+        if ((time >= scene->frameStart) && (time < scene->frameEnd))
+        {
+            return scene;
+        }
+    }
+
+    return nullptr;
 }

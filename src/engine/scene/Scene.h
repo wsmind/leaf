@@ -33,6 +33,8 @@ class Scene : public Resource
 
 	    const RenderSettings &updateRenderSettings(int width, int height, bool overrideCamera = false, const glm::mat4 &viewMatrixOverride = glm::mat4(), const glm::mat4 &projectionMatrixOverride = glm::mat4());
 
+        static Scene *findCurrentScene(float time);
+
     private:
 		void updateCameraSettings(bool overrideCamera, const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix, float aspect);
 		int findCurrentCamera(float time);
@@ -57,5 +59,10 @@ class Scene : public Resource
         int currentCamera; // computed through markers, defaults to activeCamera if no markers
         int activeCamera; // active camera at the time of export
 
+        float frameStart;
+        float frameEnd;
+
 		RenderSettings renderSettings;
+
+        static std::vector<Scene *> allScenes;
 };

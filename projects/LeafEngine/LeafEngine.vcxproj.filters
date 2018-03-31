@@ -105,6 +105,7 @@
     <ClCompile Include="..\..\src\engine\scene\ParticleSystem.cpp">
       <Filter>scene</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\engine\Demo.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\engine\api.h" />
@@ -286,6 +287,7 @@
     <ClInclude Include="..\..\src\engine\scene\ParticleSystem.h">
       <Filter>scene</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\engine\Demo.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\..\src\engine\render\shaders\plop.vs.hlsl">

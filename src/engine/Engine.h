@@ -9,7 +9,7 @@
 
 struct cJSON;
 class Renderer;
-class Scene;
+class Demo;
 
 class Engine
 {
@@ -31,7 +31,10 @@ class Engine
         HWND hwnd;
 
         Renderer *renderer;
-        Scene *scene;
+
+        Demo *demo;
+
+        float currentTime = 0.0f;
 
     public:
         // singleton implementation

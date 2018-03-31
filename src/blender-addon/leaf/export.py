@@ -14,6 +14,14 @@ from . import cooking
 
 def export_data(output_file, data, prefix, updated_only=False):
 
+    class Demo():
+        pass
+
+    demo = Demo();
+    demo.name = "demo"
+    demo.is_updated = True
+    demo.scenes = data.scenes
+
     data_types = (
         ("Scene", data.scenes, export_scene),
         ("Material", data.materials, export_material),
@@ -23,7 +31,8 @@ def export_data(output_file, data, prefix, updated_only=False):
         ("Action", data.actions, export_action),
         ("Light", data.lamps, export_light),
         ("Camera", data.cameras, export_camera),
-        ("ParticleSettings", data.particles, export_particle_settings)
+        ("ParticleSettings", data.particles, export_particle_settings),
+        ("Demo", [demo], export_demo),
     )
 
     def export_data_type(type_name, collection, export_function):
@@ -81,6 +90,8 @@ def export_scene(scene, export_reference):
         "nodes": [export_scene_node(obj, objects, export_reference) for obj in objects],
         "markers": [export_marker(marker, objects) for marker in markers],
         "activeCamera": objects.index(scene.camera) if scene.camera else 0,
+        "frame_start": scene.frame_start,
+        "frame_end": scene.frame_end,
         "ambientColor": ambient,
         "mist": mist,
         "environmentMap": environmentMap,
@@ -428,3 +439,10 @@ def export_particle_settings(particle_settings, export_reference):
     }
 
     return json.dumps(data).encode("utf-8")
+
+def export_demo(demo, export_reference):
+    output = {
+        "scenes": [export_reference(scene) for scene in demo.scenes]
+    }
+
+    return json.dumps(output).encode("utf-8")
