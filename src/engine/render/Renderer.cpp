@@ -144,8 +144,12 @@ Renderer::Renderer(HWND hwnd, int backbufferWidth, int backbufferHeight, bool ca
     Device::device->CreateRasterizerState(&rasterizerDesc, &rasterizerState);
     Device::context->RSSetState(rasterizerState);
 
-    //for (int i = 0; i < GBUFFER_PLANE_COUNT; i++)
-    //    this->gBuffer[i] = new RenderTarget(this->backbufferWidth, this->backbufferHeight, DXGI_FORMAT_R16G16B16A16_FLOAT);
+    // fill the screen in black to get a clean startup (even if some baking is done at loading time)
+    glm::vec4 clearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    Device::context->ClearRenderTargetView(this->renderTarget, (float *)&clearColor);
+    this->swapChain->Present(0, 0);
+    Device::context->ClearRenderTargetView(this->renderTarget, (float *)&clearColor);
+    this->swapChain->Present(0, 0);
 
     this->postProcessor = new PostProcessor(this->renderTarget, backbufferWidth, backbufferHeight);
     this->shadowRenderer = new ShadowRenderer(1024);
