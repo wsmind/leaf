@@ -48,6 +48,7 @@ class Scene : public Resource
         std::vector<SceneNode *> particleSystemNodes;
 
         AnimationPlayer animationPlayer;
+        AnimationData *animation = nullptr;
 
         struct Marker
         {

@@ -25,7 +25,7 @@ struct BloomSettings
 {
 	float threshold = 1.0f;
 	float intensity = 1.0f;
-    int size = 4;
+    float size = 4.0f;
 	bool debug = false;
 };
 

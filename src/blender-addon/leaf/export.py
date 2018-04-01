@@ -103,6 +103,9 @@ def export_scene(scene, export_reference):
         }
     }
 
+    if scene.animation_data:
+        data["animation"] = export_animation(scene.animation_data, export_reference)
+
     return json.dumps(data).encode("utf-8")
 
 def compute_parent_depth(obj):

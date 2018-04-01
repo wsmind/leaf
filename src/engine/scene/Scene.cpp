@@ -17,6 +17,8 @@ std::vector<Scene *> Scene::allScenes;
 
 void Scene::load(const unsigned char *buffer, size_t size)
 {
+    this->animation = nullptr;
+
     cJSON *json = cJSON_Parse((const char *)buffer);
 
     this->activeCamera = cJSON_GetObjectItem(json, "activeCamera")->valueint;
@@ -73,8 +75,20 @@ void Scene::load(const unsigned char *buffer, size_t size)
 	cJSON *bloomJson = cJSON_GetObjectItem(json, "bloom");
 	this->renderSettings.bloom.threshold = (float)cJSON_GetObjectItem(bloomJson, "threshold")->valuedouble;
 	this->renderSettings.bloom.intensity = (float)cJSON_GetObjectItem(bloomJson, "intensity")->valuedouble;
-    this->renderSettings.bloom.size = cJSON_GetObjectItem(bloomJson, "size")->valueint;
+    this->renderSettings.bloom.size = (float)cJSON_GetObjectItem(bloomJson, "size")->valuedouble;
     this->renderSettings.bloom.debug = (cJSON_GetObjectItem(bloomJson, "debug")->type == cJSON_True);
+
+    cJSON *animation = cJSON_GetObjectItem(json, "animation");
+    if (animation)
+    {
+        PropertyMapping properties;
+        properties.add("leaf.bloom_threshold", (float *)&this->renderSettings.bloom.threshold);
+        properties.add("leaf.bloom_intensity", (float *)&this->renderSettings.bloom.intensity);
+        properties.add("leaf.bloom_threshold", (float *)&this->renderSettings.bloom.size);
+
+        this->animation = new AnimationData(animation, properties);
+        AnimationPlayer::globalPlayer.registerAnimation(this->animation);
+    }
 
     cJSON_Delete(json);
 
@@ -83,6 +97,13 @@ void Scene::load(const unsigned char *buffer, size_t size)
 
 void Scene::unload()
 {
+    if (this->animation)
+    {
+        AnimationPlayer::globalPlayer.unregisterAnimation(this->animation);
+        delete this->animation;
+        this->animation = nullptr;
+    }
+
     Scene::allScenes.erase(std::remove(Scene::allScenes.begin(), Scene::allScenes.end(), this), Scene::allScenes.end());
 
     for (SceneNode *node : this->nodes)
