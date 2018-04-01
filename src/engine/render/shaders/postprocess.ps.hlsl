@@ -36,7 +36,7 @@ POSTPROCESS_PS_OUTPUT main(POSTPROCESS_PS_INPUT input)
     );
 
     // vignette
-    //radiance *= pow(1.0 - length(input.uv - float2(0.5, 0.5)), 2.0);
+    radiance *= pow(1.0 - length(input.uv - float2(0.5, 0.5)), 1.6);
 
     // tone mapping (also applies gamma correction)
     float3 color = filmicToneMapping(radiance);
