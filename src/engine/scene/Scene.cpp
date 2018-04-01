@@ -84,7 +84,7 @@ void Scene::load(const unsigned char *buffer, size_t size)
         PropertyMapping properties;
         properties.add("leaf.bloom_threshold", (float *)&this->renderSettings.bloom.threshold);
         properties.add("leaf.bloom_intensity", (float *)&this->renderSettings.bloom.intensity);
-        properties.add("leaf.bloom_threshold", (float *)&this->renderSettings.bloom.size);
+        properties.add("leaf.bloom_size", (float *)&this->renderSettings.bloom.size);
 
         this->animation = new AnimationData(animation, properties);
         AnimationPlayer::globalPlayer.registerAnimation(this->animation);
