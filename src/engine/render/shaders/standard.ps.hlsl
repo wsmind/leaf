@@ -88,13 +88,13 @@ float rand(float2 uv)
 float3 computeEnvironmentIrradiance(SurfaceProperties surface)
 {
     float2 uv = directionToEquirectangularUV(surface.normal);
-    return environmentMap.SampleLevel(environmentSampler, uv, sceneConstants.environmentMipLevels - 3.0).rgb;
+    return environmentMap.SampleLevel(environmentSampler, uv, sceneConstants.environmentMipLevels - 5.0).rgb;
 }
 
 float3 computeEnvironmentRadiance(SurfaceProperties surface, float3 eye)
 {
-    //float3 direction = reflect(-eye, surface.normal);
-    float2 uv = directionToEquirectangularUV(surface.normal);
+    float3 direction = reflect(-eye, surface.normal);
+    float2 uv = directionToEquirectangularUV(direction);
     return environmentMap.SampleLevel(environmentSampler, uv, surface.roughness * sceneConstants.environmentMipLevels).rgb;
 }
 
@@ -133,8 +133,8 @@ STANDARD_PS_OUTPUT main(STANDARD_PS_INPUT input)
 
 	radiance += sceneConstants.ambientColor * surface.albedo;
 
-    //radiance += computeEnvironmentIrradiance(surface) * surface.albedo / 3.14159265;
-    radiance += computeEnvironmentRadiance(surface, eye) / 3.14159265;
+    radiance += computeEnvironmentIrradiance(surface) * surface.albedo;
+    radiance += computeEnvironmentRadiance(surface, eye) * surface.specularColor;
 
     // point lights
     for (int i = 0; i < sceneConstants.pointLightCount; i++)
