@@ -374,6 +374,9 @@
     <FxCompile Include="..\..\src\engine\render\shaders\unlit.vs.hlsl">
       <Filter>render\shaders</Filter>
     </FxCompile>
+    <FxCompile Include="..\..\src\engine\render\shaders\generateibl.cs.hlsl">
+      <Filter>render\shaders</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="blender-addon">

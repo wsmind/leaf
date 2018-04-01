@@ -76,6 +76,11 @@ int main(int argc, char **argv)
 
     ShowCursor(FALSE);
 
+    // render one frame for delayed loadings and shader warmup
+    leaf_update(startFrame);
+    leaf_render(width, height, 1.0f / 60.0f);
+    leaf_render(width, height, 1.0f / 60.0f); // because of double buffering
+
     if (audioBuffer != nullptr)
         sndPlaySound((LPCSTR)audioBuffer, SND_ASYNC | SND_MEMORY);
 

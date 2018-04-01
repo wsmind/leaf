@@ -16,6 +16,7 @@ class Image: public Resource
         virtual void load(const unsigned char *buffer, size_t size) override;
         virtual void unload() override;
 
+        ID3D11Resource *getTexture() const { return this->texture; }
         ID3D11ShaderResourceView *getSRV() const { return this->srv; }
         int getMipLevels() const { return this->mipLevels; }
 

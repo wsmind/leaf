@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <vector>
 
 #include <engine/render/Device.h>
 #include <engine/resource/Resource.h>
@@ -42,8 +43,15 @@ class Texture: public Resource, public ResourceWatcher
         ID3D11SamplerState *samplerState;
 
         // type-specific data
+
+        // Image
         Image *image;
+
+        // EnvironmentMap
         Image *environmentMap;
+        ID3D11Texture2D *environmentTexture = nullptr;
+        ID3D11ShaderResourceView *environmentSRV = nullptr;
+        std::vector<ID3D11UnorderedAccessView *> environmentUAVs;
 
         // flag if the envmap prefiltering needs to be rebaked
         bool environmentMapDirty = false;

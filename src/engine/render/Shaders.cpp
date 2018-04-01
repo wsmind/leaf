@@ -30,6 +30,7 @@
 #include <shaders/unlit.ps.hlsl.h>
 
 // compute
+#include <shaders/generateibl.cs.hlsl.h>
 #include <shaders/neighbormax.cs.hlsl.h>
 #include <shaders/tilemax.cs.hlsl.h>
 
@@ -68,6 +69,7 @@ void Shaders::loadShaders()
 
     res = Device::device->CreateComputeShader(tileMaxCS, sizeof(tileMaxCS), NULL, &compute.tileMax); CHECK_HRESULT(res);
     res = Device::device->CreateComputeShader(neighborMaxCS, sizeof(neighborMaxCS), NULL, &compute.neighborMax); CHECK_HRESULT(res);
+    res = Device::device->CreateComputeShader(generateIblCS, sizeof(generateIblCS), NULL, &compute.generateIbl); CHECK_HRESULT(res);
 }
 
 void Shaders::unloadShaders()
@@ -99,4 +101,5 @@ void Shaders::unloadShaders()
 
     compute.tileMax->Release();
     compute.neighborMax->Release();
+    compute.generateIbl->Release();
 }

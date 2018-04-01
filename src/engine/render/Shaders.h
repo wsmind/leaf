@@ -37,6 +37,7 @@ struct ComputeShaderList
 {
     ID3D11ComputeShader *tileMax;
     ID3D11ComputeShader *neighborMax;
+    ID3D11ComputeShader *generateIbl;
 };
 
 class Shaders
