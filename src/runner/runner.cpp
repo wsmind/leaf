@@ -76,10 +76,16 @@ int main(int argc, char **argv)
 
     ShowCursor(FALSE);
 
-    // render one frame for delayed loadings and shader warmup
-    leaf_update(startFrame);
-    leaf_render(width, height, 1.0f / 60.0f);
-    leaf_render(width, height, 1.0f / 60.0f); // because of double buffering
+    // render a few frames for delayed loadings and shader warmup
+    for (int i = 0; i < 5; i++)
+    {
+        // get motion blur correct from the start
+        leaf_update(startFrame - 1.0f);
+        leaf_render(width, height, 1.0f / 60.0f);
+
+        leaf_update(startFrame);
+        leaf_render(width, height, 1.0f / 60.0f);
+    }
 
     if (audioBuffer != nullptr)
         sndPlaySound((LPCSTR)audioBuffer, SND_ASYNC | SND_MEMORY);
