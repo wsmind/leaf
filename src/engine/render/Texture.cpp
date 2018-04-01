@@ -120,6 +120,9 @@ void Texture::update(FrameGraph *frameGraph)
             this->environmentUAVs.clear();
         }
 
+        if (this->environmentMap->getTexture() == nullptr)
+            return;
+
         HRESULT res;
 
         ID3D11Texture2D *source = nullptr;
@@ -182,9 +185,6 @@ void Texture::update(FrameGraph *frameGraph)
 
             this->environmentUAVs.push_back(uav);
         }
-
-        // do stuff
-        //Device::context->GenerateMips(this->environmentSRV);
     }
 }
 
