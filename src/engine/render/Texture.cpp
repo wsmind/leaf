@@ -151,7 +151,6 @@ void Texture::update(FrameGraph *frameGraph)
         // retrieve the computed number of mips
         this->environmentSRV->GetDesc(&srvDesc);
         int mipLevels = srvDesc.Texture2D.MipLevels;
-        printf("%d mip levels computed!\n", mipLevels);
 
         for (int i = 0; i < mipLevels; i++)
         {
