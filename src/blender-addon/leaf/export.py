@@ -188,6 +188,8 @@ def export_bsdf_standard(mtl, export_reference):
         "emissive": [lmtl.emissive.r, lmtl.emissive.g, lmtl.emissive.b],
         "metallicOffset": lmtl.metallic_offset,
         "roughnessOffset": lmtl.roughness_offset,
+        "uvScale": [lmtl.uv_scale[0], lmtl.uv_scale[1]],
+        "uvOffset": [lmtl.uv_offset[0], lmtl.uv_offset[1]],
         "baseColorMap": export_texture_slot(mtl, 0, "__default_white", export_reference),
         "normalMap": export_texture_slot(mtl, 1, "__default_normal", export_reference),
         "metallicMap": export_texture_slot(mtl, 2, "__default_black", export_reference),

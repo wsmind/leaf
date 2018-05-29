@@ -21,6 +21,12 @@ StandardBsdf::StandardBsdf(cJSON *json)
     this->constants.metallicOffset = (float)cJSON_GetObjectItem(json, "metallicOffset")->valuedouble;
     this->constants.roughnessOffset = (float)cJSON_GetObjectItem(json, "roughnessOffset")->valuedouble;
 
+    cJSON *uvScale = cJSON_GetObjectItem(json, "uvScale");
+    this->constants.uvScale = glm::vec2(cJSON_GetArrayItem(uvScale, 0)->valuedouble, cJSON_GetArrayItem(uvScale, 1)->valuedouble);
+
+    cJSON *uvOffset = cJSON_GetObjectItem(json, "uvOffset");
+    this->constants.uvOffset = glm::vec2(cJSON_GetArrayItem(uvOffset, 0)->valuedouble, cJSON_GetArrayItem(uvOffset, 1)->valuedouble);
+
     this->baseColorMap = ResourceManager::getInstance()->requestResource<Texture>(cJSON_GetObjectItem(json, "baseColorMap")->valuestring);
     this->normalMap = ResourceManager::getInstance()->requestResource<Texture>(cJSON_GetObjectItem(json, "normalMap")->valuestring);
     this->metallicMap = ResourceManager::getInstance()->requestResource<Texture>(cJSON_GetObjectItem(json, "metallicMap")->valuestring);
@@ -54,6 +60,8 @@ void StandardBsdf::registerAnimatedProperties(PropertyMapping &properties)
     properties.add("leaf.emissive", (float *)&this->constants.emissive);
     properties.add("leaf.metallic_offset", &this->constants.metallicOffset);
     properties.add("leaf.roughness_offset", &this->constants.roughnessOffset);
+    properties.add("leaf.uv_scale", (float *)&this->constants.uvScale);
+    properties.add("leaf.uv_offset", (float *)&this->constants.uvOffset);
 }
 
 void StandardBsdf::setupBatch(Batch *batch, const RenderSettings &settings, ID3D11ShaderResourceView *shadowSRV, ID3D11SamplerState *shadowSampler, ShadowConstants *shadowConstants)

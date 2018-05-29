@@ -16,5 +16,8 @@ struct StandardConstants
     float roughnessOffset;
     float3 emissive;
 
+    float2 uvScale;
+    float2 uvOffset;
+
 	ShadowConstants shadows;
 };

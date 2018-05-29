@@ -17,6 +17,8 @@ STANDARD_PS_INPUT main(VS_INPUT input)
 {
     STANDARD_PS_INPUT output;
 
+    float2 uv = input.uv * standardConstants.uvScale + standardConstants.uvOffset;
+
     float4 worldPosition = mul(input.modelMatrix, float4(input.pos, 1.0));
     float4 viewPosition = mul(passConstants.viewMatrix, worldPosition);
     output.position = mul(passConstants.projectionMatrix, viewPosition);
@@ -29,7 +31,7 @@ STANDARD_PS_INPUT main(VS_INPUT input)
     output.marchingStep = (output.worldPosition - passConstants.cameraPosition) / MARCHING_ITERATIONS;
     output.normal = mul(input.normalMatrix, input.normal);
     output.tangent = float4(mul(input.normalMatrix, input.tangent.xyz), input.tangent.w);
-    output.uv = float2(input.uv.x, 1.0 - input.uv.y);
+    output.uv = float2(uv.x, 1.0 - uv.y);
     output.clipPosition = output.position;
 
 	output.worldToPreviousFrameClipSpaceMatrix = input.worldToPreviousFrameClipSpaceMatrix;

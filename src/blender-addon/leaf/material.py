@@ -44,6 +44,18 @@ class LeafMaterialSettings(bpy.types.PropertyGroup):
             description="Unshaded color",
             default=[0.0, 0.0, 0.0]
         )
+        cls.uv_scale = FloatVectorProperty(
+            name="UV Scale",
+            description="Multiplies the mesh UV data",
+            size=2,
+            default=[1.0, 1.0]
+        )
+        cls.uv_offset = FloatVectorProperty(
+            name="UV Offset",
+            description="Offsets the mesh UV data",
+            size=2,
+            default=[0.0, 0.0]
+        )
 
     @classmethod
     def unregister(cls):
@@ -215,6 +227,21 @@ class LeafMaterial_PT_Standard_Roughness(LeafMaterialBSDFPanel, Panel):
 
         self.texture_picker(mat, 3)
         layout.prop(lmat, "roughness_offset")
+
+class LeafMaterial_PT_Standard_UVTransform(LeafMaterialBSDFPanel, Panel):
+    bl_label = "UV Transform"
+
+    @classmethod
+    def poll(cls, context):
+        return LeafMaterialBSDFPanel.poll(context, "STANDARD")
+
+    def draw(self, context):
+        layout = self.layout
+        mat = context.material
+        lmat = context.material.leaf
+
+        layout.prop(lmat, "uv_scale")
+        layout.prop(lmat, "uv_offset")
 
 ###############################################################################
 # Unlit BSDF
