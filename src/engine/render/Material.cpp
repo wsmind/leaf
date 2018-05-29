@@ -10,7 +10,7 @@
 #include <engine/cJSON/cJSON.h>
 
 const std::string Material::resourceClassName = "Material";
-const std::string Material::defaultResourceData = "{\"bsdf\": \"UNLIT\", \"emissive\": [4.0, 0.0, 3.0], \"emissiveMap\": \"__default_white\"}";
+const std::string Material::defaultResourceData = "{\"bsdf\": \"UNLIT\", \"emissive\": [4.0, 0.0, 3.0], \"emissiveMap\": \"__default_white\", \"uvScale\": [1.0, 1.0], \"uvOffset\": [0.0, 0.0]}";
 
 void Material::load(const unsigned char *buffer, size_t size)
 {

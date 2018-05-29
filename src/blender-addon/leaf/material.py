@@ -261,3 +261,18 @@ class LeafMaterial_PT_Unlit_Emissive(LeafMaterialBSDFPanel, Panel):
 
         layout.prop(lmat, "emissive", text="")
         self.texture_picker(mat, 0)
+
+class LeafMaterial_PT_Unlit_UVTransform(LeafMaterialBSDFPanel, Panel):
+    bl_label = "UV Transform"
+
+    @classmethod
+    def poll(cls, context):
+        return LeafMaterialBSDFPanel.poll(context, "UNLIT")
+
+    def draw(self, context):
+        layout = self.layout
+        mat = context.material
+        lmat = context.material.leaf
+
+        layout.prop(lmat, "uv_scale")
+        layout.prop(lmat, "uv_offset")

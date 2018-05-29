@@ -200,6 +200,8 @@ def export_bsdf_unlit(mtl, export_reference):
     lmtl = mtl.leaf
     return {
         "emissive": [lmtl.emissive.r, lmtl.emissive.g, lmtl.emissive.b],
+        "uvScale": [lmtl.uv_scale[0], lmtl.uv_scale[1]],
+        "uvOffset": [lmtl.uv_offset[0], lmtl.uv_offset[1]],
         "emissiveMap": export_texture_slot(mtl, 0, "__default_white", export_reference)
     }
 

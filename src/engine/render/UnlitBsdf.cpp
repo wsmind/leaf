@@ -17,6 +17,12 @@ UnlitBsdf::UnlitBsdf(cJSON *json)
     cJSON *emissive = cJSON_GetObjectItem(json, "emissive");
     this->constants.emissive = glm::vec3(cJSON_GetArrayItem(emissive, 0)->valuedouble, cJSON_GetArrayItem(emissive, 1)->valuedouble, cJSON_GetArrayItem(emissive, 2)->valuedouble);
 
+    cJSON *uvScale = cJSON_GetObjectItem(json, "uvScale");
+    this->constants.uvScale = glm::vec2(cJSON_GetArrayItem(uvScale, 0)->valuedouble, cJSON_GetArrayItem(uvScale, 1)->valuedouble);
+
+    cJSON *uvOffset = cJSON_GetObjectItem(json, "uvOffset");
+    this->constants.uvOffset = glm::vec2(cJSON_GetArrayItem(uvOffset, 0)->valuedouble, cJSON_GetArrayItem(uvOffset, 1)->valuedouble);
+
     this->emissiveMap = ResourceManager::getInstance()->requestResource<Texture>(cJSON_GetObjectItem(json, "emissiveMap")->valuestring);
 
     D3D11_BUFFER_DESC cbDesc;
@@ -41,6 +47,8 @@ UnlitBsdf::~UnlitBsdf()
 void UnlitBsdf::registerAnimatedProperties(PropertyMapping &properties)
 {
     properties.add("leaf.emissive", (float *)&this->constants.emissive);
+    properties.add("leaf.uv_scale", (float *)&this->constants.uvScale);
+    properties.add("leaf.uv_offset", (float *)&this->constants.uvOffset);
 }
 
 void UnlitBsdf::setupBatch(Batch *batch, const RenderSettings &settings, ID3D11ShaderResourceView *shadowSRV, ID3D11SamplerState *shadowSampler, ShadowConstants *shadowConstants)
