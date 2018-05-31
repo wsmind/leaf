@@ -28,6 +28,8 @@ class PostProcessor
 
 		ID3D11InputLayout *inputLayout;
 
+        ID3D11Buffer *constantBuffer;
+
         Mesh *fullscreenQuad;
 
         MotionBlurRenderer *motionBlurRenderer;

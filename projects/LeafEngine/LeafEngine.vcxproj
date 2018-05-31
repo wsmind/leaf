@@ -227,6 +227,7 @@
     <ClInclude Include="..\..\src\engine\render\shaders\bloom.h" />
     <ClInclude Include="..\..\src\engine\render\shaders\constants\BloomConstants.h" />
     <ClInclude Include="..\..\src\engine\render\shaders\constants\PassConstants.h" />
+    <ClInclude Include="..\..\src\engine\render\shaders\constants\PostProcessConstants.h" />
     <ClInclude Include="..\..\src\engine\render\shaders\constants\SceneConstants.h" />
     <ClInclude Include="..\..\src\engine\render\shaders\constants\ShaderTypes.h" />
     <ClInclude Include="..\..\src\engine\render\shaders\constants\StandardConstants.h" />

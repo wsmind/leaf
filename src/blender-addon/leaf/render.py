@@ -106,6 +106,11 @@ class LeafRenderSettings(bpy.types.PropertyGroup):
             name="Bloom debug",
             default=False
         )
+        cls.pixellate_divider = FloatProperty(
+            name="Pixellate Divider",
+            min=0.0, max=1.0,
+            default=0.0
+        )
 
     @classmethod
     def unregister(cls):
@@ -159,3 +164,13 @@ class LeafRender_PT_bloom(LeafRenderButtonsPanel, Panel):
 
         layout.prop(lrd, "bloom_intensity", text="Intensity")
         layout.prop(lrd, "bloom_size", text="Size")
+
+class LeafRender_PT_posteffects(LeafRenderButtonsPanel, Panel):
+    bl_label = "Post Effects"
+
+    def draw(self, context):
+        layout = self.layout
+        rd = context.scene.render
+        lrd = context.scene.leaf
+
+        layout.prop(lrd, "pixellate_divider", text="Pixellate")

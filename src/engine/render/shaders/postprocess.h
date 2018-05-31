@@ -1,3 +1,10 @@
+#include "constants/PostProcessConstants.h"
+
+cbuffer PostProcessConstants : register(b2)
+{
+    PostProcessConstants postProcessConstants;
+};
+
 struct POSTPROCESS_PS_INPUT
 {
 	float4 pos: SV_POSITION;

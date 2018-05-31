@@ -1,3 +1,4 @@
+#include "pass.h"
 #include "postprocess.h"
 #include "tonemapping.h"
 
@@ -24,10 +25,19 @@ POSTPROCESS_PS_OUTPUT main(POSTPROCESS_PS_INPUT input)
 {
     POSTPROCESS_PS_OUTPUT output;
 
+    float2 uv = input.uv;
+
+    // pixellate
+    if (postProcessConstants.pixellateDivider > 0.0)
+    {
+        float2 divider = float2(postProcessConstants.pixellateDivider * passConstants.viewportSize.y * passConstants.viewportSize.z, postProcessConstants.pixellateDivider);
+        uv = floor(uv / divider) * divider;
+    }
+
     // per-channel offset for chromatic abberation
-    float2 uvR = offsetUV(input.uv, 0.034);
-    float2 uvG = offsetUV(input.uv, 0.024);
-    float2 uvB = offsetUV(input.uv, 0.041);
+    float2 uvR = offsetUV(uv, 0.034);
+    float2 uvG = offsetUV(uv, 0.024);
+    float2 uvB = offsetUV(uv, 0.041);
 
     float3 radiance = float3(
         radianceTexture.Sample(radianceSampler, uvR).r,

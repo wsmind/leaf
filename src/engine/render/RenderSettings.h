@@ -29,6 +29,11 @@ struct BloomSettings
 	bool debug = false;
 };
 
+struct PostProcessSettings
+{
+    float pixellateDivider = 0.0f;
+};
+
 struct RenderSettings
 {
 	int frameWidth;
@@ -37,4 +42,5 @@ struct RenderSettings
 	CameraSettings camera;
 	EnvironmentSettings environment;
 	BloomSettings bloom;
+    PostProcessSettings postProcess;
 };

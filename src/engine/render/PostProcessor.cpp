@@ -12,6 +12,7 @@
 #include <engine/render/graph/FrameGraph.h>
 #include <engine/render/graph/Job.h>
 #include <engine/render/graph/Pass.h>
+#include <engine/render/shaders/constants/PostProcessConstants.h>
 #include <engine/resource/ResourceManager.h>
 
 #include <shaders/postprocess.vs.hlsl.h>
@@ -32,7 +33,18 @@ PostProcessor::PostProcessor(ID3D11RenderTargetView *backbufferTarget, int backb
 	res = Device::device->CreateInputLayout(layout, 4, postprocessVS, sizeof(postprocessVS), &this->inputLayout);
 	CHECK_HRESULT(res);
 
-	this->targets[0] = new RenderTarget(this->backbufferWidth, this->backbufferHeight, DXGI_FORMAT_R16G16B16A16_FLOAT);
+    D3D11_BUFFER_DESC cbDesc;
+    cbDesc.Usage = D3D11_USAGE_DYNAMIC;
+    cbDesc.ByteWidth = sizeof(PostProcessConstants);
+    cbDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+    cbDesc.StructureByteStride = 0;
+    cbDesc.MiscFlags = 0;
+    cbDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+
+    res = Device::device->CreateBuffer(&cbDesc, nullptr, &this->constantBuffer);
+    CHECK_HRESULT(res);
+
+    this->targets[0] = new RenderTarget(this->backbufferWidth, this->backbufferHeight, DXGI_FORMAT_R16G16B16A16_FLOAT);
     this->targets[1] = new RenderTarget(this->backbufferWidth, this->backbufferHeight, DXGI_FORMAT_R16G16B16A16_FLOAT);
 
     this->fullscreenQuad = ResourceManager::getInstance()->requestResource<Mesh>("__fullscreenQuad");
@@ -45,6 +57,8 @@ PostProcessor::~PostProcessor()
 {
 	this->inputLayout->Release();
 
+    this->constantBuffer->Release();
+
     delete this->targets[0];
     delete this->targets[1];
 
@@ -56,6 +70,15 @@ PostProcessor::~PostProcessor()
 
 void PostProcessor::render(FrameGraph *frameGraph, const RenderSettings &settings, RenderTarget *motionTarget)
 {
+    PostProcessConstants postProcessConstants;
+    postProcessConstants.pixellateDivider = settings.postProcess.pixellateDivider;
+
+    D3D11_MAPPED_SUBRESOURCE mappedResource;
+    HRESULT res = Device::context->Map(this->constantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+    CHECK_HRESULT(res);
+    memcpy(mappedResource.pData, &postProcessConstants, sizeof(postProcessConstants));
+    Device::context->Unmap(this->constantBuffer, 0);
+
     const Mesh::SubMesh &quadSubMesh = this->fullscreenQuad->getSubMeshes()[0];
 
     this->motionBlurRenderer->render(frameGraph, this->targets[0], motionTarget, this->targets[1], this->backbufferWidth, this->backbufferHeight, quadSubMesh);
@@ -68,6 +91,7 @@ void PostProcessor::render(FrameGraph *frameGraph, const RenderSettings &setting
 	toneMappingPass->setViewport((float)this->backbufferWidth, (float)this->backbufferHeight, glm::mat4(), glm::mat4());
 
     Batch *toneMappingBatch = toneMappingPass->addBatch("");
+    toneMappingBatch->setShaderConstants(this->constantBuffer);
     toneMappingBatch->setResources({ this->targets[0]->getSRV() });
 	toneMappingBatch->setSamplers({ this->targets[0]->getSamplerState() });
     toneMappingBatch->setVertexShader(Shaders::vertex.postprocess);

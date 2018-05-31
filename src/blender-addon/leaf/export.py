@@ -100,6 +100,10 @@ def export_scene(scene, export_reference):
             "intensity": leaf_scene.bloom_intensity,
             "size": leaf_scene.bloom_size,
             "debug": leaf_scene.bloom_debug
+        },
+        "postprocess":
+        {
+            "pixellate_divider": leaf_scene.pixellate_divider
         }
     }
 

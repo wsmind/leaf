@@ -288,6 +288,9 @@
       <Filter>scene</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\engine\Demo.h" />
+    <ClInclude Include="..\..\src\engine\render\shaders\constants\PostProcessConstants.h">
+      <Filter>render\shaders\constants</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\..\src\engine\render\shaders\plop.vs.hlsl">
