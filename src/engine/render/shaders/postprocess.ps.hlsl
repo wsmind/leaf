@@ -14,8 +14,8 @@ float2 offsetUV(float2 uv, float factor)
 {
     uv = uv * 2.0 - 1.0;
 
-    float l = length(uv);
-    uv *= pow(l, factor);
+    float l = length(uv) + 1.0;
+    uv /= pow(l, factor);
 
     uv = uv * 0.5 + 0.5;
     return uv;
@@ -34,7 +34,7 @@ POSTPROCESS_PS_OUTPUT main(POSTPROCESS_PS_INPUT input)
         uv = floor(uv / divider) * divider;
     }
 
-    float3 colorOffsets = postProcessConstants.abberationStrength * float3(0.034, 0.024, 0.041);
+    float3 colorOffsets = postProcessConstants.abberationStrength * float3(0.34, 0.24, 0.41);
 
     // per-channel offset for chromatic abberation
     float2 uvR = offsetUV(uv, colorOffsets.r);
