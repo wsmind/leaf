@@ -72,6 +72,8 @@ void PostProcessor::render(FrameGraph *frameGraph, const RenderSettings &setting
 {
     PostProcessConstants postProcessConstants;
     postProcessConstants.pixellateDivider = settings.postProcess.pixellateDivider;
+    postProcessConstants.vignetteSize = settings.postProcess.vignetteSize;
+    postProcessConstants.vignettePower = settings.postProcess.vignettePower;
 
     D3D11_MAPPED_SUBRESOURCE mappedResource;
     HRESULT res = Device::context->Map(this->constantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);

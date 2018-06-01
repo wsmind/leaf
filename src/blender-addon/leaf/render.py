@@ -111,6 +111,15 @@ class LeafRenderSettings(bpy.types.PropertyGroup):
             min=0.0, max=1.0,
             default=0.0
         )
+        cls.vignette_size = FloatProperty(
+            name="Vignette Size",
+            min=0.0, max=1.0,
+            default=1.0
+        )
+        cls.vignette_power = FloatProperty(
+            name="Vignette Power",
+            default=1.6
+        )
 
     @classmethod
     def unregister(cls):
@@ -174,3 +183,5 @@ class LeafRender_PT_posteffects(LeafRenderButtonsPanel, Panel):
         lrd = context.scene.leaf
 
         layout.prop(lrd, "pixellate_divider", text="Pixellate")
+        layout.prop(lrd, "vignette_size")
+        layout.prop(lrd, "vignette_power")

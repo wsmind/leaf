@@ -11,7 +11,7 @@
 #include <engine/glm/gtc/matrix_transform.hpp>
 
 const std::string Scene::resourceClassName = "Scene";
-const std::string Scene::defaultResourceData = "{\"activeCamera\": 0, \"nodes\": [], \"markers\": [], \"frame_start\": 0.0, \"frame_end\": 10.0, \"ambientColor\": [0.0, 0.0, 0.0], \"mist\": 0.0, \"environmentMap\": \"__default\", \"bloom\": {\"threshold\": 1.0, \"intensity\": 1.0, \"size\": 4, \"debug\": false}, \"postprocess\": {\"pixellate_divider\": 0.0}}";
+const std::string Scene::defaultResourceData = "{\"activeCamera\": 0, \"nodes\": [], \"markers\": [], \"frame_start\": 0.0, \"frame_end\": 10.0, \"ambientColor\": [0.0, 0.0, 0.0], \"mist\": 0.0, \"environmentMap\": \"__default\", \"bloom\": {\"threshold\": 1.0, \"intensity\": 1.0, \"size\": 4, \"debug\": false}, \"postprocess\": {\"pixellate_divider\": 0.0, \"vignette_size\": 1.0, \"vignette_power\": 1.6}}";
 
 std::vector<Scene *> Scene::allScenes;
 
@@ -80,6 +80,8 @@ void Scene::load(const unsigned char *buffer, size_t size)
 
     cJSON *pixellateJson = cJSON_GetObjectItem(json, "postprocess");
     this->renderSettings.postProcess.pixellateDivider = (float)cJSON_GetObjectItem(pixellateJson, "pixellate_divider")->valuedouble;
+    this->renderSettings.postProcess.vignetteSize = (float)cJSON_GetObjectItem(pixellateJson, "vignette_size")->valuedouble;
+    this->renderSettings.postProcess.vignettePower = (float)cJSON_GetObjectItem(pixellateJson, "vignette_power")->valuedouble;
 
     cJSON *animation = cJSON_GetObjectItem(json, "animation");
     if (animation)
@@ -89,6 +91,8 @@ void Scene::load(const unsigned char *buffer, size_t size)
         properties.add("leaf.bloom_intensity", (float *)&this->renderSettings.bloom.intensity);
         properties.add("leaf.bloom_size", (float *)&this->renderSettings.bloom.size);
         properties.add("leaf.pixellate_divider", (float *)&this->renderSettings.postProcess.pixellateDivider);
+        properties.add("leaf.vignette_size", (float *)&this->renderSettings.postProcess.vignetteSize);
+        properties.add("leaf.vignette_power", (float *)&this->renderSettings.postProcess.vignettePower);
 
         this->animation = new AnimationData(animation, properties);
         AnimationPlayer::globalPlayer.registerAnimation(this->animation);

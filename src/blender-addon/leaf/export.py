@@ -103,7 +103,9 @@ def export_scene(scene, export_reference):
         },
         "postprocess":
         {
-            "pixellate_divider": leaf_scene.pixellate_divider
+            "pixellate_divider": leaf_scene.pixellate_divider,
+            "vignette_size": leaf_scene.vignette_size,
+            "vignette_power": leaf_scene.vignette_power
         }
     }
 
