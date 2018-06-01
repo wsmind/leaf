@@ -123,6 +123,18 @@ class LeafRenderSettings(bpy.types.PropertyGroup):
             name="Chromatic Abberation Strength",
             default=1.0
         )
+        cls.scanline_strength = FloatProperty(
+            name="Scanline Strength",
+            default=0.0
+        )
+        cls.scanline_frequency = FloatProperty(
+            name="Scanline Frequency",
+            default=20.0
+        )
+        cls.scanline_offset = FloatProperty(
+            name="Scanline Offset",
+            default=0.0
+        )
 
     @classmethod
     def unregister(cls):
@@ -189,3 +201,6 @@ class LeafRender_PT_posteffects(LeafRenderButtonsPanel, Panel):
         layout.prop(lrd, "vignette_size")
         layout.prop(lrd, "vignette_power")
         layout.prop(lrd, "abberation_strength", text="Chromatic Abberation")
+        layout.prop(lrd, "scanline_strength")
+        layout.prop(lrd, "scanline_frequency")
+        layout.prop(lrd, "scanline_offset")

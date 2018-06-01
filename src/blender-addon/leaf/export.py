@@ -106,7 +106,10 @@ def export_scene(scene, export_reference):
             "pixellate_divider": leaf_scene.pixellate_divider,
             "vignette_size": leaf_scene.vignette_size,
             "vignette_power": leaf_scene.vignette_power,
-            "abberation_strength": leaf_scene.abberation_strength
+            "abberation_strength": leaf_scene.abberation_strength,
+            "scanline_strength": leaf_scene.scanline_strength,
+            "scanline_frequency": leaf_scene.scanline_frequency,
+            "scanline_offset": leaf_scene.scanline_offset
         }
     }
 

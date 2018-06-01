@@ -75,6 +75,9 @@ void PostProcessor::render(FrameGraph *frameGraph, const RenderSettings &setting
     postProcessConstants.vignetteSize = settings.postProcess.vignetteSize;
     postProcessConstants.vignettePower = settings.postProcess.vignettePower;
     postProcessConstants.abberationStrength = settings.postProcess.abberationStrength;
+    postProcessConstants.scanlineStrength = settings.postProcess.scanlineStrength;
+    postProcessConstants.scanlineFrequency = settings.postProcess.scanlineFrequency;
+    postProcessConstants.scanlineOffset = settings.postProcess.scanlineOffset;
 
     D3D11_MAPPED_SUBRESOURCE mappedResource;
     HRESULT res = Device::context->Map(this->constantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);

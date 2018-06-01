@@ -47,6 +47,9 @@ POSTPROCESS_PS_OUTPUT main(POSTPROCESS_PS_INPUT input)
         radianceTexture.Sample(radianceSampler, uvB).b
     );
 
+    // scanline
+    radiance *= lerp(1.0, frac((input.uv.y + postProcessConstants.scanlineOffset) * postProcessConstants.scanlineFrequency), postProcessConstants.scanlineStrength);
+
     // vignette
     radiance *= pow(postProcessConstants.vignetteSize - length(input.uv - float2(0.5, 0.5)), postProcessConstants.vignettePower);
 
