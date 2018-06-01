@@ -113,12 +113,15 @@ class LeafRenderSettings(bpy.types.PropertyGroup):
         )
         cls.vignette_size = FloatProperty(
             name="Vignette Size",
-            min=0.0, max=1.0,
             default=1.0
         )
         cls.vignette_power = FloatProperty(
             name="Vignette Power",
             default=1.6
+        )
+        cls.abberation_strength = FloatProperty(
+            name="Chromatic Abberation Strength",
+            default=1.0
         )
 
     @classmethod
@@ -185,3 +188,4 @@ class LeafRender_PT_posteffects(LeafRenderButtonsPanel, Panel):
         layout.prop(lrd, "pixellate_divider", text="Pixellate")
         layout.prop(lrd, "vignette_size")
         layout.prop(lrd, "vignette_power")
+        layout.prop(lrd, "abberation_strength", text="Chromatic Abberation")

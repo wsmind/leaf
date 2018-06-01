@@ -34,10 +34,12 @@ POSTPROCESS_PS_OUTPUT main(POSTPROCESS_PS_INPUT input)
         uv = floor(uv / divider) * divider;
     }
 
+    float3 colorOffsets = postProcessConstants.abberationStrength * float3(0.034, 0.024, 0.041);
+
     // per-channel offset for chromatic abberation
-    float2 uvR = offsetUV(uv, 0.034);
-    float2 uvG = offsetUV(uv, 0.024);
-    float2 uvB = offsetUV(uv, 0.041);
+    float2 uvR = offsetUV(uv, colorOffsets.r);
+    float2 uvG = offsetUV(uv, colorOffsets.g);
+    float2 uvB = offsetUV(uv, colorOffsets.b);
 
     float3 radiance = float3(
         radianceTexture.Sample(radianceSampler, uvR).r,

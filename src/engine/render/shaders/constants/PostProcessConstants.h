@@ -9,5 +9,5 @@ struct PostProcessConstants
 	float pixellateDivider;
 	float vignetteSize;
 	float vignettePower;
-    float _padding;
+    float abberationStrength;
 };

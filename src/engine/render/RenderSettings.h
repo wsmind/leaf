@@ -34,6 +34,7 @@ struct PostProcessSettings
     float pixellateDivider = 0.0f;
     float vignetteSize = 1.0f;
     float vignettePower = 1.6f;
+    float abberationStrength = 1.0f;
 };
 
 struct RenderSettings
