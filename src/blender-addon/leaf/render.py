@@ -121,7 +121,7 @@ class LeafRenderSettings(bpy.types.PropertyGroup):
         )
         cls.abberation_strength = FloatProperty(
             name="Chromatic Abberation Strength",
-            default=1.0
+            default=0.1
         )
         cls.scanline_strength = FloatProperty(
             name="Scanline Strength",

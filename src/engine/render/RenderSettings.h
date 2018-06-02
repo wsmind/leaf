@@ -34,7 +34,7 @@ struct PostProcessSettings
     float pixellateDivider = 0.0f;
     float vignetteSize = 1.0f;
     float vignettePower = 1.6f;
-    float abberationStrength = 1.0f;
+    float abberationStrength = 0.1f;
     float scanlineStrength = 0.0f;
     float scanlineFrequency = 20.0f;
     float scanlineOffset = 0.0f;
