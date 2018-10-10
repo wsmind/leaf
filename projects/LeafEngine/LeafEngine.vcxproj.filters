@@ -3,9 +3,6 @@
   <ItemGroup>
     <ClCompile Include="..\..\src\engine\api.cpp" />
     <ClCompile Include="..\..\src\engine\Engine.cpp" />
-    <ClCompile Include="..\..\src\engine\cJSON\cJSON.c">
-      <Filter>cJSON</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\engine\DDSTextureLoader\DDSTextureLoader.cpp">
       <Filter>DDSTextureLoader</Filter>
     </ClCompile>
@@ -106,15 +103,15 @@
       <Filter>scene</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\engine\Demo.cpp" />
+    <ClCompile Include="..\..\external\cJSON\cJSON.c">
+      <Filter>external\cJSON</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\engine\api.h" />
     <ClInclude Include="..\..\src\engine\Engine.h" />
     <ClInclude Include="..\..\src\engine\render\shaders\shared.h">
       <Filter>render\shaders</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\engine\cJSON\cJSON.h">
-      <Filter>cJSON</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\engine\DDSTextureLoader\DDSTextureLoader.h">
       <Filter>DDSTextureLoader</Filter>
@@ -291,6 +288,9 @@
     <ClInclude Include="..\..\src\engine\render\shaders\constants\PostProcessConstants.h">
       <Filter>render\shaders\constants</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\external\cJSON\cJSON.h">
+      <Filter>external\cJSON</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\..\src\engine\render\shaders\plop.vs.hlsl">
@@ -385,9 +385,6 @@
     <Filter Include="blender-addon">
       <UniqueIdentifier>{841e16fa-304c-4e34-a9fe-7435ea03131c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="cJSON">
-      <UniqueIdentifier>{475ef57d-2dad-44f9-a439-6ba115a64e87}</UniqueIdentifier>
-    </Filter>
     <Filter Include="DDSTextureLoader">
       <UniqueIdentifier>{e513681b-5414-4202-a5d4-24fc46eff4fc}</UniqueIdentifier>
     </Filter>
@@ -414,6 +411,12 @@
     </Filter>
     <Filter Include="RenderDoc">
       <UniqueIdentifier>{629b52f0-677f-483a-8d99-1861f151dee1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="external">
+      <UniqueIdentifier>{f11413b1-3187-4961-8d02-a49f289f7edd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="external\cJSON">
+      <UniqueIdentifier>{db523197-21b4-4724-8ffc-b222b28e8814}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

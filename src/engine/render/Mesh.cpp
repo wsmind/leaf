@@ -6,7 +6,7 @@
 #include <engine/render/graph/Job.h>
 #include <engine/resource/ResourceManager.h>
 
-#include <engine/cJSON/cJSON.h>
+#include <cJSON/cJSON.h>
 
 const std::string Mesh::resourceClassName = "Mesh";
 const std::string Mesh::defaultResourceData = "";

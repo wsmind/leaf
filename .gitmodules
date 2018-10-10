@@ -1,3 +1,6 @@
 [submodule "src/texture-compressor/nvidia-texture-tools"]
 	path = src/texture-compressor/nvidia-texture-tools
 	url = https://github.com/castano/nvidia-texture-tools
+[submodule "external/cJSON"]
+	path = external/cJSON
+	url = https://github.com/DaveGamble/cJSON.git

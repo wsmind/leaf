@@ -13,7 +13,7 @@
 #include <engine/resource/ResourceManager.h>
 #include <engine/scene/ParticleSystem.h>
 
-#include <engine/cJSON/cJSON.h>
+#include <cJSON/cJSON.h>
 
 SceneNode::SceneNode(const cJSON *json, const SceneNode *parent)
     : parent(parent)

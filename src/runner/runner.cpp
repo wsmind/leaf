@@ -7,7 +7,7 @@
 #include <Windows.h>
 
 #include <engine/api.h>
-#include <engine/cJSON/cJSON.h>
+#include <cJSON/cJSON.h>
 
 void *loadFile(const std::string &filename, size_t *fileSize = nullptr)
 {

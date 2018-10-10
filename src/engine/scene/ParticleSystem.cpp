@@ -1,6 +1,6 @@
 #include <engine/scene/ParticleSystem.h>
 
-#include <engine/cJSON/cJSON.h>
+#include <cJSON/cJSON.h>
 
 #include <engine/glm/gtc/matrix_transform.hpp>
 #include <engine/glm/gtc/random.hpp>

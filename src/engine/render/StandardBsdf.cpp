@@ -10,7 +10,7 @@
 #include <engine/render/graph/Batch.h>
 #include <engine/resource/ResourceManager.h>
 
-#include <engine/cJSON/cJSON.h>
+#include <cJSON/cJSON.h>
 
 StandardBsdf::StandardBsdf(cJSON *json)
 {

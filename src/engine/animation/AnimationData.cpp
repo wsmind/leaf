@@ -3,7 +3,7 @@
 #include <engine/animation/Action.h>
 #include <engine/resource/ResourceManager.h>
 
-#include <engine/cJSON/cJSON.h>
+#include <cJSON/cJSON.h>
 
 AnimationData::AnimationData(const cJSON *json, const PropertyMapping &properties)
 {

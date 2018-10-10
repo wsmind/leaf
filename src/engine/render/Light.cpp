@@ -1,6 +1,6 @@
 #include <engine/render/Light.h>
 
-#include <engine/cJSON/cJSON.h>
+#include <cJSON/cJSON.h>
 #include <engine/animation/AnimationData.h>
 #include <engine/animation/AnimationPlayer.h>
 #include <engine/animation/PropertyMapping.h>

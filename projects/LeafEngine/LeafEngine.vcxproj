@@ -69,25 +69,25 @@
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\bin\</OutDir>
     <IntDir>$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\obj\$(ProjectName)\</IntDir>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)..\src;$(IntDir)</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)..\external;$(SolutionDir)..\src;$(IntDir)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\bin\</OutDir>
     <IntDir>$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\obj\$(ProjectName)\</IntDir>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)..\src;$(IntDir)</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)..\external;$(SolutionDir)..\src;$(IntDir)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\bin\</OutDir>
     <IntDir>$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\obj\$(ProjectName)\</IntDir>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)..\src;$(IntDir)</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)..\external;$(SolutionDir)..\src;$(IntDir)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\bin\</OutDir>
     <IntDir>$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\obj\$(ProjectName)\</IntDir>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)..\src;$(IntDir)</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)..\external;$(SolutionDir)..\src;$(IntDir)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -158,13 +158,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\external\cJSON\cJSON.c" />
     <ClCompile Include="..\..\src\engine\animation\Action.cpp" />
     <ClCompile Include="..\..\src\engine\animation\AnimationData.cpp" />
     <ClCompile Include="..\..\src\engine\animation\AnimationPlayer.cpp" />
     <ClCompile Include="..\..\src\engine\animation\FCurve.cpp" />
     <ClCompile Include="..\..\src\engine\animation\PropertyMapping.cpp" />
     <ClCompile Include="..\..\src\engine\api.cpp" />
-    <ClCompile Include="..\..\src\engine\cJSON\cJSON.c" />
     <ClCompile Include="..\..\src\engine\DDSTextureLoader\DDSTextureLoader.cpp" />
     <ClCompile Include="..\..\src\engine\Demo.cpp" />
     <ClCompile Include="..\..\src\engine\Engine.cpp" />
@@ -195,12 +195,12 @@
     <ClCompile Include="..\..\src\engine\scene\ParticleSystem.cpp" />
     <ClCompile Include="..\..\src\engine\scene\Scene.cpp" />
     <ClCompile Include="..\..\src\engine\scene\SceneNode.cpp" />
+    <ClInclude Include="..\..\external\cJSON\cJSON.h" />
     <ClInclude Include="..\..\src\engine\animation\Action.h" />
     <ClInclude Include="..\..\src\engine\animation\AnimationData.h" />
     <ClInclude Include="..\..\src\engine\animation\AnimationPlayer.h" />
     <ClInclude Include="..\..\src\engine\animation\FCurve.h" />
     <ClInclude Include="..\..\src\engine\animation\PropertyMapping.h" />
-    <ClInclude Include="..\..\src\engine\cJSON\cJSON.h" />
     <ClInclude Include="..\..\src\engine\DDSTextureLoader\DDSTextureLoader.h" />
     <ClInclude Include="..\..\src\engine\Demo.h" />
     <ClInclude Include="..\..\src\engine\RenderDoc\renderdoc_app.h" />

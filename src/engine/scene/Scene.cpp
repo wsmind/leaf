@@ -7,7 +7,7 @@
 #include <engine/render/RenderList.h>
 #include <engine/resource/ResourceManager.h>
 
-#include <engine/cJSON/cJSON.h>
+#include <cJSON/cJSON.h>
 #include <engine/glm/gtc/matrix_transform.hpp>
 
 const std::string Scene::resourceClassName = "Scene";

@@ -10,7 +10,7 @@
 #include <engine/render/graph/Pass.h>
 #include <engine/resource/ResourceManager.h>
 
-#include <engine/cJSON/cJSON.h>
+#include <cJSON/cJSON.h>
 
 const std::string Texture::resourceClassName = "Texture";
 const std::string Texture::defaultResourceData = "{\"type\": \"IMAGE\", \"image\": \"__default\"}";

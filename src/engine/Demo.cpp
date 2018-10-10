@@ -5,7 +5,7 @@
 #include <engine/resource/ResourceManager.h>
 #include <engine/scene/Scene.h>
 
-#include <engine/cJSON/cJSON.h>
+#include <cJSON/cJSON.h>
 
 const std::string Demo::resourceClassName = "Demo";
 const std::string Demo::defaultResourceData = "{\"scenes\": []}";

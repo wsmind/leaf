@@ -1,6 +1,6 @@
 #include <engine/animation/FCurve.h>
 
-#include <engine/cJSON/cJSON.h>
+#include <cJSON/cJSON.h>
 #include <engine/animation/PropertyMapping.h>
 
 FCurve::FCurve(const cJSON *json)

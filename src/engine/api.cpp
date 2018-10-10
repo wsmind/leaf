@@ -4,7 +4,7 @@
 #include <cstdio>
 
 #include <engine/Engine.h>
-#include <engine/cJSON/cJSON.h>
+#include <cJSON/cJSON.h>
 
 LEAFENGINE_API void leaf_initialize(int backbufferWidth, int backbufferHeight, bool capture, const char *profileFilename)
 {

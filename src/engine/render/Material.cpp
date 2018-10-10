@@ -7,7 +7,7 @@
 #include <engine/render/StandardBsdf.h>
 #include <engine/render/UnlitBsdf.h>
 
-#include <engine/cJSON/cJSON.h>
+#include <cJSON/cJSON.h>
 
 const std::string Material::resourceClassName = "Material";
 const std::string Material::defaultResourceData = "{\"bsdf\": \"UNLIT\", \"emissive\": [4.0, 0.0, 3.0], \"emissiveMap\": \"__default_white\", \"uvScale\": [1.0, 1.0], \"uvOffset\": [0.0, 0.0]}";
