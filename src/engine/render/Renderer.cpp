@@ -98,10 +98,10 @@ Renderer::Renderer(HWND hwnd, int backbufferWidth, int backbufferHeight, bool ca
     depthBufferDesc.Height = this->backbufferHeight;
     depthBufferDesc.MipLevels = 1;
     depthBufferDesc.ArraySize = 1;
-    depthBufferDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+    depthBufferDesc.Format = DXGI_FORMAT_R24G8_TYPELESS;
     depthBufferDesc.SampleDesc.Count = 1;
     depthBufferDesc.SampleDesc.Quality = 0;
-    depthBufferDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+    depthBufferDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE;
 
     res = Device::device->CreateTexture2D(&depthBufferDesc, NULL, &this->depthBuffer);
     CHECK_HRESULT(res);
@@ -109,10 +109,19 @@ Renderer::Renderer(HWND hwnd, int backbufferWidth, int backbufferHeight, bool ca
     D3D11_DEPTH_STENCIL_VIEW_DESC depthTargetDesc;
     ZeroMemory(&depthTargetDesc, sizeof(depthTargetDesc));
     depthTargetDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-    depthTargetDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2DMS;
+    depthTargetDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
     depthTargetDesc.Texture2D.MipSlice = 0;
 
     res = Device::device->CreateDepthStencilView(depthBuffer, &depthTargetDesc, &this->depthTarget);
+    CHECK_HRESULT(res);
+
+    D3D11_SHADER_RESOURCE_VIEW_DESC depthSRVDesc;
+    ZeroMemory(&depthSRVDesc, sizeof(depthSRVDesc));
+    depthSRVDesc.Format = DXGI_FORMAT_R24_UNORM_X8_TYPELESS;
+    depthSRVDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+    depthSRVDesc.Texture2D.MipLevels = 1;
+
+    res = Device::device->CreateShaderResourceView(depthBuffer, &depthSRVDesc, &this->depthSRV);
     CHECK_HRESULT(res);
 
     D3D11_DEPTH_STENCIL_DESC depthStateDesc;
@@ -259,6 +268,7 @@ Renderer::~Renderer()
         this->captureBuffer->Release();
     this->renderTarget->Release();
     this->depthTarget->Release();
+    this->depthSRV->Release();
 
     Shaders::unloadShaders();
 
