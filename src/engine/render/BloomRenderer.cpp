@@ -81,7 +81,7 @@ void BloomRenderer::render(FrameGraph *frameGraph, const RenderSettings &setting
 	{
 		Pass *pass = frameGraph->addPass("BloomDebug");
 		pass->setTargets({ outputTarget->getTarget() }, nullptr);
-		pass->setViewport((float)outputTarget->getWidth(), (float)outputTarget->getHeight(), glm::mat4(), glm::mat4());
+		pass->setViewport((float)outputTarget->getWidth(), (float)outputTarget->getHeight(), glm::mat4(1.0f), glm::mat4(1.0f));
 
 		Batch *batch = pass->addBatch("");
 		batch->setShaderConstants(this->constantBuffer);
@@ -100,7 +100,7 @@ void BloomRenderer::render(FrameGraph *frameGraph, const RenderSettings &setting
 
 	Pass *thresholdPass = frameGraph->addPass("BloomThreshold");
 	thresholdPass->setTargets({ this->downsampleTargets[0]->getTarget() }, nullptr);
-	thresholdPass->setViewport((float)this->downsampleTargets[0]->getWidth(), (float)this->downsampleTargets[0]->getHeight(), glm::mat4(), glm::mat4());
+	thresholdPass->setViewport((float)this->downsampleTargets[0]->getWidth(), (float)this->downsampleTargets[0]->getHeight(), glm::mat4(1.0f), glm::mat4(1.0f));
 
 	Batch *thresholdBatch = thresholdPass->addBatch("");
 	thresholdBatch->setShaderConstants(this->constantBuffer);
@@ -122,7 +122,7 @@ void BloomRenderer::render(FrameGraph *frameGraph, const RenderSettings &setting
 
 		Pass *pass = frameGraph->addPass("BloomDownsample");
 		pass->setTargets({ destination->getTarget() }, nullptr);
-		pass->setViewport((float)destination->getWidth(), (float)destination->getHeight(), glm::mat4(), glm::mat4());
+		pass->setViewport((float)destination->getWidth(), (float)destination->getHeight(), glm::mat4(1.0f), glm::mat4(1.0f));
 
 		Batch *batch = pass->addBatch("");
 		batch->setShaderConstants(this->constantBuffer);
@@ -146,7 +146,7 @@ void BloomRenderer::render(FrameGraph *frameGraph, const RenderSettings &setting
 
 		Pass *pass = frameGraph->addPass("BloomUpsample");
 		pass->setTargets({ destination->getTarget() }, nullptr);
-		pass->setViewport((float)destination->getWidth(), (float)destination->getHeight(), glm::mat4(), glm::mat4());
+		pass->setViewport((float)destination->getWidth(), (float)destination->getHeight(), glm::mat4(1.0f), glm::mat4(1.0f));
 
 		Batch *batch = pass->addBatch("");
 		batch->setShaderConstants(this->constantBuffer);

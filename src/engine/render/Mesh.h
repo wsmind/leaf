@@ -6,7 +6,7 @@
 #include <engine/render/Device.h>
 #include <engine/resource/Resource.h>
 
-#include <engine/glm/vec3.hpp>
+#include <glm/vec3.hpp>
 
 class Job;
 class Material;

@@ -1,8 +1,10 @@
 #include <engine/scene/SceneNode.h>
 
-#include <engine/glm/glm.hpp>
-#include <engine/glm/gtc/matrix_transform.hpp>
-#include <engine/glm/gtx/euler_angles.hpp>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/euler_angles.hpp>
 
 #include <engine/animation/AnimationData.h>
 #include <engine/animation/AnimationPlayer.h>
@@ -106,7 +108,7 @@ void SceneNode::updateTransforms()
 
     // node's own transform
     glm::mat4 rotation = glm::eulerAngleZ(this->orientation.z) * glm::eulerAngleY(this->orientation.y) * glm::eulerAngleX(this->orientation.x);
-    glm::mat4 transform = glm::translate(glm::mat4(), this->position) * rotation * glm::scale(glm::mat4(), this->scale);
+    glm::mat4 transform = glm::translate(glm::mat4(1.0f), this->position) * rotation * glm::scale(glm::mat4(1.0f), this->scale);
 
     // apply parent transform, if any
     if (this->parent != nullptr)
@@ -121,7 +123,7 @@ void SceneNode::updateTransforms()
 glm::mat4 SceneNode::computeViewTransform() const
 {
     glm::mat4 rotation = glm::eulerAngleZ(this->orientation.z) * glm::eulerAngleY(this->orientation.y) * glm::eulerAngleX(this->orientation.x);
-    glm::mat4 transform = glm::translate(glm::mat4(), this->position) * rotation;
+    glm::mat4 transform = glm::translate(glm::mat4(1.0f), this->position) * rotation;
 
     if (this->parent != nullptr)
     {
@@ -130,7 +132,7 @@ glm::mat4 SceneNode::computeViewTransform() const
         // compensate for parent scale
         glm::vec3 scaledUnit = glm::mat3(parentTransform) * glm::vec3(1.0f, 0.0f, 0.0f);
         float parentScale = glm::length(scaledUnit);
-        transform = transform * glm::scale(glm::mat4(), glm::vec3(1.0f / parentScale));
+        transform = transform * glm::scale(glm::mat4(1.0f), glm::vec3(1.0f / parentScale));
 
         transform = parentTransform * transform;
     }

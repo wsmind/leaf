@@ -5,7 +5,7 @@
 
 #include <windows.h>
 
-#include <engine/glm/glm.hpp>
+#include <glm/glm.hpp>
 
 struct cJSON;
 class Renderer;

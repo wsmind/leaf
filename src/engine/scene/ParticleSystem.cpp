@@ -2,8 +2,8 @@
 
 #include <cJSON/cJSON.h>
 
-#include <engine/glm/gtc/matrix_transform.hpp>
-#include <engine/glm/gtc/random.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/random.hpp>
 
 #include <engine/render/Mesh.h>
 #include <engine/render/RenderList.h>
@@ -52,7 +52,7 @@ void ParticleSystem::fillRenderList(RenderList *renderList) const
             if (!particle.visible)
                 continue;
 
-            glm::mat4 transform = glm::translate(glm::mat4(), particle.position) * glm::scale(glm::mat4(), glm::vec3(particle.size));
+            glm::mat4 transform = glm::translate(glm::mat4(1.0f), particle.position) * glm::scale(glm::mat4(1.0f), glm::vec3(particle.size));
             job.transform = transform;
             job.previousFrameTransform = transform;
             renderList->addJob(job);

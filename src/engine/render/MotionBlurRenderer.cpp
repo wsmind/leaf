@@ -105,7 +105,7 @@ void MotionBlurRenderer::render(FrameGraph *frameGraph, RenderTarget *radianceTa
 
 	Pass *blurPass = frameGraph->addPass("MotionBlur");
 	blurPass->setTargets({ outputTarget->getTarget() }, nullptr);
-	blurPass->setViewport((float)width, (float)height, glm::mat4(), glm::mat4());
+	blurPass->setViewport((float)width, (float)height, glm::mat4(1.0f), glm::mat4(1.0f));
 
 	Batch *blurBatch = blurPass->addBatch("");
 	blurBatch->setResources({ radianceTarget->getSRV(), motionTarget->getSRV(), this->neighborMaxSRV });

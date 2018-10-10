@@ -15,7 +15,7 @@ Pass::Pass(const std::string &name)
     defaultViewport.TopLeftX = 0;
     defaultViewport.TopLeftY = 0;
 
-    this->setViewport(defaultViewport, glm::mat4(), glm::mat4());
+    this->setViewport(defaultViewport, glm::mat4(1.0f), glm::mat4(1.0f));
 }
 
 void Pass::setViewport(D3D11_VIEWPORT viewport, const glm::mat4 &viewMatrix, const glm::mat4 &projectionMatrix)

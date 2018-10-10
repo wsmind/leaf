@@ -1,7 +1,7 @@
 #include <engine/render/Camera.h>
 
 #include <cJSON/cJSON.h>
-#include <engine/glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 #include <engine/animation/AnimationData.h>
 #include <engine/animation/AnimationPlayer.h>

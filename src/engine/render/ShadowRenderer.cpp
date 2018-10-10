@@ -123,7 +123,7 @@ void ShadowRenderer::render(FrameGraph *frameGraph, const Scene *scene, const Re
         viewport.MaxDepth = 1.0f;
         viewport.TopLeftX = (float)((index % 2) * this->resolution);
         viewport.TopLeftY = (float)((index / 2) * this->resolution);
-        shadowPass->setViewport(viewport, glm::mat4(), glm::mat4());
+        shadowPass->setViewport(viewport, glm::mat4(1.0f), glm::mat4(1.0f));
 
 		Batch *batch = shadowPass->addBatch("Light");
 		batch->setDepthStencil(this->depthState);

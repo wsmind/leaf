@@ -8,7 +8,7 @@
 #include <engine/resource/ResourceManager.h>
 
 #include <cJSON/cJSON.h>
-#include <engine/glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 const std::string Scene::resourceClassName = "Scene";
 const std::string Scene::defaultResourceData = "{\"activeCamera\": 0, \"nodes\": [], \"markers\": [], \"frame_start\": 0.0, \"frame_end\": 10.0, \"ambientColor\": [0.0, 0.0, 0.0], \"mist\": 0.0, \"environmentMap\": \"__default\", \"bloom\": {\"threshold\": 1.0, \"intensity\": 1.0, \"size\": 4, \"debug\": false}, \"postprocess\": {\"pixellate_divider\": 0.0, \"vignette_size\": 1.0, \"vignette_power\": 1.6, \"abberation_strength\": 0.1, \"scanline_strength\": 0.0, \"scanline_frequency\": 20.0, \"scanline_offset\": 0.0}}";

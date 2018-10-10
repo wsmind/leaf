@@ -94,7 +94,7 @@ void PostProcessor::render(FrameGraph *frameGraph, const RenderSettings &setting
     // tone mapping and gamma correction
     Pass *toneMappingPass = frameGraph->addPass("ToneMapping");
     toneMappingPass->setTargets({ this->targets[1]->getTarget() }, nullptr);
-	toneMappingPass->setViewport((float)this->backbufferWidth, (float)this->backbufferHeight, glm::mat4(), glm::mat4());
+	toneMappingPass->setViewport((float)this->backbufferWidth, (float)this->backbufferHeight, glm::mat4(1.0f), glm::mat4(1.0f));
 
     Batch *toneMappingBatch = toneMappingPass->addBatch("");
     toneMappingBatch->setShaderConstants(this->constantBuffer);
@@ -111,7 +111,7 @@ void PostProcessor::render(FrameGraph *frameGraph, const RenderSettings &setting
     // fxaa pass and blit to backbuffer
     Pass *fxaaPass = frameGraph->addPass("FXAA");
     fxaaPass->setTargets({ this->backbufferTarget }, nullptr);
-	fxaaPass->setViewport((float)settings.frameWidth, (float)settings.frameHeight, glm::mat4(), glm::mat4());
+	fxaaPass->setViewport((float)settings.frameWidth, (float)settings.frameHeight, glm::mat4(1.0f), glm::mat4(1.0f));
 
     Batch *fxaaBatch = fxaaPass->addBatch("");
     fxaaBatch->setResources({ this->targets[1]->getSRV() });

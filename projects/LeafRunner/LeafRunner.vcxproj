@@ -69,7 +69,7 @@
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\bin\</OutDir>
     <IntDir>$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\obj\$(ProjectName)\</IntDir>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)..\external;$(SolutionDir)..\src</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)..\external;$(SolutionDir)..\external\glm;$(SolutionDir)..\src</IncludePath>
     <CustomBuildAfterTargets>
     </CustomBuildAfterTargets>
     <LibraryPath>$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(NETFXKitsDir)Lib\um\x86;$(OutDir)</LibraryPath>
@@ -78,7 +78,7 @@
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\bin\</OutDir>
     <IntDir>$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\obj\$(ProjectName)\</IntDir>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)..\external;$(SolutionDir)..\src</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)..\external;$(SolutionDir)..\external\glm;$(SolutionDir)..\src</IncludePath>
     <CustomBuildAfterTargets>
     </CustomBuildAfterTargets>
     <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);$(NETFXKitsDir)Lib\um\x64;$(OutDir)</LibraryPath>
@@ -87,7 +87,7 @@
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\bin\</OutDir>
     <IntDir>$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\obj\$(ProjectName)\</IntDir>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)..\external;$(SolutionDir)..\src</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)..\external;$(SolutionDir)..\external\glm;$(SolutionDir)..\src</IncludePath>
     <CustomBuildAfterTargets>
     </CustomBuildAfterTargets>
     <LibraryPath>$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(NETFXKitsDir)Lib\um\x86;$(OutDir)</LibraryPath>
@@ -96,7 +96,7 @@
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\bin\</OutDir>
     <IntDir>$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\obj\$(ProjectName)\</IntDir>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)..\external;$(SolutionDir)..\src</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)..\external;$(SolutionDir)..\external\glm;$(SolutionDir)..\src</IncludePath>
     <CustomBuildAfterTargets>
     </CustomBuildAfterTargets>
     <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);$(NETFXKitsDir)Lib\um\x64;$(OutDir)</LibraryPath>

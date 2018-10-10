@@ -1,7 +1,7 @@
 #pragma once
 
 #include <d3d11.h>
-#include <engine/glm/glm.hpp>
+#include <glm/glm.hpp>
 
 class FrameGraph;
 class RenderList;

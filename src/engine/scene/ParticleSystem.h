@@ -2,7 +2,7 @@
 
 #include <vector>
 
-#include <engine/glm/glm.hpp>
+#include <glm/glm.hpp>
 
 #include <engine/resource/ResourceWatcher.h>
 

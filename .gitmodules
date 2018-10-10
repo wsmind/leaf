@@ -4,3 +4,6 @@
 [submodule "external/cJSON"]
 	path = external/cJSON
 	url = https://github.com/DaveGamble/cJSON.git
+[submodule "external/glm"]
+	path = external/glm
+	url = https://github.com/g-truc/glm.git@21a30e11164c6ffc1ec12811cf7ce82c9f3b2d1f

@@ -6,7 +6,7 @@
 #include <windows.h>
 #include <d3d11_1.h>
 
-#include <engine/glm/vec4.hpp>
+#include <glm/vec4.hpp>
 
 class Pass;
 struct SceneConstants;

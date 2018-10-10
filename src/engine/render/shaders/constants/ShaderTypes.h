@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include <engine/glm/glm.hpp>
+#include <glm/glm.hpp>
 
 // remap HLSL types to glm types
 using float2 = glm::vec2;

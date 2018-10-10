@@ -69,25 +69,25 @@
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\bin\</OutDir>
     <IntDir>$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\obj\$(ProjectName)\</IntDir>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)..\external;$(SolutionDir)..\src;$(IntDir)</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)..\external;$(SolutionDir)..\external\glm;$(SolutionDir)..\src;$(IntDir)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\bin\</OutDir>
     <IntDir>$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\obj\$(ProjectName)\</IntDir>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)..\external;$(SolutionDir)..\src;$(IntDir)</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)..\external;$(SolutionDir)..\external\glm;$(SolutionDir)..\src;$(IntDir)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\bin\</OutDir>
     <IntDir>$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\obj\$(ProjectName)\</IntDir>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)..\external;$(SolutionDir)..\src;$(IntDir)</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)..\external;$(SolutionDir)..\external\glm;$(SolutionDir)..\src;$(IntDir)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\bin\</OutDir>
     <IntDir>$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\obj\$(ProjectName)\</IntDir>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)..\external;$(SolutionDir)..\src;$(IntDir)</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)..\external;$(SolutionDir)..\external\glm;$(SolutionDir)..\src;$(IntDir)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

@@ -174,7 +174,7 @@ void Texture::update(FrameGraph *frameGraph)
             viewMatrix[0][2] = (float)roughness;
 
             Pass *pass = frameGraph->addPass("GenerateIBL");
-            pass->setViewport((float)desc.Width, (float)desc.Height, viewMatrix, glm::mat4());
+            pass->setViewport((float)desc.Width, (float)desc.Height, viewMatrix, glm::mat4(1.0f));
 
             Batch *batch = pass->addBatch("");
             batch->setResources({ this->environmentMap->getSRV() });

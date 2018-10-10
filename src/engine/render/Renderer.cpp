@@ -6,8 +6,8 @@
 #include <gl/GL.h>
 #include <d3d11.h>
 
-#include <engine/glm/glm.hpp>
-#include <engine/glm/gtc/matrix_inverse.hpp>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_inverse.hpp>
 
 #include <engine/RenderDoc/renderdoc_app.h>
 

@@ -1,13 +1,13 @@
 #pragma once
 
-#include <engine/glm/glm.hpp>
+#include <glm/glm.hpp>
 
 class Texture;
 
 struct CameraSettings
 {
-	glm::mat4 viewMatrix = glm::mat4();
-	glm::mat4 projectionMatrix = glm::mat4();
+	glm::mat4 viewMatrix = glm::mat4(1.0f);
+	glm::mat4 projectionMatrix = glm::mat4(1.0f);
 	float shutterSpeed = 0.01f;
 	float focusDistance = 1.0f;
 	float focalLength = 35.0f;

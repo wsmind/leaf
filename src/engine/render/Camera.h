@@ -2,7 +2,7 @@
 
 #include <string>
 
-#include <engine/glm/glm.hpp>
+#include <glm/glm.hpp>
 #include <engine/resource/Resource.h>
 
 class AnimationData;

@@ -3,7 +3,7 @@
 #include <string>
 #include <vector>
 
-#include <engine/glm/glm.hpp>
+#include <glm/glm.hpp>
 
 #include <engine/animation/AnimationPlayer.h>
 #include <engine/render/Camera.h>
@@ -31,7 +31,7 @@ class Scene : public Resource
 
         void fillRenderList(RenderList *renderList) const;
 
-	    const RenderSettings &updateRenderSettings(int width, int height, bool overrideCamera = false, const glm::mat4 &viewMatrixOverride = glm::mat4(), const glm::mat4 &projectionMatrixOverride = glm::mat4());
+	    const RenderSettings &updateRenderSettings(int width, int height, bool overrideCamera = false, const glm::mat4 &viewMatrixOverride = glm::mat4(1.0f), const glm::mat4 &projectionMatrixOverride = glm::mat4(1.0f));
 
         static Scene *findCurrentScene(float time);
 
