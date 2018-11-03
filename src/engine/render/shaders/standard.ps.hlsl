@@ -154,41 +154,41 @@ STANDARD_PS_OUTPUT main(STANDARD_PS_INPUT input)
 	// spot lights
     float3 inScattering = float3(0.0, 0.0, 0.0);
     float stepLength = length(input.marchingStep);
-    for (int i = 0; i < sceneConstants.spotLightCount; i++)
+    for (int j = 0; j < sceneConstants.spotLightCount; j++)
     {
-        float3 lightVector = sceneConstants.spotLights[i].position - input.worldPosition;
+        float3 lightVector = sceneConstants.spotLights[j].position - input.worldPosition;
         float lightDistance = length(lightVector);
 
-        float shadowFactor = sampleShadowMap(i, input.worldPosition);
+        float shadowFactor = sampleShadowMap(j, input.worldPosition);
 
         LightProperties light;
         light.direction = lightVector / lightDistance;
-        light.incomingRadiance = sceneConstants.spotLights[i].color * computeLightFalloff(lightDistance, sceneConstants.spotLights[i].radius) * shadowFactor;
+        light.incomingRadiance = sceneConstants.spotLights[j].color * computeLightFalloff(lightDistance, sceneConstants.spotLights[j].radius) * shadowFactor;
 
         // angle falloff (scale and offset are precomputed on CPU according to the inner and outer angles)
-        float angleFalloff = saturate(dot(-light.direction, sceneConstants.spotLights[i].direction) * sceneConstants.spotLights[i].cosAngleScale + sceneConstants.spotLights[i].cosAngleOffset);
+        float angleFalloff = saturate(dot(-light.direction, sceneConstants.spotLights[j].direction) * sceneConstants.spotLights[j].cosAngleScale + sceneConstants.spotLights[j].cosAngleOffset);
         angleFalloff *= angleFalloff; // more natural square attenuation
         light.incomingRadiance *= angleFalloff;
 
         radiance += computeShading(surface, light, eye);
 
-        if (sceneConstants.spotLights[i].scattering == 0.0)
+        if (sceneConstants.spotLights[j].scattering == 0.0)
             continue;
 
 		float3 samplePosition = passConstants.cameraPosition + input.marchingStep * jitter;
         float3 sampledScattering = float3(0.0, 0.0, 0.0);
         for (int k = 0; k < MARCHING_ITERATIONS; k++)
         {
-            float3 lightVector2 = sceneConstants.spotLights[i].position - samplePosition;
+            float3 lightVector2 = sceneConstants.spotLights[j].position - samplePosition;
             float lightDistance2 = length(lightVector2);
             float opticalDepth = distance(passConstants.cameraPosition, samplePosition) + lightDistance2;
-            float angleFalloff2 = saturate(dot(-lightVector2 / lightDistance2, sceneConstants.spotLights[i].direction) * sceneConstants.spotLights[i].cosAngleScale + sceneConstants.spotLights[i].cosAngleOffset);
+            float angleFalloff2 = saturate(dot(-lightVector2 / lightDistance2, sceneConstants.spotLights[j].direction) * sceneConstants.spotLights[j].cosAngleScale + sceneConstants.spotLights[j].cosAngleOffset);
             angleFalloff2 *= angleFalloff2; // more natural square attenuation
 
 			if (angleFalloff2 > 0.01)
 			{
-				float shadowFactor2 = sampleShadowMap(i, samplePosition);
-				float3 radiance2 = sceneConstants.spotLights[i].color * computeLightFalloff(lightDistance, sceneConstants.spotLights[i].radius) * angleFalloff2 * shadowFactor2;
+				float shadowFactor2 = sampleShadowMap(j, samplePosition);
+				float3 radiance2 = sceneConstants.spotLights[j].color * computeLightFalloff(lightDistance, sceneConstants.spotLights[j].radius) * angleFalloff2 * shadowFactor2;
 
 				//float density = exp(-samplePosition.z * 10.0);
 				sampledScattering += stepLength * radiance2 * exp(-opticalDepth * 0.01);
@@ -197,7 +197,7 @@ STANDARD_PS_OUTPUT main(STANDARD_PS_INPUT input)
             samplePosition += input.marchingStep;
         }
 
-        inScattering += sampledScattering * sceneConstants.spotLights[i].scattering;
+        inScattering += sampledScattering * sceneConstants.spotLights[j].scattering;
     }
 
     float transmittance = exp(input.viewPosition.z * sceneConstants.mist);
