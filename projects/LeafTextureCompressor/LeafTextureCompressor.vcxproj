@@ -94,6 +94,8 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(SolutionDir)..\external\nvidia-texture-tools\extern\poshlib;$(SolutionDir)..\external\nvidia-texture-tools\project\vc12;$(SolutionDir)..\external\nvidia-texture-tools\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <MinimalRebuild>false</MinimalRebuild>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>$(SolutionDir)..\external\nvidia-texture-tools\project\vc12\nvcore\$(Configuration)\$(PlatformTarget);$(SolutionDir)..\external\nvidia-texture-tools\project\vc12\nvmath\$(Configuration)\$(PlatformTarget);$(SolutionDir)..\external\nvidia-texture-tools\project\vc12\nvimage\$(Configuration)\$(PlatformTarget);$(SolutionDir)..\external\nvidia-texture-tools\project\vc12\$(Configuration).$(PlatformTarget)\lib;$(SolutionDir)..\external\nvidia-texture-tools\project\vc12\bc6h\$(Configuration)\$(PlatformTarget);$(SolutionDir)..\external\nvidia-texture-tools\project\vc12\bc7\$(Configuration)\$(PlatformTarget);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -106,6 +108,8 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(SolutionDir)..\external\nvidia-texture-tools\extern\poshlib;$(SolutionDir)..\external\nvidia-texture-tools\project\vc12;$(SolutionDir)..\external\nvidia-texture-tools\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <MinimalRebuild>false</MinimalRebuild>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>$(SolutionDir)..\external\nvidia-texture-tools\project\vc12\nvcore\$(Configuration)\$(PlatformTarget);$(SolutionDir)..\external\nvidia-texture-tools\project\vc12\nvmath\$(Configuration)\$(PlatformTarget);$(SolutionDir)..\external\nvidia-texture-tools\project\vc12\nvimage\$(Configuration)\$(PlatformTarget);$(SolutionDir)..\external\nvidia-texture-tools\project\vc12\$(Configuration).$(PlatformTarget)\lib;$(SolutionDir)..\external\nvidia-texture-tools\project\vc12\bc6h\$(Configuration)\$(PlatformTarget);$(SolutionDir)..\external\nvidia-texture-tools\project\vc12\bc7\$(Configuration)\$(PlatformTarget);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -120,6 +124,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(SolutionDir)..\external\nvidia-texture-tools\extern\poshlib;$(SolutionDir)..\external\nvidia-texture-tools\project\vc12;$(SolutionDir)..\external\nvidia-texture-tools\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -136,6 +141,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(SolutionDir)..\external\nvidia-texture-tools\extern\poshlib;$(SolutionDir)..\external\nvidia-texture-tools\project\vc12;$(SolutionDir)..\external\nvidia-texture-tools\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
