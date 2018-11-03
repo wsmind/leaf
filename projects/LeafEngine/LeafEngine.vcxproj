@@ -179,13 +179,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\external\cJSON\cJSON.c" />
+    <ClCompile Include="..\..\external\DDSTextureLoader\DDSTextureLoader.cpp" />
     <ClCompile Include="..\..\src\engine\animation\Action.cpp" />
     <ClCompile Include="..\..\src\engine\animation\AnimationData.cpp" />
     <ClCompile Include="..\..\src\engine\animation\AnimationPlayer.cpp" />
     <ClCompile Include="..\..\src\engine\animation\FCurve.cpp" />
     <ClCompile Include="..\..\src\engine\animation\PropertyMapping.cpp" />
     <ClCompile Include="..\..\src\engine\api.cpp" />
-    <ClCompile Include="..\..\src\engine\DDSTextureLoader\DDSTextureLoader.cpp" />
     <ClCompile Include="..\..\src\engine\Demo.cpp" />
     <ClCompile Include="..\..\src\engine\Engine.cpp" />
     <ClCompile Include="..\..\src\engine\render\BloomRenderer.cpp" />
@@ -216,14 +216,14 @@
     <ClCompile Include="..\..\src\engine\scene\Scene.cpp" />
     <ClCompile Include="..\..\src\engine\scene\SceneNode.cpp" />
     <ClInclude Include="..\..\external\cJSON\cJSON.h" />
+    <ClInclude Include="..\..\external\DDSTextureLoader\DDSTextureLoader.h" />
+    <ClInclude Include="..\..\external\RenderDoc\renderdoc_app.h" />
     <ClInclude Include="..\..\src\engine\animation\Action.h" />
     <ClInclude Include="..\..\src\engine\animation\AnimationData.h" />
     <ClInclude Include="..\..\src\engine\animation\AnimationPlayer.h" />
     <ClInclude Include="..\..\src\engine\animation\FCurve.h" />
     <ClInclude Include="..\..\src\engine\animation\PropertyMapping.h" />
-    <ClInclude Include="..\..\src\engine\DDSTextureLoader\DDSTextureLoader.h" />
     <ClInclude Include="..\..\src\engine\Demo.h" />
-    <ClInclude Include="..\..\src\engine\RenderDoc\renderdoc_app.h" />
     <ClInclude Include="..\..\src\engine\render\BloomRenderer.h" />
     <ClInclude Include="..\..\src\engine\render\Bsdf.h" />
     <ClInclude Include="..\..\src\engine\render\Camera.h" />

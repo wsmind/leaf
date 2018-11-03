@@ -9,7 +9,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_inverse.hpp>
 
-#include <engine/RenderDoc/renderdoc_app.h>
+#include <RenderDoc/renderdoc_app.h>
 
 #include <engine/render/Device.h>
 #include <engine/render/graph/GPUProfiler.h>

@@ -3,9 +3,6 @@
   <ItemGroup>
     <ClCompile Include="..\..\src\engine\api.cpp" />
     <ClCompile Include="..\..\src\engine\Engine.cpp" />
-    <ClCompile Include="..\..\src\engine\DDSTextureLoader\DDSTextureLoader.cpp">
-      <Filter>DDSTextureLoader</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\engine\animation\Action.cpp">
       <Filter>animation</Filter>
     </ClCompile>
@@ -106,15 +103,15 @@
     <ClCompile Include="..\..\external\cJSON\cJSON.c">
       <Filter>external\cJSON</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\external\DDSTextureLoader\DDSTextureLoader.cpp">
+      <Filter>external\DDSTextureLoader</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\engine\api.h" />
     <ClInclude Include="..\..\src\engine\Engine.h" />
     <ClInclude Include="..\..\src\engine\render\shaders\shared.h">
       <Filter>render\shaders</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\engine\DDSTextureLoader\DDSTextureLoader.h">
-      <Filter>DDSTextureLoader</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\engine\render\shaders\postprocess.h">
       <Filter>render\shaders</Filter>
@@ -275,9 +272,6 @@
     <ClInclude Include="..\..\src\engine\render\UnlitBsdf.h">
       <Filter>render</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\engine\RenderDoc\renderdoc_app.h">
-      <Filter>RenderDoc</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\engine\scene\ParticleSettings.h">
       <Filter>scene</Filter>
     </ClInclude>
@@ -290,6 +284,12 @@
     </ClInclude>
     <ClInclude Include="..\..\external\cJSON\cJSON.h">
       <Filter>external\cJSON</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\external\DDSTextureLoader\DDSTextureLoader.h">
+      <Filter>external\DDSTextureLoader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\external\RenderDoc\renderdoc_app.h">
+      <Filter>external\RenderDoc</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -385,9 +385,6 @@
     <Filter Include="blender-addon">
       <UniqueIdentifier>{841e16fa-304c-4e34-a9fe-7435ea03131c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="DDSTextureLoader">
-      <UniqueIdentifier>{e513681b-5414-4202-a5d4-24fc46eff4fc}</UniqueIdentifier>
-    </Filter>
     <Filter Include="render">
       <UniqueIdentifier>{72bc7154-f70f-45d7-99f3-3f6d70621c1f}</UniqueIdentifier>
     </Filter>
@@ -409,14 +406,17 @@
     <Filter Include="render\shaders\constants">
       <UniqueIdentifier>{732e4431-2c83-4b86-90d6-e5b78b4b7c34}</UniqueIdentifier>
     </Filter>
-    <Filter Include="RenderDoc">
-      <UniqueIdentifier>{629b52f0-677f-483a-8d99-1861f151dee1}</UniqueIdentifier>
-    </Filter>
     <Filter Include="external">
       <UniqueIdentifier>{f11413b1-3187-4961-8d02-a49f289f7edd}</UniqueIdentifier>
     </Filter>
     <Filter Include="external\cJSON">
       <UniqueIdentifier>{db523197-21b4-4724-8ffc-b222b28e8814}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="external\RenderDoc">
+      <UniqueIdentifier>{629b52f0-677f-483a-8d99-1861f151dee1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="external\DDSTextureLoader">
+      <UniqueIdentifier>{e513681b-5414-4202-a5d4-24fc46eff4fc}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

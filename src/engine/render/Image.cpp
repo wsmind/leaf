@@ -2,7 +2,7 @@
 
 #include <engine/resource/ResourceManager.h>
 
-#include <engine/DDSTextureLoader/DDSTextureLoader.h>
+#include <DDSTextureLoader/DDSTextureLoader.h>
 
 const std::string Image::resourceClassName = "Image";
 const std::string Image::defaultResourceData = "";
