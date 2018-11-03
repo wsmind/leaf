@@ -4,6 +4,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LeafEngine", "LeafEngine\LeafEngine.vcxproj", "{345FD125-10DD-40FA-9009-8E06B34B90E7}"
+	ProjectSection(ProjectDependencies) = postProject
+		{DB00DA62-0533-4AFD-B59F-A67D5B3A0808} = {DB00DA62-0533-4AFD-B59F-A67D5B3A0808}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LeafRunner", "LeafRunner\LeafRunner.vcxproj", "{012ADCF2-EF24-4733-A271-9B10D514D015}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -11,6 +14,21 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LeafRunner", "LeafRunner\Le
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LeafTextureCompressor", "LeafTextureCompressor\LeafTextureCompressor.vcxproj", "{C2CD713E-200C-4E4E-B411-352E6A766184}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "external", "external", "{2F19B452-3B7F-4CE0-95EB-613C624DA8A9}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "slang", "slang", "{AF2C31BD-64A1-46C5-83B4-05522555B81F}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "slang", "..\external\slang\source\slang\slang.vcxproj", "{DB00DA62-0533-4AFD-B59F-A67D5B3A0808}"
+	ProjectSection(ProjectDependencies) = postProject
+		{66174227-8541-41FC-A6DF-4764FC66F78E} = {66174227-8541-41FC-A6DF-4764FC66F78E}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "core", "..\external\slang\source\core\core.vcxproj", "{F9BE7957-8399-899E-0C49-E714FDDD4B65}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tools", "tools", "{AE7D8BA9-BCB3-40C2-BF2E-D512CBCBF53A}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "slang-generate", "..\external\slang\tools\slang-generate\slang-generate.vcxproj", "{66174227-8541-41FC-A6DF-4764FC66F78E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -52,8 +70,45 @@ Global
 		{C2CD713E-200C-4E4E-B411-352E6A766184}.Release|x64.Build.0 = Release|x64
 		{C2CD713E-200C-4E4E-B411-352E6A766184}.Release|x86.ActiveCfg = Release|Win32
 		{C2CD713E-200C-4E4E-B411-352E6A766184}.Release|x86.Build.0 = Release|Win32
+		{DB00DA62-0533-4AFD-B59F-A67D5B3A0808}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{DB00DA62-0533-4AFD-B59F-A67D5B3A0808}.Debug|x64.ActiveCfg = Debug|x64
+		{DB00DA62-0533-4AFD-B59F-A67D5B3A0808}.Debug|x64.Build.0 = Debug|x64
+		{DB00DA62-0533-4AFD-B59F-A67D5B3A0808}.Debug|x86.ActiveCfg = Debug|Win32
+		{DB00DA62-0533-4AFD-B59F-A67D5B3A0808}.Debug|x86.Build.0 = Debug|Win32
+		{DB00DA62-0533-4AFD-B59F-A67D5B3A0808}.Release|Any CPU.ActiveCfg = Release|Win32
+		{DB00DA62-0533-4AFD-B59F-A67D5B3A0808}.Release|x64.ActiveCfg = Release|x64
+		{DB00DA62-0533-4AFD-B59F-A67D5B3A0808}.Release|x64.Build.0 = Release|x64
+		{DB00DA62-0533-4AFD-B59F-A67D5B3A0808}.Release|x86.ActiveCfg = Release|Win32
+		{DB00DA62-0533-4AFD-B59F-A67D5B3A0808}.Release|x86.Build.0 = Release|Win32
+		{F9BE7957-8399-899E-0C49-E714FDDD4B65}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{F9BE7957-8399-899E-0C49-E714FDDD4B65}.Debug|x64.ActiveCfg = Debug|x64
+		{F9BE7957-8399-899E-0C49-E714FDDD4B65}.Debug|x64.Build.0 = Debug|x64
+		{F9BE7957-8399-899E-0C49-E714FDDD4B65}.Debug|x86.ActiveCfg = Debug|Win32
+		{F9BE7957-8399-899E-0C49-E714FDDD4B65}.Debug|x86.Build.0 = Debug|Win32
+		{F9BE7957-8399-899E-0C49-E714FDDD4B65}.Release|Any CPU.ActiveCfg = Release|Win32
+		{F9BE7957-8399-899E-0C49-E714FDDD4B65}.Release|x64.ActiveCfg = Release|x64
+		{F9BE7957-8399-899E-0C49-E714FDDD4B65}.Release|x64.Build.0 = Release|x64
+		{F9BE7957-8399-899E-0C49-E714FDDD4B65}.Release|x86.ActiveCfg = Release|Win32
+		{F9BE7957-8399-899E-0C49-E714FDDD4B65}.Release|x86.Build.0 = Release|Win32
+		{66174227-8541-41FC-A6DF-4764FC66F78E}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{66174227-8541-41FC-A6DF-4764FC66F78E}.Debug|x64.ActiveCfg = Debug|x64
+		{66174227-8541-41FC-A6DF-4764FC66F78E}.Debug|x64.Build.0 = Debug|x64
+		{66174227-8541-41FC-A6DF-4764FC66F78E}.Debug|x86.ActiveCfg = Debug|Win32
+		{66174227-8541-41FC-A6DF-4764FC66F78E}.Debug|x86.Build.0 = Debug|Win32
+		{66174227-8541-41FC-A6DF-4764FC66F78E}.Release|Any CPU.ActiveCfg = Release|Win32
+		{66174227-8541-41FC-A6DF-4764FC66F78E}.Release|x64.ActiveCfg = Release|x64
+		{66174227-8541-41FC-A6DF-4764FC66F78E}.Release|x64.Build.0 = Release|x64
+		{66174227-8541-41FC-A6DF-4764FC66F78E}.Release|x86.ActiveCfg = Release|Win32
+		{66174227-8541-41FC-A6DF-4764FC66F78E}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{AF2C31BD-64A1-46C5-83B4-05522555B81F} = {2F19B452-3B7F-4CE0-95EB-613C624DA8A9}
+		{DB00DA62-0533-4AFD-B59F-A67D5B3A0808} = {AF2C31BD-64A1-46C5-83B4-05522555B81F}
+		{F9BE7957-8399-899E-0C49-E714FDDD4B65} = {AF2C31BD-64A1-46C5-83B4-05522555B81F}
+		{AE7D8BA9-BCB3-40C2-BF2E-D512CBCBF53A} = {AF2C31BD-64A1-46C5-83B4-05522555B81F}
+		{66174227-8541-41FC-A6DF-4764FC66F78E} = {AE7D8BA9-BCB3-40C2-BF2E-D512CBCBF53A}
 	EndGlobalSection
 EndGlobal

@@ -2,6 +2,8 @@
 
 #include <engine/render/Device.h>
 
+#include <slang.h>
+
 // vertex
 #include <shaders/background.vs.hlsl.h>
 #include <shaders/basic.vs.hlsl.h>
@@ -40,6 +42,9 @@ ComputeShaderList Shaders::compute;
 
 void Shaders::loadShaders()
 {
+    SlangSession *slangSession = spCreateSession(nullptr);
+    spDestroySession(slangSession);
+
     HRESULT res;
 
     res = Device::device->CreateVertexShader(backgroundVS, sizeof(backgroundVS), NULL, &vertex.background); CHECK_HRESULT(res);
