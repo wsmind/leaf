@@ -178,6 +178,9 @@ def export_marker(marker, camera_objects):
 def export_material(mtl, export_reference):
     lmtl = mtl.leaf
 
+    if mtl.use_nodes:
+        export_node_tree(mtl.node_tree)
+
     export_bsdf_function = {
         "STANDARD": export_bsdf_standard,
         "UNLIT": export_bsdf_unlit
@@ -456,6 +459,94 @@ def export_particle_settings(particle_settings, export_reference):
     }
 
     return json.dumps(data).encode("utf-8")
+
+def make_node_id(node):
+    return node.bl_static_type + "_" + str(node.as_pointer())
+
+socket_type_to_hlsl = {
+    "CUSTOM": "unknown_type",
+    "VALUE": "float",
+    "INT": "int",
+    "BOOLEAN": "bool",
+    "VECTOR": "float3",
+    "STRING": "string_unsupported",
+    "RGBA": "float4",
+    "SHADER": "BSDF"
+}
+
+def socket_value_to_hlsl(socket):
+    if socket.type == "VALUE":
+        return str(socket.default_value)
+    elif socket.type == "INT":
+        return str(socket.default_value)
+    elif socket.type == "BOOLEAN":
+        return "true" if socket.default_value else "false"
+    elif socket.type == "VECTOR":
+        return "float3(%f, %f, %f)" % socket.default_value
+    elif socket.type == "RGBA":
+        return "float4(%f, %f, %f, %f)" % socket.default_value
+    else:
+        return "## unsupported value type ##"
+
+def compile_node(node):
+    code = ""
+    node_type = node.bl_static_type
+    node_id = make_node_id(node)
+
+    # input/output structs
+    code += "\t%s_input %s_input;\n" % (node_type, node_id)
+    code += "\t%s_output %s_output;\n" % (node_type, node_id)
+
+    # input definition (from parameter blocks and/or other nodes)
+    for input in node.inputs:
+        if input.is_linked:
+            other_id = make_node_id(input.links[0].from_node)
+            other_identifier = input.links[0].from_socket.identifier
+            code += "\t%s_input.%s = %s_output.%s\n" % (node_id, input.identifier, other_id, other_identifier)
+        else:
+            code += "\t%s_input.%s = %s\n" % (node_id, input.identifier, socket_value_to_hlsl(input))
+
+    # actual call
+    code += "\t%s(%s_input, %s_output);\n" % (node_type, node_id, node_id)
+
+    return code
+
+def compile_node_tree(tree, output_type):
+    # find output node
+    output_node = next(filter(lambda node: node.bl_static_type == output_type, tree.nodes))
+
+    # build a topological sort, starting from output (this will also implicitely remove dead nodes)
+    def traverse_node_dependencies(depth_map, node, depth):
+        depth_map[node] = depth
+        for input in node.inputs:
+            for link in input.links:
+                traverse_node_dependencies(depth_map, link.from_node, depth + 1)
+    
+    depth_map = {}
+    traverse_node_dependencies(depth_map, output_node, 0)
+
+    sorted_nodes = sorted(depth_map.items(), key=lambda item: -item[1])
+    print("Node tree: " + tree.name)
+    print(sorted_nodes)
+
+    code = "\n".join(map(lambda item: compile_node(item[0]), sorted_nodes))
+    print(code)
+
+def export_node_tree(tree):
+    # recursively identify all the subgroups needed by this tree
+    def accumulate_tree_dependencies(tree, group_set):
+        for node in tree.nodes:
+            if node.bl_static_type == "GROUP":
+                group_set.add(node.node_tree.name)
+                accumulate_tree_dependencies(node.node_tree, group_set)
+        return group_set
+
+    subgroups = accumulate_tree_dependencies(tree, set())
+    
+    for subgroup in subgroups:
+        compile_node_tree(bpy.data.node_groups[subgroup], "GROUP_OUTPUT")
+
+    compile_node_tree(tree, "OUTPUT_MATERIAL")
 
 def export_demo(demo, export_reference):
     output = {
