@@ -119,6 +119,10 @@ class EngineWrapper:
         self.lock = threading.Lock()
 
     def load(self):
+        # make sure indirect DLL dependencies are found
+        if os.environ["PATH"].find(self.script_dir) == -1:
+            os.environ["PATH"] += ";" + self.script_dir
+
         # copy the dll, to allow hot reload after rebuild
         shutil.copy(self.dll_name, self.loaded_dll_name)
 
