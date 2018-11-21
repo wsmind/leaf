@@ -109,6 +109,9 @@
     <ClCompile Include="..\..\src\engine\render\ShaderCache.cpp">
       <Filter>render</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\external\smhasher\src\MurmurHash3.cpp">
+      <Filter>external\smhasher</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\engine\api.h" />
@@ -297,6 +300,9 @@
     <ClInclude Include="..\..\src\engine\render\ShaderCache.h">
       <Filter>render</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\external\smhasher\src\MurmurHash3.h">
+      <Filter>external\smhasher</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\..\src\engine\render\shaders\plop.vs.hlsl">
@@ -423,6 +429,9 @@
     </Filter>
     <Filter Include="external\DDSTextureLoader">
       <UniqueIdentifier>{e513681b-5414-4202-a5d4-24fc46eff4fc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="external\smhasher">
+      <UniqueIdentifier>{dd30f513-b5b7-4c18-90ca-1ae738a5faf3}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

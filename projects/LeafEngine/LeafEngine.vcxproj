@@ -186,6 +186,7 @@
   <ItemGroup>
     <ClCompile Include="..\..\external\cJSON\cJSON.c" />
     <ClCompile Include="..\..\external\DDSTextureLoader\DDSTextureLoader.cpp" />
+    <ClCompile Include="..\..\external\smhasher\src\MurmurHash3.cpp" />
     <ClCompile Include="..\..\src\engine\animation\Action.cpp" />
     <ClCompile Include="..\..\src\engine\animation\AnimationData.cpp" />
     <ClCompile Include="..\..\src\engine\animation\AnimationPlayer.cpp" />
@@ -225,6 +226,7 @@
     <ClInclude Include="..\..\external\cJSON\cJSON.h" />
     <ClInclude Include="..\..\external\DDSTextureLoader\DDSTextureLoader.h" />
     <ClInclude Include="..\..\external\RenderDoc\renderdoc_app.h" />
+    <ClInclude Include="..\..\external\smhasher\src\MurmurHash3.h" />
     <ClInclude Include="..\..\src\engine\animation\Action.h" />
     <ClInclude Include="..\..\src\engine\animation\AnimationData.h" />
     <ClInclude Include="..\..\src\engine\animation\AnimationPlayer.h" />

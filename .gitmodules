@@ -10,3 +10,6 @@
 [submodule "external/slang"]
 	path = external/slang
 	url = https://github.com/shader-slang/slang.git
+[submodule "external/smhasher"]
+	path = external/smhasher
+	url = https://github.com/aappleby/smhasher.git
