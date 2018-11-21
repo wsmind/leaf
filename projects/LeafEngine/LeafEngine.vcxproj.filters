@@ -106,6 +106,9 @@
     <ClCompile Include="..\..\external\DDSTextureLoader\DDSTextureLoader.cpp">
       <Filter>external\DDSTextureLoader</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\engine\render\ShaderCache.cpp">
+      <Filter>render</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\engine\api.h" />
@@ -290,6 +293,9 @@
     </ClInclude>
     <ClInclude Include="..\..\external\RenderDoc\renderdoc_app.h">
       <Filter>external\RenderDoc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\engine\render\ShaderCache.h">
+      <Filter>render</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

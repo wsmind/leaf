@@ -12,10 +12,10 @@
 #include <engine/render/Material.h>
 #include <engine/render/Mesh.h>
 #include <engine/render/Renderer.h>
+#include <engine/render/Texture.h>
 #include <engine/resource/ResourceManager.h>
 #include <engine/scene/ParticleSettings.h>
 #include <engine/scene/Scene.h>
-#include <engine/render/Texture.h>
 
 Engine *Engine::instance = nullptr;
 

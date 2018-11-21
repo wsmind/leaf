@@ -20,6 +20,7 @@
 #include <engine/render/RenderList.h>
 #include <engine/render/RenderTarget.h>
 #include <engine/render/Shaders.h>
+#include <engine/render/ShaderCache.h>
 #include <engine/render/ShadowRenderer.h>
 #include <engine/render/Texture.h>
 #include <engine/render/graph/Batch.h>
@@ -178,6 +179,7 @@ Renderer::Renderer(HWND hwnd, int backbufferWidth, int backbufferHeight, bool ca
     }
 
     Shaders::loadShaders();
+    ShaderCache::create();
 
     D3D11_INPUT_ELEMENT_DESC layout[] =
     {
@@ -270,8 +272,6 @@ Renderer::~Renderer()
     this->depthTarget->Release();
     this->depthSRV->Release();
 
-    Shaders::unloadShaders();
-
     this->inputLayout->Release();
     this->depthOnlyInputLayout->Release();
 
@@ -292,6 +292,9 @@ Renderer::~Renderer()
 
     // make sure all graphics resources are released before destroying the context
     ResourceManager::getInstance()->clearPendingUnloads();
+
+    ShaderCache::destroy();
+    Shaders::unloadShaders();
 
     Device::context->Release();
     Device::device->Release();

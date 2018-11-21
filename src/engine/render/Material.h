@@ -4,6 +4,7 @@
 
 #include <d3d11.h>
 
+#include <engine/render/ShaderCache.h>
 #include <engine/resource/Resource.h>
 
 class AnimationData;
@@ -26,4 +27,5 @@ class Material: public Resource
     private:
         AnimationData *animation = nullptr;
         Bsdf *bsdf = nullptr;
+        ShaderCache::Hash prefixHash;
 };

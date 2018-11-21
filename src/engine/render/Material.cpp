@@ -33,10 +33,14 @@ void Material::load(const unsigned char *buffer, size_t size)
     }
 
     cJSON_Delete(json);
+
+    this->prefixHash = ShaderCache::getInstance()->registerPrefix("float brdf = 42.0f;\n");
 }
 
 void Material::unload()
 {
+    ShaderCache::getInstance()->unregisterPrefix(this->prefixHash);
+
     if (this->animation)
     {
         AnimationPlayer::globalPlayer.unregisterAnimation(this->animation);
