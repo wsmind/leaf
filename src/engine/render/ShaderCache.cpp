@@ -1,10 +1,12 @@
 #include <engine/render/ShaderCache.h>
 
+#include <smhasher/src/MurmurHash3.h>
+
 ShaderCache *ShaderCache::instance = nullptr;
 
 ShaderCache::Hash ShaderCache::registerPrefix(const std::string &code)
 {
-    Hash hash = computePrefixHash(code);
+    Hash hash = computeHash(code);
 
     Prefix &prefix = this->prefixes.find(hash)->second;
     prefix.referenceCounter++;
@@ -32,7 +34,7 @@ void ShaderCache::unregisterPrefix(Hash prefixHash)
     }
 }
 
-const ShaderVariant *ShaderCache::getVariant(const std::string &shaderName, unsigned long prefixHash)
+const ShaderVariant *ShaderCache::getVariant(const std::string &shaderName, Hash prefixHash)
 {
     return nullptr;
 }
@@ -46,7 +48,10 @@ ShaderCache::~ShaderCache()
 {
 }
 
-ShaderCache::Hash ShaderCache::computePrefixHash(const std::string &code) const
+ShaderCache::Hash ShaderCache::computeHash(const std::string &code) const
 {
-    return 0;
+    Hash hash;
+    MurmurHash3_x64_128(code.c_str(), (int)code.size(), 42, &hash);
+
+    return hash;
 }

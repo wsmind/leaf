@@ -3,13 +3,14 @@
 #include <string>
 #include <map>
 #include <cassert>
+#include <cstdint>
 
 class ShaderVariant;
 
 class ShaderCache
 {
     public:
-        typedef unsigned long Hash;
+        typedef uint64_t Hash;
 
         Hash registerPrefix(const std::string &code);
         void unregisterPrefix(Hash prefixHash);
@@ -31,7 +32,7 @@ class ShaderCache
         ShaderCache();
         ~ShaderCache();
 
-        Hash computePrefixHash(const std::string &code) const;
+        Hash computeHash(const std::string &code) const;
 
     public:
         // singleton implementation
