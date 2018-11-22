@@ -1048,6 +1048,7 @@
     <None Include="..\..\src\blender-addon\leaf\material.py" />
     <None Include="..\..\src\blender-addon\leaf\texture.py" />
     <None Include="..\..\src\blender-addon\leaf\__init__.py" />
+    <None Include="..\..\src\engine\render\shaders\postprocess.slang" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

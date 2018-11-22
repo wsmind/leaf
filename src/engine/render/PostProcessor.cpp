@@ -104,8 +104,8 @@ void PostProcessor::render(FrameGraph *frameGraph, const RenderSettings &setting
     toneMappingBatch->setShaderConstants(this->constantBuffer);
     toneMappingBatch->setResources({ this->targets[0]->getSRV() });
 	toneMappingBatch->setSamplers({ this->targets[0]->getSamplerState() });
-    toneMappingBatch->setVertexShader(Shaders::vertex.postprocess);
-    toneMappingBatch->setPixelShader(Shaders::pixel.postprocess);
+    toneMappingBatch->setVertexShader(layout.vertexShader);
+    toneMappingBatch->setPixelShader(layout.pixelShader);
 	toneMappingBatch->setInputLayout(this->inputLayout);
 
     Job *toneMappingJob = toneMappingBatch->addJob();

@@ -95,7 +95,31 @@ ShaderCache::Hash ShaderCache::computeHash(const std::string &code) const
 
 ShaderVariant *ShaderCache::compileVariant(const std::string &shaderName, Hash prefixHash)
 {
-    return new ShaderVariant;
+    SlangCompileRequest *slangRequest = spCreateCompileRequest(slangSession);
+
+    int targetIndex = spAddCodeGenTarget(slangRequest, SLANG_DXIL);
+    spSetTargetProfile(slangRequest, targetIndex, spFindProfile(slangSession, "sm_5_0"));
+
+    if (prefixHash != Hash{0, 0})
+    {
+        auto it = this->prefixes.find(prefixHash);
+        assert(it != this->prefixes.end());
+
+        const std::string prefixCode = it->second.code;
+
+        int prefixTranslationUnitIndex = spAddTranslationUnit(slangRequest, SLANG_SOURCE_LANGUAGE_SLANG, "prefix");
+        spAddTranslationUnitSourceString(slangRequest, prefixTranslationUnitIndex, "prefix.slang", prefixCode.c_str());
+    }
+
+    std::string mainShaderPath = this->sourcePath + shaderName + ".slang";
+    int mainTranslationUnitIndex = spAddTranslationUnit(slangRequest, SLANG_SOURCE_LANGUAGE_SLANG, nullptr);
+    spAddTranslationUnitSourceFile(slangRequest, mainTranslationUnitIndex, mainShaderPath.c_str());
+
+    ShaderVariant *variant = new ShaderVariant(slangRequest, mainTranslationUnitIndex);
+
+    spDestroyCompileRequest(slangRequest);
+
+    return variant;
 }
 
 template <class Predicate>

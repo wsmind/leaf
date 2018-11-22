@@ -2,6 +2,8 @@
 
 #include <d3d11.h>
 
+struct SlangCompileRequest;
+
 struct PipelineLayout
 {
     ID3D11VertexShader *vertexShader = nullptr;
@@ -12,7 +14,7 @@ struct PipelineLayout
 class ShaderVariant
 {
     public:
-        ShaderVariant();
+        ShaderVariant(SlangCompileRequest *slangRequest, int translationUnitIndex);
         ~ShaderVariant();
 
         const PipelineLayout &getLayout() const { return this->layout; }
