@@ -6,6 +6,7 @@
 #include <cstdint>
 
 class ShaderVariant;
+struct SlangSession;
 
 class ShaderCache
 {
@@ -40,6 +41,8 @@ class ShaderCache
             }
         };
         std::map<VariantKey, ShaderVariant *> variants;
+
+        SlangSession *slangSession = nullptr;
 
         ShaderCache();
         ~ShaderCache();

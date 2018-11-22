@@ -1,5 +1,6 @@
 #include <engine/render/ShaderCache.h>
 
+#include <slang.h>
 #include <smhasher/src/MurmurHash3.h>
 
 #include <engine/render/ShaderVariant.h>
@@ -72,12 +73,16 @@ ShaderCache::ShaderCache()
     this->sourcePath = folderPath + "shaders/";
 
     printf("Shader source folder: %s\n", this->sourcePath.c_str());
+
+    this->slangSession = spCreateSession(nullptr);
 }
 
 ShaderCache::~ShaderCache()
 {
     // clean all remaining variants
     this->invalidateVariants([](const VariantKey &key) { return true; });
+
+    spDestroySession(this->slangSession);
 }
 
 ShaderCache::Hash ShaderCache::computeHash(const std::string &code) const
