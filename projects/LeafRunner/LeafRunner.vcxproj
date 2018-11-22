@@ -124,8 +124,8 @@ COPY "$(SolutionDir)..\external\slang\bin\windows-$(PlatformTarget)\$(Configurat
 REM Copy shaders to the bin/ and dist/ folder
 MKDIR "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\bin\shaders"
 MKDIR "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf\shaders"
-XCOPY /E /V "$(SolutionDir)..\src\engine\render\shaders" "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\bin\shaders"
-XCOPY /E /V "$(SolutionDir)..\src\engine\render\shaders" "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf\shaders"
+XCOPY /E /Y "$(SolutionDir)..\src\engine\render\shaders" "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\bin\shaders"
+XCOPY /E /Y "$(SolutionDir)..\src\engine\render\shaders" "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf\shaders"
 
 REM Copy binaries and python to dist/ folder
 MKDIR "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf"
@@ -140,7 +140,7 @@ COPY "$(SolutionDir)..\external\nvidia-texture-tools\project\vc12\$(Configuratio
 
 REM Deploy dist/ to blender addons (2.79 assumed)
 MKDIR "%APPDATA%\Blender Foundation\Blender\2.79\scripts\addons\leaf"
-COPY "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf\*.*" "%APPDATA%\Blender Foundation\Blender\2.79\scripts\addons\leaf"
+XCOPY /E /Y "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf" "%APPDATA%\Blender Foundation\Blender\2.79\scripts\addons\leaf"
 </Command>
       <Message>
       </Message>
@@ -180,8 +180,8 @@ COPY "$(SolutionDir)..\external\slang\bin\windows-$(PlatformTarget)\$(Configurat
 REM Copy shaders to the bin/ and dist/ folder
 MKDIR "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\bin\shaders"
 MKDIR "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf\shaders"
-XCOPY /E /V "$(SolutionDir)..\src\engine\render\shaders" "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\bin\shaders"
-XCOPY /E /V "$(SolutionDir)..\src\engine\render\shaders" "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf\shaders"
+XCOPY /E /Y "$(SolutionDir)..\src\engine\render\shaders" "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\bin\shaders"
+XCOPY /E /Y "$(SolutionDir)..\src\engine\render\shaders" "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf\shaders"
 
 REM Copy binaries and python to dist/ folder
 MKDIR "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf"
@@ -196,7 +196,7 @@ COPY "$(SolutionDir)..\external\nvidia-texture-tools\project\vc12\$(Configuratio
 
 REM Deploy dist/ to blender addons (2.79 assumed)
 MKDIR "%APPDATA%\Blender Foundation\Blender\2.79\scripts\addons\leaf"
-COPY "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf\*.*" "%APPDATA%\Blender Foundation\Blender\2.79\scripts\addons\leaf"
+XCOPY /E /Y "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf" "%APPDATA%\Blender Foundation\Blender\2.79\scripts\addons\leaf"
 </Command>
       <Message>
       </Message>
@@ -239,8 +239,8 @@ COPY "$(SolutionDir)..\external\slang\bin\windows-$(PlatformTarget)\$(Configurat
 REM Copy shaders to the bin/ and dist/ folder
 MKDIR "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\bin\shaders"
 MKDIR "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf\shaders"
-XCOPY /E /V "$(SolutionDir)..\src\engine\render\shaders" "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\bin\shaders"
-XCOPY /E /V "$(SolutionDir)..\src\engine\render\shaders" "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf\shaders"
+XCOPY /E /Y "$(SolutionDir)..\src\engine\render\shaders" "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\bin\shaders"
+XCOPY /E /Y "$(SolutionDir)..\src\engine\render\shaders" "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf\shaders"
 
 REM Copy binaries and python to dist/ folder
 MKDIR "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf"
@@ -255,7 +255,7 @@ COPY "$(SolutionDir)..\external\nvidia-texture-tools\project\vc12\$(Configuratio
 
 REM Deploy dist/ to blender addons (2.79 assumed)
 MKDIR "%APPDATA%\Blender Foundation\Blender\2.79\scripts\addons\leaf"
-COPY "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf\*.*" "%APPDATA%\Blender Foundation\Blender\2.79\scripts\addons\leaf"
+XCOPY /E /Y "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf" "%APPDATA%\Blender Foundation\Blender\2.79\scripts\addons\leaf"
 </Command>
       <Message>
       </Message>
@@ -298,8 +298,8 @@ COPY "$(SolutionDir)..\external\slang\bin\windows-$(PlatformTarget)\$(Configurat
 REM Copy shaders to the bin/ and dist/ folder
 MKDIR "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\bin\shaders"
 MKDIR "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf\shaders"
-XCOPY /E /V "$(SolutionDir)..\src\engine\render\shaders" "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\bin\shaders"
-XCOPY /E /V "$(SolutionDir)..\src\engine\render\shaders" "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf\shaders"
+XCOPY /E /Y "$(SolutionDir)..\src\engine\render\shaders" "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\bin\shaders"
+XCOPY /E /Y "$(SolutionDir)..\src\engine\render\shaders" "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf\shaders"
 
 REM Copy binaries and python to dist/ folder
 MKDIR "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf"
@@ -314,7 +314,7 @@ COPY "$(SolutionDir)..\external\nvidia-texture-tools\project\vc12\$(Configuratio
 
 REM Deploy dist/ to blender addons (2.79 assumed)
 MKDIR "%APPDATA%\Blender Foundation\Blender\2.79\scripts\addons\leaf"
-COPY "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf\*.*" "%APPDATA%\Blender Foundation\Blender\2.79\scripts\addons\leaf"
+XCOPY /E /Y "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf" "%APPDATA%\Blender Foundation\Blender\2.79\scripts\addons\leaf"
 </Command>
       <Message>
       </Message>
