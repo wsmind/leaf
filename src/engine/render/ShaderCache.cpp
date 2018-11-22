@@ -97,7 +97,7 @@ ShaderVariant *ShaderCache::compileVariant(const std::string &shaderName, Hash p
 {
     SlangCompileRequest *slangRequest = spCreateCompileRequest(slangSession);
 
-    int targetIndex = spAddCodeGenTarget(slangRequest, SLANG_DXIL);
+    int targetIndex = spAddCodeGenTarget(slangRequest, SLANG_DXBC);
     spSetTargetProfile(slangRequest, targetIndex, spFindProfile(slangSession, "sm_5_0"));
 
     if (prefixHash != Hash{0, 0})
