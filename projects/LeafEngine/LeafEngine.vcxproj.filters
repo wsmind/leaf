@@ -112,6 +112,9 @@
     <ClCompile Include="..\..\external\smhasher\src\MurmurHash3.cpp">
       <Filter>external\smhasher</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\engine\render\ShaderVariant.cpp">
+      <Filter>render</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\engine\api.h" />
@@ -302,6 +305,9 @@
     </ClInclude>
     <ClInclude Include="..\..\external\smhasher\src\MurmurHash3.h">
       <Filter>external\smhasher</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\engine\render\ShaderVariant.h">
+      <Filter>render</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

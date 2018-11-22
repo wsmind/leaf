@@ -214,6 +214,7 @@
     <ClCompile Include="..\..\src\engine\render\RenderTarget.cpp" />
     <ClCompile Include="..\..\src\engine\render\ShaderCache.cpp" />
     <ClCompile Include="..\..\src\engine\render\Shaders.cpp" />
+    <ClCompile Include="..\..\src\engine\render\ShaderVariant.cpp" />
     <ClCompile Include="..\..\src\engine\render\ShadowRenderer.cpp" />
     <ClCompile Include="..\..\src\engine\render\StandardBsdf.cpp" />
     <ClCompile Include="..\..\src\engine\render\Texture.cpp" />
@@ -265,6 +266,7 @@
     <ClInclude Include="..\..\src\engine\render\shaders\equirectangular.h" />
     <ClInclude Include="..\..\src\engine\render\shaders\pass.h" />
     <ClInclude Include="..\..\src\engine\render\shaders\unlit.h" />
+    <ClInclude Include="..\..\src\engine\render\ShaderVariant.h" />
     <ClInclude Include="..\..\src\engine\render\ShadowRenderer.h" />
     <ClInclude Include="..\..\src\engine\render\StandardBsdf.h" />
     <ClInclude Include="..\..\src\engine\render\Texture.h" />

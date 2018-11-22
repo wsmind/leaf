@@ -8,6 +8,8 @@
 #include <engine/render/RenderSettings.h>
 #include <engine/render/RenderTarget.h>
 #include <engine/render/Shaders.h>
+#include <engine/render/ShaderCache.h>
+#include <engine/render/ShaderVariant.h>
 #include <engine/render/graph/Batch.h>
 #include <engine/render/graph/FrameGraph.h>
 #include <engine/render/graph/Job.h>
@@ -95,6 +97,8 @@ void PostProcessor::render(FrameGraph *frameGraph, const RenderSettings &setting
     Pass *toneMappingPass = frameGraph->addPass("ToneMapping");
     toneMappingPass->setTargets({ this->targets[1]->getTarget() }, nullptr);
 	toneMappingPass->setViewport((float)this->backbufferWidth, (float)this->backbufferHeight, glm::mat4(1.0f), glm::mat4(1.0f));
+
+    const PipelineLayout &layout = ShaderCache::getInstance()->getVariant("postprocess")->getLayout();
 
     Batch *toneMappingBatch = toneMappingPass->addBatch("");
     toneMappingBatch->setShaderConstants(this->constantBuffer);
