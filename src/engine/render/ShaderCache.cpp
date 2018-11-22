@@ -62,7 +62,16 @@ const ShaderVariant *ShaderCache::getVariant(const std::string &shaderName, Hash
 
 ShaderCache::ShaderCache()
 {
-    this->repositoryPath = "shaders/";
+    // look for the shaders next to the engine dll
+    char leafDllPath[512];
+    const std::string dllName = "LeafEngine.dll";
+    HMODULE leafModule = GetModuleHandle(dllName.c_str());
+    GetModuleFileName(leafModule, leafDllPath, 512);
+
+    std::string folderPath(leafDllPath, strlen(leafDllPath) - dllName.size());
+    this->sourcePath = folderPath + "shaders/";
+
+    printf("Shader source folder: %s\n", this->sourcePath.c_str());
 }
 
 ShaderCache::~ShaderCache()

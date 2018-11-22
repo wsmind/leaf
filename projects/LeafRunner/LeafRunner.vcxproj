@@ -121,6 +121,12 @@
       <Command>REM Copy DLL dependencies to the bin/ folder
 COPY "$(SolutionDir)..\external\slang\bin\windows-$(PlatformTarget)\$(Configuration)\slang.dll" "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\bin"
 
+REM Copy shaders to the bin/ and dist/ folder
+MKDIR "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\bin\shaders"
+MKDIR "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf\shaders"
+XCOPY /E /V "$(SolutionDir)..\src\engine\render\shaders" "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\bin\shaders"
+XCOPY /E /V "$(SolutionDir)..\src\engine\render\shaders" "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf\shaders"
+
 REM Copy binaries and python to dist/ folder
 MKDIR "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf"
 DEL /Q "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf\*.*"
@@ -170,6 +176,12 @@ COPY "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf\*.*" "
     <CustomBuildStep>
       <Command>REM Copy DLL dependencies to the bin/ folder
 COPY "$(SolutionDir)..\external\slang\bin\windows-$(PlatformTarget)\$(Configuration)\slang.dll" "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\bin"
+
+REM Copy shaders to the bin/ and dist/ folder
+MKDIR "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\bin\shaders"
+MKDIR "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf\shaders"
+XCOPY /E /V "$(SolutionDir)..\src\engine\render\shaders" "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\bin\shaders"
+XCOPY /E /V "$(SolutionDir)..\src\engine\render\shaders" "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf\shaders"
 
 REM Copy binaries and python to dist/ folder
 MKDIR "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf"
@@ -224,6 +236,12 @@ COPY "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf\*.*" "
       <Command>REM Copy DLL dependencies to the bin/ folder
 COPY "$(SolutionDir)..\external\slang\bin\windows-$(PlatformTarget)\$(Configuration)\slang.dll" "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\bin"
 
+REM Copy shaders to the bin/ and dist/ folder
+MKDIR "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\bin\shaders"
+MKDIR "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf\shaders"
+XCOPY /E /V "$(SolutionDir)..\src\engine\render\shaders" "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\bin\shaders"
+XCOPY /E /V "$(SolutionDir)..\src\engine\render\shaders" "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf\shaders"
+
 REM Copy binaries and python to dist/ folder
 MKDIR "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf"
 DEL /Q "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf\*.*"
@@ -276,6 +294,12 @@ COPY "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf\*.*" "
     <CustomBuildStep>
       <Command>REM Copy DLL dependencies to the bin/ folder
 COPY "$(SolutionDir)..\external\slang\bin\windows-$(PlatformTarget)\$(Configuration)\slang.dll" "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\bin"
+
+REM Copy shaders to the bin/ and dist/ folder
+MKDIR "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\bin\shaders"
+MKDIR "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf\shaders"
+XCOPY /E /V "$(SolutionDir)..\src\engine\render\shaders" "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\bin\shaders"
+XCOPY /E /V "$(SolutionDir)..\src\engine\render\shaders" "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf\shaders"
 
 REM Copy binaries and python to dist/ folder
 MKDIR "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf"

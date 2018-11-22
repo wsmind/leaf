@@ -20,7 +20,7 @@ class ShaderCache
     private:
         static ShaderCache *instance;
 
-        std::string repositoryPath;
+        std::string sourcePath;
 
         struct Prefix
         {
