@@ -14,7 +14,7 @@ class Demo;
 class Engine
 {
     public:
-        void initialize(int backbufferWidth, int backbufferHeight, bool capture, const std::string &profileFilename);
+        void initialize(int backbufferWidth, int backbufferHeight, bool capture, const std::string &profileFilename, const std::string &shaderPath);
         void shutdown();
 
         void loadData(const void *buffer, size_t size);

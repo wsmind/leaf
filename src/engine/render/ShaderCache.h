@@ -44,7 +44,7 @@ class ShaderCache
 
         SlangSession *slangSession = nullptr;
 
-        ShaderCache();
+        ShaderCache(const std::string &shaderPath);
         ~ShaderCache();
 
         Hash computeHash(const std::string &code) const;
@@ -54,9 +54,11 @@ class ShaderCache
         template <class Predicate>
         void invalidateVariants(Predicate predicate);
 
+        static std::string getDllPath();
+
     public:
         // singleton implementation
-        static void create() { assert(!ShaderCache::instance); ShaderCache::instance = new ShaderCache; }
+        static void create(const std::string &shaderPath) { assert(!ShaderCache::instance); ShaderCache::instance = new ShaderCache(shaderPath); }
         static void destroy() { assert(ShaderCache::instance); delete ShaderCache::instance; }
         static ShaderCache *getInstance() { assert(ShaderCache::instance); return ShaderCache::instance; }
 };

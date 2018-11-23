@@ -176,7 +176,8 @@ def register():
 
     # these dimensions define the maximum viewport size, actual viewports can be smaller
     # and will use only a subregion of it
-    engine.dll.leaf_initialize(1920, 1080, True, None)
+    shader_path = os.path.join(os.path.dirname(__file__), "shaders")
+    engine.dll.leaf_initialize(1920, 1080, True, None, shader_path.encode("utf-8"))
     
     # tag everything for reupload in engine
     engine.full_data_send = True

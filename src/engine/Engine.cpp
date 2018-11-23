@@ -19,7 +19,7 @@
 
 Engine *Engine::instance = nullptr;
 
-void Engine::initialize(int backbufferWidth, int backbufferHeight, bool capture, const std::string &profileFilename)
+void Engine::initialize(int backbufferWidth, int backbufferHeight, bool capture, const std::string &profileFilename, const std::string &shaderPath)
 {
     printf("LeafEngine started\n");
 
@@ -28,7 +28,7 @@ void Engine::initialize(int backbufferWidth, int backbufferHeight, bool capture,
     // hide window when capturing
     this->hwnd = CreateWindow("static", "Leaf", WS_POPUP | (capture ? 0 : WS_VISIBLE), 0, 0, backbufferWidth, backbufferHeight, NULL, NULL, NULL, 0);
 
-    this->renderer = new Renderer(hwnd, backbufferWidth, backbufferHeight, capture, profileFilename);
+    this->renderer = new Renderer(hwnd, backbufferWidth, backbufferHeight, capture, profileFilename, shaderPath);
     this->demo = ResourceManager::getInstance()->requestResource<Demo>("demo");
 }
 

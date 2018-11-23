@@ -49,7 +49,7 @@ struct InstanceData
 };
 #pragma pack(pop)
 
-Renderer::Renderer(HWND hwnd, int backbufferWidth, int backbufferHeight, bool capture, const std::string &profileFilename)
+Renderer::Renderer(HWND hwnd, int backbufferWidth, int backbufferHeight, bool capture, const std::string &profileFilename, const std::string &shaderPath)
 {
     this->backbufferWidth = backbufferWidth;
     this->backbufferHeight = backbufferHeight;
@@ -179,7 +179,7 @@ Renderer::Renderer(HWND hwnd, int backbufferWidth, int backbufferHeight, bool ca
     }
 
     Shaders::loadShaders();
-    ShaderCache::create();
+    ShaderCache::create(shaderPath);
 
     D3D11_INPUT_ELEMENT_DESC layout[] =
     {

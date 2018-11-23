@@ -19,7 +19,7 @@ class ShadowRenderer;
 class Renderer
 {
     public:
-        Renderer(HWND hwnd, int backbufferWidth, int backbufferHeight, bool capture, const std::string &profileFilename);
+        Renderer(HWND hwnd, int backbufferWidth, int backbufferHeight, bool capture, const std::string &profileFilename, const std::string &shaderPath);
         ~Renderer();
 
         void render(const Scene *scene, const RenderSettings &settings, float deltaTime);

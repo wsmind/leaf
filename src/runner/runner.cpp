@@ -64,7 +64,15 @@ int main(int argc, char **argv)
         argIndex++;
     }
 
-    leaf_initialize(width, height, false, profileFilename.empty() ? nullptr : profileFilename.c_str());
+    char enginePath[MAX_PATH];
+    GetModuleFileName(GetModuleHandle(nullptr), enginePath, MAX_PATH);
+
+    std::string shaderPath = enginePath;
+    shaderPath.resize(shaderPath.rfind('\\'));
+
+    shaderPath += "/shaders/";
+
+    leaf_initialize(width, height, false, profileFilename.empty() ? nullptr : profileFilename.c_str(), shaderPath.c_str());
 
     size_t dataSize;
     void *dataBuffer = loadFile("data.bin", &dataSize);
