@@ -302,6 +302,8 @@ Renderer::~Renderer()
 
 void Renderer::render(const Scene *scene, const RenderSettings &settings, float deltaTime)
 {
+    ShaderCache::getInstance()->update();
+
     // rebake environment when needed
     settings.environment.environmentMap->update(this->frameGraph);
 

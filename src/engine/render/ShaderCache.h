@@ -1,9 +1,11 @@
 #pragma once
 
 #include <string>
+#include <thread>
 #include <map>
 #include <cassert>
 #include <cstdint>
+#include <atomic>
 
 class ShaderVariant;
 struct SlangSession;
@@ -18,10 +20,15 @@ class ShaderCache
 
         const ShaderVariant *getVariant(const std::string &shaderName, Hash prefixHash = { 0, 0 });
 
+        void update();
+
     private:
         static ShaderCache *instance;
 
         std::string sourcePath;
+
+        std::thread *watcherThread;
+        std::atomic<bool> sourceChanged;
 
         struct Prefix
         {
@@ -55,6 +62,8 @@ class ShaderCache
         void invalidateVariants(Predicate predicate);
 
         static std::string getDllPath();
+
+        void watchFileChanges(std::string path);
 
     public:
         // singleton implementation

@@ -61,12 +61,25 @@ const ShaderVariant *ShaderCache::getVariant(const std::string &shaderName, Hash
     return variant;
 }
 
+void ShaderCache::update()
+{
+    bool cacheDirty = this->sourceChanged.exchange(false);
+    if (cacheDirty)
+        this->invalidateVariants([](const VariantKey &) { return true; });
+}
+
 ShaderCache::ShaderCache(const std::string &shaderPath)
     : sourcePath(shaderPath + "/")
 {
     printf("Shader source folder: %s\n", this->sourcePath.c_str());
 
     this->slangSession = spCreateSession(nullptr);
+
+    // start watching the filesystem for source code changes
+    this->watcherThread = new std::thread([&]()
+    {
+        this->watchFileChanges(this->sourcePath);
+    });
 }
 
 ShaderCache::~ShaderCache()
@@ -128,5 +141,16 @@ void ShaderCache::invalidateVariants(Predicate predicate)
         {
             it++;
         }
+    }
+}
+
+void ShaderCache::watchFileChanges(std::string path)
+{
+    HANDLE handle = FindFirstChangeNotificationA(path.c_str(), TRUE, FILE_NOTIFY_CHANGE_FILE_NAME | FILE_NOTIFY_CHANGE_DIR_NAME | FILE_NOTIFY_CHANGE_LAST_WRITE);
+
+    while (true)
+    {
+        WaitForSingleObject(handle, INFINITE);
+        this->sourceChanged = true;
     }
 }
