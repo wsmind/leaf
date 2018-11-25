@@ -67,3 +67,19 @@ void TEX_COORD(in TEX_COORD_input input, out TEX_COORD_output output, float2 int
 	output.Window = float3(0.0, 0.0, 0.0);
 	output.Reflection = float3(0.0, 0.0, 0.0);
 }
+
+struct INVERT_input
+{
+	float Fac;
+	float4 Color;
+};
+
+struct INVERT_output
+{
+	float4 Color;
+};
+
+void INVERT(in INVERT_input input, out INVERT_output output, float2 intersection)
+{
+	output.Color = lerp(input.Color, 1.0 - input.Color, input.Fac);
+}
