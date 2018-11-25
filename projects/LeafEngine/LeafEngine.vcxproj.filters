@@ -480,5 +480,8 @@
     <None Include="..\..\src\engine\render\shaders\nodes.slang">
       <Filter>render\shaders</Filter>
     </None>
+    <None Include="..\..\src\engine\render\shaders\bsdf.slang">
+      <Filter>render\shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>
