@@ -188,7 +188,8 @@ def export_material(mtl, export_reference):
 
     if mtl.use_nodes:
         data["shaderPrefix"] = export_node_tree(mtl.node_tree)
-        print(data["shaderPrefix"])
+        print(data["shaderPrefix"]["code"])
+        print(data["shaderPrefix"]["textures"])
 
     if mtl.animation_data:
         data["animation"] = export_animation(mtl.animation_data, export_reference)
@@ -517,9 +518,10 @@ def compile_struct(node, symbol_map):
 
     return code
 
-def compile_node(node, symbol_map):
+def compile_node(node, symbol_map, resource_map):
     code = ""
     symbols = symbol_map[node]
+    resource = resource_map[node]
 
     # input/output structs
     if "input_type" in symbols:
@@ -538,11 +540,14 @@ def compile_node(node, symbol_map):
 
     # actual call
     if "function_name" in symbols:
-        code += "\t%s(%s, %s);\n" % (symbols["function_name"], symbols["input_name"], symbols["output_name"])
+        if resource is not None:
+            code += "\t%s(%s, %s, %s, %s, intersection);\n" % (symbols["function_name"], symbols["input_name"], symbols["output_name"], "materialTextures[%d]" % resource, "materialSamplers[%d]" % resource)
+        else:
+            code += "\t%s(%s, %s, intersection);\n" % (symbols["function_name"], symbols["input_name"], symbols["output_name"])
 
     return code
 
-def compile_node_tree(tree, output_type):
+def compile_node_tree(tree, output_type, resources):
     # find output node
     output_node = next(filter(lambda node: node.bl_static_type == output_type, tree.nodes))
 
@@ -559,6 +564,17 @@ def compile_node_tree(tree, output_type):
     sorted_nodes = sorted(depth_map.items(), key=lambda item: -item[1])
     print("Node tree: " + tree.name)
     print(sorted_nodes)
+
+    def merge_node_resources(resources, node):
+        if node.bl_static_type == "TEX_IMAGE":
+            image_name = node.image.name if node.image else "__default"
+            index = resources.get(image_name, len(resources))
+            resources[image_name] = index
+            return index
+        else:
+            return None
+    
+    resource_map = { item[0]: merge_node_resources(resources, item[0]) for item in sorted_nodes }
 
     def build_node_symbols(node):
         if node.bl_static_type == "GROUP_INPUT":
@@ -615,11 +631,11 @@ def compile_node_tree(tree, output_type):
     code += "".join(map(lambda item: compile_struct(item[0], symbol_map), sorted_nodes))
 
     if output_type == "OUTPUT_MATERIAL":
-        code += "void evaluateMaterial(out Material output)\n"
+        code += "void evaluateMaterial(out Material output, float2 intersection)\n"
     else:
-        code += "void %s(in %s_input input, out %s_output output)\n" % (tree.name, tree.name, tree.name)
+        code += "void %s(in %s_input input, out %s_output output, float2 intersection)\n" % (tree.name, tree.name, tree.name)
     code += "{\n"
-    code += "\n".join(map(lambda item: compile_node(item[0], symbol_map), sorted_nodes))
+    code += "\n".join(map(lambda item: compile_node(item[0], symbol_map, resource_map), sorted_nodes))
     code += "}\n"
 
     return code
@@ -640,12 +656,25 @@ def export_node_tree(tree):
     code += "import bsdf;\n"
     code += "import nodes;\n"
 
+    resources = {}
+
+    function_code = ""
     for subgroup in subgroups:
-        code += compile_node_tree(bpy.data.node_groups[subgroup], "GROUP_OUTPUT")
+        function_code += compile_node_tree(bpy.data.node_groups[subgroup], "GROUP_OUTPUT", resources)
 
-    code += compile_node_tree(tree, "OUTPUT_MATERIAL")
+    function_code += compile_node_tree(tree, "OUTPUT_MATERIAL", resources)
+    
+    sorted_resources = sorted(resources.items(), key=lambda item: item[1])
 
-    return code
+    code += "Texture2D materialTextures[%d]: register(t0);\n" % len(sorted_resources)
+    code += "SamplerState materialSamplers[%d]: register(s0);\n" % len(sorted_resources)
+
+    code += function_code
+
+    return {
+        "code": code,
+        "textures": list(map(lambda item: item[0], sorted_resources))
+    }
 
 def export_demo(demo, export_reference):
     output = {

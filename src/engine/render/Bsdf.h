@@ -15,5 +15,5 @@ class Bsdf
         virtual ~Bsdf() {}
 
         virtual void registerAnimatedProperties(PropertyMapping &properties) {}
-        virtual void setupBatch(Batch *batch, const RenderSettings &settings, ID3D11ShaderResourceView *shadowSRV, ID3D11SamplerState *shadowSampler, ShadowConstants *shadowConstants) {}
+        virtual void setupBatch(Batch *batch, const RenderSettings &settings, ID3D11ShaderResourceView *shadowSRV, ShadowConstants *shadowConstants) {}
 };

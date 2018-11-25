@@ -64,7 +64,7 @@ void StandardBsdf::registerAnimatedProperties(PropertyMapping &properties)
     properties.add("leaf.uv_offset", (float *)&this->constants.uvOffset);
 }
 
-void StandardBsdf::setupBatch(Batch *batch, const RenderSettings &settings, ID3D11ShaderResourceView *shadowSRV, ID3D11SamplerState *shadowSampler, ShadowConstants *shadowConstants)
+void StandardBsdf::setupBatch(Batch *batch, const RenderSettings &settings, ID3D11ShaderResourceView *shadowSRV, ShadowConstants *shadowConstants)
 {
 	this->constants.shadows = *shadowConstants;
 
@@ -75,22 +75,4 @@ void StandardBsdf::setupBatch(Batch *batch, const RenderSettings &settings, ID3D
     Device::context->Unmap(this->constantBuffer, 0);
 
     batch->setShaderConstants(this->constantBuffer);
-
-    batch->setResources({
-        this->baseColorMap->getSRV(),
-        this->normalMap->getSRV(),
-        this->metallicMap->getSRV(),
-        this->roughnessMap->getSRV(),
-		shadowSRV,
-        settings.environment.environmentMap->getSRV()
-	});
-
-	batch->setSamplers({
-		this->baseColorMap->getSamplerState(),
-		this->normalMap->getSamplerState(),
-		this->metallicMap->getSamplerState(),
-		this->roughnessMap->getSamplerState(),
-		shadowSampler,
-        this->baseColorMap->getSamplerState() // use base color sampler for envmap
-	});
 }

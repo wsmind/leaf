@@ -1,11 +1,19 @@
 #include <engine/render/Material.h>
 
+#include <algorithm>
+#include <iterator>
+
 #include <engine/animation/AnimationData.h>
 #include <engine/animation/AnimationPlayer.h>
 #include <engine/animation/PropertyMapping.h>
 #include <engine/render/Bsdf.h>
+#include <engine/render/Image.h>
+#include <engine/render/RenderSettings.h>
 #include <engine/render/StandardBsdf.h>
+#include <engine/render/Texture.h>
 #include <engine/render/UnlitBsdf.h>
+#include <engine/render/graph/Batch.h>
+#include <engine/resource/ResourceManager.h>
 
 #include <cJSON/cJSON.h>
 
@@ -32,8 +40,22 @@ void Material::load(const unsigned char *buffer, size_t size)
         AnimationPlayer::globalPlayer.registerAnimation(this->animation);
     }
 
-    cJSON *prefixCode = cJSON_GetObjectItem(json, "shaderPrefix");
-    this->prefixHash = ShaderCache::getInstance()->registerPrefix(prefixCode ? prefixCode->valuestring : "");
+    cJSON *prefix = cJSON_GetObjectItem(json, "shaderPrefix");
+    if (prefix != nullptr)
+    {
+        const char *prefixCode = cJSON_GetObjectItem(prefix, "code")->valuestring;
+        this->prefixHash = ShaderCache::getInstance()->registerPrefix(prefixCode);
+
+        cJSON *textureList = cJSON_GetObjectItem(prefix, "textures");
+        cJSON *textureJson = textureList->child;
+        while (textureJson)
+        {
+            Image *texture = ResourceManager::getInstance()->requestResource<Image>(textureJson->valuestring);
+            this->textures.push_back(texture);
+
+            textureJson = textureJson->next;
+        }
+    }
 
     cJSON_Delete(json);
 }
@@ -41,6 +63,11 @@ void Material::load(const unsigned char *buffer, size_t size)
 void Material::unload()
 {
     ShaderCache::getInstance()->unregisterPrefix(this->prefixHash);
+    this->prefixHash = { 0, 0 };
+
+    for (auto texture: this->textures)
+        ResourceManager::getInstance()->releaseResource(texture);
+    this->textures.clear();
 
     if (this->animation)
     {
@@ -54,5 +81,21 @@ void Material::unload()
 
 void Material::setupBatch(Batch *batch, const RenderSettings &settings, ID3D11ShaderResourceView *shadowSRV, ID3D11SamplerState *shadowSampler, ShadowConstants *shadowConstants)
 {
-    this->bsdf->setupBatch(batch, settings, shadowSRV, shadowSampler, shadowConstants);
+    std::vector<ID3D11ShaderResourceView *> resources;
+    std::transform(this->textures.begin(), this->textures.end(), std::back_inserter(resources), [](Image *texture) { return texture->getSRV(); });
+
+    resources.push_back(shadowSRV);
+    resources.push_back(settings.environment.environmentMap->getSRV());
+
+    batch->setResources(resources);
+
+    std::vector<ID3D11SamplerState *> samplers;
+    //std::transform(this->textures.begin(), this->textures.end(), std::back_inserter(samplers), [](Image *texture) { return texture->getSamplerState(); });
+
+    samplers.push_back(shadowSampler);
+    //samplers.push_back(settings.environment.environmentMap->getSRV()); // this->baseColorMap->getSamplerState() // use base color sampler for envmap
+
+    batch->setSamplers(samplers);
+
+    this->bsdf->setupBatch(batch, settings, shadowSRV, shadowConstants);
 }

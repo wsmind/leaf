@@ -15,7 +15,7 @@ class UnlitBsdf: public Bsdf
         virtual ~UnlitBsdf();
 
         virtual void registerAnimatedProperties(PropertyMapping &properties) override;
-        virtual void setupBatch(Batch *batch, const RenderSettings &settings, ID3D11ShaderResourceView *shadowSRV, ID3D11SamplerState *shadowSampler, ShadowConstants *shadowConstants) override;
+        virtual void setupBatch(Batch *batch, const RenderSettings &settings, ID3D11ShaderResourceView *shadowSRV, ShadowConstants *shadowConstants) override;
 
     private:
         UnlitConstants constants;

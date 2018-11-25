@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <vector>
 
 #include <d3d11.h>
 
@@ -12,6 +13,7 @@ class Batch;
 class Bsdf;
 struct RenderSettings;
 struct ShadowConstants;
+class Image;
 
 class Material: public Resource
 {
@@ -30,4 +32,5 @@ class Material: public Resource
         AnimationData *animation = nullptr;
         Bsdf *bsdf = nullptr;
         ShaderCache::Hash prefixHash = { 0, 0 };
+        std::vector<Image *> textures;
 };

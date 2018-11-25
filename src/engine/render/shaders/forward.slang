@@ -10,7 +10,7 @@ cbuffer StandardConstants : register(b2)
     StandardConstants standardConstants;
 };
 
-Texture2D<float4> baseColorMap: register(t0);
+/*Texture2D<float4> baseColorMap: register(t0);
 SamplerState baseColorSampler: register(s0);
 
 Texture2D<float4> normalMap: register(t1);
@@ -26,7 +26,7 @@ Texture2D shadowMap: register(t4);
 SamplerState shadowMapSampler: register(s4);
 
 Texture2D<float4> environmentMap: register(t5);
-SamplerState environmentSampler : register(s5);
+SamplerState environmentSampler : register(s5);*/
 
 struct STANDARD_PS_INPUT
 {
@@ -87,7 +87,7 @@ STANDARD_PS_INPUT vertexMain(VS_INPUT input)
     return output;
 }
 
-float g1v(float dotNV, float k)
+/*float g1v(float dotNV, float k)
 {
     return 1.0 / (dotNV * (1.0 - k) + 1.0);
 }
@@ -179,18 +179,25 @@ float3 computeEnvironmentRadiance(SurfaceProperties surface, float3 eye)
     float3 direction = reflect(-eye, surface.normal);
     float2 uv = directionToEquirectangularUV(direction);
     return environmentMap.SampleLevel(environmentSampler, uv, surface.roughness * sceneConstants.environmentMipLevels).rgb;
-}
+}*/
 
 [shader("fragment")]
 STANDARD_PS_OUTPUT fragmentMain(STANDARD_PS_INPUT input)
 {
     STANDARD_PS_OUTPUT output;
 
+	float2 intersection = input.uv;
+	
 	Material material;
-	evaluateMaterial(material);
+	evaluateMaterial(material, intersection);
     float3 radiance = material.Surface.evaluate(float3(0.0, 0.0, 0.0), float3(0.0, 0.0, 0.0));
 
-    const float3 view = passConstants.cameraPosition - input.worldPosition;
+	output.radiance = float4(radiance, input.viewPosition.z);
+	output.motion = float4(0.0, 0.0, 0.0, 0.0);
+
+	return output;
+
+    /*const float3 view = passConstants.cameraPosition - input.worldPosition;
     const float3 eye = normalize(view);
     const float3 normal = normalize(input.normal);
     const float3 tangent = normalize(input.tangent.xyz);
@@ -302,5 +309,5 @@ STANDARD_PS_OUTPUT fragmentMain(STANDARD_PS_INPUT input)
 	// store half velocity
     output.motion = float4(0.5 * screenSpaceMotion, 0.0, 0.0);
 
-	return output;
+	return output;*/
 }

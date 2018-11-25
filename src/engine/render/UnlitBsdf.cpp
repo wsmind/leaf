@@ -51,7 +51,7 @@ void UnlitBsdf::registerAnimatedProperties(PropertyMapping &properties)
     properties.add("leaf.uv_offset", (float *)&this->constants.uvOffset);
 }
 
-void UnlitBsdf::setupBatch(Batch *batch, const RenderSettings &settings, ID3D11ShaderResourceView *shadowSRV, ID3D11SamplerState *shadowSampler, ShadowConstants *shadowConstants)
+void UnlitBsdf::setupBatch(Batch *batch, const RenderSettings &settings, ID3D11ShaderResourceView *shadowSRV, ShadowConstants *shadowConstants)
 {
     D3D11_MAPPED_SUBRESOURCE mappedResource;
     HRESULT res = Device::context->Map(this->constantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
@@ -60,12 +60,4 @@ void UnlitBsdf::setupBatch(Batch *batch, const RenderSettings &settings, ID3D11S
     Device::context->Unmap(this->constantBuffer, 0);
 
     batch->setShaderConstants(this->constantBuffer);
-
-    batch->setResources({
-        this->emissiveMap->getSRV(),
-	});
-
-	batch->setSamplers({
-		this->emissiveMap->getSamplerState(),
-	});
 }
