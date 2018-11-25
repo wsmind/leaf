@@ -21,6 +21,7 @@
 #include <engine/render/RenderTarget.h>
 #include <engine/render/Shaders.h>
 #include <engine/render/ShaderCache.h>
+#include <engine/render/ShaderVariant.h>
 #include <engine/render/ShadowRenderer.h>
 #include <engine/render/Texture.h>
 #include <engine/render/graph/Batch.h>
@@ -416,6 +417,10 @@ void Renderer::render(const Scene *scene, const RenderSettings &settings, float 
                 currentBatch = radiancePass->addBatch(std::string("Material"));
                 currentBatch->setDepthStencil(this->equalDepthState);
                 currentBatch->setInputLayout(this->inputLayout);
+
+                const PipelineLayout &layout = ShaderCache::getInstance()->getVariant("forward", currentMaterial->getPrefixHash())->getLayout();
+                currentBatch->setVertexShader(layout.vertexShader);
+                currentBatch->setPixelShader(layout.pixelShader);
 
                 currentMaterial->setupBatch(currentBatch, settings, this->shadowRenderer->getSRV(), this->shadowRenderer->getSampler(), &shadowConstants);
             }

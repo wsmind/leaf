@@ -178,9 +178,6 @@ def export_marker(marker, camera_objects):
 def export_material(mtl, export_reference):
     lmtl = mtl.leaf
 
-    if mtl.use_nodes:
-        export_node_tree(mtl.node_tree)
-
     export_bsdf_function = {
         "STANDARD": export_bsdf_standard,
         "UNLIT": export_bsdf_unlit
@@ -188,6 +185,10 @@ def export_material(mtl, export_reference):
     data = export_bsdf_function[lmtl.bsdf](mtl, export_reference)
 
     data["bsdf"] = lmtl.bsdf
+
+    if mtl.use_nodes:
+        data["shaderPrefix"] = export_node_tree(mtl.node_tree)
+        print(data["shaderPrefix"])
 
     if mtl.animation_data:
         data["animation"] = export_animation(mtl.animation_data, export_reference)
@@ -463,16 +464,29 @@ def export_particle_settings(particle_settings, export_reference):
 def make_node_id(node):
     return node.bl_static_type + "_" + str(node.as_pointer())
 
-socket_type_to_hlsl = {
-    "CUSTOM": "unknown_type",
-    "VALUE": "float",
-    "INT": "int",
-    "BOOLEAN": "bool",
-    "VECTOR": "float3",
-    "STRING": "string_unsupported",
-    "RGBA": "float4",
-    "SHADER": "BSDF"
-}
+def socket_type_to_hlsl(socket):
+    if socket.type == "CUSTOM":
+        return "int /* unknown_type */"
+    elif socket.type == "VALUE":
+        return "float"
+    elif socket.type == "INT":
+        return "int"
+    elif socket.type == "BOOLEAN":
+        return "bool"
+    elif socket.type == "VECTOR":
+        return "float3"
+    elif socket.type == "STRING":
+        return "int /* string_unsupported*/ "
+    elif socket.type == "RGBA":
+        return "float4"
+    elif socket.type == "SHADER":
+        # find the concrete type of the bsdf
+        if socket.is_linked:
+            return socket.links[0].from_node.bl_static_type + "_OUTPUT_TYPE"
+        else:
+            return "BSDF_DEFAULT_OUTPUT_TYPE"
+    else:
+        return None
 
 def socket_value_to_hlsl(socket):
     if socket.type == "VALUE":
@@ -482,32 +496,49 @@ def socket_value_to_hlsl(socket):
     elif socket.type == "BOOLEAN":
         return "true" if socket.default_value else "false"
     elif socket.type == "VECTOR":
-        return "float3(%f, %f, %f)" % socket.default_value
+        return "float3(%f, %f, %f)" % (socket.default_value[0], socket.default_value[1], socket.default_value[2])
     elif socket.type == "RGBA":
-        return "float4(%f, %f, %f, %f)" % socket.default_value
+        return "float4(%f, %f, %f, %f)" % (socket.default_value[0], socket.default_value[1], socket.default_value[2], socket.default_value[3])
+    elif socket.type == "SHADER":
+        return "defaultBsdf"
     else:
-        return "## unsupported value type ##"
+        return "0 /* ## unsupported value type ## */"
 
-def compile_node(node):
+def compile_struct(node, symbol_map):
     code = ""
-    node_type = node.bl_static_type
-    node_id = make_node_id(node)
+    symbols = symbol_map[node]
+
+    if "struct_type" in symbols:
+        code += "struct %s\n" % symbols["struct_type"]
+        code += "{\n"
+        for item in symbols["struct_items"]:
+            code += "\t%s %s;\n" % (socket_type_to_hlsl(item), item.identifier)
+        code += "};\n"
+
+    return code
+
+def compile_node(node, symbol_map):
+    code = ""
+    symbols = symbol_map[node]
 
     # input/output structs
-    code += "\t%s_input %s_input;\n" % (node_type, node_id)
-    code += "\t%s_output %s_output;\n" % (node_type, node_id)
+    if "input_type" in symbols:
+        code += "\t%s %s;\n" % (symbols["input_type"], symbols["input_name"])
+    if "output_type" in symbols:
+        code += "\t%s %s;\n" % (symbols["output_type"], symbols["output_name"])
 
     # input definition (from parameter blocks and/or other nodes)
     for input in node.inputs:
         if input.is_linked:
-            other_id = make_node_id(input.links[0].from_node)
+            other_symbols = symbol_map[input.links[0].from_node]
             other_identifier = input.links[0].from_socket.identifier
-            code += "\t%s_input.%s = %s_output.%s\n" % (node_id, input.identifier, other_id, other_identifier)
+            code += "\t%s.%s = %s.%s;\n" % (symbols["input_name"], input.identifier, other_symbols["output_name"], other_identifier)
         else:
-            code += "\t%s_input.%s = %s\n" % (node_id, input.identifier, socket_value_to_hlsl(input))
+            code += "\t%s.%s = %s;\n" % (symbols["input_name"], input.identifier, socket_value_to_hlsl(input))
 
     # actual call
-    code += "\t%s(%s_input, %s_output);\n" % (node_type, node_id, node_id)
+    if "function_name" in symbols:
+        code += "\t%s(%s, %s);\n" % (symbols["function_name"], symbols["input_name"], symbols["output_name"])
 
     return code
 
@@ -529,8 +560,69 @@ def compile_node_tree(tree, output_type):
     print("Node tree: " + tree.name)
     print(sorted_nodes)
 
-    code = "\n".join(map(lambda item: compile_node(item[0]), sorted_nodes))
-    print(code)
+    def build_node_symbols(node):
+        if node.bl_static_type == "GROUP_INPUT":
+            tree_name = tree.name
+            return {
+                "struct_type": tree_name + "_input",
+                "struct_items": node.outputs,
+
+                "output_name": "input"
+            }
+        elif node.bl_static_type == "GROUP_OUTPUT":
+            tree_name = tree.name
+            return {
+                "struct_type": tree_name + "_output",
+                "struct_items": node.inputs,
+
+                "input_name": "output"
+            }
+        elif node.bl_static_type == "GROUP":
+            tree_name = node.node_tree.name
+            node_id = make_node_id(node)
+            return {
+                "input_type": tree_name + "_input",
+                "input_name": node_id + "_input",
+
+                "output_type": tree_name + "_output",
+                "output_name": node_id + "_output",
+
+                "function_name": tree_name
+            }
+        elif node.bl_static_type == "OUTPUT_MATERIAL":
+            return {
+                "struct_type": "Material",
+                "struct_items": node.inputs,
+
+                "input_name": "output"
+            }
+        else:
+            node_type = node.bl_static_type
+            node_id = make_node_id(node)
+            return {
+                "input_type": node_type + "_input",
+                "input_name": node_id + "_input",
+
+                "output_type": node_type + "_output",
+                "output_name": node_id + "_output",
+
+                "function_name": node_type
+            }
+
+    symbol_map = { item[0]: build_node_symbols(item[0]) for item in sorted_nodes }
+
+    code = ""
+    code += "".join(map(lambda item: compile_struct(item[0], symbol_map), sorted_nodes))
+
+    if output_type == "OUTPUT_MATERIAL":
+        code += "void evaluateMaterial(out Material output)\n"
+    else:
+        code += "void %s(in %s_input input, out %s_output output)\n" % (tree.name, tree.name, tree.name)
+    code += "{\n"
+    code += "\n".join(map(lambda item: compile_node(item[0], symbol_map), sorted_nodes))
+    code += "}\n"
+
+    return code
 
 def export_node_tree(tree):
     # recursively identify all the subgroups needed by this tree
@@ -543,10 +635,17 @@ def export_node_tree(tree):
 
     subgroups = accumulate_tree_dependencies(tree, set())
     
-    for subgroup in subgroups:
-        compile_node_tree(bpy.data.node_groups[subgroup], "GROUP_OUTPUT")
+    code = ""
 
-    compile_node_tree(tree, "OUTPUT_MATERIAL")
+    code += "import bsdf;\n"
+    code += "import nodes;\n"
+
+    for subgroup in subgroups:
+        code += compile_node_tree(bpy.data.node_groups[subgroup], "GROUP_OUTPUT")
+
+    code += compile_node_tree(tree, "OUTPUT_MATERIAL")
+
+    return code
 
 def export_demo(demo, export_reference):
     output = {

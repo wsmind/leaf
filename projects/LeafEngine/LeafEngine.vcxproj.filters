@@ -474,5 +474,11 @@
     <None Include="..\..\src\engine\render\shaders\postprocess.slang">
       <Filter>render\shaders</Filter>
     </None>
+    <None Include="..\..\src\engine\render\shaders\forward.slang">
+      <Filter>render\shaders</Filter>
+    </None>
+    <None Include="..\..\src\engine\render\shaders\nodes.slang">
+      <Filter>render\shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

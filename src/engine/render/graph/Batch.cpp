@@ -57,6 +57,10 @@ void Batch::execute(ID3D11DeviceContext *context)
 {
     GPUProfiler::ScopedProfile profile(this->name);
 
+    // if no shader is bound, skip the draw calls
+    if (!this->vertexShader && !this->pixelShader && !this->computeShader)
+        return;
+
     if (this->depthStencil != nullptr)
         context->OMSetDepthStencilState(this->depthStencil, 0);
 

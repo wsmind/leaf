@@ -44,7 +44,10 @@ class ShaderCache
 
             bool operator <(const VariantKey &rhs) const
             {
-                return (this->prefixHash < rhs.prefixHash) && (strcmp(this->shaderName.c_str(), rhs.shaderName.c_str()) < 0);
+                if (this->prefixHash != rhs.prefixHash)
+                    return this->prefixHash < rhs.prefixHash;
+
+                return strcmp(this->shaderName.c_str(), rhs.shaderName.c_str()) < 0;
             }
         };
         std::map<VariantKey, ShaderVariant *> variants;

@@ -24,8 +24,10 @@ class Material: public Resource
 
         void setupBatch(Batch *batch, const RenderSettings &settings, ID3D11ShaderResourceView *shadowSRV, ID3D11SamplerState *shadowSampler, ShadowConstants *shadowConstants);
 
+        ShaderCache::Hash getPrefixHash() const { return this->prefixHash; }
+
     private:
         AnimationData *animation = nullptr;
         Bsdf *bsdf = nullptr;
-        ShaderCache::Hash prefixHash;
+        ShaderCache::Hash prefixHash = { 0, 0 };
 };

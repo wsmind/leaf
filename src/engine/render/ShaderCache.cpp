@@ -105,6 +105,8 @@ ShaderVariant *ShaderCache::compileVariant(const std::string &shaderName, Hash p
     int targetIndex = spAddCodeGenTarget(slangRequest, SLANG_DXBC);
     spSetTargetProfile(slangRequest, targetIndex, spFindProfile(slangSession, "sm_5_0"));
 
+    int translationUnitIndex = spAddTranslationUnit(slangRequest, SLANG_SOURCE_LANGUAGE_SLANG, nullptr);
+
     if (prefixHash != Hash{0, 0})
     {
         auto it = this->prefixes.find(prefixHash);
@@ -112,15 +114,14 @@ ShaderVariant *ShaderCache::compileVariant(const std::string &shaderName, Hash p
 
         const std::string prefixCode = it->second.code;
 
-        int prefixTranslationUnitIndex = spAddTranslationUnit(slangRequest, SLANG_SOURCE_LANGUAGE_SLANG, "prefix");
-        spAddTranslationUnitSourceString(slangRequest, prefixTranslationUnitIndex, "prefix.slang", prefixCode.c_str());
+        std::string prefixPath = this->sourcePath + "prefix.slang";
+        spAddTranslationUnitSourceString(slangRequest, translationUnitIndex, prefixPath.c_str(), prefixCode.c_str());
     }
 
     std::string mainShaderPath = this->sourcePath + shaderName + ".slang";
-    int mainTranslationUnitIndex = spAddTranslationUnit(slangRequest, SLANG_SOURCE_LANGUAGE_SLANG, nullptr);
-    spAddTranslationUnitSourceFile(slangRequest, mainTranslationUnitIndex, mainShaderPath.c_str());
+    spAddTranslationUnitSourceFile(slangRequest, translationUnitIndex, mainShaderPath.c_str());
 
-    ShaderVariant *variant = new ShaderVariant(slangRequest, mainTranslationUnitIndex);
+    ShaderVariant *variant = new ShaderVariant(slangRequest, translationUnitIndex);
 
     spDestroyCompileRequest(slangRequest);
 

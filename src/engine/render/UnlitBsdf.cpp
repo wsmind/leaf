@@ -59,9 +59,6 @@ void UnlitBsdf::setupBatch(Batch *batch, const RenderSettings &settings, ID3D11S
     memcpy(mappedResource.pData, &constants, sizeof(constants));
     Device::context->Unmap(this->constantBuffer, 0);
 
-    batch->setVertexShader(Shaders::vertex.unlit);
-    batch->setPixelShader(Shaders::pixel.unlit);
-
     batch->setShaderConstants(this->constantBuffer);
 
     batch->setResources({
