@@ -3,6 +3,8 @@
 #include "scene.h"
 #include "shadows.h"
 
+import bsdf;
+
 #include "constants/StandardConstants.h"
 
 cbuffer StandardConstants : register(b2)
@@ -10,19 +12,7 @@ cbuffer StandardConstants : register(b2)
     StandardConstants standardConstants;
 };
 
-/*Texture2D<float4> baseColorMap: register(t0);
-SamplerState baseColorSampler: register(s0);
-
-Texture2D<float4> normalMap: register(t1);
-SamplerState normalSampler: register(s1);
-
-Texture2D<float4> metallicMap: register(t2);
-SamplerState metallicSampler: register(s2);
-
-Texture2D<float4> roughnessMap: register(t3);
-SamplerState roughnessSampler : register(s3);
-
-Texture2D shadowMap: register(t4);
+/*Texture2D shadowMap: register(t4);
 SamplerState shadowMapSampler: register(s4);
 
 Texture2D<float4> environmentMap: register(t5);
@@ -87,59 +77,6 @@ STANDARD_PS_INPUT vertexMain(VS_INPUT input)
     return output;
 }
 
-/*float g1v(float dotNV, float k)
-{
-    return 1.0 / (dotNV * (1.0 - k) + 1.0);
-}
-
-struct SurfaceProperties
-{
-    float3 albedo;
-    float3 normal;
-    float3 specularColor;
-    float roughness;
-};
-
-struct LightProperties
-{
-    float3 direction;
-    float3 incomingRadiance;
-};
-
-float3 computeShading(SurfaceProperties surface, LightProperties light, float3 eye)
-{
-    const float3 h = normalize(eye + light.direction);
-
-    // precompute all cosines
-    float dotLH = saturate(dot(light.direction, h));
-    float dotNH = saturate(dot(surface.normal, h));
-    float dotNL = saturate(dot(surface.normal, light.direction));
-    float dotNV = saturate(dot(surface.normal, eye));
-
-    // simple lambert for diffuse
-    float3 diffuse = surface.albedo / 3.141592;
-
-    // schlick fresnel approximation
-    float3 fresnel = surface.specularColor + (1.0 - surface.specularColor) * pow(1.0 - dotLH, 5.0);
-
-    float alpha = surface.roughness * surface.roughness;
-    float alphaSquared = alpha * alpha;
-	alphaSquared = max(0.0000001, alphaSquared); // avoid division by zero
-
-    // GGX normal distribution
-    float denominator = dotNH * dotNH * (alphaSquared - 1.0) + 1.0;
-    float normalDistribution = alphaSquared / (3.141592 * denominator * denominator);
-
-    // schlick approximation for visibility factor
-    float k = alpha * 0.5;
-    float visibility = g1v(dotNL, k) * g1v(dotNV, k);
-
-    // cook-torrance microfacet model
-    float3 specular = fresnel * normalDistribution * visibility;
-
-    return dotNL * light.incomingRadiance * (diffuse + specular);
-}
-
 float computeLightFalloff(float distance, float radius)
 {
     // see http://blog.selfshadow.com/publications/s2013-shading-course/karis/s2013_pbs_epic_notes_v2.pdf
@@ -148,7 +85,7 @@ float computeLightFalloff(float distance, float radius)
     return numerator / (distance * distance + 1.0);
 }
 
-float sampleShadowMap(int index, float3 worldPosition)
+/*float sampleShadowMap(int index, float3 worldPosition)
 {
     float4 shadowCoords = mul(standardConstants.shadows.lightMatrix[index], float4(worldPosition, 1.0));
     shadowCoords.z = (shadowCoords.z + shadowCoords.w) * 0.5; // hack; GL to DX clip space
@@ -184,47 +121,40 @@ float3 computeEnvironmentRadiance(SurfaceProperties surface, float3 eye)
 [shader("fragment")]
 STANDARD_PS_OUTPUT fragmentMain(STANDARD_PS_INPUT input)
 {
-    STANDARD_PS_OUTPUT output;
+    const float3 view = passConstants.cameraPosition - input.worldPosition;
+    const float3 eye = normalize(view);
 
-	float2 intersection = input.uv;
+	Intersection intersection;
+	intersection.uv = input.uv;
+    intersection.normal = normalize(input.normal);
+    intersection.tangent = normalize(input.tangent.xyz);
+    intersection.bitangent = normalize(-input.tangent.w * cross(intersection.normal, intersection.tangent));
 	
 	Material material;
 	evaluateMaterial(material, intersection);
-    float3 radiance = material.Surface.evaluate(float3(0.0, 0.0, 0.0), float3(0.0, 0.0, 0.0));
 
+	float3 radiance = float3(0.0, 0.0, 0.0);
+
+    // point lights
+    for (int i = 0; i < sceneConstants.pointLightCount; i++)
+    {
+        float3 lightVector = sceneConstants.pointLights[i].position - input.worldPosition;
+        float lightDistance = length(lightVector);
+
+        LightSample lightSample;
+        lightSample.direction = lightVector / lightDistance;
+        lightSample.radiance = sceneConstants.pointLights[i].color * computeLightFalloff(lightDistance, sceneConstants.pointLights[i].radius);
+
+        radiance += material.Surface.integrateSample(eye, lightSample);
+    }
+
+    STANDARD_PS_OUTPUT output;
 	output.radiance = float4(radiance, input.viewPosition.z);
 	output.motion = float4(0.0, 0.0, 0.0, 0.0);
 
 	return output;
 
-    /*const float3 view = passConstants.cameraPosition - input.worldPosition;
-    const float3 eye = normalize(view);
-    const float3 normal = normalize(input.normal);
-    const float3 tangent = normalize(input.tangent.xyz);
-    const float3 bitangent = normalize(-input.tangent.w * cross(normal, tangent));
-
-    // compute TBN frame for normal mapping
-    float3x3 TBN = float3x3(tangent, bitangent, normal);
-
-    // compute normal after normal map perturbation, in world space
-    float3 tangentNormal = normalize(normalMap.Sample(normalSampler, input.uv).rgb * 2.0 - 1.0);
-    float3 perturbedNormal = mul(tangentNormal, TBN);
-
-    float3 baseColor = standardConstants.baseColorMultiplier * baseColorMap.Sample(baseColorSampler, input.uv).rgb;
-    float metallic = saturate(standardConstants.metallicOffset + metallicMap.Sample(metallicSampler, input.uv).r);
-    float roughness = saturate(standardConstants.roughnessOffset + roughnessMap.Sample(roughnessSampler, input.uv).r);
-
-    // blend between dielectric and metal
-    float3 albedo = baseColor * (1.0 - metallic);
-    float3 specularColor = lerp(float3(0.04, 0.04, 0.04), baseColor, metallic);
-
-    SurfaceProperties surface;
-    surface.albedo = albedo;
-    surface.normal = perturbedNormal;
-    surface.specularColor = specularColor;
-    surface.roughness = roughness * 0.9;
-
-	radiance += sceneConstants.ambientColor * surface.albedo;
+	/*radiance += sceneConstants.ambientColor * surface.albedo;
 
     radiance += computeEnvironmentIrradiance(surface) * surface.albedo;
     radiance += computeEnvironmentRadiance(surface, eye) * surface.specularColor;

@@ -33,4 +33,5 @@ class Material: public Resource
         Bsdf *bsdf = nullptr;
         ShaderCache::Hash prefixHash = { 0, 0 };
         std::vector<Image *> textures;
+        ID3D11SamplerState *samplerState;
 };

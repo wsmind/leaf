@@ -58,10 +58,25 @@ void Material::load(const unsigned char *buffer, size_t size)
     }
 
     cJSON_Delete(json);
+
+    D3D11_SAMPLER_DESC samplerDesc;
+    ZeroMemory(&samplerDesc, sizeof(samplerDesc));
+    samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR; // trilinear
+    samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+    samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+    samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+    samplerDesc.MipLODBias = 0;
+    samplerDesc.MinLOD = 0;
+    samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
+
+    Device::device->CreateSamplerState(&samplerDesc, &this->samplerState);
 }
 
 void Material::unload()
 {
+    this->samplerState->Release();
+    this->samplerState = nullptr;
+
     ShaderCache::getInstance()->unregisterPrefix(this->prefixHash);
     this->prefixHash = { 0, 0 };
 
@@ -90,10 +105,10 @@ void Material::setupBatch(Batch *batch, const RenderSettings &settings, ID3D11Sh
     batch->setResources(resources);
 
     std::vector<ID3D11SamplerState *> samplers;
-    //std::transform(this->textures.begin(), this->textures.end(), std::back_inserter(samplers), [](Image *texture) { return texture->getSamplerState(); });
+    std::transform(this->textures.begin(), this->textures.end(), std::back_inserter(samplers), [&](Image *texture) { return this->samplerState; });
 
     samplers.push_back(shadowSampler);
-    //samplers.push_back(settings.environment.environmentMap->getSRV()); // this->baseColorMap->getSamplerState() // use base color sampler for envmap
+    samplers.push_back(this->samplerState); // use base color sampler for envmap
 
     batch->setSamplers(samplers);
 

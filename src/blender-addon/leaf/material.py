@@ -60,7 +60,7 @@ class LeafMaterialSettings(bpy.types.PropertyGroup):
     @classmethod
     def unregister(cls):
         del bpy.types.Material.leaf
-
+"""
 class LeafMaterialButtonsPanel():
     bl_space_type = "PROPERTIES"
     bl_region_type = "WINDOW"
@@ -276,3 +276,4 @@ class LeafMaterial_PT_Unlit_UVTransform(LeafMaterialBSDFPanel, Panel):
 
         layout.prop(lmat, "uv_scale")
         layout.prop(lmat, "uv_offset")
+"""

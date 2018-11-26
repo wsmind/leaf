@@ -165,7 +165,8 @@ compatible_panels = [
     bpy.types.RENDER_PT_dimensions,
     bpy.types.RENDER_PT_output,
     bpy.types.WORLD_PT_world,
-    bpy.types.WORLD_PT_mist
+    bpy.types.WORLD_PT_mist,
+    bpy.types.CyclesMaterial_PT_surface
 ]
 
 def register():

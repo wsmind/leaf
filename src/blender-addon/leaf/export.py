@@ -501,9 +501,12 @@ def socket_value_to_hlsl(socket):
     elif socket.type == "RGBA":
         return "float4(%f, %f, %f, %f)" % (socket.default_value[0], socket.default_value[1], socket.default_value[2], socket.default_value[3])
     elif socket.type == "SHADER":
-        return "defaultBsdf"
+        return "nullBsdf"
     else:
         return "0 /* ## unsupported value type ## */"
+
+def compile_identifier(identifier):
+    return "".join(filter(lambda c: c.isalnum(), identifier))
 
 def compile_struct(node, symbol_map):
     code = ""
@@ -513,7 +516,7 @@ def compile_struct(node, symbol_map):
         code += "struct %s\n" % symbols["struct_type"]
         code += "{\n"
         for item in symbols["struct_items"]:
-            code += "\t%s %s;\n" % (socket_type_to_hlsl(item), item.identifier)
+            code += "\t%s %s;\n" % (socket_type_to_hlsl(item), compile_identifier(item.identifier))
         code += "};\n"
 
     return code
@@ -534,9 +537,15 @@ def compile_node(node, symbol_map, resource_map):
         if input.is_linked:
             other_symbols = symbol_map[input.links[0].from_node]
             other_identifier = input.links[0].from_socket.identifier
-            code += "\t%s.%s = %s.%s;\n" % (symbols["input_name"], input.identifier, other_symbols["output_name"], other_identifier)
+            
+            # insert a cast if necessary
+            cast_function = ""
+            if input.links[0].from_socket.type != input.type:
+                cast_function = "cast_to_%s" % socket_type_to_hlsl(input)
+            
+            code += "\t%s.%s = %s(%s.%s);\n" % (symbols["input_name"], compile_identifier(input.identifier), cast_function, other_symbols["output_name"], compile_identifier(other_identifier))
         else:
-            code += "\t%s.%s = %s;\n" % (symbols["input_name"], input.identifier, socket_value_to_hlsl(input))
+            code += "\t%s.%s = %s;\n" % (symbols["input_name"], compile_identifier(input.identifier), socket_value_to_hlsl(input))
 
     # actual call
     if "function_name" in symbols:
@@ -631,9 +640,9 @@ def compile_node_tree(tree, output_type, resources):
     code += "".join(map(lambda item: compile_struct(item[0], symbol_map), sorted_nodes))
 
     if output_type == "OUTPUT_MATERIAL":
-        code += "void evaluateMaterial(out Material output, float2 intersection)\n"
+        code += "void evaluateMaterial(out Material output, Intersection intersection)\n"
     else:
-        code += "void %s(in %s_input input, out %s_output output, float2 intersection)\n" % (tree.name, tree.name, tree.name)
+        code += "void %s(in %s_input input, out %s_output output, Intersection intersection)\n" % (tree.name, tree.name, tree.name)
     code += "{\n"
     code += "\n".join(map(lambda item: compile_node(item[0], symbol_map, resource_map), sorted_nodes))
     code += "}\n"
@@ -654,6 +663,7 @@ def export_node_tree(tree):
     code = ""
 
     code += "import bsdf;\n"
+    code += "import geometry;\n"
     code += "import nodes;\n"
 
     resources = {}

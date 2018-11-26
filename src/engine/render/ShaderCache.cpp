@@ -1,5 +1,9 @@
 #include <engine/render/ShaderCache.h>
 
+#include <string>
+#include <fstream>
+#include <streambuf>
+
 #include <slang.h>
 #include <smhasher/src/MurmurHash3.h>
 
@@ -100,12 +104,15 @@ ShaderCache::Hash ShaderCache::computeHash(const std::string &code) const
 
 ShaderVariant *ShaderCache::compileVariant(const std::string &shaderName, Hash prefixHash)
 {
+    printf("## Compiling shader '%s' (prefix: 0x%llx%llx) ##\n", shaderName.c_str(), prefixHash.first, prefixHash.second);
     SlangCompileRequest *slangRequest = spCreateCompileRequest(slangSession);
 
     int targetIndex = spAddCodeGenTarget(slangRequest, SLANG_DXBC);
     spSetTargetProfile(slangRequest, targetIndex, spFindProfile(slangSession, "sm_5_0"));
 
-    int translationUnitIndex = spAddTranslationUnit(slangRequest, SLANG_SOURCE_LANGUAGE_SLANG, nullptr);
+    std::string shaderPath = this->sourcePath + shaderName + ".slang";
+    std::ifstream shaderFile(shaderPath.c_str());
+    std::string code((std::istreambuf_iterator<char>(shaderFile)), std::istreambuf_iterator<char>());
 
     if (prefixHash != Hash{0, 0})
     {
@@ -114,12 +121,12 @@ ShaderVariant *ShaderCache::compileVariant(const std::string &shaderName, Hash p
 
         const std::string prefixCode = it->second.code;
 
-        std::string prefixPath = this->sourcePath + "prefix.slang";
-        spAddTranslationUnitSourceString(slangRequest, translationUnitIndex, prefixPath.c_str(), prefixCode.c_str());
+        code = prefixCode + "\n" + code;
     }
 
-    std::string mainShaderPath = this->sourcePath + shaderName + ".slang";
-    spAddTranslationUnitSourceFile(slangRequest, translationUnitIndex, mainShaderPath.c_str());
+    std::string mainPath = this->sourcePath + "main.slang";
+    int translationUnitIndex = spAddTranslationUnit(slangRequest, SLANG_SOURCE_LANGUAGE_SLANG, nullptr);
+    spAddTranslationUnitSourceString(slangRequest, translationUnitIndex, mainPath.c_str(), code.c_str());
 
     ShaderVariant *variant = new ShaderVariant(slangRequest, translationUnitIndex);
 
