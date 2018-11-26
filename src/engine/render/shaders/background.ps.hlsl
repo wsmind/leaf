@@ -1,4 +1,4 @@
-#include "equirectangular.h"
+#include "equirectangular.slang"
 #include "shared.h"
 
 Texture2D<float4> environmentTexture: register(t0);

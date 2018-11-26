@@ -1,5 +1,4 @@
-#include "pass.h"
-#include "postprocess.h"
+#include "postprocess.slang"
 #include "scene.h"
 
 Texture2D<float4> inputTexture: register(t0);

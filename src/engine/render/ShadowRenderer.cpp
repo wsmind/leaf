@@ -10,7 +10,7 @@
 #include <engine/render/graph/Pass.h>
 #include <engine/scene/Scene.h>
 
-#include <engine/render/shaders/constants/StandardConstants.h>
+#include <engine/render/shaders/constants/ShadowConstants.h>
 
 ShadowRenderer::ShadowRenderer(int resolution)
 {
@@ -71,6 +71,17 @@ ShadowRenderer::ShadowRenderer(int resolution)
     depthStateDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
     res = Device::device->CreateDepthStencilState(&depthStateDesc, &this->depthState);
     CHECK_HRESULT(res);
+
+    D3D11_BUFFER_DESC cbDesc;
+    cbDesc.Usage = D3D11_USAGE_DYNAMIC;
+    cbDesc.ByteWidth = sizeof(ShadowConstants);
+    cbDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+    cbDesc.StructureByteStride = 0;
+    cbDesc.MiscFlags = 0;
+    cbDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+
+    res = Device::device->CreateBuffer(&cbDesc, nullptr, &this->constantBuffer);
+    CHECK_HRESULT(res);
 }
 
 ShadowRenderer::~ShadowRenderer()
@@ -80,14 +91,19 @@ ShadowRenderer::~ShadowRenderer()
     this->srv->Release();
     this->sampler->Release();
     this->depthState->Release();
+
+    this->constantBuffer->Release();
 }
 
-void ShadowRenderer::render(FrameGraph *frameGraph, const Scene *scene, const RenderList *renderList, ShadowConstants *shadowConstants, ID3D11InputLayout *inputLayout)
+void ShadowRenderer::render(FrameGraph *frameGraph, const Scene *scene, const RenderList *renderList, ID3D11InputLayout *inputLayout)
 {
     const std::vector<RenderList::Job> &jobs = renderList->getJobs();
     const std::vector<RenderList::Light> &lights = renderList->getLights();
 
 	frameGraph->addClearTarget(this->target, 1.0f, 0);
+
+    ShadowConstants shadowConstants;
+    ZeroMemory(&shadowConstants, sizeof(shadowConstants));
 
     int shadowCount = 0;
 	for (int i = 0; i < lights.size(); i++)
@@ -109,7 +125,7 @@ void ShadowRenderer::render(FrameGraph *frameGraph, const Scene *scene, const Re
 			0.0f, 0.0f, scale.z, offset.z,
 			0.0f, 0.0f, 0.0f, 1.0f
 		);*/
-		shadowConstants->lightMatrix[index] = lights[i].shadowTransform;
+		shadowConstants.lightMatrix[index] = lights[i].shadowTransform;
 
 		GPUProfiler::ScopedProfile profile("Shadow");
 
@@ -149,4 +165,11 @@ void ShadowRenderer::render(FrameGraph *frameGraph, const Scene *scene, const Re
 			currentJob->addInstance(instanceData);
 		}
     }
+
+    // update shader constants
+    D3D11_MAPPED_SUBRESOURCE mappedResource;
+    HRESULT res = Device::context->Map(this->constantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+    CHECK_HRESULT(res);
+    memcpy(mappedResource.pData, &shadowConstants, sizeof(shadowConstants));
+    Device::context->Unmap(this->constantBuffer, 0);
 }

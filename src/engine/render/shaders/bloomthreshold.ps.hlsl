@@ -1,6 +1,5 @@
 #include "bloom.h"
-#include "pass.h"
-#include "postprocess.h"
+#include "postprocess.slang"
 #include "scene.h"
 
 #define SAMPLE_COUNT 13

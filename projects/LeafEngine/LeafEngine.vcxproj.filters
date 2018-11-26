@@ -87,12 +87,6 @@
     <ClCompile Include="..\..\src\engine\render\Shaders.cpp">
       <Filter>render</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\engine\render\StandardBsdf.cpp">
-      <Filter>render</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\engine\render\UnlitBsdf.cpp">
-      <Filter>render</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\engine\scene\ParticleSettings.cpp">
       <Filter>scene</Filter>
     </ClCompile>
@@ -120,12 +114,6 @@
     <ClInclude Include="..\..\src\engine\api.h" />
     <ClInclude Include="..\..\src\engine\Engine.h" />
     <ClInclude Include="..\..\src\engine\render\shaders\shared.h">
-      <Filter>render\shaders</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\engine\render\shaders\postprocess.h">
-      <Filter>render\shaders</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\engine\render\shaders\standard.h">
       <Filter>render\shaders</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\engine\render\shaders\scene.h">
@@ -239,9 +227,6 @@
     <ClInclude Include="..\..\src\engine\render\graph\Batch.h">
       <Filter>render\graph</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\engine\render\shaders\constants\StandardConstants.h">
-      <Filter>render\shaders\constants</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\engine\render\graph\Job.h">
       <Filter>render\graph</Filter>
     </ClInclude>
@@ -260,26 +245,11 @@
     <ClInclude Include="..\..\src\engine\resource\ResourceWatcher.h">
       <Filter>resource</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\engine\render\shaders\equirectangular.h">
-      <Filter>render\shaders</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\engine\render\Shaders.h">
       <Filter>render</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\engine\render\shaders\unlit.h">
-      <Filter>render\shaders</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\engine\render\shaders\constants\UnlitConstants.h">
       <Filter>render\shaders\constants</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\engine\render\Bsdf.h">
-      <Filter>render</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\engine\render\StandardBsdf.h">
-      <Filter>render</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\engine\render\UnlitBsdf.h">
-      <Filter>render</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\engine\scene\ParticleSettings.h">
       <Filter>scene</Filter>
@@ -309,6 +279,9 @@
     <ClInclude Include="..\..\src\engine\render\ShaderVariant.h">
       <Filter>render</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\engine\render\shaders\constants\ShadowConstants.h">
+      <Filter>render\shaders\constants</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\..\src\engine\render\shaders\plop.vs.hlsl">
@@ -327,18 +300,6 @@
       <Filter>render\shaders</Filter>
     </FxCompile>
     <FxCompile Include="..\..\src\engine\render\shaders\background.vs.hlsl">
-      <Filter>render\shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="..\..\src\engine\render\shaders\postprocess.ps.hlsl">
-      <Filter>render\shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="..\..\src\engine\render\shaders\postprocess.vs.hlsl">
-      <Filter>render\shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="..\..\src\engine\render\shaders\standard.ps.hlsl">
-      <Filter>render\shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="..\..\src\engine\render\shaders\standard.vs.hlsl">
       <Filter>render\shaders</Filter>
     </FxCompile>
     <FxCompile Include="..\..\src\engine\render\shaders\depthonly.ps.hlsl">
@@ -387,12 +348,6 @@
       <Filter>render\shaders</Filter>
     </FxCompile>
     <FxCompile Include="..\..\src\engine\render\shaders\bloomdebug.ps.hlsl">
-      <Filter>render\shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="..\..\src\engine\render\shaders\unlit.ps.hlsl">
-      <Filter>render\shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="..\..\src\engine\render\shaders\unlit.vs.hlsl">
       <Filter>render\shaders</Filter>
     </FxCompile>
     <FxCompile Include="..\..\src\engine\render\shaders\generateibl.cs.hlsl">

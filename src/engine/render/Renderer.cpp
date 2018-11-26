@@ -29,7 +29,6 @@
 #include <engine/render/graph/Job.h>
 #include <engine/render/graph/Pass.h>
 #include <engine/render/shaders/constants/SceneConstants.h>
-#include <engine/render/shaders/constants/StandardConstants.h>
 #include <engine/resource/ResourceManager.h>
 #include <engine/scene/Scene.h>
 
@@ -312,8 +311,7 @@ void Renderer::render(const Scene *scene, const RenderSettings &settings, float 
     scene->fillRenderList(this->renderList);
 
     // shadow maps
-	ShadowConstants shadowConstants;
-    this->shadowRenderer->render(this->frameGraph, scene, this->renderList, &shadowConstants, this->depthOnlyInputLayout);
+    this->shadowRenderer->render(this->frameGraph, scene, this->renderList, this->depthOnlyInputLayout);
 
     SceneConstants sceneConstants;
     sceneConstants.ambientColor = settings.environment.ambientColor;
@@ -402,6 +400,8 @@ void Renderer::render(const Scene *scene, const RenderSettings &settings, float 
     radiancePass->setTargets({ radianceTarget->getTarget(), this->motionTarget->getTarget() }, this->depthTarget);
 	radiancePass->setViewport((float)this->backbufferWidth, (float)this->backbufferHeight, settings.camera.viewMatrix, settings.camera.projectionMatrix);
 
+    ID3D11Buffer *shadowConstants = this->shadowRenderer->getConstants();
+
     {
         //GPUProfiler::ScopedProfile profile("Geometry");
         Material *currentMaterial = nullptr;
@@ -422,7 +422,9 @@ void Renderer::render(const Scene *scene, const RenderSettings &settings, float 
                 currentBatch->setVertexShader(layout.vertexShader);
                 currentBatch->setPixelShader(layout.pixelShader);
 
-                currentMaterial->setupBatch(currentBatch, settings, this->shadowRenderer->getSRV(), this->shadowRenderer->getSampler(), &shadowConstants);
+                currentBatch->setShaderConstants(shadowConstants);
+
+                currentMaterial->setupBatch(currentBatch, settings, this->shadowRenderer->getSRV(), this->shadowRenderer->getSampler());
             }
 
             if (currentSubMesh != job.subMesh)

@@ -5,11 +5,11 @@
 import bsdf;
 import environment;
 
-#include "constants/StandardConstants.h"
+#include "constants/ShadowConstants.h"
 
-cbuffer StandardConstants : register(b2)
+cbuffer ShadowConstants : register(b2)
 {
-    StandardConstants standardConstants;
+    ShadowConstants shadowConstants;
 };
 
 Texture2D shadowMap: register(t0);
@@ -18,7 +18,7 @@ SamplerState shadowMapSampler: register(s0);
 Texture2D environmentMap: register(t1);
 SamplerState environmentSampler : register(s1);
 
-struct STANDARD_PS_INPUT
+struct FORWARD_PS_INPUT
 {
     float4 position : SV_POSITION;
     float3 worldPosition : POSITION0;
@@ -31,7 +31,7 @@ struct STANDARD_PS_INPUT
 	float4x4 worldToPreviousFrameClipSpaceMatrix : TEXCOORD2;
 };
 
-struct STANDARD_PS_OUTPUT
+struct FORWARD_PS_OUTPUT
 {
     float4 radiance : SV_TARGET0;
     float4 motion : SV_TARGET1;
@@ -51,11 +51,11 @@ struct VS_INPUT
 };
 
 [shader("vertex")]
-STANDARD_PS_INPUT vertexMain(VS_INPUT input)
+FORWARD_PS_INPUT vertexMain(VS_INPUT input)
 {
-    STANDARD_PS_INPUT output;
+    FORWARD_PS_INPUT output;
 
-    float2 uv = input.uv * standardConstants.uvScale + standardConstants.uvOffset;
+    float2 uv = input.uv;
 
     float4 worldPosition = mul(input.modelMatrix, float4(input.pos, 1.0));
     float4 viewPosition = mul(passConstants.viewMatrix, worldPosition);
@@ -87,7 +87,7 @@ float computeLightFalloff(float distance, float radius)
 
 float sampleShadowMap(int index, float3 worldPosition)
 {
-    float4 shadowCoords = mul(standardConstants.shadows.lightMatrix[index], float4(worldPosition, 1.0));
+    float4 shadowCoords = mul(shadowConstants.lightMatrix[index], float4(worldPosition, 1.0));
     shadowCoords.z = (shadowCoords.z + shadowCoords.w) * 0.5; // hack; GL to DX clip space
     shadowCoords /= shadowCoords.w;
 	shadowCoords.xy = shadowCoords.xy * 0.5 + 0.5;
@@ -106,7 +106,7 @@ float rand(float2 uv)
 }
 
 [shader("fragment")]
-STANDARD_PS_OUTPUT fragmentMain(STANDARD_PS_INPUT input)
+FORWARD_PS_OUTPUT fragmentMain(FORWARD_PS_INPUT input)
 {
     const float3 view = passConstants.cameraPosition - input.worldPosition;
     const float3 eye = normalize(view);
@@ -198,7 +198,7 @@ STANDARD_PS_OUTPUT fragmentMain(STANDARD_PS_INPUT input)
 
     float transmittance = exp(input.viewPosition.z * sceneConstants.mist);
     
-	STANDARD_PS_OUTPUT output;
+	FORWARD_PS_OUTPUT output;
 
     output.radiance = float4(lerp(sceneConstants.ambientColor, radiance, transmittance) + inScattering, input.viewPosition.z);
 

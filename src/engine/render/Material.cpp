@@ -6,12 +6,9 @@
 #include <engine/animation/AnimationData.h>
 #include <engine/animation/AnimationPlayer.h>
 #include <engine/animation/PropertyMapping.h>
-#include <engine/render/Bsdf.h>
 #include <engine/render/Image.h>
 #include <engine/render/RenderSettings.h>
-#include <engine/render/StandardBsdf.h>
 #include <engine/render/Texture.h>
-#include <engine/render/UnlitBsdf.h>
 #include <engine/render/graph/Batch.h>
 #include <engine/resource/ResourceManager.h>
 
@@ -19,11 +16,6 @@
 
 const std::string Material::resourceClassName = "Material";
 const std::string Material::defaultResourceData = "{"
-    "\"bsdf\": \"UNLIT\","
-    "\"emissive\": [4.0, 0.0, 3.0],"
-    "\"emissiveMap\": \"__default_white\","
-    "\"uvScale\": [1.0, 1.0],"
-    "\"uvOffset\": [0.0, 0.0],"
     "\"shaderPrefix\": {"
         "\"code\": \""
             "import bsdf;\n"
@@ -57,17 +49,10 @@ void Material::load(const unsigned char *buffer, size_t size)
 {
     cJSON *json = cJSON_Parse((const char *)buffer);
 
-    const char *bsdfName = cJSON_GetObjectItem(json, "bsdf")->valuestring;
-
-    if (!strcmp(bsdfName, "STANDARD")) this->bsdf = new StandardBsdf(json);
-    if (!strcmp(bsdfName, "UNLIT")) this->bsdf = new UnlitBsdf(json);
-    assert(this->bsdf != nullptr);
-
     cJSON *animation = cJSON_GetObjectItem(json, "animation");
     if (animation)
     {
         PropertyMapping properties;
-        this->bsdf->registerAnimatedProperties(properties);
 
         this->animation = new AnimationData(animation, properties);
         AnimationPlayer::globalPlayer.registerAnimation(this->animation);
@@ -123,11 +108,9 @@ void Material::unload()
         delete this->animation;
         this->animation = nullptr;
     }
-
-    delete this->bsdf;
 }
 
-void Material::setupBatch(Batch *batch, const RenderSettings &settings, ID3D11ShaderResourceView *shadowSRV, ID3D11SamplerState *shadowSampler, ShadowConstants *shadowConstants)
+void Material::setupBatch(Batch *batch, const RenderSettings &settings, ID3D11ShaderResourceView *shadowSRV, ID3D11SamplerState *shadowSampler)
 {
     std::vector<ID3D11ShaderResourceView *> resources;
     resources.push_back(shadowSRV);
@@ -142,6 +125,4 @@ void Material::setupBatch(Batch *batch, const RenderSettings &settings, ID3D11Sh
     std::transform(this->textures.begin(), this->textures.end(), std::back_inserter(samplers), [&](Image *texture) { return this->samplerState; });
 
     batch->setSamplers(samplers);
-
-    this->bsdf->setupBatch(batch, settings, shadowSRV, shadowConstants);
 }

@@ -1,4 +1,4 @@
-#include "equirectangular.h"
+#include "equirectangular.slang"
 #include "pass.h"
 
 Texture2D<float4> environmentMap: register(t0);

@@ -1,5 +1,4 @@
-#include "pass.h"
-#include "postprocess.h"
+#include "postprocess.slang"
 
 #define FXAA_PC 1
 #define FXAA_HLSL_5 1
@@ -8,11 +7,6 @@
 
 Texture2D<float4> image: register(t0);
 SamplerState samplerState: register(s0);
-
-struct POSTPROCESS_PS_OUTPUT
-{
-	float4 color: SV_TARGET;
-};
 
 POSTPROCESS_PS_OUTPUT main(POSTPROCESS_PS_INPUT input)
 {

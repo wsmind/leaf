@@ -1,13 +1,9 @@
-#include "pass.h"
-#include "postprocess.h"
+#include "postprocess.slang"
 #include "scene.h"
 
 // sources:
 // http://casual-effects.com/research/McGuire2012Blur/McGuire12Blur.pdf
 // http://research.nvidia.com/sites/default/files/pubs/2013-11_A-Fast-and/Guertin2013MotionBlur-small.pdf
-
-Texture2D<float4> radianceTexture: register(t0);
-SamplerState radianceSampler: register(s0);
 
 Texture2D<float4> motionTexture: register(t1);
 SamplerState motionSampler: register(s1);
