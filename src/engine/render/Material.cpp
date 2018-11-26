@@ -18,7 +18,40 @@
 #include <cJSON/cJSON.h>
 
 const std::string Material::resourceClassName = "Material";
-const std::string Material::defaultResourceData = "{\"bsdf\": \"UNLIT\", \"emissive\": [4.0, 0.0, 3.0], \"emissiveMap\": \"__default_white\", \"uvScale\": [1.0, 1.0], \"uvOffset\": [0.0, 0.0]}";
+const std::string Material::defaultResourceData = "{"
+    "\"bsdf\": \"UNLIT\","
+    "\"emissive\": [4.0, 0.0, 3.0],"
+    "\"emissiveMap\": \"__default_white\","
+    "\"uvScale\": [1.0, 1.0],"
+    "\"uvOffset\": [0.0, 0.0],"
+    "\"shaderPrefix\": {"
+        "\"code\": \""
+            "import bsdf;\n"
+            "import geometry;\n"
+            "import nodes;\n"
+            "struct Material\n"
+            "{\n"
+            "    BSDF_DIFFUSE_OUTPUT_TYPE Surface;\n"
+            "    BSDF_DEFAULT_OUTPUT_TYPE Volume;\n"
+            "    float Displacement;\n"
+            "};\n"
+            "void evaluateMaterial(out Material output, Intersection intersection)\n"
+            "{\n"
+            "    BSDF_DIFFUSE_input diffuseInput;\n"
+            "    BSDF_DIFFUSE_output diffuseOutput;\n"
+            "    diffuseInput.Color = float4(0.8, 0.8, 0.8, 1.0);\n"
+            "    diffuseInput.Roughness = 0.5;\n"
+            "    diffuseInput.Normal = intersection.normal;\n"
+            "    BSDF_DIFFUSE(diffuseInput, diffuseOutput, intersection);\n"
+            "    \n"
+            "    output.Surface = diffuseOutput.BSDF;\n"
+            "    output.Volume = nullBsdf;\n"
+            "    output.Displacement = 0.0;\n"
+            "}\n"
+        "\","
+        "\"textures\": []"
+    "}"
+"}";
 
 void Material::load(const unsigned char *buffer, size_t size)
 {
