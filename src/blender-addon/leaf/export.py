@@ -300,11 +300,13 @@ def export_mesh(mesh, export_reference):
     if len(mesh.uv_layers) > 0 and len(mesh.uv_layers[0].data) > 0:
         uv_layer_data = mesh.uv_layers[0].data
 
-        # will also compute split tangents according to sharp edges
         try:
             mesh.calc_tangents()
         except:
             print("Failed to compute tangents for mesh '%s': %s" % (mesh.name, sys.exc_info()[0]))
+
+    # compute normals according to sharp edges
+    mesh.calc_normals_split()
 
     t1 = time.perf_counter()
 
@@ -533,6 +535,25 @@ def socket_value_to_hlsl(socket):
     else:
         return "0 /* ## unsupported value type ## */"
 
+socket_default_value_overrides = {
+    "BSDF_DIFFUSE": {
+        "Normal": "intersection.normal"
+    },
+    "BSDF_PRINCIPLED": {
+        "Normal": "intersection.normal",
+        "ClearcoatNormal": "intersection.normal",
+        "Tangent": "normalize(intersection.tangent.xyz)",
+    },
+    "TEX_IMAGE": {
+        "Vector": "float3(intersection.uv, 0.0)"
+    },
+    "OUTPUT_MATERIAL": {
+        "Surface": "nullBsdf",
+        "Volume": "nullBsdf",
+        "Displacement": "0.0"
+    }
+}
+
 def compile_identifier(identifier):
     return "".join(filter(lambda c: c.isalnum(), identifier))
 
@@ -573,7 +594,12 @@ def compile_node(node, symbol_map, resource_map):
             
             code += "\t%s.%s = %s(%s.%s);\n" % (symbols["input_name"], compile_identifier(input.identifier), cast_function, other_symbols["output_name"], compile_identifier(other_identifier))
         else:
-            code += "\t%s.%s = %s;\n" % (symbols["input_name"], compile_identifier(input.identifier), socket_value_to_hlsl(input))
+            value = socket_value_to_hlsl(input)
+            if input.hide_value:
+                # hidden values should have engine-provided defaults (as they are not exposed to the user directly)
+                value = socket_default_value_overrides[node.bl_static_type][compile_identifier(input.identifier)]
+            
+            code += "\t%s.%s = %s;\n" % (symbols["input_name"], compile_identifier(input.identifier), value)
 
     # actual call
     if "function_name" in symbols:
