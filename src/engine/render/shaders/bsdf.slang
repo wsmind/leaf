@@ -37,7 +37,10 @@ struct LambertDiffuse: Bsdf
 
 	float3 integrateSample(float3 eye, LightSample lightSample)
 	{
-		return albedo / 3.14159265;
+		float3 diffuse = albedo / 3.14159265;
+
+		float dotNL = saturate(dot(normal, lightSample.direction));
+		return dotNL * lightSample.radiance * diffuse;
 	}
 
 	float3 integrateEnvironment(float3 eye, EnvironmentMap environment)

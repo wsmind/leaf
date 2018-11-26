@@ -190,6 +190,34 @@ def export_material(mtl, export_reference):
         data["shaderPrefix"] = export_node_tree(mtl.node_tree)
         print(data["shaderPrefix"]["code"])
         print(data["shaderPrefix"]["textures"])
+    else:
+        data["shaderPrefix"] = {
+            "code": """
+import bsdf;
+import geometry;
+import nodes;
+struct Material
+{
+        BSDF_DIFFUSE_OUTPUT_TYPE Surface;
+        BSDF_DEFAULT_OUTPUT_TYPE Volume;
+        float Displacement;
+};
+void evaluateMaterial(out Material output, Intersection intersection)
+{
+        BSDF_DIFFUSE_input diffuseInput;
+        BSDF_DIFFUSE_output diffuseOutput;
+        diffuseInput.Color = float4(0.8, 0.8, 0.8, 1.0);
+        diffuseInput.Roughness = 0.5;
+        diffuseInput.Normal = intersection.normal;
+        BSDF_DIFFUSE(diffuseInput, diffuseOutput, intersection);
+        
+        output.Surface = diffuseOutput.BSDF;
+        output.Volume = nullBsdf;
+        output.Displacement = 0.0;
+}
+            """,
+            "textures": []
+        }
 
     if mtl.animation_data:
         data["animation"] = export_animation(mtl.animation_data, export_reference)

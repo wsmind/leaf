@@ -114,8 +114,7 @@ STANDARD_PS_OUTPUT fragmentMain(STANDARD_PS_INPUT input)
 	Intersection intersection;
 	intersection.uv = input.uv;
     intersection.normal = normalize(input.normal);
-    intersection.tangent = normalize(input.tangent.xyz);
-    intersection.bitangent = normalize(-input.tangent.w * cross(intersection.normal, intersection.tangent));
+    intersection.tangent = input.tangent;
 	
 	Material material;
 	evaluateMaterial(material, intersection);

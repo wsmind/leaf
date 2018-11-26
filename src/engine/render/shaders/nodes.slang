@@ -201,7 +201,9 @@ struct NORMAL_MAP_output
 void NORMAL_MAP(in NORMAL_MAP_input input, out NORMAL_MAP_output output, Intersection intersection)
 {
     // compute TBN frame for normal mapping
-    float3x3 TBN = float3x3(intersection.tangent, intersection.bitangent, intersection.normal);
+    float3 tangent = normalize(intersection.tangent.xyz);
+    float3 bitangent = normalize(-intersection.tangent.w * cross(intersection.normal, tangent));
+    float3x3 TBN = float3x3(tangent, bitangent, intersection.normal);
 
     // compute normal after normal map perturbation, in world space
     float3 tangentSpaceNormal = input.Color.rgb * 2.0 - 1.0;
