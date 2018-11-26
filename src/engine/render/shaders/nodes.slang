@@ -147,7 +147,7 @@ struct TEX_COORD_output
 void TEX_COORD(in TEX_COORD_input input, out TEX_COORD_output output, Intersection intersection)
 {
 	output.Generated = float3(0.0, 0.0, 0.0);
-	output.Normal = float3(0.0, 0.0, 0.0);
+	output.Normal = intersection.normal;
 	output.UV = float3(intersection.uv, 0.0);
 	output.Object = float3(0.0, 0.0, 0.0);
 	output.Camera = float3(0.0, 0.0, 0.0);
