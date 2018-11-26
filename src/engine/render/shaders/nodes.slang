@@ -210,3 +210,39 @@ void NORMAL_MAP(in NORMAL_MAP_input input, out NORMAL_MAP_output output, Interse
 	// blend geometric and shading normals
 	output.Normal = normalize(lerp(intersection.normal, perturbedNormal, input.Strength));
 }
+
+struct SEPXYZ_input
+{
+	float3 Vector;
+};
+
+struct SEPXYZ_output
+{
+	float X;
+	float Y;
+	float Z;
+};
+
+void SEPXYZ(in SEPXYZ_input input, out SEPXYZ_output output, Intersection intersection)
+{
+	output.X = input.Vector.x;
+	output.Y = input.Vector.y;
+	output.Z = input.Vector.z;
+}
+
+struct COMBXYZ_input
+{
+	float X;
+	float Y;
+	float Z;
+};
+
+struct COMBXYZ_output
+{
+	float3 Vector;
+};
+
+void COMBXYZ(in COMBXYZ_input input, out COMBXYZ_output output, Intersection intersection)
+{
+	output.Vector = float3(input.X, input.Y, input.Z);
+}
