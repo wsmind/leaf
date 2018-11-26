@@ -154,11 +154,13 @@ void ShaderCache::invalidateVariants(Predicate predicate)
 
 void ShaderCache::watchFileChanges(std::string path)
 {
-    HANDLE handle = FindFirstChangeNotificationA(path.c_str(), TRUE, FILE_NOTIFY_CHANGE_FILE_NAME | FILE_NOTIFY_CHANGE_DIR_NAME | FILE_NOTIFY_CHANGE_LAST_WRITE);
+    HANDLE handle = FindFirstChangeNotification(path.c_str(), TRUE, FILE_NOTIFY_CHANGE_FILE_NAME | FILE_NOTIFY_CHANGE_DIR_NAME | FILE_NOTIFY_CHANGE_LAST_WRITE);
 
     while (true)
     {
         WaitForSingleObject(handle, INFINITE);
         this->sourceChanged = true;
+
+        FindNextChangeNotification(handle);
     }
 }
