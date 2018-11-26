@@ -111,6 +111,27 @@ void BSDF_PRINCIPLED(in BSDF_PRINCIPLED_input input, out BSDF_PRINCIPLED_output 
 
 typedef PrincipledBsdf BSDF_PRINCIPLED_OUTPUT_TYPE;
 
+struct EMISSION_input
+{
+	float4 Color;
+	float Strength;
+};
+
+struct EMISSION_output
+{
+	EmissionBsdf Emission;
+};
+
+void EMISSION(in EMISSION_input input, out EMISSION_output output, Intersection intersection)
+{
+	EmissionBsdf bsdf;
+	bsdf.color = input.Color.rgb * input.Strength;
+
+	output.Emission = bsdf;
+}
+
+typedef EmissionBsdf EMISSION_OUTPUT_TYPE;
+
 struct TEX_IMAGE_input
 {
 	float3 Vector;

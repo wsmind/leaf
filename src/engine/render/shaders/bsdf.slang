@@ -8,6 +8,8 @@ struct LightSample
 
 interface Bsdf
 {
+	float3 integrateEmission(float3 eye);
+
 	float3 integrateSample(float3 eye, LightSample lightSample);
 
 	float3 integrateEnvironment(float3 eye, EnvironmentMap environment);
@@ -17,6 +19,11 @@ struct NullBsdf: Bsdf
 {
 	// this member variable is useless, but removing it crashes the Slang compiler :)
 	float3 __unused;
+
+	float3 integrateEmission(float3 eye)
+	{
+		return float3(0.0, 0.0, 0.0);
+	}
 
 	float3 integrateSample(float3 eye, LightSample lightSample)
 	{
@@ -34,6 +41,11 @@ struct LambertDiffuse: Bsdf
 {
 	float3 albedo;
 	float3 normal;
+
+	float3 integrateEmission(float3 eye)
+	{
+		return float3(0.0, 0.0, 0.0);
+	}
 
 	float3 integrateSample(float3 eye, LightSample lightSample)
 	{
@@ -62,6 +74,11 @@ struct PrincipledBsdf: Bsdf
 	float3 normal;
 	float3 specularColor;
 	float roughness;
+
+	float3 integrateEmission(float3 eye)
+	{
+		return float3(0.0, 0.0, 0.0);
+	}
 
 	float3 integrateSample(float3 eye, LightSample lightSample)
 	{
@@ -105,5 +122,25 @@ struct PrincipledBsdf: Bsdf
 		float3 specular = sampleEnvironmentSpecular(environment, specularDirection, roughness) * specularColor;
 		
 		return diffuse + specular;
+	}
+};
+
+struct EmissionBsdf: Bsdf
+{
+	float3 color;
+
+	float3 integrateEmission(float3 eye)
+	{
+		return color;
+	}
+
+	float3 integrateSample(float3 eye, LightSample lightSample)
+	{
+		return float3(0.0, 0.0, 0.0);
+	}
+
+	float3 integrateEnvironment(float3 eye, EnvironmentMap environment)
+	{
+		return float3(0.0, 0.0, 0.0);
 	}
 };

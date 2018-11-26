@@ -121,6 +121,8 @@ STANDARD_PS_OUTPUT fragmentMain(STANDARD_PS_INPUT input)
 
 	float3 radiance = float3(0.0, 0.0, 0.0);
 
+	radiance += material.Surface.integrateEmission(eye);
+
 	//radiance += sceneConstants.ambientColor * surface.albedo;
 
 	EnvironmentMap environment;
