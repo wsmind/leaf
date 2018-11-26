@@ -424,7 +424,18 @@ void Renderer::render(const Scene *scene, const RenderSettings &settings, float 
 
                 currentBatch->setShaderConstants(shadowConstants);
 
-                currentMaterial->setupBatch(currentBatch, settings, this->shadowRenderer->getSRV(), this->shadowRenderer->getSampler());
+                std::vector<ID3D11ShaderResourceView *> resources;
+                resources.push_back(this->shadowRenderer->getSRV());
+                resources.push_back(settings.environment.environmentMap->getSRV());
+
+                std::vector<ID3D11SamplerState *> samplers;
+                samplers.push_back(this->shadowRenderer->getSampler());
+                samplers.push_back(settings.environment.environmentMap->getSamplerState());
+
+                currentMaterial->getResources(resources, samplers);
+
+                currentBatch->setResources(resources);
+                currentBatch->setSamplers(samplers);
             }
 
             if (currentSubMesh != job.subMesh)

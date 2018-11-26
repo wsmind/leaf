@@ -23,7 +23,7 @@ class Material: public Resource
         virtual void load(const unsigned char *buffer, size_t size) override;
         virtual void unload() override;
 
-        void setupBatch(Batch *batch, const RenderSettings &settings, ID3D11ShaderResourceView *shadowSRV, ID3D11SamplerState *shadowSampler);
+        void getResources(std::vector<ID3D11ShaderResourceView *> &resources, std::vector<ID3D11SamplerState *> &samplers);
 
         ShaderCache::Hash getPrefixHash() const { return this->prefixHash; }
 
