@@ -676,8 +676,8 @@ def export_node_tree(tree):
     
     sorted_resources = sorted(resources.items(), key=lambda item: item[1])
 
-    code += "Texture2D materialTextures[%d]: register(t0);\n" % len(sorted_resources)
-    code += "SamplerState materialSamplers[%d]: register(s0);\n" % len(sorted_resources)
+    code += "Texture2D materialTextures[%d]: register(t2);\n" % len(sorted_resources)
+    code += "SamplerState materialSamplers[%d]: register(s2);\n" % len(sorted_resources)
 
     code += function_code
 

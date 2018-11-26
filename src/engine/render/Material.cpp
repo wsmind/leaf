@@ -97,18 +97,16 @@ void Material::unload()
 void Material::setupBatch(Batch *batch, const RenderSettings &settings, ID3D11ShaderResourceView *shadowSRV, ID3D11SamplerState *shadowSampler, ShadowConstants *shadowConstants)
 {
     std::vector<ID3D11ShaderResourceView *> resources;
-    std::transform(this->textures.begin(), this->textures.end(), std::back_inserter(resources), [](Image *texture) { return texture->getSRV(); });
-
     resources.push_back(shadowSRV);
     resources.push_back(settings.environment.environmentMap->getSRV());
+    std::transform(this->textures.begin(), this->textures.end(), std::back_inserter(resources), [](Image *texture) { return texture->getSRV(); });
 
     batch->setResources(resources);
 
     std::vector<ID3D11SamplerState *> samplers;
-    std::transform(this->textures.begin(), this->textures.end(), std::back_inserter(samplers), [&](Image *texture) { return this->samplerState; });
-
     samplers.push_back(shadowSampler);
     samplers.push_back(this->samplerState); // use base color sampler for envmap
+    std::transform(this->textures.begin(), this->textures.end(), std::back_inserter(samplers), [&](Image *texture) { return this->samplerState; });
 
     batch->setSamplers(samplers);
 

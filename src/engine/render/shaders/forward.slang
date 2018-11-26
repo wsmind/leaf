@@ -1,9 +1,9 @@
-#include "equirectangular.h"
 #include "pass.h"
 #include "scene.h"
 #include "shadows.h"
 
 import bsdf;
+import environment;
 
 #include "constants/StandardConstants.h"
 
@@ -12,11 +12,11 @@ cbuffer StandardConstants : register(b2)
     StandardConstants standardConstants;
 };
 
-/*Texture2D shadowMap: register(t4);
-SamplerState shadowMapSampler: register(s4);
+Texture2D shadowMap: register(t0);
+SamplerState shadowMapSampler: register(s0);
 
-Texture2D<float4> environmentMap: register(t5);
-SamplerState environmentSampler : register(s5);*/
+Texture2D environmentMap: register(t1);
+SamplerState environmentSampler : register(s1);
 
 struct STANDARD_PS_INPUT
 {
@@ -85,7 +85,7 @@ float computeLightFalloff(float distance, float radius)
     return numerator / (distance * distance + 1.0);
 }
 
-/*float sampleShadowMap(int index, float3 worldPosition)
+float sampleShadowMap(int index, float3 worldPosition)
 {
     float4 shadowCoords = mul(standardConstants.shadows.lightMatrix[index], float4(worldPosition, 1.0));
     shadowCoords.z = (shadowCoords.z + shadowCoords.w) * 0.5; // hack; GL to DX clip space
@@ -105,19 +105,6 @@ float rand(float2 uv)
 	return frac(sin(dot(uv.xy, float2(12.9898, 78.233)) * 43758.5453));
 }
 
-float3 computeEnvironmentIrradiance(SurfaceProperties surface)
-{
-    float2 uv = directionToEquirectangularUV(surface.normal);
-    return environmentMap.SampleLevel(environmentSampler, uv, sceneConstants.environmentMipLevels - 5.0).rgb;
-}
-
-float3 computeEnvironmentRadiance(SurfaceProperties surface, float3 eye)
-{
-    float3 direction = reflect(-eye, surface.normal);
-    float2 uv = directionToEquirectangularUV(direction);
-    return environmentMap.SampleLevel(environmentSampler, uv, surface.roughness * sceneConstants.environmentMipLevels).rgb;
-}*/
-
 [shader("fragment")]
 STANDARD_PS_OUTPUT fragmentMain(STANDARD_PS_INPUT input)
 {
@@ -135,6 +122,15 @@ STANDARD_PS_OUTPUT fragmentMain(STANDARD_PS_INPUT input)
 
 	float3 radiance = float3(0.0, 0.0, 0.0);
 
+	//radiance += sceneConstants.ambientColor * surface.albedo;
+
+	EnvironmentMap environment;
+	environment.texture = environmentMap;
+	environment.sampler = environmentSampler;
+	environment.mipLevels = sceneConstants.environmentMipLevels;
+
+    radiance += material.Surface.integrateEnvironment(eye, environment);
+
     // point lights
     for (int i = 0; i < sceneConstants.pointLightCount; i++)
     {
@@ -146,30 +142,6 @@ STANDARD_PS_OUTPUT fragmentMain(STANDARD_PS_INPUT input)
         lightSample.radiance = sceneConstants.pointLights[i].color * computeLightFalloff(lightDistance, sceneConstants.pointLights[i].radius);
 
         radiance += material.Surface.integrateSample(eye, lightSample);
-    }
-
-    STANDARD_PS_OUTPUT output;
-	output.radiance = float4(radiance, input.viewPosition.z);
-	output.motion = float4(0.0, 0.0, 0.0, 0.0);
-
-	return output;
-
-	/*radiance += sceneConstants.ambientColor * surface.albedo;
-
-    radiance += computeEnvironmentIrradiance(surface) * surface.albedo;
-    radiance += computeEnvironmentRadiance(surface, eye) * surface.specularColor;
-
-    // point lights
-    for (int i = 0; i < sceneConstants.pointLightCount; i++)
-    {
-        float3 lightVector = sceneConstants.pointLights[i].position - input.worldPosition;
-        float lightDistance = length(lightVector);
-
-        LightProperties light;
-        light.direction = lightVector / lightDistance;
-        light.incomingRadiance = sceneConstants.pointLights[i].color * computeLightFalloff(lightDistance, sceneConstants.pointLights[i].radius);
-
-        radiance += computeShading(surface, light, eye);
     }
 
 	float jitter = rand(input.uv);
@@ -184,16 +156,16 @@ STANDARD_PS_OUTPUT fragmentMain(STANDARD_PS_INPUT input)
 
         float shadowFactor = sampleShadowMap(j, input.worldPosition);
 
-        LightProperties light;
-        light.direction = lightVector / lightDistance;
-        light.incomingRadiance = sceneConstants.spotLights[j].color * computeLightFalloff(lightDistance, sceneConstants.spotLights[j].radius) * shadowFactor;
+        LightSample lightSample;
+        lightSample.direction = lightVector / lightDistance;
+        lightSample.radiance = sceneConstants.spotLights[j].color * computeLightFalloff(lightDistance, sceneConstants.spotLights[j].radius) * shadowFactor;
 
         // angle falloff (scale and offset are precomputed on CPU according to the inner and outer angles)
-        float angleFalloff = saturate(dot(-light.direction, sceneConstants.spotLights[j].direction) * sceneConstants.spotLights[j].cosAngleScale + sceneConstants.spotLights[j].cosAngleOffset);
+        float angleFalloff = saturate(dot(-lightSample.direction, sceneConstants.spotLights[j].direction) * sceneConstants.spotLights[j].cosAngleScale + sceneConstants.spotLights[j].cosAngleOffset);
         angleFalloff *= angleFalloff; // more natural square attenuation
-        light.incomingRadiance *= angleFalloff;
+        lightSample.radiance *= angleFalloff;
 
-        radiance += computeShading(surface, light, eye);
+        radiance += material.Surface.integrateSample(eye, lightSample);
 
         if (sceneConstants.spotLights[j].scattering == 0.0)
             continue;
@@ -225,6 +197,8 @@ STANDARD_PS_OUTPUT fragmentMain(STANDARD_PS_INPUT input)
 
     float transmittance = exp(input.viewPosition.z * sceneConstants.mist);
     
+	STANDARD_PS_OUTPUT output;
+
     output.radiance = float4(lerp(sceneConstants.ambientColor, radiance, transmittance) + inScattering, input.viewPosition.z);
 
     // estimate pixel movement from last frame
@@ -239,5 +213,5 @@ STANDARD_PS_OUTPUT fragmentMain(STANDARD_PS_INPUT input)
 	// store half velocity
     output.motion = float4(0.5 * screenSpaceMotion, 0.0, 0.0);
 
-	return output;*/
+	return output;
 }

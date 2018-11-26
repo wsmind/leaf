@@ -1,3 +1,5 @@
+import environment;
+
 struct LightSample
 {
     float3 direction;
@@ -7,6 +9,8 @@ struct LightSample
 interface Bsdf
 {
 	float3 integrateSample(float3 eye, LightSample lightSample);
+
+	float3 integrateEnvironment(float3 eye, EnvironmentMap environment);
 };
 
 struct NullBsdf: Bsdf
@@ -18,16 +22,29 @@ struct NullBsdf: Bsdf
 	{
 		return float3(0.0, 0.0, 0.0);
 	}
+
+	float3 integrateEnvironment(float3 eye, EnvironmentMap environment)
+	{
+		return float3(0.0, 0.0, 0.0);
+	}
 };
 NullBsdf nullBsdf;
 
 struct LambertDiffuse: Bsdf
 {
 	float3 albedo;
+	float3 normal;
 
 	float3 integrateSample(float3 eye, LightSample lightSample)
 	{
 		return albedo / 3.14159265;
+	}
+
+	float3 integrateEnvironment(float3 eye, EnvironmentMap environment)
+	{
+		float3 diffuse = sampleEnvironmentDiffuse(environment, normal) * albedo;
+		
+		return diffuse;
 	}
 };
 
@@ -75,5 +92,15 @@ struct PrincipledBsdf: Bsdf
 		float3 specular = fresnel * normalDistribution * visibility;
 
 		return dotNL * lightSample.radiance * (diffuse + specular);
+	}
+
+	float3 integrateEnvironment(float3 eye, EnvironmentMap environment)
+	{
+		float3 diffuse = sampleEnvironmentDiffuse(environment, normal) * albedo;
+		
+		float3 specularDirection = reflect(-eye, normal);
+		float3 specular = sampleEnvironmentSpecular(environment, specularDirection, roughness) * specularColor;
+		
+		return diffuse + specular;
 	}
 };

@@ -49,6 +49,7 @@ void BSDF_DIFFUSE(in BSDF_DIFFUSE_input input, out BSDF_DIFFUSE_output output, I
 {
 	LambertDiffuse brdf;
 	brdf.albedo = input.Color.rgb;
+	brdf.normal = input.Normal;
 
 	output.BSDF = brdf;
 }
