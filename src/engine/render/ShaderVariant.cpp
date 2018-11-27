@@ -25,11 +25,13 @@ ShaderVariant::ShaderVariant(SlangCompileRequest *slangRequest, int translationU
 
     ISlangBlob* vertexShaderBlob = nullptr;
     spGetEntryPointCodeBlob(slangRequest, vertexIndex, 0, &vertexShaderBlob);
+    //printf("%s\n", (const char *)vertexShaderBlob->getBufferPointer());
     res = Device::device->CreateVertexShader(vertexShaderBlob->getBufferPointer(), vertexShaderBlob->getBufferSize(), NULL, &this->layout.vertexShader);
     CHECK_HRESULT(res);
 
     ISlangBlob* fragmentShaderBlob = nullptr;
     spGetEntryPointCodeBlob(slangRequest, fragmentIndex, 0, &fragmentShaderBlob);
+    //printf("%s\n", (const char *)fragmentShaderBlob->getBufferPointer());
     res = Device::device->CreatePixelShader(fragmentShaderBlob->getBufferPointer(), fragmentShaderBlob->getBufferSize(), NULL, &this->layout.pixelShader);
     CHECK_HRESULT(res);
 }

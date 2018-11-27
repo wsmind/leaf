@@ -1,6 +1,8 @@
 #include "../constants/PassConstants.h"
 
-cbuffer PassConstants
+struct PassParameters
 {
-	PassConstants passConstants;
-}
+	PassConstants constants;
+};
+
+ParameterBlock<PassParameters> passParameters;

@@ -1,5 +1,4 @@
 #include "depthonly.h"
-#include "pass.h"
 
 struct VS_INPUT
 {

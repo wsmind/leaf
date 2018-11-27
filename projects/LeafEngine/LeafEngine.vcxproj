@@ -892,8 +892,15 @@
     <None Include="..\..\src\blender-addon\leaf\texture.py" />
     <None Include="..\..\src\blender-addon\leaf\__init__.py" />
     <None Include="..\..\src\engine\render\shaders\bsdf.slang" />
+    <None Include="..\..\src\engine\render\shaders\environment.slang" />
+    <None Include="..\..\src\engine\render\shaders\equirectangular.slang" />
     <None Include="..\..\src\engine\render\shaders\forward.slang" />
+    <None Include="..\..\src\engine\render\shaders\geometry.slang" />
     <None Include="..\..\src\engine\render\shaders\nodes.slang" />
+    <None Include="..\..\src\engine\render\shaders\parameters\environment.slang" />
+    <None Include="..\..\src\engine\render\shaders\parameters\pass.slang" />
+    <None Include="..\..\src\engine\render\shaders\parameters\scene.slang" />
+    <None Include="..\..\src\engine\render\shaders\parameters\shadow.slang" />
     <None Include="..\..\src\engine\render\shaders\postprocess.slang" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

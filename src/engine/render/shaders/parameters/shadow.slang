@@ -1,9 +1,10 @@
 #include "../constants/ShadowConstants.h"
 
-cbuffer ShadowConstants
+struct ShadowParameters
 {
-    ShadowConstants shadowConstants;
+    ShadowConstants constants;
+	Texture2D texture;
+	SamplerState sampler;
 };
 
-Texture2D shadowMap;
-SamplerState shadowMapSampler;
+ParameterBlock<ShadowParameters> shadowParameters;

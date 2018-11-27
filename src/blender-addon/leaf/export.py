@@ -505,7 +505,7 @@ def socket_value_to_hlsl(socket):
     elif socket.type == "RGBA":
         return "float4(%f, %f, %f, %f)" % (socket.default_value[0], socket.default_value[1], socket.default_value[2], socket.default_value[3])
     elif socket.type == "SHADER":
-        return "nullBsdf"
+        return "makeNullBsdf()"
     else:
         return "0 /* ## unsupported value type ## */"
 
@@ -522,8 +522,8 @@ socket_default_value_overrides = {
         "Vector": "float3(intersection.uv, 0.0)"
     },
     "OUTPUT_MATERIAL": {
-        "Surface": "nullBsdf",
-        "Volume": "nullBsdf",
+        "Surface": "makeNullBsdf()",
+        "Volume": "makeNullBsdf()",
         "Displacement": "0.0"
     }
 }
@@ -578,7 +578,7 @@ def compile_node(node, symbol_map, resource_map):
     # actual call
     if "function_name" in symbols:
         if resource is not None:
-            code += "\t%s(%s, %s, %s, %s, intersection);\n" % (symbols["function_name"], symbols["input_name"], symbols["output_name"], "materialTextures[%d]" % resource, "materialSamplers[%d]" % resource)
+            code += "\t%s(%s, %s, %s, %s, intersection);\n" % (symbols["function_name"], symbols["input_name"], symbols["output_name"], "materialParameters.textures[%d]" % resource, "materialParameters.samplers[%d]" % resource)
         else:
             code += "\t%s(%s, %s, intersection);\n" % (symbols["function_name"], symbols["input_name"], symbols["output_name"])
 
@@ -706,8 +706,12 @@ def export_node_tree(tree):
     resource_count = len(sorted_resources)
 
     if resource_count > 0:
-        code += "Texture2D materialTextures[%d];\n" % resource_count
-        code += "SamplerState materialSamplers[%d];\n" % resource_count
+        code += "struct MaterialParameters\n"
+        code += "{\n"
+        code += "    Texture2D textures[%d];\n" % resource_count
+        code += "    SamplerState samplers[%d];\n" % resource_count
+        code += "};\n"
+        code += "ParameterBlock<MaterialParameters> materialParameters;\n"
 
     code += function_code
 

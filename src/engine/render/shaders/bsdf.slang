@@ -35,7 +35,14 @@ struct NullBsdf: Bsdf
 		return float3(0.0, 0.0, 0.0);
 	}
 };
-NullBsdf nullBsdf;
+
+// this cannot be a global, otherwise it pollutes the constant buffer indexing space
+NullBsdf makeNullBsdf()
+{
+	NullBsdf bsdf;
+	bsdf.__unused = float3(0.0, 0.0, 0.0);
+	return bsdf;
+}
 
 struct LambertDiffuse: Bsdf
 {

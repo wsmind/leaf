@@ -101,14 +101,3 @@ void Batch::execute(ID3D11DeviceContext *context)
     if (this->pipeline.inputLayout != nullptr)
         context->IASetInputLayout(nullptr);
 }
-
-void bindPipeline()
-{
-}
-
-void unbindPipeline()
-{
-}
-
-void bindDescriptors();
-void unbindDescriptors();

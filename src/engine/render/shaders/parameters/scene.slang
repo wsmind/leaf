@@ -1,6 +1,8 @@
 #include "../constants/SceneConstants.h"
 
-cbuffer SceneConstants
+struct SceneParameters
 {
-	SceneConstants sceneConstants;
-}
+	SceneConstants constants;
+};
+
+ParameterBlock<SceneParameters> sceneParameters;

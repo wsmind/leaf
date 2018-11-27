@@ -394,6 +394,9 @@
     <Filter Include="external\smhasher">
       <UniqueIdentifier>{dd30f513-b5b7-4c18-90ca-1ae738a5faf3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="render\shaders\paramters">
+      <UniqueIdentifier>{eab720e1-92a6-4c4b-9afe-ac50b41f2896}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\src\blender-addon\leaf\__init__.py">
@@ -436,6 +439,27 @@
       <Filter>render\shaders</Filter>
     </None>
     <None Include="..\..\src\engine\render\shaders\bsdf.slang">
+      <Filter>render\shaders</Filter>
+    </None>
+    <None Include="..\..\src\engine\render\shaders\parameters\pass.slang">
+      <Filter>render\shaders\paramters</Filter>
+    </None>
+    <None Include="..\..\src\engine\render\shaders\parameters\scene.slang">
+      <Filter>render\shaders\paramters</Filter>
+    </None>
+    <None Include="..\..\src\engine\render\shaders\parameters\shadow.slang">
+      <Filter>render\shaders\paramters</Filter>
+    </None>
+    <None Include="..\..\src\engine\render\shaders\parameters\environment.slang">
+      <Filter>render\shaders\paramters</Filter>
+    </None>
+    <None Include="..\..\src\engine\render\shaders\environment.slang">
+      <Filter>render\shaders</Filter>
+    </None>
+    <None Include="..\..\src\engine\render\shaders\equirectangular.slang">
+      <Filter>render\shaders</Filter>
+    </None>
+    <None Include="..\..\src\engine\render\shaders\geometry.slang">
       <Filter>render\shaders</Filter>
     </None>
   </ItemGroup>
