@@ -400,8 +400,6 @@ void Renderer::render(const Scene *scene, const RenderSettings &settings, float 
     radiancePass->setTargets({ radianceTarget->getTarget(), this->motionTarget->getTarget() }, this->depthTarget);
 	radiancePass->setViewport((float)this->backbufferWidth, (float)this->backbufferHeight, settings.camera.viewMatrix, settings.camera.projectionMatrix);
 
-    ID3D11Buffer *shadowConstants = this->shadowRenderer->getConstants();
-
     {
         //GPUProfiler::ScopedProfile profile("Geometry");
         Material *currentMaterial = nullptr;
@@ -422,20 +420,13 @@ void Renderer::render(const Scene *scene, const RenderSettings &settings, float 
                 currentBatch->setVertexShader(layout.vertexShader);
                 currentBatch->setPixelShader(layout.pixelShader);
 
-                currentBatch->setShaderConstants(shadowConstants);
+                DescriptorSet environmentParameterBlock = { { settings.environment.environmentMap->getSRV() }, { }, { settings.environment.environmentMap->getSamplerState() }, { } };
 
-                std::vector<ID3D11ShaderResourceView *> resources;
-                resources.push_back(this->shadowRenderer->getSRV());
-                resources.push_back(settings.environment.environmentMap->getSRV());
-
-                std::vector<ID3D11SamplerState *> samplers;
-                samplers.push_back(this->shadowRenderer->getSampler());
-                samplers.push_back(settings.environment.environmentMap->getSamplerState());
-
-                currentMaterial->getResources(resources, samplers);
-
-                currentBatch->setResources(resources);
-                currentBatch->setSamplers(samplers);
+                currentBatch->setDescriptorSets({
+                    currentMaterial->getParameterBlock(),
+                    this->shadowRenderer->getParameterBlock(),
+                    environmentParameterBlock
+                });
             }
 
             if (currentSubMesh != job.subMesh)

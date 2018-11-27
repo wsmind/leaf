@@ -3,7 +3,6 @@
 #include <engine/render/Device.h>
 #include <engine/render/RenderList.h>
 #include <engine/render/Shaders.h>
-#include <engine/render/graph/Batch.h>
 #include <engine/render/graph/FrameGraph.h>
 #include <engine/render/graph/GPUProfiler.h>
 #include <engine/render/graph/Job.h>
@@ -47,7 +46,8 @@ ShadowRenderer::ShadowRenderer(int resolution)
     srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
     srvDesc.Texture2D.MipLevels = 1;
 
-    res = Device::device->CreateShaderResourceView(this->shadowMap, &srvDesc, &this->srv);
+    ID3D11ShaderResourceView *srv;
+    res = Device::device->CreateShaderResourceView(this->shadowMap, &srvDesc, &srv);
     CHECK_HRESULT(res);
 
     D3D11_SAMPLER_DESC samplerDesc;
@@ -60,7 +60,8 @@ ShadowRenderer::ShadowRenderer(int resolution)
     samplerDesc.MinLOD = 0;
     samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
 
-    res = Device::device->CreateSamplerState(&samplerDesc, &this->sampler);
+    ID3D11SamplerState *sampler;
+    res = Device::device->CreateSamplerState(&samplerDesc, &sampler);
     CHECK_HRESULT(res);
     D3D11_DEPTH_STENCIL_DESC depthStateDesc;
 
@@ -80,19 +81,24 @@ ShadowRenderer::ShadowRenderer(int resolution)
     cbDesc.MiscFlags = 0;
     cbDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 
-    res = Device::device->CreateBuffer(&cbDesc, nullptr, &this->constantBuffer);
+    ID3D11Buffer *constantBuffer;
+    res = Device::device->CreateBuffer(&cbDesc, nullptr, &constantBuffer);
     CHECK_HRESULT(res);
+
+    this->parameterBlock.resources = { srv };
+    this->parameterBlock.samplers = { sampler };
+    this->parameterBlock.constants = { constantBuffer };
 }
 
 ShadowRenderer::~ShadowRenderer()
 {
     this->shadowMap->Release();
     this->target->Release();
-    this->srv->Release();
-    this->sampler->Release();
     this->depthState->Release();
 
-    this->constantBuffer->Release();
+    this->parameterBlock.resources[0]->Release();
+    this->parameterBlock.samplers[0]->Release();
+    this->parameterBlock.constants[0]->Release();
 }
 
 void ShadowRenderer::render(FrameGraph *frameGraph, const Scene *scene, const RenderList *renderList, ID3D11InputLayout *inputLayout)
@@ -168,8 +174,8 @@ void ShadowRenderer::render(FrameGraph *frameGraph, const Scene *scene, const Re
 
     // update shader constants
     D3D11_MAPPED_SUBRESOURCE mappedResource;
-    HRESULT res = Device::context->Map(this->constantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+    HRESULT res = Device::context->Map(this->parameterBlock.constants[0], 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
     CHECK_HRESULT(res);
     memcpy(mappedResource.pData, &shadowConstants, sizeof(shadowConstants));
-    Device::context->Unmap(this->constantBuffer, 0);
+    Device::context->Unmap(this->parameterBlock.constants[0], 0);
 }

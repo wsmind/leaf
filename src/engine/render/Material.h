@@ -6,6 +6,7 @@
 #include <d3d11.h>
 
 #include <engine/render/ShaderCache.h>
+#include <engine/render/graph/Batch.h>
 #include <engine/resource/Resource.h>
 
 class AnimationData;
@@ -23,7 +24,7 @@ class Material: public Resource
         virtual void load(const unsigned char *buffer, size_t size) override;
         virtual void unload() override;
 
-        void getResources(std::vector<ID3D11ShaderResourceView *> &resources, std::vector<ID3D11SamplerState *> &samplers);
+        DescriptorSet getParameterBlock() const;
 
         ShaderCache::Hash getPrefixHash() const { return this->prefixHash; }
 

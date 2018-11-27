@@ -47,7 +47,7 @@ class Batch
         Batch(const std::string &name);
 
         void setPipeline(const Pipeline &pipeline) { this->pipeline = pipeline; }
-        void setDescriptorSets(const std::vector<DescriptorSet> sets) { for (const auto &set: sets) { this->descriptors.append(set); } }
+        void setDescriptorSets(const std::vector<DescriptorSet> &sets) { for (const auto &set: sets) { this->descriptors.append(set); } }
 
         Job *addJob();
 

@@ -1,6 +1,6 @@
 #include "constants/PassConstants.h"
 
-cbuffer PassConstants : register(b1)
+cbuffer PassConstants
 {
 	PassConstants passConstants;
 }

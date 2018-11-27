@@ -110,8 +110,12 @@ void Material::unload()
     }
 }
 
-void Material::getResources(std::vector<ID3D11ShaderResourceView *> &resources, std::vector<ID3D11SamplerState *> &samplers)
+DescriptorSet Material::getParameterBlock() const
 {
-    std::transform(this->textures.begin(), this->textures.end(), std::back_inserter(resources), [](Image *texture) { return texture->getSRV(); });
-    std::transform(this->textures.begin(), this->textures.end(), std::back_inserter(samplers), [&](Image *texture) { return this->samplerState; });
+    DescriptorSet set;
+
+    std::transform(this->textures.begin(), this->textures.end(), std::back_inserter(set.resources), [](Image *texture) { return texture->getSRV(); });
+    std::transform(this->textures.begin(), this->textures.end(), std::back_inserter(set.samplers), [&](Image *texture) { return this->samplerState; });
+
+    return set;
 }

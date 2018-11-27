@@ -706,8 +706,8 @@ def export_node_tree(tree):
     resource_count = len(sorted_resources)
 
     if resource_count > 0:
-        code += "Texture2D materialTextures[%d]: register(t2);\n" % resource_count
-        code += "SamplerState materialSamplers[%d]: register(s2);\n" % resource_count
+        code += "Texture2D materialTextures[%d];\n" % resource_count
+        code += "SamplerState materialSamplers[%d];\n" % resource_count
 
     code += function_code
 
