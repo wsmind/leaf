@@ -1,5 +1,6 @@
-#include "postprocess.slang"
 #include "scene.h"
+#include "pass.h"
+#include "postprocess.h"
 
 // sources:
 // http://casual-effects.com/research/McGuire2012Blur/McGuire12Blur.pdf

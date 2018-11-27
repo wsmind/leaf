@@ -2,7 +2,8 @@
 
 #include <engine/render/Device.h>
 #include <engine/render/RenderList.h>
-#include <engine/render/Shaders.h>
+#include <engine/render/ShaderCache.h>
+#include <engine/render/ShaderVariant.h>
 #include <engine/render/graph/FrameGraph.h>
 #include <engine/render/graph/GPUProfiler.h>
 #include <engine/render/graph/Job.h>
@@ -147,10 +148,12 @@ void ShadowRenderer::render(FrameGraph *frameGraph, const Scene *scene, const Re
         viewport.TopLeftY = (float)((index / 2) * this->resolution);
         shadowPass->setViewport(viewport, glm::mat4(1.0f), glm::mat4(1.0f));
 
-		Batch *batch = shadowPass->addBatch("Light");
+        const PipelineLayout &layout = ShaderCache::getInstance()->getVariant("depthonly")->getLayout();
+
+        Batch *batch = shadowPass->addBatch("Light");
 		batch->setDepthStencil(this->depthState);
-		batch->setVertexShader(Shaders::vertex.depthOnly);
-		batch->setPixelShader(Shaders::pixel.depthOnly);
+		batch->setVertexShader(layout.vertexShader);
+		batch->setPixelShader(layout.pixelShader);
 		batch->setInputLayout(inputLayout);
 
         const Mesh::SubMesh *currentSubMesh = nullptr;

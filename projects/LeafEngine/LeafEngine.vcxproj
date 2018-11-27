@@ -261,6 +261,7 @@
     <ClInclude Include="..\..\src\engine\render\shaders\constants\ShadowConstants.h" />
     <ClInclude Include="..\..\src\engine\render\shaders\constants\UnlitConstants.h" />
     <ClInclude Include="..\..\src\engine\render\shaders\pass.h" />
+    <ClInclude Include="..\..\src\engine\render\shaders\postprocess.h" />
     <ClInclude Include="..\..\src\engine\render\ShaderVariant.h" />
     <ClInclude Include="..\..\src\engine\render\ShadowRenderer.h" />
     <ClInclude Include="..\..\src\engine\render\Texture.h" />
@@ -892,6 +893,7 @@
     <None Include="..\..\src\blender-addon\leaf\texture.py" />
     <None Include="..\..\src\blender-addon\leaf\__init__.py" />
     <None Include="..\..\src\engine\render\shaders\bsdf.slang" />
+    <None Include="..\..\src\engine\render\shaders\depthonly.slang" />
     <None Include="..\..\src\engine\render\shaders\environment.slang" />
     <None Include="..\..\src\engine\render\shaders\equirectangular.slang" />
     <None Include="..\..\src\engine\render\shaders\forward.slang" />
@@ -899,6 +901,7 @@
     <None Include="..\..\src\engine\render\shaders\nodes.slang" />
     <None Include="..\..\src\engine\render\shaders\parameters\environment.slang" />
     <None Include="..\..\src\engine\render\shaders\parameters\pass.slang" />
+    <None Include="..\..\src\engine\render\shaders\parameters\postprocess.slang" />
     <None Include="..\..\src\engine\render\shaders\parameters\scene.slang" />
     <None Include="..\..\src\engine\render\shaders\parameters\shadow.slang" />
     <None Include="..\..\src\engine\render\shaders\postprocess.slang" />

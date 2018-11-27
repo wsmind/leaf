@@ -1,4 +1,6 @@
-#include "postprocess.slang"
+#include "scene.h"
+#include "pass.h"
+#include "postprocess.h"
 
 #define FXAA_PC 1
 #define FXAA_HLSL_5 1

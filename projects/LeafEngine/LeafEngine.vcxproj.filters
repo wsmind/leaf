@@ -282,6 +282,9 @@
     <ClInclude Include="..\..\src\engine\render\shaders\constants\ShadowConstants.h">
       <Filter>render\shaders\constants</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\engine\render\shaders\postprocess.h">
+      <Filter>render\shaders</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\..\src\engine\render\shaders\plop.vs.hlsl">
@@ -394,7 +397,7 @@
     <Filter Include="external\smhasher">
       <UniqueIdentifier>{dd30f513-b5b7-4c18-90ca-1ae738a5faf3}</UniqueIdentifier>
     </Filter>
-    <Filter Include="render\shaders\paramters">
+    <Filter Include="render\shaders\parameters">
       <UniqueIdentifier>{eab720e1-92a6-4c4b-9afe-ac50b41f2896}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -442,16 +445,16 @@
       <Filter>render\shaders</Filter>
     </None>
     <None Include="..\..\src\engine\render\shaders\parameters\pass.slang">
-      <Filter>render\shaders\paramters</Filter>
+      <Filter>render\shaders\parameters</Filter>
     </None>
     <None Include="..\..\src\engine\render\shaders\parameters\scene.slang">
-      <Filter>render\shaders\paramters</Filter>
+      <Filter>render\shaders\parameters</Filter>
     </None>
     <None Include="..\..\src\engine\render\shaders\parameters\shadow.slang">
-      <Filter>render\shaders\paramters</Filter>
+      <Filter>render\shaders\parameters</Filter>
     </None>
     <None Include="..\..\src\engine\render\shaders\parameters\environment.slang">
-      <Filter>render\shaders\paramters</Filter>
+      <Filter>render\shaders\parameters</Filter>
     </None>
     <None Include="..\..\src\engine\render\shaders\environment.slang">
       <Filter>render\shaders</Filter>
@@ -461,6 +464,12 @@
     </None>
     <None Include="..\..\src\engine\render\shaders\geometry.slang">
       <Filter>render\shaders</Filter>
+    </None>
+    <None Include="..\..\src\engine\render\shaders\depthonly.slang">
+      <Filter>render\shaders</Filter>
+    </None>
+    <None Include="..\..\src\engine\render\shaders\parameters\postprocess.slang">
+      <Filter>render\shaders\parameters</Filter>
     </None>
   </ItemGroup>
 </Project>

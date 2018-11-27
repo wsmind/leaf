@@ -367,10 +367,12 @@ void Renderer::render(const Scene *scene, const RenderSettings &settings, float 
     depthPrePass->setTargets({}, this->depthTarget);
     depthPrePass->setViewport((float)this->backbufferWidth, (float)this->backbufferHeight, settings.camera.viewMatrix, settings.camera.projectionMatrix);
 
+    const PipelineLayout &layout = ShaderCache::getInstance()->getVariant("depthonly")->getLayout();
+
     Batch *depthBatch = depthPrePass->addBatch("Depth");
     depthBatch->setDepthStencil(this->lessEqualDepthState);
-    depthBatch->setVertexShader(Shaders::vertex.depthOnly);
-    depthBatch->setPixelShader(Shaders::pixel.depthOnly);
+    depthBatch->setVertexShader(layout.vertexShader);
+    depthBatch->setPixelShader(layout.pixelShader);
     depthBatch->setInputLayout(this->depthOnlyInputLayout);
 
     const Mesh::SubMesh *currentSubMesh = nullptr;
