@@ -10,34 +10,34 @@ namespace
     // base implementation left intentionally undefined; will break the build if an unknown
     // shader type is encountered
     template <class StageType>
-    void bindStage(ID3D11DeviceContext *context, StageType *shader, const std::vector<ID3D11ShaderResourceView *> &resources, const std::vector<ID3D11UnorderedAccessView *> &uavs, const std::vector<ID3D11SamplerState *> &samplers, ID3D11Buffer *shaderConstantBuffer);
+    void bindStage(ID3D11DeviceContext *context, StageType *shader, const DescriptorSet &descriptors);
 
     template <>
-    void bindStage<ID3D11VertexShader>(ID3D11DeviceContext *context, ID3D11VertexShader *shader, const std::vector<ID3D11ShaderResourceView *> &resources, const std::vector<ID3D11UnorderedAccessView *> &uavs, const std::vector<ID3D11SamplerState *> &samplers, ID3D11Buffer *shaderConstantBuffer)
+    void bindStage<ID3D11VertexShader>(ID3D11DeviceContext *context, ID3D11VertexShader *shader, const DescriptorSet &descriptors)
     {
         context->VSSetShader(shader, nullptr, 0);
-        context->VSSetConstantBuffers(2, 1, &shaderConstantBuffer);
-        context->VSSetShaderResources(0, (UINT)resources.size(), resources.data());
-        context->VSSetSamplers(0, (UINT)samplers.size(), samplers.data());
+        context->VSSetConstantBuffers(2, (UINT)descriptors.constants.size(), descriptors.constants.data());
+        context->VSSetShaderResources(0, (UINT)descriptors.resources.size(), descriptors.resources.data());
+        context->VSSetSamplers(0, (UINT)descriptors.samplers.size(), descriptors.samplers.data());
     }
 
     template <>
-    void bindStage<ID3D11PixelShader>(ID3D11DeviceContext *context, ID3D11PixelShader *shader, const std::vector<ID3D11ShaderResourceView *> &resources, const std::vector<ID3D11UnorderedAccessView *> &uavs, const std::vector<ID3D11SamplerState *> &samplers, ID3D11Buffer *shaderConstantBuffer)
+    void bindStage<ID3D11PixelShader>(ID3D11DeviceContext *context, ID3D11PixelShader *shader, const DescriptorSet &descriptors)
     {
         context->PSSetShader(shader, nullptr, 0);
-        context->PSSetConstantBuffers(2, 1, &shaderConstantBuffer);
-        context->PSSetShaderResources(0, (UINT)resources.size(), resources.data());
-        context->PSSetSamplers(0, (UINT)samplers.size(), samplers.data());
-	}
+        context->PSSetConstantBuffers(2, (UINT)descriptors.constants.size(), descriptors.constants.data());
+        context->PSSetShaderResources(0, (UINT)descriptors.resources.size(), descriptors.resources.data());
+        context->PSSetSamplers(0, (UINT)descriptors.samplers.size(), descriptors.samplers.data());
+    }
 
     template <>
-    void bindStage<ID3D11ComputeShader>(ID3D11DeviceContext *context, ID3D11ComputeShader *shader, const std::vector<ID3D11ShaderResourceView *> &resources, const std::vector<ID3D11UnorderedAccessView *> &uavs, const std::vector<ID3D11SamplerState *> &samplers, ID3D11Buffer *shaderConstantBuffer)
+    void bindStage<ID3D11ComputeShader>(ID3D11DeviceContext *context, ID3D11ComputeShader *shader, const DescriptorSet &descriptors)
     {
         context->CSSetShader(shader, nullptr, 0);
-        context->CSSetConstantBuffers(2, 1, &shaderConstantBuffer);
-        context->CSSetShaderResources(0, (UINT)resources.size(), resources.data());
-		context->CSSetUnorderedAccessViews(0, (UINT)uavs.size(), uavs.data(), nullptr);
-		context->CSSetSamplers(0, (UINT)samplers.size(), samplers.data());
+        context->CSSetConstantBuffers(2, (UINT)descriptors.constants.size(), descriptors.constants.data());
+        context->CSSetShaderResources(0, (UINT)descriptors.resources.size(), descriptors.resources.data());
+        context->CSSetUnorderedAccessViews(0, (UINT)descriptors.unorderedResources.size(), descriptors.unorderedResources.data(), nullptr);
+        context->CSSetSamplers(0, (UINT)descriptors.samplers.size(), descriptors.samplers.data());
 	}
 }
 
@@ -58,23 +58,23 @@ void Batch::execute(ID3D11DeviceContext *context)
     GPUProfiler::ScopedProfile profile(this->name);
 
     // if no shader is bound, skip the draw calls
-    if (!this->vertexShader && !this->pixelShader && !this->computeShader)
+    if (!this->pipeline.vertexShader && !this->pipeline.pixelShader && !this->pipeline.computeShader)
         return;
 
-    if (this->depthStencil != nullptr)
-        context->OMSetDepthStencilState(this->depthStencil, 0);
+    if (this->pipeline.depthStencil != nullptr)
+        context->OMSetDepthStencilState(this->pipeline.depthStencil, 0);
 
-    if (this->vertexShader != nullptr)
-        bindStage(context, this->vertexShader, this->resources, this->unorderedResources, this->samplers, this->shaderConstantBuffer);
+    if (this->pipeline.vertexShader != nullptr)
+        bindStage(context, this->pipeline.vertexShader, this->descriptors);
 
-    if (this->pixelShader != nullptr)
-        bindStage(context, this->pixelShader, this->resources, this->unorderedResources, this->samplers, this->shaderConstantBuffer);
+    if (this->pipeline.pixelShader != nullptr)
+        bindStage(context, this->pipeline.pixelShader, this->descriptors);
     
-    if (this->computeShader != nullptr)
-        bindStage(context, this->computeShader, this->resources, this->unorderedResources, this->samplers, this->shaderConstantBuffer);
+    if (this->pipeline.computeShader != nullptr)
+        bindStage(context, this->pipeline.computeShader, this->descriptors);
 
-    if (this->inputLayout != nullptr)
-        context->IASetInputLayout(this->inputLayout);
+    if (this->pipeline.inputLayout != nullptr)
+        context->IASetInputLayout(this->pipeline.inputLayout);
 
     // render jobs
     for (auto *job : this->jobs)
@@ -84,27 +84,31 @@ void Batch::execute(ID3D11DeviceContext *context)
     }
 
     // nullify all resources to unbind them
-    if (this->resources.size() > 0)
-        memset(&this->resources[0], 0, sizeof(this->resources[0]) * this->resources.size());
+    this->descriptors.nullify();
 
-	if (this->unorderedResources.size() > 0)
-		memset(&this->unorderedResources[0], 0, sizeof(this->unorderedResources[0]) * this->unorderedResources.size());
-
-	if (this->samplers.size() > 0)
-		memset(&this->samplers[0], 0, sizeof(this->samplers[0]) * this->samplers.size());
-
-	if (this->depthStencil != nullptr)
+	if (this->pipeline.depthStencil != nullptr)
         context->OMSetDepthStencilState(nullptr, 0);
 
-    if (this->vertexShader != nullptr)
-        bindStage<ID3D11VertexShader>(context, nullptr, this->resources, this->unorderedResources, this->samplers, nullptr);
+    if (this->pipeline.vertexShader != nullptr)
+        bindStage<ID3D11VertexShader>(context, nullptr, this->descriptors);
 
-    if (this->pixelShader != nullptr)
-        bindStage<ID3D11PixelShader>(context, nullptr, this->resources, this->unorderedResources, this->samplers, nullptr);
+    if (this->pipeline.pixelShader != nullptr)
+        bindStage<ID3D11PixelShader>(context, nullptr, this->descriptors);
 
-    if (this->computeShader != nullptr)
-        bindStage<ID3D11ComputeShader>(context, nullptr, this->resources, this->unorderedResources, this->samplers, nullptr);
+    if (this->pipeline.computeShader != nullptr)
+        bindStage<ID3D11ComputeShader>(context, nullptr, this->descriptors);
 
-    if (this->inputLayout != nullptr)
+    if (this->pipeline.inputLayout != nullptr)
         context->IASetInputLayout(nullptr);
 }
+
+void bindPipeline()
+{
+}
+
+void unbindPipeline()
+{
+}
+
+void bindDescriptors();
+void unbindDescriptors();

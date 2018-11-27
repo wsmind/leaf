@@ -1,22 +1,10 @@
-#include "pass.h"
-#include "scene.h"
-#include "shadows.h"
+import parameters.scene;
+import parameters.pass;
+import parameters.shadow;
+import parameters.environment;
 
 import bsdf;
 import environment;
-
-#include "constants/ShadowConstants.h"
-
-cbuffer ShadowConstants : register(b2)
-{
-    ShadowConstants shadowConstants;
-};
-
-Texture2D shadowMap: register(t0);
-SamplerState shadowMapSampler: register(s0);
-
-Texture2D environmentMap: register(t1);
-SamplerState environmentSampler : register(s1);
 
 struct FORWARD_PS_INPUT
 {
