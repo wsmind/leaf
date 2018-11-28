@@ -293,9 +293,6 @@
     <FxCompile Include="..\..\src\engine\render\shaders\basic.ps.hlsl">
       <Filter>render\shaders</Filter>
     </FxCompile>
-    <FxCompile Include="..\..\src\engine\render\shaders\basic.vs.hlsl">
-      <Filter>render\shaders</Filter>
-    </FxCompile>
     <FxCompile Include="..\..\src\engine\render\shaders\fxaa.ps.hlsl">
       <Filter>render\shaders</Filter>
     </FxCompile>
@@ -341,6 +338,12 @@
     <FxCompile Include="..\..\src\engine\render\shaders\generateibl.cs.hlsl">
       <Filter>render\shaders</Filter>
     </FxCompile>
+    <FxCompile Include="..\..\src\engine\render\shaders\streams\depthonly.vs.hlsl">
+      <Filter>render\shaders\streams</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\src\engine\render\shaders\streams\instancedmesh.vs.hlsl">
+      <Filter>render\shaders\streams</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="blender-addon">
@@ -384,6 +387,9 @@
     </Filter>
     <Filter Include="render\shaders\parameters">
       <UniqueIdentifier>{eab720e1-92a6-4c4b-9afe-ac50b41f2896}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="render\shaders\streams">
+      <UniqueIdentifier>{b20d307c-e220-4506-9e90-ffbe996b8bb6}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -458,6 +464,12 @@
     </None>
     <None Include="..\..\src\engine\render\shaders\background.slang">
       <Filter>render\shaders</Filter>
+    </None>
+    <None Include="..\..\src\engine\render\shaders\streams\instancedmesh.slang">
+      <Filter>render\shaders\streams</Filter>
+    </None>
+    <None Include="..\..\src\engine\render\shaders\streams\depthonly.slang">
+      <Filter>render\shaders\streams</Filter>
     </None>
   </ItemGroup>
 </Project>

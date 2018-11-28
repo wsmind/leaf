@@ -32,6 +32,8 @@
 #include <engine/resource/ResourceManager.h>
 #include <engine/scene/Scene.h>
 
+#include <shaders/basic.vs.hlsl.h>
+
 static const unsigned char blackDDS[] = { 68, 68, 83, 32, 124, 0, 0, 0, 7, 16, 2, 0, 4, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 85, 86, 69, 82, 0, 0, 0, 0, 78, 86, 84, 84, 0, 1, 2, 0, 32, 0, 0, 0, 4, 0, 0, 0, 68, 88, 49, 48, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 16, 64, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 71, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 170, 170, 170, 170, 0, 0, 0, 0, 170, 170, 170, 170, 0, 0, 0, 0, 170, 170, 170, 170 };
 static const unsigned char whiteDDS[] = { 68, 68, 83, 32, 124, 0, 0, 0, 7, 16, 2, 0, 4, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 85, 86, 69, 82, 0, 0, 0, 0, 78, 86, 84, 84, 0, 1, 2, 0, 32, 0, 0, 0, 4, 0, 0, 0, 68, 88, 49, 48, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 16, 64, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 71, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 255, 255, 255, 255, 170, 170, 170, 170, 255, 255, 255, 255, 170, 170, 170, 170, 255, 255, 255, 255, 170, 170, 170, 170 };
 static const unsigned char normalDDS[] = { 68, 68, 83, 32, 124, 0, 0, 0, 7, 16, 2, 0, 4, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 85, 86, 69, 82, 0, 0, 0, 0, 78, 86, 84, 84, 0, 1, 2, 0, 32, 0, 0, 0, 4, 0, 0, 128, 68, 88, 49, 48, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 16, 64, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 71, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 255, 139, 31, 124, 255, 255, 255, 255, 255, 139, 31, 124, 255, 255, 255, 255, 255, 139, 31, 124, 255, 255, 255, 255 };
@@ -178,41 +180,6 @@ Renderer::Renderer(HWND hwnd, int backbufferWidth, int backbufferHeight, bool ca
     Shaders::loadShaders();
     ShaderCache::create(shaderPath);
 
-    D3D11_INPUT_ELEMENT_DESC layout[] =
-    {
-        { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-        { "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-        { "TANGENT", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 24, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-        { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 40, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "MODELMATRIX", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 0, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
-		{ "MODELMATRIX", 1, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 16, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
-		{ "MODELMATRIX", 2, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 32, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
-		{ "MODELMATRIX", 3, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 48, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
-		{ "WORLDTOPREVIOUSFRAMECLIPSPACE", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 64, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
-		{ "WORLDTOPREVIOUSFRAMECLIPSPACE", 1, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 80, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
-		{ "WORLDTOPREVIOUSFRAMECLIPSPACE", 2, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 96, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
-		{ "WORLDTOPREVIOUSFRAMECLIPSPACE", 3, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 112, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
-		{ "NORMALMATRIX", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 128, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
-		{ "NORMALMATRIX", 1, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 144, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
-		{ "NORMALMATRIX", 2, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 160, D3D11_INPUT_PER_INSTANCE_DATA, 1 }
-	};
-    res = Device::device->CreateInputLayout(layout, 15, standardVS, sizeof(standardVS), &this->inputLayout);
-    CHECK_HRESULT(res);
-
-    D3D11_INPUT_ELEMENT_DESC depthOnlyLayout[] =
-    {
-        { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-        { "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-        { "TANGENT", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 24, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-        { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 40, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-        { "TRANSFORM", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 0, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
-        { "TRANSFORM", 1, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 16, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
-        { "TRANSFORM", 2, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 32, D3D11_INPUT_PER_INSTANCE_DATA, 1 },
-        { "TRANSFORM", 3, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 48, D3D11_INPUT_PER_INSTANCE_DATA, 1 }
-    };
-    res = Device::device->CreateInputLayout(depthOnlyLayout, 8, depthonlyVS, sizeof(depthonlyVS), &this->depthOnlyInputLayout);
-    CHECK_HRESULT(res);
-
     // built-in rendering resources
 
     ResourceManager::getInstance()->updateResourceData<Image>("__default_black", blackDDS, sizeof(blackDDS));
@@ -269,9 +236,6 @@ Renderer::~Renderer()
     this->depthTarget->Release();
     this->depthSRV->Release();
 
-    this->inputLayout->Release();
-    this->depthOnlyInputLayout->Release();
-
     delete this->renderList;
 
     ResourceManager::getInstance()->releaseResource(this->fullscreenQuad);
@@ -308,7 +272,7 @@ void Renderer::render(const Scene *scene, const RenderSettings &settings, float 
     scene->fillRenderList(this->renderList);
 
     // shadow maps
-    this->shadowRenderer->render(this->frameGraph, scene, this->renderList, this->depthOnlyInputLayout);
+    this->shadowRenderer->render(this->frameGraph, scene, this->renderList);
 
     SceneConstants sceneConstants;
     sceneConstants.ambientColor = settings.environment.ambientColor;
@@ -366,7 +330,7 @@ void Renderer::render(const Scene *scene, const RenderSettings &settings, float 
 
     const ShaderVariant *shaderVariant = ShaderCache::getInstance()->getVariant("depthonly");
     Pipeline pipeline = shaderVariant->getPipeline();
-    pipeline.inputLayout = this->depthOnlyInputLayout;
+    pipeline.inputLayout = Shaders::layout.depthOnly;
     pipeline.depthStencil = this->lessEqualDepthState;
 
     Batch *depthBatch = depthPrePass->addBatch("");
@@ -422,7 +386,7 @@ void Renderer::render(const Scene *scene, const RenderSettings &settings, float 
 
                 const ShaderVariant *shaderVariant = ShaderCache::getInstance()->getVariant("forward", currentMaterial->getPrefixHash());
                 Pipeline pipeline = shaderVariant->getPipeline();
-                pipeline.inputLayout = this->inputLayout;
+                pipeline.inputLayout = Shaders::layout.instancedMesh;
                 pipeline.depthStencil = this->equalDepthState;
                 currentBatch->setPipeline(pipeline);
 
@@ -455,7 +419,7 @@ void Renderer::render(const Scene *scene, const RenderSettings &settings, float 
 
     const ShaderVariant *backgroundShader = ShaderCache::getInstance()->getVariant("background");
     Pipeline backgroundPipeline = backgroundShader->getPipeline();
-    backgroundPipeline.inputLayout = this->inputLayout;
+    backgroundPipeline.inputLayout = Shaders::layout.instancedMesh;
     backgroundPipeline.depthStencil = this->equalDepthState;
     backgroundBatch->setPipeline(backgroundPipeline);
 

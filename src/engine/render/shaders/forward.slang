@@ -1,3 +1,5 @@
+import streams.instancedmesh;
+
 import parameters.scene;
 import parameters.pass;
 import parameters.shadow;
@@ -39,13 +41,13 @@ struct VS_INPUT
 };
 
 [shader("vertex")]
-FORWARD_PS_INPUT vertexMain(VS_INPUT input)
+FORWARD_PS_INPUT vertexMain(InstancedMesh mesh)
 {
     FORWARD_PS_INPUT output;
 
-    float2 uv = input.uv;
+    float2 uv = mesh.vertex.uv;
 
-    float4 worldPosition = mul(input.modelMatrix, float4(input.pos, 1.0));
+    float4 worldPosition = mul(mesh.modelMatrix, float4(mesh.vertex.position, 1.0));
     float4 viewPosition = mul(passParameters.constants.viewMatrix, worldPosition);
     output.position = mul(passParameters.constants.projectionMatrix, viewPosition);
    
@@ -55,12 +57,12 @@ FORWARD_PS_INPUT vertexMain(VS_INPUT input)
     output.worldPosition = worldPosition.xyz;
     output.viewPosition = viewPosition.xyz;
     output.marchingStep = (output.worldPosition - passParameters.constants.cameraPosition) / MARCHING_ITERATIONS;
-    output.normal = mul(input.normalMatrix, input.normal);
-    output.tangent = float4(mul(input.normalMatrix, input.tangent.xyz), input.tangent.w);
+    output.normal = mul(mesh.normalMatrix, mesh.vertex.normal);
+    output.tangent = float4(mul(mesh.normalMatrix, mesh.vertex.tangent.xyz), mesh.vertex.tangent.w);
     output.uv = float2(uv.x, 1.0 - uv.y);
     output.clipPosition = output.position;
 
-	output.worldToPreviousFrameClipSpaceMatrix = input.worldToPreviousFrameClipSpaceMatrix;
+	output.worldToPreviousFrameClipSpaceMatrix = mesh.worldToPreviousFrameClipSpaceMatrix;
 
     return output;
 }

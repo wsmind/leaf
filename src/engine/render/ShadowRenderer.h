@@ -21,7 +21,7 @@ class ShadowRenderer
         ShadowRenderer(int resolution);
         ~ShadowRenderer();
 
-        void render(FrameGraph *frameGraph, const Scene *scene, const RenderList *renderList, ID3D11InputLayout *inputLayout);
+        void render(FrameGraph *frameGraph, const Scene *scene, const RenderList *renderList);
 
         DescriptorSet getParameterBlock() const { return this->parameterBlock; }
 

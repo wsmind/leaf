@@ -30,6 +30,12 @@ struct ComputeShaderList
     ID3D11ComputeShader *generateIbl;
 };
 
+struct LayoutList
+{
+    ID3D11InputLayout *instancedMesh;
+    ID3D11InputLayout *depthOnly;
+};
+
 class Shaders
 {
     public:
@@ -39,4 +45,6 @@ class Shaders
         static VertexShaderList vertex;
         static PixelShaderList pixel;
         static ComputeShaderList compute;
+
+        static LayoutList layout;
 };

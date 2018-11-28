@@ -2,6 +2,7 @@
 
 #include <engine/render/Device.h>
 #include <engine/render/RenderList.h>
+#include <engine/render/Shaders.h>
 #include <engine/render/ShaderCache.h>
 #include <engine/render/ShaderVariant.h>
 #include <engine/render/graph/FrameGraph.h>
@@ -102,7 +103,7 @@ ShadowRenderer::~ShadowRenderer()
     this->parameterBlock.constants[0]->Release();
 }
 
-void ShadowRenderer::render(FrameGraph *frameGraph, const Scene *scene, const RenderList *renderList, ID3D11InputLayout *inputLayout)
+void ShadowRenderer::render(FrameGraph *frameGraph, const Scene *scene, const RenderList *renderList)
 {
     const std::vector<RenderList::Job> &jobs = renderList->getJobs();
     const std::vector<RenderList::Light> &lights = renderList->getLights();
@@ -150,7 +151,7 @@ void ShadowRenderer::render(FrameGraph *frameGraph, const Scene *scene, const Re
 
         const ShaderVariant *shaderVariant = ShaderCache::getInstance()->getVariant("depthonly");
         Pipeline pipeline = shaderVariant->getPipeline();
-        pipeline.inputLayout = inputLayout;
+        pipeline.inputLayout = Shaders::layout.depthOnly;
         pipeline.depthStencil = this->depthState;
 
         Batch *batch = shadowPass->addBatch("");
