@@ -1,4 +1,10 @@
-#include "scene.h"
+cbuffer __unused : register(b0)
+{
+    // temp fix (the whole file will be replaced soon anyway)
+    // just make sure that pass constants are in register (b1)
+    float __plop;
+};
+
 #include "pass.h"
 #include "postprocess.h"
 

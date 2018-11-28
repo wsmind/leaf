@@ -1,45 +1,39 @@
+import streams.geometry2d;
+
 import parameters.scene;
 import parameters.pass;
 import parameters.environment;
 
 import environment;
 
-struct VS_INPUT
+struct VertexOutput
 {
-	float3 pos: POSITION;
-    float3 normal: NORMAL;
-    float4 tangent: TANGENT;
-    float2 uv: TEXCOORD;
-};
-
-struct BACKGROUND_PS_INPUT
-{
-    float4 pos: SV_POSITION;
+    float4 position: SV_POSITION;
     float3 worldPosition: POSITION0;
 };
 
-struct PS_OUTPUT
+struct PixelOutput
 {
     float4 radiance : SV_TARGET0;
     float4 motion : SV_TARGET1;
 };
 
 [shader("vertex")]
-BACKGROUND_PS_INPUT vertexMain(VS_INPUT input)
+VertexOutput vertexMain(Geometry2D geometry)
 {
-    BACKGROUND_PS_INPUT output;
+    VertexOutput output;
 
     // force z to 1 to make sure the background is always behind everything
-	output.pos = float4(input.pos.xy, 1.0, 1.0);
-    output.worldPosition = mul(passParameters.constants.viewProjectionInverseMatrix, output.pos).xyz;
+	output.position = float4(geometry.vertex.position.xy, 1.0, 1.0);
+    output.worldPosition = mul(passParameters.constants.viewProjectionInverseMatrix, output.position).xyz;
 
 	return output;
 }
 
 [shader("fragment")]
-PS_OUTPUT fragmentMain(BACKGROUND_PS_INPUT input)
+PixelOutput fragmentMain(VertexOutput input)
 {
-	PS_OUTPUT output;
+	PixelOutput output;
 
 	EnvironmentMap environment;
 	environment.texture = environmentMap;
@@ -47,7 +41,7 @@ PS_OUTPUT fragmentMain(BACKGROUND_PS_INPUT input)
 	environment.mipLevels = sceneParameters.constants.environmentMipLevels;
 
     float3 direction = normalize(input.worldPosition);
-	float3 radiance = 0.0; //sampleEnvironmentRadiance(environment, direction);
+	float3 radiance = sampleEnvironmentRadiance(environment, direction);
 	
 	output.radiance = float4(radiance, 0.0);
 	output.motion = float4(0.0, 0.0, 0.0, 0.0);
