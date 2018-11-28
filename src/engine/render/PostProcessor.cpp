@@ -25,15 +25,6 @@ PostProcessor::PostProcessor(ID3D11RenderTargetView *backbufferTarget, int backb
 	, backbufferHeight(backbufferHeight)
 {
     HRESULT res;
-	D3D11_INPUT_ELEMENT_DESC layout[] =
-	{
-		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "TANGENT", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 24, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 40, D3D11_INPUT_PER_VERTEX_DATA, 0 }
-	};
-	res = Device::device->CreateInputLayout(layout, 4, motionblurVS, sizeof(motionblurVS), &this->inputLayout);
-	CHECK_HRESULT(res);
 
     D3D11_BUFFER_DESC cbDesc;
     cbDesc.Usage = D3D11_USAGE_DYNAMIC;
@@ -57,8 +48,6 @@ PostProcessor::PostProcessor(ID3D11RenderTargetView *backbufferTarget, int backb
 
 PostProcessor::~PostProcessor()
 {
-	this->inputLayout->Release();
-
     this->constantBuffer->Release();
 
     delete this->targets[0];
@@ -100,7 +89,7 @@ void PostProcessor::render(FrameGraph *frameGraph, const RenderSettings &setting
 
     const ShaderVariant *shaderVariant = ShaderCache::getInstance()->getVariant("postprocess");
     Pipeline pipeline = shaderVariant->getPipeline();
-    pipeline.inputLayout = this->inputLayout;
+    pipeline.inputLayout = Shaders::layout.geometry2D;
 
     Batch *toneMappingBatch = toneMappingPass->addBatch("");
     toneMappingBatch->setPipeline(pipeline);
@@ -125,7 +114,7 @@ void PostProcessor::render(FrameGraph *frameGraph, const RenderSettings &setting
 	fxaaBatch->setSamplers({ this->targets[1]->getSamplerState() });
 	fxaaBatch->setVertexShader(Shaders::vertex.fxaa);
     fxaaBatch->setPixelShader(Shaders::pixel.fxaa);
-	fxaaBatch->setInputLayout(this->inputLayout);
+	fxaaBatch->setInputLayout(Shaders::layout.geometry2D);
 
     Job *fxaaJob = fxaaBatch->addJob();
     fxaaJob->setBuffers(quadSubMesh.vertexBuffer, quadSubMesh.indexBuffer, quadSubMesh.indexCount);

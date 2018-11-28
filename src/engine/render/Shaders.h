@@ -34,6 +34,7 @@ struct LayoutList
 {
     ID3D11InputLayout *instancedMesh;
     ID3D11InputLayout *depthOnly;
+    ID3D11InputLayout *geometry2D;
 };
 
 class Shaders

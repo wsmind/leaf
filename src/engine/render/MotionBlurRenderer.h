@@ -20,8 +20,6 @@ class MotionBlurRenderer
         int tileCountX;
         int tileCountY;
 
-		ID3D11InputLayout *inputLayout;
-
 		ID3D11Texture2D *tileMaxTexture;
         ID3D11ShaderResourceView *tileMaxSRV;
         ID3D11UnorderedAccessView *tileMaxUAV;

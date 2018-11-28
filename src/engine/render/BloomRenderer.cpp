@@ -18,16 +18,6 @@ BloomRenderer::BloomRenderer(int backbufferWidth, int backbufferHeight)
 	this->backbufferWidth = backbufferWidth;
 	this->backbufferHeight = backbufferHeight;
 
-	D3D11_INPUT_ELEMENT_DESC layout[] =
-	{
-		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "TANGENT", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 24, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 40, D3D11_INPUT_PER_VERTEX_DATA, 0 }
-	};
-	HRESULT res = Device::device->CreateInputLayout(layout, 4, bloomVS, sizeof(bloomVS), &this->inputLayout);
-	CHECK_HRESULT(res);
-
 	int width = backbufferWidth;
 	int height = backbufferHeight;
 	for (int i = 0; i < DOWNSAMPLE_LEVELS; i++)
@@ -39,7 +29,9 @@ BloomRenderer::BloomRenderer(int backbufferWidth, int backbufferHeight)
 		this->blurTargets[i] = new RenderTarget(width, height, DXGI_FORMAT_R16G16B16A16_FLOAT);
 	}
 
-	D3D11_BUFFER_DESC cbDesc;
+    HRESULT res;
+
+    D3D11_BUFFER_DESC cbDesc;
 	cbDesc.Usage = D3D11_USAGE_DYNAMIC;
 	cbDesc.ByteWidth = sizeof(BloomConstants);
 	cbDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
@@ -53,8 +45,6 @@ BloomRenderer::BloomRenderer(int backbufferWidth, int backbufferHeight)
 
 BloomRenderer::~BloomRenderer()
 {
-	this->inputLayout->Release();
-
 	for (int i = 0; i < DOWNSAMPLE_LEVELS; i++)
 	{
 		delete this->downsampleTargets[i];
@@ -89,7 +79,7 @@ void BloomRenderer::render(FrameGraph *frameGraph, const RenderSettings &setting
 		batch->setSamplers({ inputTarget->getSamplerState() });
 		batch->setVertexShader(Shaders::vertex.bloom);
 		batch->setPixelShader(Shaders::pixel.bloomDebug);
-		batch->setInputLayout(this->inputLayout);
+		batch->setInputLayout(Shaders::layout.geometry2D);
 
 		Job *job = batch->addJob();
         job->setBuffers(quadSubMesh.vertexBuffer, quadSubMesh.indexBuffer, quadSubMesh.indexCount);
@@ -108,7 +98,7 @@ void BloomRenderer::render(FrameGraph *frameGraph, const RenderSettings &setting
 	thresholdBatch->setSamplers({ inputTarget->getSamplerState() });
 	thresholdBatch->setVertexShader(Shaders::vertex.bloom);
 	thresholdBatch->setPixelShader(Shaders::pixel.bloomThreshold);
-	thresholdBatch->setInputLayout(this->inputLayout);
+	thresholdBatch->setInputLayout(Shaders::layout.geometry2D);
 
     Job *thresholdJob = thresholdBatch->addJob();
     thresholdJob->setBuffers(quadSubMesh.vertexBuffer, quadSubMesh.indexBuffer, quadSubMesh.indexCount);
@@ -130,7 +120,7 @@ void BloomRenderer::render(FrameGraph *frameGraph, const RenderSettings &setting
 		batch->setSamplers({ source->getSamplerState() });
 		batch->setVertexShader(Shaders::vertex.bloom);
 		batch->setPixelShader(Shaders::pixel.bloomDownsample);
-		batch->setInputLayout(this->inputLayout);
+		batch->setInputLayout(Shaders::layout.geometry2D);
 
 		Job *job = batch->addJob();
         job->setBuffers(quadSubMesh.vertexBuffer, quadSubMesh.indexBuffer, quadSubMesh.indexCount);
@@ -154,7 +144,7 @@ void BloomRenderer::render(FrameGraph *frameGraph, const RenderSettings &setting
 		batch->setSamplers({ source->getSamplerState(), accumulator->getSamplerState() });
 		batch->setVertexShader(Shaders::vertex.bloom);
 		batch->setPixelShader(Shaders::pixel.bloomAccumulation);
-		batch->setInputLayout(this->inputLayout);
+		batch->setInputLayout(Shaders::layout.geometry2D);
 
 		Job *job = batch->addJob();
         job->setBuffers(quadSubMesh.vertexBuffer, quadSubMesh.indexBuffer, quadSubMesh.indexCount);

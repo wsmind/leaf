@@ -17,15 +17,7 @@ MotionBlurRenderer::MotionBlurRenderer(int backbufferWidth, int backbufferHeight
     this->tileCountX = backbufferWidth / tileSize;
     this->tileCountY = backbufferHeight / tileSize;
 
-    D3D11_INPUT_ELEMENT_DESC layout[] =
-	{
-		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "TANGENT", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 24, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 40, D3D11_INPUT_PER_VERTEX_DATA, 0 }
-	};
-	HRESULT res = Device::device->CreateInputLayout(layout, 4, motionblurVS, sizeof(motionblurVS), &this->inputLayout);
-	CHECK_HRESULT(res);
+    HRESULT res;
 
 	D3D11_TEXTURE2D_DESC textureDesc;
     ZeroMemory(&textureDesc, sizeof(textureDesc));
@@ -72,8 +64,6 @@ MotionBlurRenderer::MotionBlurRenderer(int backbufferWidth, int backbufferHeight
 
 MotionBlurRenderer::~MotionBlurRenderer()
 {
-	this->inputLayout->Release();
-
     this->tileMaxTexture->Release();
     this->tileMaxSRV->Release();
     this->tileMaxUAV->Release();
@@ -112,7 +102,7 @@ void MotionBlurRenderer::render(FrameGraph *frameGraph, RenderTarget *radianceTa
 	blurBatch->setSamplers({ radianceTarget->getSamplerState(), motionTarget->getSamplerState(), this->neighborMaxSampler });
 	blurBatch->setVertexShader(Shaders::vertex.motionBlur);
 	blurBatch->setPixelShader(Shaders::pixel.motionBlur);
-	blurBatch->setInputLayout(this->inputLayout);
+	blurBatch->setInputLayout(Shaders::layout.geometry2D);
 
 	Job *blurJob = blurBatch->addJob();
     blurJob->setBuffers(quadSubMesh.vertexBuffer, quadSubMesh.indexBuffer, quadSubMesh.indexCount);

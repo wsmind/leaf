@@ -1,16 +1,10 @@
+import streams.geometry2d;
+
 import parameters.scene;
 import parameters.pass;
 import parameters.postprocess;
 
 #include "tonemapping.h"
-
-struct POSTPROCESS_VS_INPUT
-{
-    float3 pos: POSITION;
-    float3 normal: NORMAL;
-    float4 tangent: TANGENT;
-    float2 uv: TEXCOORD;
-};
 
 struct POSTPROCESS_PS_INPUT
 {
@@ -24,11 +18,11 @@ struct POSTPROCESS_PS_OUTPUT
 };
 
 [shader("vertex")]
-POSTPROCESS_PS_INPUT vertexMain(POSTPROCESS_VS_INPUT input)
+POSTPROCESS_PS_INPUT vertexMain(Geometry2D geometry)
 {
     POSTPROCESS_PS_INPUT output;
-    output.pos = float4(input.pos.xy, 0.0, 1.0);
-    output.uv = input.uv;
+    output.pos = float4(geometry.vertex.position.xy, 0.0, 1.0);
+    output.uv = geometry.vertex.uv;
 
     return output;
 }

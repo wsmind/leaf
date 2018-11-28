@@ -26,8 +26,6 @@ class PostProcessor
 
         RenderTarget *targets[2]; // two is enough to ping-pong between the targets
 
-		ID3D11InputLayout *inputLayout;
-
         ID3D11Buffer *constantBuffer;
 
         Mesh *fullscreenQuad;

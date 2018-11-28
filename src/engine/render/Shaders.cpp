@@ -6,6 +6,7 @@
 
 #include <shaders/streams/instancedmesh.vs.hlsl.h>
 #include <shaders/streams/depthonly.vs.hlsl.h>
+#include <shaders/streams/geometry2d.vs.hlsl.h>
 
 // vertex
 #include <shaders/bloom.vs.hlsl.h>
@@ -72,6 +73,16 @@ void Shaders::loadShaders()
     res = Device::device->CreateInputLayout(depthOnlyLayout, 8, depthOnlyVS, sizeof(depthOnlyVS), &Shaders::layout.depthOnly);
     CHECK_HRESULT(res);
 
+    D3D11_INPUT_ELEMENT_DESC geometry2DLayout[] =
+    {
+        { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+        { "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+        { "TANGENT", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 24, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+        { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 40, D3D11_INPUT_PER_VERTEX_DATA, 0 }
+    };
+    res = Device::device->CreateInputLayout(geometry2DLayout, 4, geometry2DVS, sizeof(geometry2DVS), &Shaders::layout.geometry2D);
+    CHECK_HRESULT(res);
+
     res = Device::device->CreateVertexShader(instancedMeshVS, sizeof(instancedMeshVS), NULL, &vertex.basic); CHECK_HRESULT(res);
     res = Device::device->CreateVertexShader(bloomVS, sizeof(bloomVS), NULL, &vertex.bloom); CHECK_HRESULT(res);
     res = Device::device->CreateVertexShader(fxaaVS, sizeof(fxaaVS), NULL, &vertex.fxaa); CHECK_HRESULT(res);
@@ -96,6 +107,7 @@ void Shaders::unloadShaders()
 {
     Shaders::layout.instancedMesh->Release();
     Shaders::layout.depthOnly->Release();
+    Shaders::layout.geometry2D->Release();
 
     vertex.basic->Release();
     vertex.bloom->Release();
