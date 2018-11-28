@@ -109,12 +109,18 @@ void PostProcessor::render(FrameGraph *frameGraph, const RenderSettings &setting
     fxaaPass->setTargets({ this->backbufferTarget }, nullptr);
 	fxaaPass->setViewport((float)settings.frameWidth, (float)settings.frameHeight, glm::mat4(1.0f), glm::mat4(1.0f));
 
-    Batch *fxaaBatch = fxaaPass->addBatch("");
-    fxaaBatch->setResources({ this->targets[1]->getSRV() });
-	fxaaBatch->setSamplers({ this->targets[1]->getSamplerState() });
-	fxaaBatch->setVertexShader(Shaders::vertex.fxaa);
-    fxaaBatch->setPixelShader(Shaders::pixel.fxaa);
-	fxaaBatch->setInputLayout(Shaders::layout.geometry2D);
+    const ShaderVariant *fxaaShader = ShaderCache::getInstance()->getVariant("fxaa");
+    Pipeline fxaaPipeline = fxaaShader->getPipeline();
+    fxaaPipeline.inputLayout = Shaders::layout.geometry2D;
+
+    Batch *fxaaBatch= fxaaPass->addBatch("");
+    fxaaBatch->setPipeline(fxaaPipeline);
+    fxaaBatch->setDescriptorSets({ {
+        { this->targets[1]->getSRV() },
+        {},
+        { this->targets[1]->getSamplerState() },
+        {}
+    } });
 
     Job *fxaaJob = fxaaBatch->addJob();
     fxaaJob->setBuffers(quadSubMesh.vertexBuffer, quadSubMesh.indexBuffer, quadSubMesh.indexCount);

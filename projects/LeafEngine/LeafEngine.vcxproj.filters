@@ -119,9 +119,6 @@
     <ClInclude Include="..\..\src\engine\render\shaders\scene.h">
       <Filter>render\shaders</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\engine\render\shaders\gamma.h">
-      <Filter>render\shaders</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\engine\render\shaders\shadows.h">
       <Filter>render\shaders</Filter>
     </ClInclude>
@@ -233,9 +230,6 @@
     <ClInclude Include="..\..\src\engine\render\shaders\constants\BloomConstants.h">
       <Filter>render\shaders\constants</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\engine\render\shaders\bloom.h">
-      <Filter>render\shaders</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\engine\resource\ResourceWatcher.h">
       <Filter>resource</Filter>
     </ClInclude>
@@ -284,21 +278,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="..\..\src\engine\render\shaders\plop.vs.hlsl">
-      <Filter>render\shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="..\..\src\engine\render\shaders\plop.ps.hlsl">
-      <Filter>render\shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="..\..\src\engine\render\shaders\basic.ps.hlsl">
-      <Filter>render\shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="..\..\src\engine\render\shaders\fxaa.ps.hlsl">
-      <Filter>render\shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="..\..\src\engine\render\shaders\fxaa.vs.hlsl">
-      <Filter>render\shaders</Filter>
-    </FxCompile>
     <FxCompile Include="..\..\src\engine\render\shaders\motionblur.ps.hlsl">
       <Filter>render\shaders</Filter>
     </FxCompile>
@@ -466,6 +445,9 @@
       <Filter>render\shaders</Filter>
     </None>
     <None Include="..\..\src\engine\render\shaders\color.slang">
+      <Filter>render\shaders</Filter>
+    </None>
+    <None Include="..\..\src\engine\render\shaders\fxaa.slang">
       <Filter>render\shaders</Filter>
     </None>
   </ItemGroup>

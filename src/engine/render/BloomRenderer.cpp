@@ -13,8 +13,6 @@
 #include <engine/render/graph/Pass.h>
 #include <engine/render/shaders/constants/BloomConstants.h>
 
-#include <shaders/bloom.vs.hlsl.h>
-
 BloomRenderer::BloomRenderer(int backbufferWidth, int backbufferHeight)
 {
 	this->backbufferWidth = backbufferWidth;

@@ -4,23 +4,12 @@
 
 struct VertexShaderList
 {
-    ID3D11VertexShader *basic;
-    ID3D11VertexShader *bloom;
-    ID3D11VertexShader *fxaa;
     ID3D11VertexShader *motionBlur;
-    ID3D11VertexShader *plop;
 };
 
 struct PixelShaderList
 {
-    ID3D11PixelShader *basic;
-    ID3D11PixelShader *bloomThreshold;
-    ID3D11PixelShader *bloomDownsample;
-    ID3D11PixelShader *bloomAccumulation;
-    ID3D11PixelShader *bloomDebug;
-    ID3D11PixelShader *fxaa;
     ID3D11PixelShader *motionBlur;
-    ID3D11PixelShader *plop;
 };
 
 struct ComputeShaderList

@@ -7,22 +7,22 @@ import parameters.postprocess;
 import tonemapping;
 import color;
 
-struct POSTPROCESS_PS_INPUT
+struct VertexOutput
 {
-	float4 pos: SV_POSITION;
+	float4 position: SV_POSITION;
 	float2 uv: TEXCOORD0;
 };
 
-struct POSTPROCESS_PS_OUTPUT
+struct PixelOutput
 {
 	float4 color: SV_TARGET;
 };
 
 [shader("vertex")]
-POSTPROCESS_PS_INPUT vertexMain(Geometry2D geometry)
+VertexOutput vertexMain(Geometry2D geometry)
 {
-    POSTPROCESS_PS_INPUT output;
-    output.pos = float4(geometry.vertex.position.xy, 0.0, 1.0);
+    VertexOutput output;
+    output.position = float4(geometry.vertex.position.xy, 0.0, 1.0);
     output.uv = geometry.vertex.uv;
 
     return output;
@@ -40,9 +40,9 @@ float2 offsetUV(float2 uv, float factor)
 }
 
 [shader("fragment")]
-POSTPROCESS_PS_OUTPUT fragmentMain(POSTPROCESS_PS_INPUT input)
+PixelOutput fragmentMain(VertexOutput input)
 {
-    POSTPROCESS_PS_OUTPUT output;
+    PixelOutput output;
 
     float2 uv = input.uv;
 
