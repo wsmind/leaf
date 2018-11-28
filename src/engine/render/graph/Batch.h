@@ -9,8 +9,8 @@ class Job;
 
 struct Pipeline
 {
-    ID3D11DepthStencilState *depthStencil = nullptr;
     ID3D11InputLayout *inputLayout = nullptr;
+    ID3D11DepthStencilState *depthStencil = nullptr;
 
     ID3D11VertexShader *vertexShader = nullptr;
     ID3D11PixelShader *pixelShader = nullptr;

@@ -26,24 +26,24 @@ ShaderVariant::ShaderVariant(SlangCompileRequest *slangRequest, int translationU
     ISlangBlob* vertexShaderBlob = nullptr;
     spGetEntryPointCodeBlob(slangRequest, vertexIndex, 0, &vertexShaderBlob);
     //printf("%s\n", (const char *)vertexShaderBlob->getBufferPointer());
-    res = Device::device->CreateVertexShader(vertexShaderBlob->getBufferPointer(), vertexShaderBlob->getBufferSize(), NULL, &this->layout.vertexShader);
+    res = Device::device->CreateVertexShader(vertexShaderBlob->getBufferPointer(), vertexShaderBlob->getBufferSize(), NULL, &this->pipeline.vertexShader);
     CHECK_HRESULT(res);
 
     ISlangBlob* fragmentShaderBlob = nullptr;
     spGetEntryPointCodeBlob(slangRequest, fragmentIndex, 0, &fragmentShaderBlob);
     //printf("%s\n", (const char *)fragmentShaderBlob->getBufferPointer());
-    res = Device::device->CreatePixelShader(fragmentShaderBlob->getBufferPointer(), fragmentShaderBlob->getBufferSize(), NULL, &this->layout.pixelShader);
+    res = Device::device->CreatePixelShader(fragmentShaderBlob->getBufferPointer(), fragmentShaderBlob->getBufferSize(), NULL, &this->pipeline.pixelShader);
     CHECK_HRESULT(res);
 }
 
 ShaderVariant::~ShaderVariant()
 {
-    if (this->layout.vertexShader != nullptr)
-        this->layout.vertexShader->Release();
+    if (this->pipeline.vertexShader != nullptr)
+        this->pipeline.vertexShader->Release();
 
-    if (this->layout.pixelShader != nullptr)
-        this->layout.pixelShader->Release();
+    if (this->pipeline.pixelShader != nullptr)
+        this->pipeline.pixelShader->Release();
 
-    if (this->layout.computeShader != nullptr)
-        this->layout.computeShader->Release();
+    if (this->pipeline.computeShader != nullptr)
+        this->pipeline.computeShader->Release();
 }

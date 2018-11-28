@@ -148,13 +148,13 @@ void ShadowRenderer::render(FrameGraph *frameGraph, const Scene *scene, const Re
         viewport.TopLeftY = (float)((index / 2) * this->resolution);
         shadowPass->setViewport(viewport, glm::mat4(1.0f), glm::mat4(1.0f));
 
-        const PipelineLayout &layout = ShaderCache::getInstance()->getVariant("depthonly")->getLayout();
+        const ShaderVariant *shaderVariant = ShaderCache::getInstance()->getVariant("depthonly");
+        Pipeline pipeline = shaderVariant->getPipeline();
+        pipeline.inputLayout = inputLayout;
+        pipeline.depthStencil = this->depthState;
 
-        Batch *batch = shadowPass->addBatch("Light");
-		batch->setDepthStencil(this->depthState);
-		batch->setVertexShader(layout.vertexShader);
-		batch->setPixelShader(layout.pixelShader);
-		batch->setInputLayout(inputLayout);
+        Batch *batch = shadowPass->addBatch("");
+        batch->setPipeline(pipeline);
 
         const Mesh::SubMesh *currentSubMesh = nullptr;
 		Job *currentJob = nullptr;

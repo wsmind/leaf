@@ -299,12 +299,6 @@
     <FxCompile Include="..\..\src\engine\render\shaders\basic.vs.hlsl">
       <Filter>render\shaders</Filter>
     </FxCompile>
-    <FxCompile Include="..\..\src\engine\render\shaders\background.ps.hlsl">
-      <Filter>render\shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="..\..\src\engine\render\shaders\background.vs.hlsl">
-      <Filter>render\shaders</Filter>
-    </FxCompile>
     <FxCompile Include="..\..\src\engine\render\shaders\depthonly.ps.hlsl">
       <Filter>render\shaders</Filter>
     </FxCompile>
@@ -470,6 +464,9 @@
     </None>
     <None Include="..\..\src\engine\render\shaders\parameters\postprocess.slang">
       <Filter>render\shaders\parameters</Filter>
+    </None>
+    <None Include="..\..\src\engine\render\shaders\background.slang">
+      <Filter>render\shaders</Filter>
     </None>
   </ItemGroup>
 </Project>

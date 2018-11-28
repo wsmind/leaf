@@ -7,6 +7,12 @@ struct EnvironmentMap
 	uint mipLevels;
 };
 
+float3 sampleEnvironmentRadiance(EnvironmentMap environment, float3 direction)
+{
+	float2 uv = directionToEquirectangularUV(direction);
+	return environment.texture.SampleLevel(environment.sampler, uv, 0.0).rgb;
+}
+
 float3 sampleEnvironmentDiffuse(EnvironmentMap environment, float3 direction)
 {
 	float2 uv = directionToEquirectangularUV(direction);

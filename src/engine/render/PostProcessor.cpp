@@ -98,15 +98,18 @@ void PostProcessor::render(FrameGraph *frameGraph, const RenderSettings &setting
     toneMappingPass->setTargets({ this->targets[1]->getTarget() }, nullptr);
 	toneMappingPass->setViewport((float)this->backbufferWidth, (float)this->backbufferHeight, glm::mat4(1.0f), glm::mat4(1.0f));
 
-    const PipelineLayout &layout = ShaderCache::getInstance()->getVariant("postprocess")->getLayout();
+    const ShaderVariant *shaderVariant = ShaderCache::getInstance()->getVariant("postprocess");
+    Pipeline pipeline = shaderVariant->getPipeline();
+    pipeline.inputLayout = this->inputLayout;
 
     Batch *toneMappingBatch = toneMappingPass->addBatch("");
-    toneMappingBatch->setShaderConstants(this->constantBuffer);
-    toneMappingBatch->setResources({ this->targets[0]->getSRV() });
-	toneMappingBatch->setSamplers({ this->targets[0]->getSamplerState() });
-    toneMappingBatch->setVertexShader(layout.vertexShader);
-    toneMappingBatch->setPixelShader(layout.pixelShader);
-	toneMappingBatch->setInputLayout(this->inputLayout);
+    toneMappingBatch->setPipeline(pipeline);
+    toneMappingBatch->setDescriptorSets({ {
+        { this->targets[0]->getSRV() },
+        {},
+        { this->targets[0]->getSamplerState() },
+        { this->constantBuffer }
+    } });
 
     Job *toneMappingJob = toneMappingBatch->addJob();
     toneMappingJob->setBuffers(quadSubMesh.vertexBuffer, quadSubMesh.indexBuffer, quadSubMesh.indexCount);

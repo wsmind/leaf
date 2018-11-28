@@ -367,13 +367,13 @@ void Renderer::render(const Scene *scene, const RenderSettings &settings, float 
     depthPrePass->setTargets({}, this->depthTarget);
     depthPrePass->setViewport((float)this->backbufferWidth, (float)this->backbufferHeight, settings.camera.viewMatrix, settings.camera.projectionMatrix);
 
-    const PipelineLayout &layout = ShaderCache::getInstance()->getVariant("depthonly")->getLayout();
+    const ShaderVariant *shaderVariant = ShaderCache::getInstance()->getVariant("depthonly");
+    Pipeline pipeline = shaderVariant->getPipeline();
+    pipeline.inputLayout = this->depthOnlyInputLayout;
+    pipeline.depthStencil = this->lessEqualDepthState;
 
-    Batch *depthBatch = depthPrePass->addBatch("Depth");
-    depthBatch->setDepthStencil(this->lessEqualDepthState);
-    depthBatch->setVertexShader(layout.vertexShader);
-    depthBatch->setPixelShader(layout.pixelShader);
-    depthBatch->setInputLayout(this->depthOnlyInputLayout);
+    Batch *depthBatch = depthPrePass->addBatch("");
+    depthBatch->setPipeline(pipeline);
 
     const Mesh::SubMesh *currentSubMesh = nullptr;
     Job *currentJob = nullptr;
@@ -402,6 +402,13 @@ void Renderer::render(const Scene *scene, const RenderSettings &settings, float 
     radiancePass->setTargets({ radianceTarget->getTarget(), this->motionTarget->getTarget() }, this->depthTarget);
 	radiancePass->setViewport((float)this->backbufferWidth, (float)this->backbufferHeight, settings.camera.viewMatrix, settings.camera.projectionMatrix);
 
+    DescriptorSet environmentParameterBlock = {
+        { settings.environment.environmentMap->getSRV() },
+        {},
+        { settings.environment.environmentMap->getSamplerState() },
+        {}
+    };
+
     {
         //GPUProfiler::ScopedProfile profile("Geometry");
         Material *currentMaterial = nullptr;
@@ -415,14 +422,12 @@ void Renderer::render(const Scene *scene, const RenderSettings &settings, float 
                 currentMaterial = job.material;
 
                 currentBatch = radiancePass->addBatch(std::string("Material"));
-                currentBatch->setDepthStencil(this->equalDepthState);
-                currentBatch->setInputLayout(this->inputLayout);
 
-                const PipelineLayout &layout = ShaderCache::getInstance()->getVariant("forward", currentMaterial->getPrefixHash())->getLayout();
-                currentBatch->setVertexShader(layout.vertexShader);
-                currentBatch->setPixelShader(layout.pixelShader);
-
-                DescriptorSet environmentParameterBlock = { { settings.environment.environmentMap->getSRV() }, { }, { settings.environment.environmentMap->getSamplerState() }, { } };
+                const ShaderVariant *shaderVariant = ShaderCache::getInstance()->getVariant("forward", currentMaterial->getPrefixHash());
+                Pipeline pipeline = shaderVariant->getPipeline();
+                pipeline.inputLayout = this->inputLayout;
+                pipeline.depthStencil = this->equalDepthState;
+                currentBatch->setPipeline(pipeline);
 
                 currentBatch->setDescriptorSets({
                     currentMaterial->getParameterBlock(),
@@ -450,12 +455,14 @@ void Renderer::render(const Scene *scene, const RenderSettings &settings, float 
 
     // background
     Batch *backgroundBatch = radiancePass->addBatch("Background");
-    backgroundBatch->setDepthStencil(this->equalDepthState);
-    backgroundBatch->setResources({ settings.environment.environmentMap->getSRV() });
-    backgroundBatch->setSamplers({ settings.environment.environmentMap->getSamplerState() });
-    backgroundBatch->setVertexShader(Shaders::vertex.background);
-    backgroundBatch->setPixelShader(Shaders::pixel.background);
-    backgroundBatch->setInputLayout(this->inputLayout);
+
+    const ShaderVariant *backgroundShader = ShaderCache::getInstance()->getVariant("background");
+    Pipeline backgroundPipeline = backgroundShader->getPipeline();
+    backgroundPipeline.inputLayout = this->inputLayout;
+    backgroundPipeline.depthStencil = this->equalDepthState;
+    backgroundBatch->setPipeline(backgroundPipeline);
+
+    backgroundBatch->setDescriptorSets({ environmentParameterBlock });
 
     const Mesh::SubMesh &quadSubMesh = this->fullscreenQuad->getSubMeshes()[0];
 

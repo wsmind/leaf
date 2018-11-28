@@ -2,14 +2,9 @@
 
 #include <d3d11.h>
 
-struct SlangCompileRequest;
+#include <engine/render/graph/Batch.h>
 
-struct PipelineLayout
-{
-    ID3D11VertexShader *vertexShader = nullptr;
-    ID3D11PixelShader *pixelShader = nullptr;
-    ID3D11ComputeShader *computeShader = nullptr;
-};
+struct SlangCompileRequest;
 
 class ShaderVariant
 {
@@ -17,8 +12,8 @@ class ShaderVariant
         ShaderVariant(SlangCompileRequest *slangRequest, int translationUnitIndex);
         ~ShaderVariant();
 
-        const PipelineLayout &getLayout() const { return this->layout; }
+        Pipeline getPipeline() const { return this->pipeline; }
 
     private:
-        PipelineLayout layout;
+        Pipeline pipeline;
 };
