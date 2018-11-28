@@ -17,7 +17,7 @@
 #include <engine/render/shaders/constants/PostProcessConstants.h>
 #include <engine/resource/ResourceManager.h>
 
-#include <shaders/postprocess.vs.hlsl.h>
+#include <shaders/motionblur.vs.hlsl.h>
 
 PostProcessor::PostProcessor(ID3D11RenderTargetView *backbufferTarget, int backbufferWidth, int backbufferHeight)
 	: backbufferTarget(backbufferTarget)
@@ -32,7 +32,7 @@ PostProcessor::PostProcessor(ID3D11RenderTargetView *backbufferTarget, int backb
 		{ "TANGENT", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 24, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 40, D3D11_INPUT_PER_VERTEX_DATA, 0 }
 	};
-	res = Device::device->CreateInputLayout(layout, 4, postprocessVS, sizeof(postprocessVS), &this->inputLayout);
+	res = Device::device->CreateInputLayout(layout, 4, motionblurVS, sizeof(motionblurVS), &this->inputLayout);
 	CHECK_HRESULT(res);
 
     D3D11_BUFFER_DESC cbDesc;

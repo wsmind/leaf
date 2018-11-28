@@ -125,9 +125,6 @@
     <ClInclude Include="..\..\src\engine\render\shaders\gamma.h">
       <Filter>render\shaders</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\engine\render\shaders\depthonly.h">
-      <Filter>render\shaders</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\engine\render\shaders\shadows.h">
       <Filter>render\shaders</Filter>
     </ClInclude>
@@ -297,12 +294,6 @@
       <Filter>render\shaders</Filter>
     </FxCompile>
     <FxCompile Include="..\..\src\engine\render\shaders\basic.vs.hlsl">
-      <Filter>render\shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="..\..\src\engine\render\shaders\depthonly.ps.hlsl">
-      <Filter>render\shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="..\..\src\engine\render\shaders\depthonly.vs.hlsl">
       <Filter>render\shaders</Filter>
     </FxCompile>
     <FxCompile Include="..\..\src\engine\render\shaders\fxaa.ps.hlsl">
