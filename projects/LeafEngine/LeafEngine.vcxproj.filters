@@ -119,9 +119,6 @@
     <ClInclude Include="..\..\src\engine\render\shaders\scene.h">
       <Filter>render\shaders</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\engine\render\shaders\tonemapping.h">
-      <Filter>render\shaders</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\engine\render\shaders\gamma.h">
       <Filter>render\shaders</Filter>
     </ClInclude>
@@ -282,6 +279,9 @@
     <ClInclude Include="..\..\src\engine\render\shaders\postprocess.h">
       <Filter>render\shaders</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\engine\render\shaders\tonemapping.slang">
+      <Filter>render\shaders</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\..\src\engine\render\shaders\plop.vs.hlsl">
@@ -311,18 +311,6 @@
     <FxCompile Include="..\..\src\engine\render\shaders\neighbormax.hlsl">
       <Filter>render\shaders</Filter>
     </FxCompile>
-    <FxCompile Include="..\..\src\engine\render\shaders\bloom.vs.hlsl">
-      <Filter>render\shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="..\..\src\engine\render\shaders\bloomthreshold.ps.hlsl">
-      <Filter>render\shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="..\..\src\engine\render\shaders\bloomdownsample.ps.hlsl">
-      <Filter>render\shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="..\..\src\engine\render\shaders\bloomaccumulation.hlsl">
-      <Filter>render\shaders</Filter>
-    </FxCompile>
     <FxCompile Include="..\..\src\engine\render\shaders\gaussianblurh.ps.hlsl">
       <Filter>render\shaders</Filter>
     </FxCompile>
@@ -330,9 +318,6 @@
       <Filter>render\shaders</Filter>
     </FxCompile>
     <FxCompile Include="..\..\src\engine\render\shaders\gaussianblurv.hlsl">
-      <Filter>render\shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="..\..\src\engine\render\shaders\bloomdebug.ps.hlsl">
       <Filter>render\shaders</Filter>
     </FxCompile>
     <FxCompile Include="..\..\src\engine\render\shaders\generateibl.cs.hlsl">
@@ -476,6 +461,12 @@
     </None>
     <None Include="..\..\src\engine\render\shaders\streams\geometry2d.slang">
       <Filter>render\shaders\streams</Filter>
+    </None>
+    <None Include="..\..\src\engine\render\shaders\bloomthreshold.slang">
+      <Filter>render\shaders</Filter>
+    </None>
+    <None Include="..\..\src\engine\render\shaders\color.slang">
+      <Filter>render\shaders</Filter>
     </None>
   </ItemGroup>
 </Project>

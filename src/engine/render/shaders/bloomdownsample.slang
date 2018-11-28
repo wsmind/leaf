@@ -1,19 +1,34 @@
-#include "scene.h"
-#include "pass.h"
-#include "postprocess.h"
-#include "bloom.h"
+import streams.geometry2d;
+
+import parameters.scene;
+import parameters.pass;
+import parameters.bloom;
 
 #define SAMPLE_COUNT 13
-
-Texture2D<float4> inputTexture: register(t0);
-SamplerState inputSampler: register(s0);
 
 struct PixelOutput
 {
 	float4 color: SV_TARGET;
 };
 
-PixelOutput main(POSTPROCESS_PS_INPUT input)
+struct VertexOutput
+{
+    float4 position : SV_POSITION;
+    float2 uv : TEXCOORD0;
+};
+
+[shader("vertex")]
+VertexOutput vertexMain(Geometry2D geometry)
+{
+    VertexOutput output;
+    output.position = float4(geometry.vertex.position.xy, 0.0, 1.0);
+    output.uv = geometry.vertex.uv;
+
+    return output;
+}
+
+[shader("fragment")]
+PixelOutput fragmentMain(VertexOutput input)
 {
 	PixelOutput output;
 
@@ -54,10 +69,8 @@ PixelOutput main(POSTPROCESS_PS_INPUT input)
 	[unroll]
 	for (int i = 0; i < SAMPLE_COUNT; i++)
 	{
-		float3 colorSample = inputTexture.Sample(inputSampler, input.uv + offsets[i] * passConstants.viewportSize.zw).rgb;
-		float luminance = computeLuminance(colorSample);
-		float thresholdWeight = smoothstep(0.0, bloomConstants.threshold, luminance);
-		color += weights[i] * thresholdWeight;
+		float3 colorSample = bloomParameters.radianceTexture.Sample(bloomParameters.radianceSampler, input.uv + offsets[i] * passParameters.constants.viewportSize.zw).rgb;
+		color += weights[i] * colorSample;
 	}
 
 	output.color = float4(color, 1.0);

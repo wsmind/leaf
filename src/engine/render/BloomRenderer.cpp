@@ -5,6 +5,8 @@
 #include <engine/render/RenderSettings.h>
 #include <engine/render/RenderTarget.h>
 #include <engine/render/Shaders.h>
+#include <engine/render/ShaderCache.h>
+#include <engine/render/ShaderVariant.h>
 #include <engine/render/graph/Batch.h>
 #include <engine/render/graph/FrameGraph.h>
 #include <engine/render/graph/Job.h>
@@ -73,13 +75,20 @@ void BloomRenderer::render(FrameGraph *frameGraph, const RenderSettings &setting
 		pass->setTargets({ outputTarget->getTarget() }, nullptr);
 		pass->setViewport((float)outputTarget->getWidth(), (float)outputTarget->getHeight(), glm::mat4(1.0f), glm::mat4(1.0f));
 
-		Batch *batch = pass->addBatch("");
-		batch->setShaderConstants(this->constantBuffer);
-		batch->setResources({ inputTarget->getSRV() });
-		batch->setSamplers({ inputTarget->getSamplerState() });
-		batch->setVertexShader(Shaders::vertex.bloom);
-		batch->setPixelShader(Shaders::pixel.bloomDebug);
-		batch->setInputLayout(Shaders::layout.geometry2D);
+        const ShaderVariant *shaderVariant = ShaderCache::getInstance()->getVariant("bloomdebug");
+        Pipeline pipeline = shaderVariant->getPipeline();
+        pipeline.inputLayout = Shaders::layout.geometry2D;
+
+        DescriptorSet bloomParameters = {
+            { inputTarget->getSRV() },
+            {},
+            { inputTarget->getSamplerState() },
+            { this->constantBuffer }
+        };
+
+        Batch *batch = pass->addBatch("");
+        batch->setPipeline(pipeline);
+        batch->setDescriptorSets({ bloomParameters });
 
 		Job *job = batch->addJob();
         job->setBuffers(quadSubMesh.vertexBuffer, quadSubMesh.indexBuffer, quadSubMesh.indexCount);
@@ -92,13 +101,20 @@ void BloomRenderer::render(FrameGraph *frameGraph, const RenderSettings &setting
 	thresholdPass->setTargets({ this->downsampleTargets[0]->getTarget() }, nullptr);
 	thresholdPass->setViewport((float)this->downsampleTargets[0]->getWidth(), (float)this->downsampleTargets[0]->getHeight(), glm::mat4(1.0f), glm::mat4(1.0f));
 
+    const ShaderVariant *shaderVariant = ShaderCache::getInstance()->getVariant("bloomthreshold");
+    Pipeline pipeline = shaderVariant->getPipeline();
+    pipeline.inputLayout = Shaders::layout.geometry2D;
+
+    DescriptorSet bloomParameters = {
+        { inputTarget->getSRV() },
+        {},
+        { inputTarget->getSamplerState() },
+        { this->constantBuffer }
+    };
+
 	Batch *thresholdBatch = thresholdPass->addBatch("");
-	thresholdBatch->setShaderConstants(this->constantBuffer);
-	thresholdBatch->setResources({ inputTarget->getSRV() });
-	thresholdBatch->setSamplers({ inputTarget->getSamplerState() });
-	thresholdBatch->setVertexShader(Shaders::vertex.bloom);
-	thresholdBatch->setPixelShader(Shaders::pixel.bloomThreshold);
-	thresholdBatch->setInputLayout(Shaders::layout.geometry2D);
+    thresholdBatch->setPipeline(pipeline);
+    thresholdBatch->setDescriptorSets({ bloomParameters });
 
     Job *thresholdJob = thresholdBatch->addJob();
     thresholdJob->setBuffers(quadSubMesh.vertexBuffer, quadSubMesh.indexBuffer, quadSubMesh.indexCount);
@@ -114,13 +130,20 @@ void BloomRenderer::render(FrameGraph *frameGraph, const RenderSettings &setting
 		pass->setTargets({ destination->getTarget() }, nullptr);
 		pass->setViewport((float)destination->getWidth(), (float)destination->getHeight(), glm::mat4(1.0f), glm::mat4(1.0f));
 
-		Batch *batch = pass->addBatch("");
-		batch->setShaderConstants(this->constantBuffer);
-		batch->setResources({ source->getSRV() });
-		batch->setSamplers({ source->getSamplerState() });
-		batch->setVertexShader(Shaders::vertex.bloom);
-		batch->setPixelShader(Shaders::pixel.bloomDownsample);
-		batch->setInputLayout(Shaders::layout.geometry2D);
+        const ShaderVariant *shaderVariant = ShaderCache::getInstance()->getVariant("bloomdownsample");
+        Pipeline pipeline = shaderVariant->getPipeline();
+        pipeline.inputLayout = Shaders::layout.geometry2D;
+
+        DescriptorSet bloomParameters = {
+            { source->getSRV() },
+            {},
+            { source->getSamplerState() },
+            { this->constantBuffer }
+        };
+
+        Batch *batch = pass->addBatch("");
+        batch->setPipeline(pipeline);
+        batch->setDescriptorSets({ bloomParameters });
 
 		Job *job = batch->addJob();
         job->setBuffers(quadSubMesh.vertexBuffer, quadSubMesh.indexBuffer, quadSubMesh.indexCount);
@@ -138,13 +161,20 @@ void BloomRenderer::render(FrameGraph *frameGraph, const RenderSettings &setting
 		pass->setTargets({ destination->getTarget() }, nullptr);
 		pass->setViewport((float)destination->getWidth(), (float)destination->getHeight(), glm::mat4(1.0f), glm::mat4(1.0f));
 
-		Batch *batch = pass->addBatch("");
-		batch->setShaderConstants(this->constantBuffer);
-		batch->setResources({ source->getSRV(), accumulator->getSRV() });
-		batch->setSamplers({ source->getSamplerState(), accumulator->getSamplerState() });
-		batch->setVertexShader(Shaders::vertex.bloom);
-		batch->setPixelShader(Shaders::pixel.bloomAccumulation);
-		batch->setInputLayout(Shaders::layout.geometry2D);
+        const ShaderVariant *shaderVariant = ShaderCache::getInstance()->getVariant("bloomaccumulation");
+        Pipeline pipeline = shaderVariant->getPipeline();
+        pipeline.inputLayout = Shaders::layout.geometry2D;
+
+        DescriptorSet bloomParameters = {
+            { source->getSRV(), accumulator->getSRV() },
+            {},
+            { source->getSamplerState(), accumulator->getSamplerState() },
+            { this->constantBuffer }
+        };
+
+        Batch *batch = pass->addBatch("");
+        batch->setPipeline(pipeline);
+        batch->setDescriptorSets({ bloomParameters });
 
 		Job *job = batch->addJob();
         job->setBuffers(quadSubMesh.vertexBuffer, quadSubMesh.indexBuffer, quadSubMesh.indexCount);

@@ -1,32 +1,36 @@
-#include "scene.h"
-#include "pass.h"
-#include "postprocess.h"
-#include "bloom.h"
+import streams.geometry2d;
+
+import parameters.scene;
+import parameters.pass;
+import parameters.bloom;
+
+import color;
 
 #define SAMPLE_COUNT 13
 
-Texture2D<float4> inputTexture: register(t0);
-SamplerState inputSampler: register(s0);
+struct VertexOutput
+{
+    float4 position : SV_POSITION;
+    float2 uv : TEXCOORD0;
+};
 
 struct PixelOutput
 {
 	float4 color: SV_TARGET;
 };
 
-/*float3 fetch4BilinearSamples(float2 uv)
+[shader("vertex")]
+VertexOutput vertexMain(Geometry2D geometry)
 {
-float2 offset = 0.5 * passConstants.viewportSize.zw;
+    VertexOutput output;
+    output.position = float4(geometry.vertex.position.xy, 0.0, 1.0);
+    output.uv = geometry.vertex.uv;
 
-float3 color = 0.0;
-color += inputTexture.Sample(inputSampler, uv + float2(-offset.x, -offset.y)).rgb;
-color += inputTexture.Sample(inputSampler, uv + float2(-offset.x, offset.y)).rgb;
-color += inputTexture.Sample(inputSampler, uv + float2(offset.x, offset.y)).rgb;
-color += inputTexture.Sample(inputSampler, uv + float2(offset.x, -offset.y)).rgb;
+    return output;
+}
 
-return color * 0.25;
-}*/
-
-PixelOutput main(POSTPROCESS_PS_INPUT input)
+[shader("fragment")]
+PixelOutput fragmentMain(VertexOutput input)
 {
 	PixelOutput output;
 
@@ -67,10 +71,10 @@ PixelOutput main(POSTPROCESS_PS_INPUT input)
 	[unroll]
 	for (int i = 0; i < SAMPLE_COUNT; i++)
 	{
-		float3 colorSample = inputTexture.Sample(inputSampler, input.uv + offsets[i] * passConstants.viewportSize.zw).rgb;
+		float3 colorSample = bloomParameters.radianceTexture.Sample(bloomParameters.radianceSampler, input.uv + offsets[i] * passParameters.constants.viewportSize.zw).rgb;
 		float luminance = computeLuminance(colorSample);
 		float luminanceWeight = 1.0 / (1.0 + luminance);
-		float thresholdWeight = smoothstep(bloomConstants.threshold - 1.0, bloomConstants.threshold, luminance);
+		float thresholdWeight = smoothstep(bloomParameters.constants.threshold - 1.0, bloomParameters.constants.threshold, luminance);
 		color += weights[i] * colorSample * luminanceWeight * thresholdWeight;
 	}
 

@@ -4,7 +4,8 @@ import parameters.scene;
 import parameters.pass;
 import parameters.postprocess;
 
-#include "tonemapping.h"
+import tonemapping;
+import color;
 
 struct POSTPROCESS_PS_INPUT
 {
@@ -36,11 +37,6 @@ float2 offsetUV(float2 uv, float factor)
 
     uv = uv * 0.5 + 0.5;
     return uv;
-}
-
-float computeLuminance(float3 color)
-{
-	return dot(color, float3(0.299, 0.587, 0.114));
 }
 
 [shader("fragment")]

@@ -1,4 +1,4 @@
-#include "gamma.h"
+import color;
 
 float3 linearToneMapping(float3 color)
 {
