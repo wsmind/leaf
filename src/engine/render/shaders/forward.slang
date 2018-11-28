@@ -118,7 +118,7 @@ FORWARD_PS_OUTPUT fragmentMain(FORWARD_PS_INPUT input)
 	environment.sampler = environmentSampler;
 	environment.mipLevels = sceneParameters.constants.environmentMipLevels;
 
-    radiance += material.Surface.integrateEnvironment(eye, environment);
+    //radiance += material.Surface.integrateEnvironment(eye, environment);
 
     // point lights
     for (int i = 0; i < sceneParameters.constants.pointLightCount; i++)
