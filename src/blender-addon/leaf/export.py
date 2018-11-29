@@ -513,12 +513,27 @@ socket_default_value_overrides = {
     "BSDF_DIFFUSE": {
         "Normal": "intersection.normal"
     },
+    "BSDF_GLASS": {
+        "Normal": "intersection.normal"
+    },
+    "BSDF_GLOSSY": {
+        "Normal": "intersection.normal"
+    },
     "BSDF_PRINCIPLED": {
         "Normal": "intersection.normal",
         "ClearcoatNormal": "intersection.normal",
         "Tangent": "normalize(intersection.tangent.xyz)",
     },
+    "BSDF_VELVET": {
+        "Normal": "intersection.normal"
+    },
     "TEX_IMAGE": {
+        "Vector": "float3(intersection.uv, 0.0)"
+    },
+    "TEX_NOISE": {
+        "Vector": "float3(intersection.uv, 0.0)"
+    },
+    "TEX_VORONOI": {
         "Vector": "float3(intersection.uv, 0.0)"
     },
     "OUTPUT_MATERIAL": {
