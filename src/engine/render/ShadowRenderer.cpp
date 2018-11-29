@@ -114,7 +114,7 @@ void ShadowRenderer::render(FrameGraph *frameGraph, const Scene *scene, const Re
     ZeroMemory(&shadowConstants, sizeof(shadowConstants));
 
     int shadowCount = 0;
-	for (int i = 0; i < lights.size(); i++)
+	for (unsigned int i = 0; i < lights.size(); i++)
 	{
 		// only spotlights cast shadows
 		if (!lights[i].spot || shadowCount >= 4)

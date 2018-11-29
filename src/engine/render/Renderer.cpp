@@ -283,7 +283,7 @@ void Renderer::render(const Scene *scene, const RenderSettings &settings, float 
     const std::vector<RenderList::Light> &lights = this->renderList->getLights();
     sceneConstants.pointLightCount = 0;
     sceneConstants.spotLightCount = 0;
-    for (int i = 0; i < lights.size(); i++)
+    for (unsigned int i = 0; i < lights.size(); i++)
     {
         if (!lights[i].spot && sceneConstants.pointLightCount < MAX_LIGHT)
         {
