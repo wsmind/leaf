@@ -42,7 +42,7 @@ VertexOutput vertexMain(InstancedMesh mesh)
     return output;
 }
 
-bool traceRay(float3 position, float3 direction)
+bool traceRay(inout float3 position, float3 direction)
 {
 	for (int i = 0; i < LEAF_RAYMARCH_ITERATIONS; i++)
 	{
