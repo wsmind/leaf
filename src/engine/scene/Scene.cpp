@@ -133,6 +133,7 @@ void Scene::unload()
 
     this->cameraNodes.clear();
     this->meshNodes.clear();
+    this->distanceFieldNodes.clear();
     this->lightNodes.clear();
 
     ResourceManager::getInstance()->releaseResource(this->renderSettings.environment.environmentMap);

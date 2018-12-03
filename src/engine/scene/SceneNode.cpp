@@ -93,6 +93,8 @@ SceneNode::~SceneNode()
 
     for (auto *particleSystem : this->particleSystems)
         delete particleSystem;
+
+    ResourceManager::getInstance()->releaseResource(this->code);
 }
 
 void SceneNode::registerAnimation(AnimationPlayer *player) const

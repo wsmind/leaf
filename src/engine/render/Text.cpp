@@ -14,6 +14,7 @@ void Text::load(const unsigned char *buffer, size_t size)
 void Text::unload()
 {
     ShaderCache::getInstance()->unregisterPrefix(this->prefixHash);
+    this->prefixHash = { 0, 0 };
 
     this->contents.clear();
 }
