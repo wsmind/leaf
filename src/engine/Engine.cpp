@@ -12,6 +12,7 @@
 #include <engine/render/Material.h>
 #include <engine/render/Mesh.h>
 #include <engine/render/Renderer.h>
+#include <engine/render/Text.h>
 #include <engine/render/Texture.h>
 #include <engine/resource/ResourceManager.h>
 #include <engine/scene/ParticleSettings.h>
@@ -78,6 +79,7 @@ void Engine::loadData(const void *buffer, size_t size)
         if (typeName == "Material") ResourceManager::getInstance()->updateResourceData<Material>(resourceName, readPosition, blobSize);
         if (typeName == "Mesh") ResourceManager::getInstance()->updateResourceData<Mesh>(resourceName, readPosition, blobSize);
         if (typeName == "ParticleSettings") ResourceManager::getInstance()->updateResourceData<ParticleSettings>(resourceName, readPosition, blobSize);
+        if (typeName == "Text") ResourceManager::getInstance()->updateResourceData<Text>(resourceName, readPosition, blobSize);
         if (typeName == "Scene") ResourceManager::getInstance()->updateResourceData<Scene>(resourceName, readPosition, blobSize);
         if (typeName == "Demo") ResourceManager::getInstance()->updateResourceData<Demo>(resourceName, readPosition, blobSize);
 

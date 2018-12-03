@@ -13,6 +13,11 @@ void RenderList::addJob(const Job &job)
     this->jobs.push_back(job);
 }
 
+void RenderList::addDistanceField(const DistanceField &distanceField)
+{
+    this->distanceFields.push_back(distanceField);
+}
+
 void RenderList::addLight(const Light &light)
 {
     this->lights.push_back(light);

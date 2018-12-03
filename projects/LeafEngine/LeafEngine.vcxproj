@@ -216,6 +216,7 @@
     <ClCompile Include="..\..\src\engine\render\Shaders.cpp" />
     <ClCompile Include="..\..\src\engine\render\ShaderVariant.cpp" />
     <ClCompile Include="..\..\src\engine\render\ShadowRenderer.cpp" />
+    <ClCompile Include="..\..\src\engine\render\Text.cpp" />
     <ClCompile Include="..\..\src\engine\render\Texture.cpp" />
     <ClCompile Include="..\..\src\engine\resource\ResourceManager.cpp" />
     <ClCompile Include="..\..\src\engine\scene\ParticleSettings.cpp" />
@@ -263,6 +264,7 @@
     <ClInclude Include="..\..\src\engine\render\shaders\postprocess.h" />
     <ClInclude Include="..\..\src\engine\render\ShaderVariant.h" />
     <ClInclude Include="..\..\src\engine\render\ShadowRenderer.h" />
+    <ClInclude Include="..\..\src\engine\render\Text.h" />
     <ClInclude Include="..\..\src\engine\render\Texture.h" />
     <ClInclude Include="..\..\src\engine\resource\Resource.h" />
     <ClInclude Include="..\..\src\engine\resource\ResourceManager.h" />
@@ -600,6 +602,7 @@
     <None Include="..\..\src\blender-addon\leaf\export.py" />
     <None Include="..\..\src\blender-addon\leaf\image.py" />
     <None Include="..\..\src\blender-addon\leaf\light.py" />
+    <None Include="..\..\src\blender-addon\leaf\objects.py" />
     <None Include="..\..\src\blender-addon\leaf\preferences.py" />
     <None Include="..\..\src\blender-addon\leaf\render.py" />
     <None Include="..\..\src\blender-addon\leaf\material.py" />

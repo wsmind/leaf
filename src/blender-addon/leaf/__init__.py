@@ -12,6 +12,7 @@ if "bpy" in locals():
     imp.reload(image)
     imp.reload(light)
     imp.reload(material)
+    imp.reload(objects)
     imp.reload(preferences)
     imp.reload(render)
     imp.reload(texture)
@@ -22,6 +23,7 @@ else:
     from . import image
     from . import light
     from . import material
+    from . import objects
     from . import preferences
     from . import render
     from . import texture

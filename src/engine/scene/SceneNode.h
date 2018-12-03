@@ -10,6 +10,7 @@ class AnimationPlayer;
 class Resource;
 class RenderList;
 class ParticleSystem;
+class Text;
 
 class SceneNode
 {
@@ -37,6 +38,9 @@ class SceneNode
 
         bool hasParticleSystems() const { return this->particleSystems.size() > 0; }
 
+        bool isDistanceField() const { return this->distanceField; }
+        Text *getCode() const { return this->code; }
+
         void updateParticles(float time);
         void fillParticleRenderList(RenderList *renderList) const;
 
@@ -62,6 +66,9 @@ class SceneNode
         Resource *data;
 
         std::vector<ParticleSystem *> particleSystems;
+
+        bool distanceField = false;
+        Text *code = nullptr;
 };
 
 template <typename DataType>

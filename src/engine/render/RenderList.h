@@ -4,6 +4,7 @@
 
 #include <glm/glm.hpp>
 #include <engine/render/Mesh.h>
+#include <engine/render/ShaderCache.h>
 
 class Material;
 
@@ -16,6 +17,15 @@ class RenderList
             const Mesh::SubMesh *subMesh;
             glm::mat4 transform;
             glm::mat4 previousFrameTransform;
+        };
+
+        struct DistanceField
+        {
+            Material *material;
+            const Mesh::SubMesh *subMesh;
+            glm::mat4 transform;
+            glm::mat4 previousFrameTransform;
+            ShaderCache::Hash prefixHash;
         };
 
         struct Light
@@ -36,14 +46,17 @@ class RenderList
         void clear();
 
         void addJob(const Job &job);
+        void addDistanceField(const DistanceField &distanceField);
         void addLight(const Light &light);
         void sortFrontToBack(const glm::vec3 &cameraDirection);
         void sortByMaterial();
 
         const std::vector<Job> &getJobs() const { return this->jobs; }
+        const std::vector<DistanceField> &getDistanceFields() const { return this->distanceFields; }
         const std::vector<Light> &getLights() const { return this->lights; }
 
     private:
         std::vector<Job> jobs;
+        std::vector<DistanceField> distanceFields;
         std::vector<Light> lights;
 };

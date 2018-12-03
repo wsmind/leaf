@@ -109,6 +109,9 @@
     <ClCompile Include="..\..\src\engine\render\ShaderVariant.cpp">
       <Filter>render</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\engine\render\Text.cpp">
+      <Filter>render</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\engine\api.h" />
@@ -275,6 +278,9 @@
     </ClInclude>
     <ClInclude Include="..\..\src\engine\render\shaders\tonemapping.slang">
       <Filter>render\shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\engine\render\Text.h">
+      <Filter>render</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -449,6 +455,9 @@
     </None>
     <None Include="..\..\src\engine\render\shaders\fxaa.slang">
       <Filter>render\shaders</Filter>
+    </None>
+    <None Include="..\..\src\blender-addon\leaf\objects.py">
+      <Filter>blender-addon</Filter>
     </None>
   </ItemGroup>
 </Project>

@@ -32,6 +32,7 @@ def export_data(output_file, data, prefix, updated_only=False):
         ("Light", data.lamps, export_light),
         ("Camera", data.cameras, export_camera),
         ("ParticleSettings", data.particles, export_particle_settings),
+        ("Text", data.texts, export_text),
         ("Demo", [demo], export_demo),
     )
 
@@ -127,13 +128,17 @@ def compute_parent_depth(obj):
     return depth
 
 def export_scene_node(obj, all_objects, export_reference):
+    lobj = obj.leaf
+    
     node = {
         "type": export_object_type(obj.type),
         "position": [obj.location.x, obj.location.y, obj.location.z],
         "orientation": [obj.rotation_euler.x, obj.rotation_euler.y, obj.rotation_euler.z],
         "scale": [obj.scale.x, obj.scale.y, obj.scale.z],
         "hide": float(obj.hide),
-        "data": export_reference(obj.data) if obj.data else ""
+        "data": export_reference(obj.data) if obj.data else "",
+        "isDistanceField": lobj.is_distance_field,
+        "code": export_reference(lobj.code) if lobj.code else "__default"
     }
 
     if len(obj.particle_systems) > 0:
@@ -189,7 +194,7 @@ def export_material(mtl, export_reference):
 
     data["bsdf"] = lmtl.bsdf
 
-    data["shaderPrefix"] = export_node_tree(mtl.node_tree)
+    data["shaderPrefix"] = export_node_tree(mtl.node_tree, export_reference)
     print(data["shaderPrefix"]["code"])
     print(data["shaderPrefix"]["textures"])
 
@@ -466,6 +471,9 @@ def export_particle_settings(particle_settings, export_reference):
 
     return json.dumps(data).encode("utf-8")
 
+def export_text(text, export_reference):
+    return text.as_string().encode("utf-8")
+
 def make_node_id(node):
     return node.bl_static_type + "_" + str(node.as_pointer())
 
@@ -599,7 +607,7 @@ def compile_node(node, symbol_map, resource_map):
 
     return code
 
-def compile_node_tree(tree, output_type, resources):
+def compile_node_tree(tree, output_type, resources, export_reference):
     # find output node
     output_node = next(filter(lambda node: node.bl_static_type == output_type, tree.nodes))
 
@@ -617,16 +625,16 @@ def compile_node_tree(tree, output_type, resources):
     print("Node tree: " + tree.name)
     print(sorted_nodes)
 
-    def merge_node_resources(resources, node):
+    def merge_node_resources(resources, node, export_reference):
         if node.bl_static_type == "TEX_IMAGE":
-            image_name = node.image.name if node.image else "__default"
+            image_name = export_reference(node.image) if node.image else "__default"
             index = resources.get(image_name, len(resources))
             resources[image_name] = index
             return index
         else:
             return None
     
-    resource_map = { item[0]: merge_node_resources(resources, item[0]) for item in sorted_nodes }
+    resource_map = { item[0]: merge_node_resources(resources, item[0], export_reference) for item in sorted_nodes }
 
     def build_node_symbols(node):
         if node.bl_static_type == "GROUP_INPUT":
@@ -692,7 +700,7 @@ def compile_node_tree(tree, output_type, resources):
 
     return code
 
-def export_node_tree(tree):
+def export_node_tree(tree, export_reference):
     # recursively identify all the subgroups needed by this tree
     def accumulate_tree_dependencies(tree, group_set):
         for node in tree.nodes:
@@ -713,7 +721,7 @@ def export_node_tree(tree):
 
     function_code = ""
     for subgroup in subgroups:
-        function_code += compile_node_tree(bpy.data.node_groups[subgroup], "GROUP_OUTPUT", resources)
+        function_code += compile_node_tree(bpy.data.node_groups[subgroup], "GROUP_OUTPUT", resources, export_reference)
 
     function_code += compile_node_tree(tree, "OUTPUT_MATERIAL", resources)
     

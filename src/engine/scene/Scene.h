@@ -46,6 +46,7 @@ class Scene : public Resource
         std::vector<SceneNode *> lightNodes;
         std::vector<SceneNode *> cameraNodes;
         std::vector<SceneNode *> particleSystemNodes;
+        std::vector<SceneNode *> distanceFieldNodes;
 
         AnimationPlayer animationPlayer;
         AnimationData *animation = nullptr;

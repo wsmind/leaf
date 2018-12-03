@@ -3,6 +3,7 @@
 #include <cassert>
 
 #include <engine/animation/AnimationData.h>
+#include <engine/render/Text.h>
 #include <engine/render/Texture.h>
 #include <engine/render/RenderList.h>
 #include <engine/resource/ResourceManager.h>
@@ -42,7 +43,7 @@ void Scene::load(const unsigned char *buffer, size_t size)
         switch (type)
         {
             case 0: this->cameraNodes.push_back(node); break;
-            case 1: this->meshNodes.push_back(node); break;
+            case 1: if (node->isDistanceField()) this->distanceFieldNodes.push_back(node); else this->meshNodes.push_back(node); break;
             case 2: this->lightNodes.push_back(node); break;
         }
 
@@ -179,13 +180,26 @@ void Scene::fillRenderList(RenderList *renderList) const
 
             for (auto &subMesh : mesh->getSubMeshes())
             {
-                RenderList::Job job;
-                job.subMesh = &subMesh;
-                job.transform = node->getCurrentTransform();
-                job.previousFrameTransform = node->getPreviousFrameTransform();
-                job.material = subMesh.material;
+                if (node->isDistanceField())
+                {
+                    RenderList::DistanceField sdf;
+                    sdf.subMesh = &subMesh;
+                    sdf.transform = node->getCurrentTransform();
+                    sdf.previousFrameTransform = node->getPreviousFrameTransform();
+                    sdf.material = subMesh.material;
+                    sdf.prefixHash = node->getCode()->getPrefixHash();
 
-                renderList->addJob(job);
+                    renderList->addDistanceField(sdf);
+                }
+                {
+                    RenderList::Job job;
+                    job.subMesh = &subMesh;
+                    job.transform = node->getCurrentTransform();
+                    job.previousFrameTransform = node->getPreviousFrameTransform();
+                    job.material = subMesh.material;
+
+                    renderList->addJob(job);
+                }
             }
         }
     }

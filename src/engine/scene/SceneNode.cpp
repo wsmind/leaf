@@ -12,6 +12,7 @@
 #include <engine/render/Camera.h>
 #include <engine/render/Light.h>
 #include <engine/render/Mesh.h>
+#include <engine/render/Text.h>
 #include <engine/resource/ResourceManager.h>
 #include <engine/scene/ParticleSystem.h>
 
@@ -53,6 +54,11 @@ SceneNode::SceneNode(const cJSON *json, const SceneNode *parent)
             this->particleSystems.push_back(new ParticleSystem(ps));
         }
     }
+
+    this->distanceField = cJSON_GetObjectItem(json, "isDistanceField")->valueint ? true : false;
+
+    std::string textName = cJSON_GetObjectItem(json, "code")->valuestring;
+    this->code = ResourceManager::getInstance()->requestResource<Text>(textName);
 
     cJSON *animation = cJSON_GetObjectItem(json, "animation");
     if (animation)

@@ -24,7 +24,7 @@ class LeafLightSettings(bpy.types.PropertyGroup):
 
     @classmethod
     def unregister(cls):
-        del bpy.types.Material.leaf
+        del bpy.types.Light.leaf
 
 class LeafLightButtonsPanel():
     bl_space_type = "PROPERTIES"
