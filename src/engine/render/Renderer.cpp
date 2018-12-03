@@ -352,6 +352,42 @@ void Renderer::render(const Scene *scene, const RenderSettings &settings, float 
         currentJob->addInstance(instanceData);
     }
 
+    ShaderCache::Hash currentHash = { 0, 0 };
+    Batch *currentBatch = nullptr;
+    currentSubMesh = nullptr;
+    currentJob = nullptr;
+    for (const auto &sdf : this->renderList->getDistanceFields())
+    {
+        if (sdf.prefixHash == ShaderCache::Hash({ 0, 0 }))
+            continue;
+
+        if (sdf.prefixHash != currentHash)
+        {
+            currentHash = sdf.prefixHash;
+
+            const ShaderVariant *shaderVariant = ShaderCache::getInstance()->getVariant("raymarch-depth", sdf.prefixHash);
+            pipeline = shaderVariant->getPipeline();
+            pipeline.inputLayout = Shaders::layout.depthOnly;
+            pipeline.depthStencil = this->lessEqualDepthState;
+
+            currentBatch = depthPrePass->addBatch("SDF");
+            currentBatch->setPipeline(pipeline);
+        }
+
+        if (currentSubMesh != sdf.subMesh)
+        {
+            currentSubMesh = sdf.subMesh;
+
+            currentJob = currentBatch->addJob();
+            currentJob->setBuffers(currentSubMesh->vertexBuffer, currentSubMesh->indexBuffer, currentSubMesh->indexCount);
+        }
+
+        DepthOnlyInstanceData instanceData;
+        instanceData.transformMatrix = sdf.transform;
+
+        currentJob->addInstance(instanceData);
+    }
+    
     // main radiance pass
     this->renderList->sortByMaterial();
 

@@ -3,15 +3,15 @@ import streams.depthonly;
 import parameters.scene;
 import parameters.pass;
 
-struct DEPTHONLY_PS_INPUT
+struct VertexOutput
 {
     float4 position : SV_POSITION;
 };
 
 [shader("vertex")]
-DEPTHONLY_PS_INPUT vertexMain(InstancedMesh mesh)
+VertexOutput vertexMain(InstancedMesh mesh)
 {
-    DEPTHONLY_PS_INPUT output;
+    VertexOutput output;
 
     float4 worldPosition = mul(mesh.transformMatrix, float4(mesh.vertex.position, 1.0));
     float4 viewPosition = mul(passParameters.constants.viewMatrix, worldPosition);
@@ -24,6 +24,6 @@ DEPTHONLY_PS_INPUT vertexMain(InstancedMesh mesh)
 }
 
 [shader("fragment")]
-void fragmentMain(DEPTHONLY_PS_INPUT input)
+void fragmentMain(VertexOutput input)
 {
 }

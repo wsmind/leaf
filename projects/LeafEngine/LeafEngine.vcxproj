@@ -625,6 +625,7 @@
     <None Include="..\..\src\engine\render\shaders\parameters\scene.slang" />
     <None Include="..\..\src\engine\render\shaders\parameters\shadow.slang" />
     <None Include="..\..\src\engine\render\shaders\postprocess.slang" />
+    <None Include="..\..\src\engine\render\shaders\raymarch-depth.slang" />
     <None Include="..\..\src\engine\render\shaders\streams\depthonly.slang" />
     <None Include="..\..\src\engine\render\shaders\streams\geometry2d.slang" />
     <None Include="..\..\src\engine\render\shaders\streams\instancedmesh.slang" />

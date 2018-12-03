@@ -459,5 +459,8 @@
     <None Include="..\..\src\blender-addon\leaf\objects.py">
       <Filter>blender-addon</Filter>
     </None>
+    <None Include="..\..\src\engine\render\shaders\raymarch-depth.slang">
+      <Filter>render\shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

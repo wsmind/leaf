@@ -180,26 +180,35 @@ void Scene::fillRenderList(RenderList *renderList) const
 
             for (auto &subMesh : mesh->getSubMeshes())
             {
-                if (node->isDistanceField())
-                {
-                    RenderList::DistanceField sdf;
-                    sdf.subMesh = &subMesh;
-                    sdf.transform = node->getCurrentTransform();
-                    sdf.previousFrameTransform = node->getPreviousFrameTransform();
-                    sdf.material = subMesh.material;
-                    sdf.prefixHash = node->getCode()->getPrefixHash();
+                RenderList::Job job;
+                job.subMesh = &subMesh;
+                job.transform = node->getCurrentTransform();
+                job.previousFrameTransform = node->getPreviousFrameTransform();
+                job.material = subMesh.material;
 
-                    renderList->addDistanceField(sdf);
-                }
-                {
-                    RenderList::Job job;
-                    job.subMesh = &subMesh;
-                    job.transform = node->getCurrentTransform();
-                    job.previousFrameTransform = node->getPreviousFrameTransform();
-                    job.material = subMesh.material;
+                renderList->addJob(job);
+            }
+        }
+    }
 
-                    renderList->addJob(job);
-                }
+    for (const SceneNode *node : this->distanceFieldNodes)
+    {
+        assert(node->isDistanceField());
+
+        if (!node->isHidden())
+        {
+            Mesh *mesh = node->getData<Mesh>();
+
+            for (auto &subMesh : mesh->getSubMeshes())
+            {
+                RenderList::DistanceField sdf;
+                sdf.subMesh = &subMesh;
+                sdf.transform = node->getCurrentTransform();
+                sdf.previousFrameTransform = node->getPreviousFrameTransform();
+                sdf.material = subMesh.material;
+                sdf.prefixHash = node->getCode()->getPrefixHash();
+
+                renderList->addDistanceField(sdf);
             }
         }
     }
