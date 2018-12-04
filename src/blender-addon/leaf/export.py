@@ -332,9 +332,11 @@ def export_mesh(mesh, export_reference):
 
     polygons = mesh.polygons
     
+    materials = mesh.materials
+
     # build per-material index lists
     indices = []
-    for material_index in range(len(mesh.materials)):
+    for material_index in range(len(materials)):
         indices.append([])
         for face in (polygon for polygon in polygons if polygon.material_index == material_index):
             face_indices = face.loop_indices
@@ -343,9 +345,21 @@ def export_mesh(mesh, export_reference):
                 indices[material_index].append(face_indices[i + 1])
                 indices[material_index].append(face_indices[i + 2])
     
+    # insert a default material if there are none
+    if len(materials) == 0:
+        materials = [None]
+        material_index = 0
+        indices.append([])
+        for face in polygons:
+            face_indices = face.loop_indices
+            for i in range(len(face_indices) - 2):
+                indices[material_index].append(face_indices[0])
+                indices[material_index].append(face_indices[i + 1])
+                indices[material_index].append(face_indices[i + 2])
+
     # output each material as a separate index buffer
-    output.write(struct.pack("=I", len(mesh.materials)))
-    for material_index, material in enumerate(mesh.materials):
+    output.write(struct.pack("=I", len(materials)))
+    for material_index, material in enumerate(materials):
         index_list = indices[material_index]
 
         # material name
