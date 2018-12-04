@@ -22,6 +22,7 @@ struct VertexOutput
 
 struct PixelOutput
 {
+	float4 normal : SV_Target;
 	float depth : SV_Depth;
 };
 
@@ -54,6 +55,16 @@ bool traceRay(inout float3 position, float3 direction)
 	return false;
 }
 
+float3 computeNormal(float3 position)
+{
+	float2 eps = float2(LEAF_RAYMARCH_THRESHOLD, 0.0);
+	return normalize(float3(
+		map(position + eps.xyy) - map(position - eps.xyy),
+		map(position + eps.yxy) - map(position - eps.yxy),
+		map(position + eps.yyx) - map(position - eps.yyx)
+	));
+}
+
 [shader("fragment")]
 PixelOutput fragmentMain(VertexOutput input)
 {
@@ -76,6 +87,8 @@ PixelOutput fragmentMain(VertexOutput input)
 		
 		// manually apply the conversion to non-homogeneous coordinates
 		output.depth = clipSpacePosition.z / clipSpacePosition.w;
+
+		output.normal = float4(computeNormal(position), 0.0);
 	}
 	else
 	{

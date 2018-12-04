@@ -162,7 +162,8 @@ Renderer::Renderer(HWND hwnd, int backbufferWidth, int backbufferHeight, bool ca
     this->shadowRenderer = new ShadowRenderer(1024);
 
     this->motionTarget = new RenderTarget(backbufferWidth, backbufferHeight, DXGI_FORMAT_R16G16B16A16_FLOAT);
-    
+    this->normalTarget = new RenderTarget(backbufferWidth, backbufferHeight, DXGI_FORMAT_R16G16B16A16_FLOAT);
+
     if (this->capture)
     {
         D3D11_TEXTURE2D_DESC captureBufferDesc;
@@ -248,6 +249,7 @@ Renderer::~Renderer()
     delete this->shadowRenderer;
 
     delete this->motionTarget;
+    delete this->normalTarget;
 
     // make sure all graphics resources are released before destroying the context
     ResourceManager::getInstance()->clearPendingUnloads();
@@ -314,6 +316,7 @@ void Renderer::render(const Scene *scene, const RenderSettings &settings, float 
 
     this->frameGraph->addClearTarget(this->renderTarget, glm::vec4(1.0f, 1.0f, 0.0f, 1.0f));
     this->frameGraph->addClearTarget(this->motionTarget->getTarget(), glm::vec4(0.0f, 0.0f, 0.0f, 0.0f));
+    this->frameGraph->addClearTarget(this->normalTarget->getTarget(), glm::vec4(0.0f, 0.0f, 0.0f, 0.0f));
     this->frameGraph->addClearTarget(this->depthTarget, 1.0, 0);
 
     const std::vector<RenderList::Job> &jobs = this->renderList->getJobs();
@@ -323,7 +326,7 @@ void Renderer::render(const Scene *scene, const RenderSettings &settings, float 
     this->renderList->sortFrontToBack(cameraDirection);
 
     Pass *depthPrePass = this->frameGraph->addPass("DepthPrePass");
-    depthPrePass->setTargets({}, this->depthTarget);
+    depthPrePass->setTargets({ this->normalTarget->getTarget() }, this->depthTarget);
     depthPrePass->setViewport((float)this->backbufferWidth, (float)this->backbufferHeight, settings.camera.viewMatrix, settings.camera.projectionMatrix);
 
     const ShaderVariant *shaderVariant = ShaderCache::getInstance()->getVariant("depthonly");

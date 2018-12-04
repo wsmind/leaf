@@ -59,6 +59,7 @@ class Renderer
         PostProcessor *postProcessor;
         ShadowRenderer *shadowRenderer;
         RenderTarget *motionTarget;
+        RenderTarget *normalTarget;
 
         glm::mat4 previousFrameViewProjectionMatrix;
 };

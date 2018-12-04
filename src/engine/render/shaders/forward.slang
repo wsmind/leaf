@@ -29,17 +29,6 @@ struct FORWARD_PS_OUTPUT
 
 #define MARCHING_ITERATIONS 64
 
-struct VS_INPUT
-{
-    float3 pos: POSITION;
-    float3 normal: NORMAL;
-    float4 tangent: TANGENT;
-    float2 uv: TEXCOORD;
-	float4x4 modelMatrix: MODELMATRIX;
-	float4x4 worldToPreviousFrameClipSpaceMatrix: WORLDTOPREVIOUSFRAMECLIPSPACE;
-	float3x3 normalMatrix: NORMALMATRIX;
-};
-
 [shader("vertex")]
 FORWARD_PS_INPUT vertexMain(InstancedMesh mesh)
 {
