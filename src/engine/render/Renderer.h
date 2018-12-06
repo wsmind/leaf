@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <vector>
 
 #include <windows.h>
 #include <d3d11.h>
@@ -8,6 +9,7 @@
 #include <glm/glm.hpp>
 
 class FrameGraph;
+class Material;
 class Mesh;
 class PostProcessor;
 class RenderList;
@@ -15,12 +17,15 @@ struct RenderSettings;
 class RenderTarget;
 class Scene;
 class ShadowRenderer;
+class Text;
 
 class Renderer
 {
     public:
         Renderer(HWND hwnd, int backbufferWidth, int backbufferHeight, bool capture, const std::string &profileFilename, const std::string &shaderPath);
         ~Renderer();
+
+        int exportShaders(const std::string &exportPath, const std::vector<Material *> materials, const std::vector<Text *> texts) const;
 
         void render(const Scene *scene, const RenderSettings &settings, float deltaTime);
         void renderBlenderViewport(const Scene *scene, const RenderSettings &settings);

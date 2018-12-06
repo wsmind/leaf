@@ -59,10 +59,20 @@ const ShaderVariant *ShaderCache::getVariant(const std::string &shaderName, Hash
         return it->second;
     }
 
-    ShaderVariant *variant = this->compileVariant(shaderName, prefixHash);
+    ShaderVariant *variant = this->compileVariant(key);
     this->variants[key] = variant;
 
     return variant;
+}
+
+int ShaderCache::exportVariants(const std::string &exportPath, const std::vector<VariantKey> keys)
+{
+    std::string filename = exportPath + "/shaders.bin";
+
+    FILE *f = fopen(filename.c_str(), "wb");
+    fclose(f);
+
+    return 0;
 }
 
 void ShaderCache::update()
@@ -102,21 +112,21 @@ ShaderCache::Hash ShaderCache::computeHash(const std::string &code) const
     return hash;
 }
 
-ShaderVariant *ShaderCache::compileVariant(const std::string &shaderName, Hash prefixHash)
+ShaderVariant *ShaderCache::compileVariant(const VariantKey &key)
 {
-    printf("## Compiling shader '%s' (prefix: 0x%llx%llx) ##\n", shaderName.c_str(), prefixHash.first, prefixHash.second);
+    printf("## Compiling shader '%s' (prefix: 0x%llx%llx) ##\n", key.shaderName.c_str(), key.prefixHash.first, key.prefixHash.second);
     SlangCompileRequest *slangRequest = spCreateCompileRequest(slangSession);
 
     int targetIndex = spAddCodeGenTarget(slangRequest, SLANG_DXBC);
     spSetTargetProfile(slangRequest, targetIndex, spFindProfile(slangSession, "sm_5_0"));
 
-    std::string shaderPath = this->sourcePath + shaderName + ".slang";
+    std::string shaderPath = this->sourcePath + key.shaderName + ".slang";
     std::ifstream shaderFile(shaderPath.c_str());
     std::string code((std::istreambuf_iterator<char>(shaderFile)), std::istreambuf_iterator<char>());
 
-    if (prefixHash != Hash{0, 0})
+    if (key.prefixHash != Hash{0, 0})
     {
-        auto it = this->prefixes.find(prefixHash);
+        auto it = this->prefixes.find(key.prefixHash);
         assert(it != this->prefixes.end());
 
         const std::string prefixCode = it->second.code;

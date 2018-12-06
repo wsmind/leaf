@@ -1,6 +1,7 @@
 #include <engine/render/Renderer.h>
 
 #include <cstdio>
+#include <set>
 
 #include <windows.h>
 #include <gl/GL.h>
@@ -23,6 +24,7 @@
 #include <engine/render/ShaderCache.h>
 #include <engine/render/ShaderVariant.h>
 #include <engine/render/ShadowRenderer.h>
+#include <engine/render/Text.h>
 #include <engine/render/Texture.h>
 #include <engine/render/graph/Batch.h>
 #include <engine/render/graph/FrameGraph.h>
@@ -259,6 +261,21 @@ Renderer::~Renderer()
 
     Device::context->Release();
     Device::device->Release();
+}
+
+int Renderer::exportShaders(const std::string &exportPath, const std::vector<Material *> materials, const std::vector<Text *> texts) const
+{
+    // extract unique hashes
+    std::set<ShaderCache::Hash> materialHashes;
+    std::set<ShaderCache::Hash> sdfHashes;
+
+    for (const Material *material : materials)
+        materialHashes.insert(material->getPrefixHash());
+
+    for (const Text *text : texts)
+        sdfHashes.insert(text->getPrefixHash());
+
+    return ShaderCache::getInstance()->exportVariants(exportPath, {});
 }
 
 void Renderer::render(const Scene *scene, const RenderSettings &settings, float deltaTime)

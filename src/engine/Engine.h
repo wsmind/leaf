@@ -2,6 +2,7 @@
 
 #include <cassert>
 #include <string>
+#include <vector>
 
 #include <windows.h>
 
@@ -10,6 +11,8 @@
 struct cJSON;
 class Renderer;
 class Demo;
+class Material;
+class Text;
 
 class Engine
 {
@@ -17,7 +20,14 @@ class Engine
         void initialize(int backbufferWidth, int backbufferHeight, bool capture, const std::string &profileFilename, const std::string &shaderPath);
         void shutdown();
 
-        void loadData(const void *buffer, size_t size);
+        struct ExportList
+        {
+            std::vector<Material *> materials;
+            std::vector<Text *> texts;
+        };
+
+        void loadData(const void *buffer, size_t size, ExportList *exportList = nullptr);
+        int exportData(const void *buffer, size_t size, const std::string exportPath);
 
         void update(float time);
 

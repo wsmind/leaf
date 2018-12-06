@@ -47,7 +47,7 @@ void Engine::shutdown()
     ResourceManager::destroy();
 }
 
-void Engine::loadData(const void *buffer, size_t size)
+void Engine::loadData(const void *buffer, size_t size, ExportList *exportList)
 {
     const unsigned char *readPosition = (const unsigned char *)buffer;
     const unsigned char *bufferEnd = readPosition + size;
@@ -83,8 +83,22 @@ void Engine::loadData(const void *buffer, size_t size)
         if (typeName == "Scene") ResourceManager::getInstance()->updateResourceData<Scene>(resourceName, readPosition, blobSize);
         if (typeName == "Demo") ResourceManager::getInstance()->updateResourceData<Demo>(resourceName, readPosition, blobSize);
 
+        if (exportList != nullptr)
+        {
+            if (typeName == "Material") exportList->materials.push_back(ResourceManager::getInstance()->requestResource<Material>(resourceName));
+            if (typeName == "Text") exportList->texts.push_back(ResourceManager::getInstance()->requestResource<Text>(resourceName));
+        }
+
         readPosition += blobSize;
     }
+}
+
+int Engine::exportData(const void *buffer, size_t size, const std::string exportPath)
+{
+    ExportList exportList;
+    this->loadData(buffer, size, &exportList);
+
+    return this->renderer->exportShaders(exportPath, exportList.materials, exportList.texts);
 }
 
 void Engine::update(float time)

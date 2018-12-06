@@ -2,6 +2,7 @@
 
 #include <string>
 #include <thread>
+#include <vector>
 #include <map>
 #include <cassert>
 #include <cstdint>
@@ -15,10 +16,26 @@ class ShaderCache
     public:
         typedef std::pair<uint64_t, uint64_t> Hash;
 
+        struct VariantKey
+        {
+            std::string shaderName;
+            Hash prefixHash;
+
+            bool operator <(const VariantKey &rhs) const
+            {
+                if (this->prefixHash != rhs.prefixHash)
+                    return this->prefixHash < rhs.prefixHash;
+
+                return strcmp(this->shaderName.c_str(), rhs.shaderName.c_str()) < 0;
+            }
+        };
+
         Hash registerPrefix(const std::string &code);
         void unregisterPrefix(Hash prefixHash);
 
         const ShaderVariant *getVariant(const std::string &shaderName, Hash prefixHash = { 0, 0 });
+
+        int exportVariants(const std::string &exportPath, const std::vector<VariantKey> keys);
 
         void update();
 
@@ -37,19 +54,6 @@ class ShaderCache
         };
         std::map<Hash, Prefix> prefixes;
 
-        struct VariantKey
-        {
-            std::string shaderName;
-            Hash prefixHash;
-
-            bool operator <(const VariantKey &rhs) const
-            {
-                if (this->prefixHash != rhs.prefixHash)
-                    return this->prefixHash < rhs.prefixHash;
-
-                return strcmp(this->shaderName.c_str(), rhs.shaderName.c_str()) < 0;
-            }
-        };
         std::map<VariantKey, ShaderVariant *> variants;
 
         SlangSession *slangSession = nullptr;
@@ -59,7 +63,7 @@ class ShaderCache
 
         Hash computeHash(const std::string &code) const;
 
-        ShaderVariant *compileVariant(const std::string &shaderName, Hash prefixHash);
+        ShaderVariant *compileVariant(const VariantKey &key);
 
         template <class Predicate>
         void invalidateVariants(Predicate predicate);

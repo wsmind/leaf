@@ -38,6 +38,8 @@ int main(int argc, char **argv)
 
     float startFrame = 1.0f; // blender starts at frame 1
     std::string profileFilename;
+    bool exporting = false;
+    std::string exportPath;
 
     int argIndex = 1;
     while (argIndex < argc)
@@ -59,6 +61,11 @@ int main(int argc, char **argv)
             {
                 profileFilename = value;
             }
+            else if (key == "--export")
+            {
+                exporting = true;
+                exportPath = value;
+            }
         }
 
         argIndex++;
@@ -71,6 +78,22 @@ int main(int argc, char **argv)
     shaderPath.resize(shaderPath.rfind('\\'));
 
     shaderPath += "/shaders/";
+
+    if (exporting)
+    {
+        leaf_initialize(1600, 900, true, nullptr, shaderPath.c_str());
+
+        size_t dataSize;
+        std::string dataPath = exportPath + "/data.bin";
+        void *dataBuffer = loadFile(dataPath, &dataSize);
+        assert(dataBuffer != nullptr);
+        int result = leaf_export_data(dataBuffer, dataSize, exportPath.c_str());
+        free(dataBuffer);
+
+        leaf_shutdown();
+
+        return result;
+    }
 
     leaf_initialize(width, height, false, profileFilename.empty() ? nullptr : profileFilename.c_str(), shaderPath.c_str());
 

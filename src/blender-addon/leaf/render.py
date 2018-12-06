@@ -1,5 +1,6 @@
 import os
 import shutil
+import subprocess
 
 import bpy
 from bpy.types import Panel, Menu, Operator
@@ -21,33 +22,39 @@ class LEAF_OT_export(Operator):
 
         os.makedirs(rd.filepath, exist_ok=True)
 
+        script_dir = os.path.dirname(__file__)
+        runtime_files = ["LeafEngine.dll", "LeafRunner.exe"]
+
         # export data
         from . import export
         with open(os.path.join(rd.filepath, "data.bin"), "wb") as f:
             export.export_data(f, bpy.data, "")
 
+        # export shaders
+        args = [
+            os.path.join(script_dir, "LeafRunner.exe"),
+            "--export=" + rd.filepath
+        ]
+        subprocess.Popen(args, cwd=script_dir)
+
         # copy engine files in the output folder
-        script_dir = os.path.dirname(__file__)
         try:
-            runtime_files = ["LeafEngine.dll", "LeafRunner.exe"]
             for f in runtime_files:
                 source = os.path.join(script_dir, f)
                 destination = os.path.join(rd.filepath, f)
                 shutil.copy(source, destination)
-
-            # run if selected
-            if lrd.run_after_export:
-                import subprocess
-                engineExe = os.path.join(rd.filepath, "LeafRunner.exe")
-                args = [
-                    engineExe,
-                    "--start-frame=" + str(lrd.run_start_frame)
-                ]
-                if lrd.run_profile:
-                    args.append("--profile=profile.json")
-                subprocess.Popen(args, cwd=rd.filepath)
         except PermissionError:
             self.report({"ERROR"}, "Failed to copy engine files. Make sure the demo is not running while exporting.")
+
+        # run if selected
+        if lrd.run_after_export:
+            args = [
+                os.path.join(rd.filepath, "LeafRunner.exe"),
+                "--start-frame=" + str(lrd.run_start_frame)
+            ]
+            if lrd.run_profile:
+                args.append("--profile=profile.json")
+            subprocess.Popen(args, cwd=rd.filepath)
 
         return {"FINISHED"}
 

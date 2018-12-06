@@ -24,6 +24,13 @@ LEAFENGINE_API void leaf_load_data(const void *buffer, size_t size)
     Engine::getInstance()->loadData(buffer, size);
 }
 
+LEAFENGINE_API int leaf_export_data(const void *buffer, size_t size, const char *exportPath)
+{
+    assert(buffer);
+    assert(exportPath != nullptr);
+    return Engine::getInstance()->exportData(buffer, size, exportPath);
+}
+
 LEAFENGINE_API void leaf_update(float time)
 {
     Engine::getInstance()->update(time);

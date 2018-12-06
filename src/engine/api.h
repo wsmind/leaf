@@ -9,7 +9,8 @@
 LEAFENGINE_API void leaf_initialize(int backbufferWidth, int backbufferHeight, bool capture, const char *profileFilename, const char *shaderPath);
 LEAFENGINE_API void leaf_shutdown();
 
-LEAFENGINE_API void leaf_load_data(const void *data, size_t size);
+LEAFENGINE_API void leaf_load_data(const void *buffer, size_t size);
+LEAFENGINE_API int leaf_export_data(const void *buffer, size_t size, const char *exportPath);
 
 LEAFENGINE_API void leaf_update(float time);
 
