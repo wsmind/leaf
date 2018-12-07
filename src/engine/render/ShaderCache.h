@@ -35,7 +35,7 @@ class ShaderCache
 
         const ShaderVariant *getVariant(const std::string &shaderName, Hash prefixHash = { 0, 0 });
 
-        int exportVariants(const std::string &exportPath, const std::vector<VariantKey> keys);
+        int exportVariants(const std::string &exportPath, const std::vector<VariantKey> &keys);
 
         void update();
 

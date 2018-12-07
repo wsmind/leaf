@@ -275,7 +275,29 @@ int Renderer::exportShaders(const std::string &exportPath, const std::vector<Mat
     for (const Text *text : texts)
         sdfHashes.insert(text->getPrefixHash());
 
-    return ShaderCache::getInstance()->exportVariants(exportPath, {});
+    // compute all the possible variants
+    std::vector<ShaderCache::VariantKey> keys;
+    for (auto materialHash : materialHashes)
+    {
+        keys.push_back({ "forward", materialHash });
+    }
+    for (auto sdfHash : sdfHashes)
+    {
+        keys.push_back({ "raymarch-depth", sdfHash });
+    }
+
+    // append common shaders with no prefix
+    keys.push_back({ "bloomdebug" });
+    keys.push_back({ "bloomthreshold" });
+    keys.push_back({ "bloomdownsample" });
+    keys.push_back({ "bloomaccumulation" });
+    keys.push_back({ "postprocess" });
+    keys.push_back({ "fxaa" });
+    keys.push_back({ "depthonly" });
+    keys.push_back({ "background" });
+    keys.push_back({ "postprocess" });
+
+    return ShaderCache::getInstance()->exportVariants(exportPath, keys);
 }
 
 void Renderer::render(const Scene *scene, const RenderSettings &settings, float deltaTime)

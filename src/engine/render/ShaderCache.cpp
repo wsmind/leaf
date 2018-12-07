@@ -65,11 +65,15 @@ const ShaderVariant *ShaderCache::getVariant(const std::string &shaderName, Hash
     return variant;
 }
 
-int ShaderCache::exportVariants(const std::string &exportPath, const std::vector<VariantKey> keys)
+int ShaderCache::exportVariants(const std::string &exportPath, const std::vector<VariantKey> &keys)
 {
     std::string filename = exportPath + "/shaders.bin";
 
     FILE *f = fopen(filename.c_str(), "wb");
+    for (const auto &key : keys)
+    {
+        fprintf(f, "Variant '%s' (prefix: 0x%llx%llx)\n", key.shaderName.c_str(), key.prefixHash.first, key.prefixHash.second);
+    }
     fclose(f);
 
     return 0;
