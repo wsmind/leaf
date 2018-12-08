@@ -9,8 +9,10 @@ struct SlangCompileRequest;
 class ShaderVariant
 {
     public:
-        ShaderVariant(SlangCompileRequest *slangRequest, int translationUnitIndex);
         ~ShaderVariant();
+
+        void compileShaders(SlangCompileRequest *slangRequest, int translationUnitIndex, FILE *exportStream = nullptr);
+        void loadShaders(FILE *inputStream);
 
         Pipeline getPipeline() const { return this->pipeline; }
 

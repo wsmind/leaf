@@ -63,7 +63,7 @@ class ShaderCache
 
         Hash computeHash(const std::string &code) const;
 
-        ShaderVariant *compileVariant(const VariantKey &key);
+        ShaderVariant *compileVariant(const VariantKey &key, FILE *exportStream = nullptr);
 
         template <class Predicate>
         void invalidateVariants(Predicate predicate);

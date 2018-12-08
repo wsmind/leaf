@@ -35,7 +35,7 @@ class LEAF_OT_export(Operator):
             os.path.join(script_dir, "LeafRunner.exe"),
             "--export=" + rd.filepath
         ]
-        subprocess.Popen(args, cwd=script_dir)
+        subprocess.Popen(args, cwd=script_dir).wait()
 
         # copy engine files in the output folder
         try:

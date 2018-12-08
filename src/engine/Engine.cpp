@@ -98,7 +98,15 @@ int Engine::exportData(const void *buffer, size_t size, const std::string export
     ExportList exportList;
     this->loadData(buffer, size, &exportList);
 
-    return this->renderer->exportShaders(exportPath, exportList.materials, exportList.texts);
+    int result = this->renderer->exportShaders(exportPath, exportList.materials, exportList.texts);
+
+    for (Material *material : exportList.materials)
+        ResourceManager::getInstance()->releaseResource(material);
+
+    for (Text *text : exportList.texts)
+        ResourceManager::getInstance()->releaseResource(text);
+
+    return result;
 }
 
 void Engine::update(float time)

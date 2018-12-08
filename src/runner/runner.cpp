@@ -79,6 +79,8 @@ int main(int argc, char **argv)
 
     shaderPath += "/shaders/";
 
+    //std::string shaderPath = "./shaders/";
+
     if (exporting)
     {
         leaf_initialize(1600, 900, true, nullptr, shaderPath.c_str());

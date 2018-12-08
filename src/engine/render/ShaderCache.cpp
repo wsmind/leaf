@@ -78,6 +78,9 @@ int ShaderCache::exportVariants(const std::string &exportPath, const std::vector
         fwrite(&size, sizeof(uint32_t), 1, f);
         fwrite(key.shaderName.c_str(), size, 1, f);
         fwrite(&key.prefixHash, sizeof(key.prefixHash), 1, f);
+
+        ShaderVariant *variant = this->compileVariant(key, f);
+        delete variant;
     }
     fclose(f);
 
@@ -93,11 +96,15 @@ void ShaderCache::update()
 
 ShaderCache::ShaderCache(const std::string &shaderPath)
     : sourcePath(shaderPath + "/")
+    , sourceChanged(false)
 {
     printf("Shader source folder: %s\n", this->sourcePath.c_str());
 
     if (this->loadVariantCache(this->sourcePath + "../shaders.bin"))
         return;
+
+    // when a precompiled cache is loaded, everything else is disabled
+    // (the goal is to catch missing shaders before shipping the demo)
 
     this->slangSession = spCreateSession(nullptr);
 
@@ -125,7 +132,7 @@ ShaderCache::Hash ShaderCache::computeHash(const std::string &code) const
     return hash;
 }
 
-ShaderVariant *ShaderCache::compileVariant(const VariantKey &key)
+ShaderVariant *ShaderCache::compileVariant(const VariantKey &key, FILE *exportStream)
 {
     assert(this->slangSession != nullptr);
 
@@ -153,7 +160,8 @@ ShaderVariant *ShaderCache::compileVariant(const VariantKey &key)
     int translationUnitIndex = spAddTranslationUnit(slangRequest, SLANG_SOURCE_LANGUAGE_SLANG, nullptr);
     spAddTranslationUnitSourceString(slangRequest, translationUnitIndex, mainPath.c_str(), code.c_str());
 
-    ShaderVariant *variant = new ShaderVariant(slangRequest, translationUnitIndex);
+    ShaderVariant *variant = new ShaderVariant();
+    variant->compileShaders(slangRequest, translationUnitIndex, exportStream);
 
     spDestroyCompileRequest(slangRequest);
 
@@ -196,11 +204,15 @@ bool ShaderCache::loadVariantCache(std::string path)
     if (!f)
         return false;
 
-    while (!feof(f))
+    while (true)
     {
         // read the key
         uint32_t size;
         fread(&size, sizeof(uint32_t), 1, f);
+
+        // EOF will be triggered after the first read failure
+        if (feof(f))
+            break;
 
         std::string shaderName((size_t)size, 0);
         fread((void *)shaderName.c_str(), size, 1, f);
@@ -211,6 +223,13 @@ bool ShaderCache::loadVariantCache(std::string path)
         VariantKey key{ shaderName, hash };
 
         printf("## Loading shader '%s' (prefix: 0x%llx%llx) ##\n", key.shaderName.c_str(), key.prefixHash.first, key.prefixHash.second);
+
+        // load the precompiled variant directly from file
+        ShaderVariant *variant = new ShaderVariant;
+        variant->loadShaders(f);
+
+        // populate the cache for further queries
+        this->variants[key] = variant;
     }
 
     fclose(f);
