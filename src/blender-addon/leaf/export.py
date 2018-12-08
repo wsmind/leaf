@@ -737,7 +737,7 @@ def export_node_tree(tree, export_reference):
     for subgroup in subgroups:
         function_code += compile_node_tree(bpy.data.node_groups[subgroup], "GROUP_OUTPUT", resources, export_reference)
 
-    function_code += compile_node_tree(tree, "OUTPUT_MATERIAL", resources)
+    function_code += compile_node_tree(tree, "OUTPUT_MATERIAL", resources, export_reference)
     
     sorted_resources = sorted(resources.items(), key=lambda item: item[1])
     resource_count = len(sorted_resources)
