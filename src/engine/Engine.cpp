@@ -98,6 +98,10 @@ int Engine::exportData(const void *buffer, size_t size, const std::string export
     ExportList exportList;
     this->loadData(buffer, size, &exportList);
 
+    // append defaults to the precompiled cache
+    exportList.materials.push_back(ResourceManager::getInstance()->requestResource<Material>("__default"));
+    exportList.texts.push_back(ResourceManager::getInstance()->requestResource<Text>("__default"));
+
     int result = this->renderer->exportShaders(exportPath, exportList.materials, exportList.texts);
 
     for (Material *material : exportList.materials)
