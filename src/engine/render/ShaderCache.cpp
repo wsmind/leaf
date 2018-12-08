@@ -72,7 +72,12 @@ int ShaderCache::exportVariants(const std::string &exportPath, const std::vector
     FILE *f = fopen(filename.c_str(), "wb");
     for (const auto &key : keys)
     {
-        fprintf(f, "Variant '%s' (prefix: 0x%llx%llx)\n", key.shaderName.c_str(), key.prefixHash.first, key.prefixHash.second);
+        printf("Exporting shader variant '%s' (prefix: 0x%llx%llx)\n", key.shaderName.c_str(), key.prefixHash.first, key.prefixHash.second);
+
+        uint32_t size = (uint32_t)key.shaderName.size();
+        fwrite(&size, sizeof(uint32_t), 1, f);
+        fwrite(key.shaderName.c_str(), size, 1, f);
+        fwrite(&key.prefixHash, sizeof(key.prefixHash), 1, f);
     }
     fclose(f);
 
@@ -91,6 +96,9 @@ ShaderCache::ShaderCache(const std::string &shaderPath)
 {
     printf("Shader source folder: %s\n", this->sourcePath.c_str());
 
+    if (this->loadVariantCache(this->sourcePath + "../shaders.bin"))
+        return;
+
     this->slangSession = spCreateSession(nullptr);
 
     // start watching the filesystem for source code changes
@@ -105,7 +113,8 @@ ShaderCache::~ShaderCache()
     // clean all remaining variants
     this->invalidateVariants([](const VariantKey &key) { return true; });
 
-    spDestroySession(this->slangSession);
+    if (this->slangSession != nullptr)
+        spDestroySession(this->slangSession);
 }
 
 ShaderCache::Hash ShaderCache::computeHash(const std::string &code) const
@@ -118,6 +127,8 @@ ShaderCache::Hash ShaderCache::computeHash(const std::string &code) const
 
 ShaderVariant *ShaderCache::compileVariant(const VariantKey &key)
 {
+    assert(this->slangSession != nullptr);
+
     printf("## Compiling shader '%s' (prefix: 0x%llx%llx) ##\n", key.shaderName.c_str(), key.prefixHash.first, key.prefixHash.second);
     SlangCompileRequest *slangRequest = spCreateCompileRequest(slangSession);
 
@@ -177,4 +188,32 @@ void ShaderCache::watchFileChanges(std::string path)
 
         FindNextChangeNotification(handle);
     }
+}
+
+bool ShaderCache::loadVariantCache(std::string path)
+{
+    FILE *f = fopen(path.c_str(), "rb");
+    if (!f)
+        return false;
+
+    while (!feof(f))
+    {
+        // read the key
+        uint32_t size;
+        fread(&size, sizeof(uint32_t), 1, f);
+
+        std::string shaderName((size_t)size, 0);
+        fread((void *)shaderName.c_str(), size, 1, f);
+
+        Hash hash;
+        fread(&hash, sizeof(hash), 1, f);
+
+        VariantKey key{ shaderName, hash };
+
+        printf("## Loading shader '%s' (prefix: 0x%llx%llx) ##\n", key.shaderName.c_str(), key.prefixHash.first, key.prefixHash.second);
+    }
+
+    fclose(f);
+
+    return true;
 }

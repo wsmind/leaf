@@ -72,6 +72,8 @@ class ShaderCache
 
         void watchFileChanges(std::string path);
 
+        bool loadVariantCache(std::string path);
+
     public:
         // singleton implementation
         static void create(const std::string &shaderPath) { assert(!ShaderCache::instance); ShaderCache::instance = new ShaderCache(shaderPath); }
