@@ -5,6 +5,7 @@
 void RenderList::clear()
 {
     this->jobs.clear();
+    this->distanceFields.clear();
     this->lights.clear();
 }
 
