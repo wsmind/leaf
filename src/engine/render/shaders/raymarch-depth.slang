@@ -69,6 +69,8 @@ float3 computeNormal(float3 position)
 PixelOutput fragmentMain(VertexOutput input)
 {
 	PixelOutput output;
+	output.depth = 1.0;
+	output.normal = float4(0.0, 0.0, 0.0, 0.0);
 
 	float3 position = input.worldPosition;
 	float3 direction = normalize(position - passParameters.constants.cameraPosition);
