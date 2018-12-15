@@ -48,6 +48,17 @@ struct InstanceData
 };
 #pragma pack(pop)
 
+#pragma pack(push)
+#pragma pack(16)
+struct DistanceFieldInstanceData
+{
+    glm::mat4 modelMatrix;
+    glm::mat4 modelMatrixInverse;
+    glm::mat3x4 normalMatrix; // use 3x4 to match cbuffer packing rules
+    glm::mat3x4 normalMatrixInverse; // use 3x4 to match cbuffer packing rules
+};
+#pragma pack(pop)
+
 Renderer::Renderer(HWND hwnd, int backbufferWidth, int backbufferHeight, bool capture, const std::string &profileFilename, const std::string &shaderPath)
 {
     this->backbufferWidth = backbufferWidth;
@@ -430,7 +441,7 @@ void Renderer::render(const Scene *scene, const RenderSettings &settings, float 
 
             const ShaderVariant *shaderVariant = ShaderCache::getInstance()->getVariant("raymarch-depth", sdf.prefixHash);
             pipeline = shaderVariant->getPipeline();
-            pipeline.inputLayout = Shaders::layout.depthOnly;
+            pipeline.inputLayout = Shaders::layout.distanceField;
             pipeline.depthStencil = this->raymarchDepthStencilState;
             pipeline.stencilRef = hashIndex;
 
@@ -446,8 +457,13 @@ void Renderer::render(const Scene *scene, const RenderSettings &settings, float 
             currentJob->setBuffers(currentSubMesh->vertexBuffer, currentSubMesh->indexBuffer, currentSubMesh->indexCount);
         }
 
-        DepthOnlyInstanceData instanceData;
-        instanceData.transformMatrix = sdf.transform;
+        glm::mat3 normalMatrix = glm::inverseTranspose(glm::mat3(sdf.transform));
+
+        DistanceFieldInstanceData instanceData;
+        instanceData.modelMatrix = sdf.transform;
+        instanceData.modelMatrixInverse = glm::inverse(sdf.transform);
+        instanceData.normalMatrix = glm::mat3x4(normalMatrix);
+        instanceData.normalMatrixInverse = glm::mat3x4(glm::inverse(normalMatrix));
 
         currentJob->addInstance(instanceData);
     }

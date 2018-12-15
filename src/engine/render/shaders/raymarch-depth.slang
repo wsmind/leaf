@@ -1,4 +1,4 @@
-import streams.depthonly;
+import streams.distancefield;
 
 import parameters.scene;
 import parameters.pass;
@@ -18,6 +18,10 @@ struct VertexOutput
 {
     float4 position : SV_Position;
     float3 worldPosition : POSITION0;
+
+	float4x4 modelMatrixInverse: MODELMATRIXINVERSE;
+	float3x3 normalMatrix: NORMALMATRIX;
+	float3x3 normalMatrixInverse: NORMALMATRIXINVERSE;
 };
 
 struct PixelOutput
@@ -31,11 +35,15 @@ VertexOutput vertexMain(InstancedMesh mesh)
 {
     VertexOutput output;
 
-    float4 worldPosition = mul(mesh.transformMatrix, float4(mesh.vertex.position, 1.0));
+    float4 worldPosition = mul(mesh.modelMatrix, float4(mesh.vertex.position, 1.0));
     float4 viewPosition = mul(passParameters.constants.viewMatrix, worldPosition);
     output.position = mul(passParameters.constants.projectionMatrix, viewPosition);
 
 	output.worldPosition = worldPosition.xyz;
+
+	output.modelMatrixInverse = mesh.modelMatrixInverse;
+	output.normalMatrix = mesh.normalMatrix;
+	output.normalMatrixInverse = mesh.normalMatrixInverse;
 
     // hack; GL to DX clip space
     output.position.z = (output.position.z + output.position.w) * 0.5;
@@ -75,6 +83,10 @@ PixelOutput fragmentMain(VertexOutput input)
 	float3 position = input.worldPosition;
 	float3 direction = normalize(position - passParameters.constants.cameraPosition);
 	
+	// apply model transform before raymarching
+	position = mul(input.modelMatrixInverse, float4(position, 1.0)).xyz;
+	direction = mul(input.normalMatrixInverse, direction);
+
 	// raymarch the custom SDF
 	bool hit = traceRay(position, direction);
 	
@@ -90,7 +102,8 @@ PixelOutput fragmentMain(VertexOutput input)
 		// manually apply the conversion to non-homogeneous coordinates
 		output.depth = clipSpacePosition.z / clipSpacePosition.w;
 
-		output.normal = float4(computeNormal(position), 0.0);
+		float3 normal = computeNormal(position);
+		output.normal = float4(mul(input.normalMatrix, normal), 1.0);
 	}
 	else
 	{

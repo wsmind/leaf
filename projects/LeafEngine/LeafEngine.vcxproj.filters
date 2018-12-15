@@ -317,6 +317,9 @@
     <FxCompile Include="..\..\src\engine\render\shaders\streams\geometry2d.vs.hlsl">
       <Filter>render\shaders\streams</Filter>
     </FxCompile>
+    <FxCompile Include="..\..\src\engine\render\shaders\streams\distancefield.vs.hlsl">
+      <Filter>render\shaders\streams</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="blender-addon">
@@ -464,6 +467,9 @@
     </None>
     <None Include="..\..\src\engine\render\shaders\sdf.slang">
       <Filter>render\shaders</Filter>
+    </None>
+    <None Include="..\..\src\engine\render\shaders\streams\distancefield.slang">
+      <Filter>render\shaders\streams</Filter>
     </None>
   </ItemGroup>
 </Project>
