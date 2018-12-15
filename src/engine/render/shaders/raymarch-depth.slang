@@ -83,6 +83,10 @@ PixelOutput fragmentMain(VertexOutput input)
 	float3 position = input.worldPosition;
 	float3 direction = normalize(position - passParameters.constants.cameraPosition);
 	
+	// start marching from the camera position to allow the distance field to spill
+	// on closer geometry
+	position = passParameters.constants.cameraPosition;
+
 	// apply model transform before raymarching
 	position = mul(input.modelMatrixInverse, float4(position, 1.0)).xyz;
 	direction = mul(input.normalMatrixInverse, direction);
