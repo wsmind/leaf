@@ -62,7 +62,7 @@ void Batch::execute(ID3D11DeviceContext *context)
         return;
 
     if (this->pipeline.depthStencil != nullptr)
-        context->OMSetDepthStencilState(this->pipeline.depthStencil, 0);
+        context->OMSetDepthStencilState(this->pipeline.depthStencil, this->pipeline.stencilRef);
 
     if (this->pipeline.vertexShader != nullptr)
         bindStage(context, this->pipeline.vertexShader, this->descriptors);

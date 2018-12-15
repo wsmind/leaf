@@ -60,6 +60,7 @@ class Renderer
 
         ID3D11DepthStencilState *lessEqualDepthState;
         ID3D11DepthStencilState *equalDepthState;
+        ID3D11DepthStencilState *raymarchDepthStencilState;
 
         PostProcessor *postProcessor;
         ShadowRenderer *shadowRenderer;

@@ -125,17 +125,35 @@ Renderer::Renderer(HWND hwnd, int backbufferWidth, int backbufferHeight, bool ca
     CHECK_HRESULT(res);
 
     D3D11_DEPTH_STENCIL_DESC depthStateDesc;
-    ZeroMemory(&depthStateDesc, sizeof(depthStateDesc));
 
+    ZeroMemory(&depthStateDesc, sizeof(depthStateDesc));
     depthStateDesc.DepthEnable = TRUE;
     depthStateDesc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
     depthStateDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
     Device::device->CreateDepthStencilState(&depthStateDesc, &this->lessEqualDepthState);
 
+    ZeroMemory(&depthStateDesc, sizeof(depthStateDesc));
     depthStateDesc.DepthEnable = TRUE;
     depthStateDesc.DepthFunc = D3D11_COMPARISON_EQUAL;
     depthStateDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
     Device::device->CreateDepthStencilState(&depthStateDesc, &this->equalDepthState);
+
+    ZeroMemory(&depthStateDesc, sizeof(depthStateDesc));
+    depthStateDesc.DepthEnable = TRUE;
+    depthStateDesc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
+    depthStateDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+    depthStateDesc.StencilEnable = TRUE;
+    depthStateDesc.StencilReadMask = 0x00;
+    depthStateDesc.StencilWriteMask = 0xff;
+    depthStateDesc.FrontFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+    depthStateDesc.FrontFace.StencilDepthFailOp = D3D11_STENCIL_OP_KEEP;
+    depthStateDesc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_REPLACE;
+    depthStateDesc.FrontFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+    depthStateDesc.BackFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+    depthStateDesc.BackFace.StencilDepthFailOp = D3D11_STENCIL_OP_KEEP;
+    depthStateDesc.BackFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+    depthStateDesc.BackFace.StencilFunc = D3D11_COMPARISON_NEVER;
+    Device::device->CreateDepthStencilState(&depthStateDesc, &this->raymarchDepthStencilState);
 
     D3D11_RASTERIZER_DESC rasterizerDesc;
     rasterizerDesc.FillMode = D3D11_FILL_SOLID;
@@ -246,6 +264,7 @@ Renderer::~Renderer()
 
     this->lessEqualDepthState->Release();
     this->equalDepthState->Release();
+    this->raymarchDepthStencilState->Release();
 
     delete this->postProcessor;
     delete this->shadowRenderer;
@@ -398,6 +417,7 @@ void Renderer::render(const Scene *scene, const RenderSettings &settings, float 
     Batch *currentBatch = nullptr;
     currentSubMesh = nullptr;
     currentJob = nullptr;
+    unsigned int hashIndex = 0;
     for (const auto &sdf : this->renderList->getDistanceFields())
     {
         if (sdf.prefixHash == ShaderCache::Hash({ 0, 0 }))
@@ -406,11 +426,13 @@ void Renderer::render(const Scene *scene, const RenderSettings &settings, float 
         if (sdf.prefixHash != currentHash)
         {
             currentHash = sdf.prefixHash;
+            hashIndex++;
 
             const ShaderVariant *shaderVariant = ShaderCache::getInstance()->getVariant("raymarch-depth", sdf.prefixHash);
             pipeline = shaderVariant->getPipeline();
             pipeline.inputLayout = Shaders::layout.depthOnly;
-            pipeline.depthStencil = this->lessEqualDepthState;
+            pipeline.depthStencil = this->raymarchDepthStencilState;
+            pipeline.stencilRef = hashIndex;
 
             currentBatch = depthPrePass->addBatch("SDF");
             currentBatch->setPipeline(pipeline);
