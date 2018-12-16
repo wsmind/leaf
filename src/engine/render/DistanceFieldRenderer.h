@@ -17,7 +17,7 @@ class DistanceFieldRenderer
         void clearRenderList();
 
         void addPrePassJobs(Pass *pass);
-        void addDeferredJobs(Pass *pass, const DescriptorSet &shadowParameterBlock, const DescriptorSet &environmentParameterBlock);
+        void addDeferredJobs(Pass *pass, const DescriptorSet &sdfGbufferParameterBlock, const DescriptorSet &shadowParameterBlock, const DescriptorSet &environmentParameterBlock);
 
     private:
         std::vector<RenderList::DistanceField> distanceFields;

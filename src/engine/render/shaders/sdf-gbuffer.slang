@@ -107,7 +107,8 @@ PixelOutput fragmentMain(VertexOutput input)
 		output.depth = clipSpacePosition.z / clipSpacePosition.w;
 
 		float3 normal = computeNormal(position);
-		output.normal = float4(mul(input.normalMatrix, normal), 1.0);
+		float viewSpaceDepth = distance(passParameters.constants.cameraPosition, position);
+		output.normal = float4(mul(input.normalMatrix, normal), viewSpaceDepth);
 	}
 	else
 	{

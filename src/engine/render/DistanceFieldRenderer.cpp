@@ -125,7 +125,7 @@ void DistanceFieldRenderer::addPrePassJobs(Pass *pass)
     }
 }
 
-void DistanceFieldRenderer::addDeferredJobs(Pass *pass, const DescriptorSet &shadowParameterBlock, const DescriptorSet &environmentParameterBlock)
+void DistanceFieldRenderer::addDeferredJobs(Pass *pass, const DescriptorSet &sdfGbufferParameterBlock, const DescriptorSet &shadowParameterBlock, const DescriptorSet &environmentParameterBlock)
 {
     ShaderCache::Hash currentHash = { 0, 0 };
     Batch *currentBatch = nullptr;
@@ -150,6 +150,7 @@ void DistanceFieldRenderer::addDeferredJobs(Pass *pass, const DescriptorSet &sha
             currentBatch->setPipeline(pipeline);
             currentBatch->setDescriptorSets({
                 sdf.material->getParameterBlock(),
+                sdfGbufferParameterBlock,
                 shadowParameterBlock,
                 environmentParameterBlock
             });

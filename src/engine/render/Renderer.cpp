@@ -284,10 +284,11 @@ int Renderer::exportShaders(const std::string &exportPath, const std::vector<Mat
     for (auto materialHash : materialHashes)
     {
         keys.push_back({ "forward", materialHash });
+        keys.push_back({ "sdf-deferred", materialHash });
     }
     for (auto sdfHash : sdfHashes)
     {
-        keys.push_back({ "raymarch-depth", sdfHash });
+        keys.push_back({ "sdf-gbuffer", sdfHash });
     }
 
     // append common shaders with no prefix
@@ -402,6 +403,20 @@ void Renderer::render(const Scene *scene, const RenderSettings &settings, float 
 
     this->distanceFieldRenderer->addPrePassJobs(depthPrePass);
     
+    DescriptorSet sdfGbufferParameterBlock = {
+        { this->normalTarget->getSRV() },
+        {},
+        { this->normalTarget->getSamplerState() },
+        {}
+    };
+
+    DescriptorSet environmentParameterBlock = {
+        { settings.environment.environmentMap->getSRV() },
+        {},
+        { settings.environment.environmentMap->getSamplerState() },
+        {}
+    };
+
     // main radiance pass
     this->renderList->sortByMaterial();
 
@@ -411,14 +426,7 @@ void Renderer::render(const Scene *scene, const RenderSettings &settings, float 
     radiancePass->setTargets({ radianceTarget->getTarget(), this->motionTarget->getTarget() }, this->depthTarget);
 	radiancePass->setViewport((float)this->backbufferWidth, (float)this->backbufferHeight, settings.camera.viewMatrix, settings.camera.projectionMatrix);
 
-    DescriptorSet environmentParameterBlock = {
-        { settings.environment.environmentMap->getSRV() },
-        {},
-        { settings.environment.environmentMap->getSamplerState() },
-        {}
-    };
-
-    this->distanceFieldRenderer->addDeferredJobs(radiancePass, this->shadowRenderer->getParameterBlock(), environmentParameterBlock);
+    this->distanceFieldRenderer->addDeferredJobs(radiancePass, sdfGbufferParameterBlock, this->shadowRenderer->getParameterBlock(), environmentParameterBlock);
 
     {
         //GPUProfiler::ScopedProfile profile("Geometry");

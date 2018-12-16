@@ -651,6 +651,7 @@
     <None Include="..\..\src\engine\render\shaders\parameters\pass.slang" />
     <None Include="..\..\src\engine\render\shaders\parameters\postprocess.slang" />
     <None Include="..\..\src\engine\render\shaders\parameters\scene.slang" />
+    <None Include="..\..\src\engine\render\shaders\parameters\sdfgbuffer.slang" />
     <None Include="..\..\src\engine\render\shaders\parameters\shadow.slang" />
     <None Include="..\..\src\engine\render\shaders\postprocess.slang" />
     <None Include="..\..\src\engine\render\shaders\sdf-gbuffer.slang" />

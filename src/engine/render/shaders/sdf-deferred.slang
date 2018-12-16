@@ -2,6 +2,7 @@ import streams.instancedmesh;
 
 import parameters.scene;
 import parameters.pass;
+import parameters.sdfgbuffer;
 import parameters.shadow;
 import parameters.environment;
 
@@ -16,7 +17,7 @@ struct VertexOutput
     float3 marchingStep : POSITION2;
     float3 normal : NORMAL;
     float4 tangent : TANGENT;
-    float2 uv : TEXCOORD0;
+	noperspective float2 uv : TEXCOORD0;
     float4 clipPosition : TEXCOORD1;
 	float4x4 worldToPreviousFrameClipSpaceMatrix : TEXCOORD2;
 };
@@ -48,7 +49,8 @@ VertexOutput vertexMain(InstancedMesh mesh)
     output.marchingStep = (output.worldPosition - passParameters.constants.cameraPosition) / MARCHING_ITERATIONS;
     output.normal = mul(mesh.normalMatrix, mesh.vertex.normal);
     output.tangent = float4(mul(mesh.normalMatrix, mesh.vertex.tangent.xyz), mesh.vertex.tangent.w);
-    output.uv = float2(uv.x, 1.0 - uv.y);
+    output.uv = (output.position.xy / output.position.w) * 0.5 + 0.5;
+	output.uv.y = 1.0 - output.uv.y;
     output.clipPosition = output.position;
 
 	output.worldToPreviousFrameClipSpaceMatrix = mesh.worldToPreviousFrameClipSpaceMatrix;
@@ -87,17 +89,24 @@ float rand(float2 uv)
 [shader("fragment")]
 PixelOutput fragmentMain(VertexOutput input)
 {
-    const float3 view = passParameters.constants.cameraPosition - input.worldPosition;
-    const float3 eye = normalize(view);
-
+	float4 normalDepth = sdfGbufferParameters.normalTexture.Sample(sdfGbufferParameters.normalSampler, input.uv);
+    float3 direction = normalize(input.worldPosition);
+	
+	float3 normal = normalize(normalDepth.xyz);
+	float viewSpaceDepth = normalDepth.w;
+	float3 worldPosition = viewSpaceDepth * direction;
+	
 	Intersection intersection;
-	intersection.uv = input.uv;
-    intersection.normal = normalize(input.normal);
+	intersection.uv = worldPosition.xy;
+    intersection.normal = normal;
     intersection.tangent = input.tangent;
 	
 	Material material;
 	evaluateMaterial(material, intersection);
 
+    const float3 view = passParameters.constants.cameraPosition - worldPosition;
+    const float3 eye = normalize(view);
+	
 	float3 radiance = float3(0.0, 0.0, 0.0);
 
 	radiance += material.Surface.integrateEmission(eye);
@@ -114,7 +123,7 @@ PixelOutput fragmentMain(VertexOutput input)
     // point lights
     for (int i = 0; i < sceneParameters.constants.pointLightCount; i++)
     {
-        float3 lightVector = sceneParameters.constants.pointLights[i].position - input.worldPosition;
+        float3 lightVector = sceneParameters.constants.pointLights[i].position - worldPosition;
         float lightDistance = length(lightVector);
 
         LightSample lightSample;
@@ -131,10 +140,10 @@ PixelOutput fragmentMain(VertexOutput input)
     float stepLength = length(input.marchingStep);
     for (int j = 0; j < sceneParameters.constants.spotLightCount; j++)
     {
-        float3 lightVector = sceneParameters.constants.spotLights[j].position - input.worldPosition;
+        float3 lightVector = sceneParameters.constants.spotLights[j].position - worldPosition;
         float lightDistance = length(lightVector);
 
-        float shadowFactor = sampleShadowMap(j, input.worldPosition);
+        float shadowFactor = sampleShadowMap(j, worldPosition);
 
         LightSample lightSample;
         lightSample.direction = lightVector / lightDistance;
@@ -175,20 +184,24 @@ PixelOutput fragmentMain(VertexOutput input)
         inScattering += sampledScattering * sceneParameters.constants.spotLights[j].scattering;
     }
 
-    float transmittance = exp(input.viewPosition.z * sceneParameters.constants.mist);
+    float transmittance = exp(viewSpaceDepth * sceneParameters.constants.mist);
     
 	PixelOutput output;
 
-    output.radiance = float4(lerp(sceneParameters.constants.ambientColor, radiance, transmittance) + inScattering, input.viewPosition.z);
+    output.radiance = float4(lerp(sceneParameters.constants.ambientColor, radiance, transmittance) + inScattering, viewSpaceDepth);
+	//output.radiance = normalDepth;//float4(input.uv, 0.0, 0.0);
 
     // estimate pixel movement from last frame
-    float4 previousFrameClipSpacePosition = mul(input.worldToPreviousFrameClipSpaceMatrix, float4(input.worldPosition, 1.0));
+    float4 previousFrameClipSpacePosition = mul(input.worldToPreviousFrameClipSpaceMatrix, float4(worldPosition, 1.0));
     float2 frameMovement = (input.clipPosition.xy / input.clipPosition.w) - (previousFrameClipSpacePosition.xy / previousFrameClipSpacePosition.w);
     float2 clipSpaceMotion = frameMovement * sceneParameters.constants.motionSpeedFactor;
 
 	// clamp motion to tile size
     float2 screenSpaceMotion = clipSpaceMotion * passParameters.constants.viewportSize.xy * 0.5;
 	screenSpaceMotion /= max(1.0, length(screenSpaceMotion) / sceneParameters.constants.motionBlurTileSize);
+	
+	// disable for now
+	screenSpaceMotion = float2(0.0, 0.0);
 	
 	// store half velocity
     output.motion = float4(0.5 * screenSpaceMotion, 0.0, 0.0);

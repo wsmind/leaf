@@ -477,5 +477,8 @@
     <None Include="..\..\src\engine\render\shaders\sdf-gbuffer.slang">
       <Filter>render\shaders</Filter>
     </None>
+    <None Include="..\..\src\engine\render\shaders\parameters\sdfgbuffer.slang">
+      <Filter>render\shaders\parameters</Filter>
+    </None>
   </ItemGroup>
 </Project>
