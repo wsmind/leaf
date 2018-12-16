@@ -8,6 +8,7 @@
 
 #include <glm/glm.hpp>
 
+class DistanceFieldRenderer;
 class FrameGraph;
 class Material;
 class Mesh;
@@ -60,10 +61,10 @@ class Renderer
 
         ID3D11DepthStencilState *lessEqualDepthState;
         ID3D11DepthStencilState *equalDepthState;
-        ID3D11DepthStencilState *raymarchDepthStencilState;
 
         PostProcessor *postProcessor;
         ShadowRenderer *shadowRenderer;
+        DistanceFieldRenderer *distanceFieldRenderer;
         RenderTarget *motionTarget;
         RenderTarget *normalTarget;
 

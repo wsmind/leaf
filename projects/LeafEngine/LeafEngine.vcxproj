@@ -198,6 +198,7 @@
     <ClCompile Include="..\..\src\engine\render\BloomRenderer.cpp" />
     <ClCompile Include="..\..\src\engine\render\Camera.cpp" />
     <ClCompile Include="..\..\src\engine\render\Device.cpp" />
+    <ClCompile Include="..\..\src\engine\render\DistanceFieldRenderer.cpp" />
     <ClCompile Include="..\..\src\engine\render\graph\Batch.cpp" />
     <ClCompile Include="..\..\src\engine\render\graph\FrameGraph.cpp" />
     <ClCompile Include="..\..\src\engine\render\graph\GPUProfiler.cpp" />
@@ -236,6 +237,7 @@
     <ClInclude Include="..\..\src\engine\render\BloomRenderer.h" />
     <ClInclude Include="..\..\src\engine\render\Camera.h" />
     <ClInclude Include="..\..\src\engine\render\Device.h" />
+    <ClInclude Include="..\..\src\engine\render\DistanceFieldRenderer.h" />
     <ClInclude Include="..\..\src\engine\render\graph\Batch.h" />
     <ClInclude Include="..\..\src\engine\render\graph\FrameGraph.h" />
     <ClInclude Include="..\..\src\engine\render\graph\GPUProfiler.h" />
@@ -651,7 +653,7 @@
     <None Include="..\..\src\engine\render\shaders\parameters\scene.slang" />
     <None Include="..\..\src\engine\render\shaders\parameters\shadow.slang" />
     <None Include="..\..\src\engine\render\shaders\postprocess.slang" />
-    <None Include="..\..\src\engine\render\shaders\raymarch-depth.slang" />
+    <None Include="..\..\src\engine\render\shaders\sdf-gbuffer.slang" />
     <None Include="..\..\src\engine\render\shaders\sdf.slang" />
     <None Include="..\..\src\engine\render\shaders\streams\depthonly.slang" />
     <None Include="..\..\src\engine\render\shaders\streams\distancefield.slang" />

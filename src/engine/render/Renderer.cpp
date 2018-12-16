@@ -13,6 +13,7 @@
 #include <RenderDoc/renderdoc_app.h>
 
 #include <engine/render/Device.h>
+#include <engine/render/DistanceFieldRenderer.h>
 #include <engine/render/graph/GPUProfiler.h>
 #include <engine/render/Image.h>
 #include <engine/render/Material.h>
@@ -45,17 +46,6 @@ struct InstanceData
     glm::mat4 modelMatrix;
     glm::mat4 worldToPreviousFrameClipSpaceMatrix;
     glm::mat3x4 normalMatrix; // use 3x4 to match cbuffer packing rules
-};
-#pragma pack(pop)
-
-#pragma pack(push)
-#pragma pack(16)
-struct DistanceFieldInstanceData
-{
-    glm::mat4 modelMatrix;
-    glm::mat4 modelMatrixInverse;
-    glm::mat3x4 normalMatrix; // use 3x4 to match cbuffer packing rules
-    glm::mat3x4 normalMatrixInverse; // use 3x4 to match cbuffer packing rules
 };
 #pragma pack(pop)
 
@@ -149,23 +139,6 @@ Renderer::Renderer(HWND hwnd, int backbufferWidth, int backbufferHeight, bool ca
     depthStateDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
     Device::device->CreateDepthStencilState(&depthStateDesc, &this->equalDepthState);
 
-    ZeroMemory(&depthStateDesc, sizeof(depthStateDesc));
-    depthStateDesc.DepthEnable = TRUE;
-    depthStateDesc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
-    depthStateDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
-    depthStateDesc.StencilEnable = TRUE;
-    depthStateDesc.StencilReadMask = 0x00;
-    depthStateDesc.StencilWriteMask = 0xff;
-    depthStateDesc.FrontFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
-    depthStateDesc.FrontFace.StencilDepthFailOp = D3D11_STENCIL_OP_KEEP;
-    depthStateDesc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_REPLACE;
-    depthStateDesc.FrontFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
-    depthStateDesc.BackFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
-    depthStateDesc.BackFace.StencilDepthFailOp = D3D11_STENCIL_OP_KEEP;
-    depthStateDesc.BackFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
-    depthStateDesc.BackFace.StencilFunc = D3D11_COMPARISON_NEVER;
-    Device::device->CreateDepthStencilState(&depthStateDesc, &this->raymarchDepthStencilState);
-
     D3D11_RASTERIZER_DESC rasterizerDesc;
     rasterizerDesc.FillMode = D3D11_FILL_SOLID;
     rasterizerDesc.CullMode = D3D11_CULL_BACK;
@@ -191,6 +164,7 @@ Renderer::Renderer(HWND hwnd, int backbufferWidth, int backbufferHeight, bool ca
 
     this->postProcessor = new PostProcessor(this->renderTarget, backbufferWidth, backbufferHeight);
     this->shadowRenderer = new ShadowRenderer(1024);
+    this->distanceFieldRenderer = new DistanceFieldRenderer;
 
     this->motionTarget = new RenderTarget(backbufferWidth, backbufferHeight, DXGI_FORMAT_R16G16B16A16_FLOAT);
     this->normalTarget = new RenderTarget(backbufferWidth, backbufferHeight, DXGI_FORMAT_R16G16B16A16_FLOAT);
@@ -275,10 +249,10 @@ Renderer::~Renderer()
 
     this->lessEqualDepthState->Release();
     this->equalDepthState->Release();
-    this->raymarchDepthStencilState->Release();
 
     delete this->postProcessor;
     delete this->shadowRenderer;
+    delete this->distanceFieldRenderer;
 
     delete this->motionTarget;
     delete this->normalTarget;
@@ -339,6 +313,8 @@ void Renderer::render(const Scene *scene, const RenderSettings &settings, float 
 
     this->renderList->clear();
     scene->fillRenderList(this->renderList);
+
+    this->distanceFieldRenderer->setRenderList(this->renderList);
 
     // shadow maps
     this->shadowRenderer->render(this->frameGraph, scene, this->renderList);
@@ -424,49 +400,7 @@ void Renderer::render(const Scene *scene, const RenderSettings &settings, float 
         currentJob->addInstance(instanceData);
     }
 
-    ShaderCache::Hash currentHash = { 0, 0 };
-    Batch *currentBatch = nullptr;
-    currentSubMesh = nullptr;
-    currentJob = nullptr;
-    unsigned int hashIndex = 0;
-    for (const auto &sdf : this->renderList->getDistanceFields())
-    {
-        if (sdf.prefixHash == ShaderCache::Hash({ 0, 0 }))
-            continue;
-
-        if (sdf.prefixHash != currentHash)
-        {
-            currentHash = sdf.prefixHash;
-            hashIndex++;
-
-            const ShaderVariant *shaderVariant = ShaderCache::getInstance()->getVariant("raymarch-depth", sdf.prefixHash);
-            pipeline = shaderVariant->getPipeline();
-            pipeline.inputLayout = Shaders::layout.distanceField;
-            pipeline.depthStencil = this->raymarchDepthStencilState;
-            pipeline.stencilRef = hashIndex;
-
-            currentBatch = depthPrePass->addBatch("SDF");
-            currentBatch->setPipeline(pipeline);
-        }
-
-        if (currentSubMesh != sdf.subMesh)
-        {
-            currentSubMesh = sdf.subMesh;
-
-            currentJob = currentBatch->addJob();
-            currentJob->setBuffers(currentSubMesh->vertexBuffer, currentSubMesh->indexBuffer, currentSubMesh->indexCount);
-        }
-
-        glm::mat3 normalMatrix = glm::inverseTranspose(glm::mat3(sdf.transform));
-
-        DistanceFieldInstanceData instanceData;
-        instanceData.modelMatrix = sdf.transform;
-        instanceData.modelMatrixInverse = glm::inverse(sdf.transform);
-        instanceData.normalMatrix = glm::mat3x4(normalMatrix);
-        instanceData.normalMatrixInverse = glm::mat3x4(glm::inverse(normalMatrix));
-
-        currentJob->addInstance(instanceData);
-    }
+    this->distanceFieldRenderer->addPrePassJobs(depthPrePass);
     
     // main radiance pass
     this->renderList->sortByMaterial();
@@ -483,6 +417,8 @@ void Renderer::render(const Scene *scene, const RenderSettings &settings, float 
         { settings.environment.environmentMap->getSamplerState() },
         {}
     };
+
+    this->distanceFieldRenderer->addDeferredJobs(radiancePass, this->shadowRenderer->getParameterBlock(), environmentParameterBlock);
 
     {
         //GPUProfiler::ScopedProfile profile("Geometry");
@@ -527,6 +463,8 @@ void Renderer::render(const Scene *scene, const RenderSettings &settings, float 
 			currentJob->addInstance(instanceData);
         }
     }
+
+    this->distanceFieldRenderer->clearRenderList();
 
     // background
     Batch *backgroundBatch = radiancePass->addBatch("Background");

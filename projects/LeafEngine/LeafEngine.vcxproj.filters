@@ -112,6 +112,9 @@
     <ClCompile Include="..\..\src\engine\render\Text.cpp">
       <Filter>render</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\engine\render\DistanceFieldRenderer.cpp">
+      <Filter>render</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\engine\api.h" />
@@ -280,6 +283,9 @@
       <Filter>render\shaders</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\engine\render\Text.h">
+      <Filter>render</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\engine\render\DistanceFieldRenderer.h">
       <Filter>render</Filter>
     </ClInclude>
   </ItemGroup>
@@ -462,14 +468,14 @@
     <None Include="..\..\src\blender-addon\leaf\objects.py">
       <Filter>blender-addon</Filter>
     </None>
-    <None Include="..\..\src\engine\render\shaders\raymarch-depth.slang">
-      <Filter>render\shaders</Filter>
-    </None>
     <None Include="..\..\src\engine\render\shaders\sdf.slang">
       <Filter>render\shaders</Filter>
     </None>
     <None Include="..\..\src\engine\render\shaders\streams\distancefield.slang">
       <Filter>render\shaders\streams</Filter>
+    </None>
+    <None Include="..\..\src\engine\render\shaders\sdf-gbuffer.slang">
+      <Filter>render\shaders</Filter>
     </None>
   </ItemGroup>
 </Project>
