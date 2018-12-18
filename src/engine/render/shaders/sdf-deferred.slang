@@ -96,8 +96,25 @@ PixelOutput fragmentMain(VertexOutput input)
 	float viewSpaceDepth = normalDepth.w;
 	float3 worldPosition = viewSpaceDepth * direction + passParameters.constants.cameraPosition;
 	
+	// simple cubic UV projection
+	float2 uv;
+	if (abs(normal.x) > abs(normal.y))
+	{
+		if (abs(normal.x) > abs(normal.z))
+			uv = worldPosition.yz;
+		else
+			uv = worldPosition.xy;
+	}
+	else
+	{
+		if (abs(normal.y) > abs(normal.z))
+			uv = worldPosition.xz;
+		else
+			uv = worldPosition.xy;
+	}
+	
 	Intersection intersection;
-	intersection.uv = worldPosition.xy;
+	intersection.uv = uv * 0.2;
     intersection.normal = normal;
     intersection.tangent = input.tangent;
 	
