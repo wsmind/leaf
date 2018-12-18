@@ -7,7 +7,7 @@ import parameters.pass;
 // (it will be appended as a prefix to this file)
 
 #ifndef LEAF_RAYMARCH_ITERATIONS
-#define LEAF_RAYMARCH_ITERATIONS 64
+#define LEAF_RAYMARCH_ITERATIONS 100
 #endif
 
 #ifndef LEAF_RAYMARCH_THRESHOLD
@@ -81,7 +81,7 @@ PixelOutput fragmentMain(VertexOutput input)
 	output.normal = float4(0.0, 0.0, 0.0, 0.0);
 
 	float3 position = input.worldPosition;
-	float3 direction = normalize(position - passParameters.constants.cameraPosition);
+	float3 direction = position - passParameters.constants.cameraPosition;
 	
 	// start marching from the camera position to allow the distance field to spill
 	// on closer geometry
@@ -89,7 +89,7 @@ PixelOutput fragmentMain(VertexOutput input)
 
 	// apply model transform before raymarching
 	position = mul(input.modelMatrixInverse, float4(position, 1.0)).xyz;
-	direction = mul(input.normalMatrixInverse, direction);
+	direction = normalize(mul(input.normalMatrixInverse, direction));
 
 	// raymarch the custom SDF
 	bool hit = traceRay(position, direction);

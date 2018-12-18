@@ -90,11 +90,11 @@ float rand(float2 uv)
 PixelOutput fragmentMain(VertexOutput input)
 {
 	float4 normalDepth = sdfGbufferParameters.normalTexture.Sample(sdfGbufferParameters.normalSampler, input.uv);
-    float3 direction = normalize(input.worldPosition);
+    float3 direction = normalize(input.worldPosition - passParameters.constants.cameraPosition);
 	
 	float3 normal = normalize(normalDepth.xyz);
 	float viewSpaceDepth = normalDepth.w;
-	float3 worldPosition = viewSpaceDepth * direction;
+	float3 worldPosition = viewSpaceDepth * direction + passParameters.constants.cameraPosition;
 	
 	Intersection intersection;
 	intersection.uv = worldPosition.xy;
@@ -184,7 +184,7 @@ PixelOutput fragmentMain(VertexOutput input)
         inScattering += sampledScattering * sceneParameters.constants.spotLights[j].scattering;
     }
 
-    float transmittance = exp(viewSpaceDepth * sceneParameters.constants.mist);
+    float transmittance = exp(-viewSpaceDepth * sceneParameters.constants.mist);
     
 	PixelOutput output;
 
