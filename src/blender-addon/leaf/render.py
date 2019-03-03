@@ -8,6 +8,7 @@ from bpy.props import (BoolProperty,
                        EnumProperty,
                        FloatProperty,
                        IntProperty,
+                       StringProperty,
                        PointerProperty)
 
 engine = None
@@ -67,6 +68,31 @@ class LEAF_OT_refresh(Operator):
 
         # tag everything for reupload in engine
         engine.full_data_send = True
+
+        return {"FINISHED"}
+
+class LEAF_OT_setup_audio(Operator):
+    bl_idname = "leaf.setup_audio"
+    bl_label = "Setup Audio"
+
+    def execute(self, context):
+        scene = context.scene
+        
+        scene.frame_start = 0
+        scene.frame_current = 0 if scene.frame_current == 1 else scene.frame_current
+        scene.render.fps = 60
+        scene.sync_mode = "AUDIO_SYNC"
+
+        scene.timeline_markers.clear()
+        for beat in range(500):
+            frame = beat * 60.0 * scene.render.fps / scene.leaf.audio_bpm
+            scene.timeline_markers.new("%d.%d" % (int(beat / 4) + 1, (beat % 4) + 1), frame)
+        
+        if scene.leaf.audio_file != "":
+            if not scene.sequence_editor:
+                scene.sequence_editor_create()
+
+            scene.sequence_editor.sequences.new_sound("music", scene.leaf.audio_file, 0, 0)
 
         return {"FINISHED"}
 
@@ -142,6 +168,15 @@ class LeafRenderSettings(bpy.types.PropertyGroup):
             name="Scanline Offset",
             default=0.0
         )
+        cls.audio_file = StringProperty(
+            name="Audio File",
+            subtype='FILE_PATH',
+            default=""
+        )
+        cls.audio_bpm = FloatProperty(
+            name="Audio BPM",
+            default=120.0
+        )
 
     @classmethod
     def unregister(cls):
@@ -211,3 +246,16 @@ class LeafRender_PT_posteffects(LeafRenderButtonsPanel, Panel):
         layout.prop(lrd, "scanline_strength")
         layout.prop(lrd, "scanline_frequency")
         layout.prop(lrd, "scanline_offset")
+
+class LeafRender_PT_audio_setup(LeafRenderButtonsPanel, Panel):
+    bl_label = "Audio Setup"
+
+    def draw(self, context):
+        layout = self.layout
+        rd = context.scene.render
+        lrd = context.scene.leaf
+
+        layout.prop(lrd, "audio_file", text="Wav File")
+        layout.prop(lrd, "audio_bpm", text="BPM")
+
+        layout.operator("leaf.setup_audio", text="Setup Audio", icon='FILE_TICK')
