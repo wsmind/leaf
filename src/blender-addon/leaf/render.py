@@ -82,6 +82,7 @@ class LEAF_OT_setup_audio(Operator):
         scene.frame_current = 0 if scene.frame_current == 1 else scene.frame_current
         scene.render.fps = 60
         scene.sync_mode = "AUDIO_SYNC"
+        scene.use_frame_drop = True
 
         scene.timeline_markers.clear()
         for beat in range(500):
