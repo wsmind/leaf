@@ -36,7 +36,7 @@ int main(int argc, char **argv)
     int height = GetSystemMetrics(SM_CYSCREEN);
     float fps = 60.0f; // hardcoded 60fps
 
-    float startFrame = 1.0f; // blender starts at frame 1
+    float startFrame = 0.0f;
     std::string profileFilename;
     bool exporting = false;
     std::string exportPath;
