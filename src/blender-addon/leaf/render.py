@@ -93,7 +93,8 @@ class LEAF_OT_setup_audio(Operator):
             if not scene.sequence_editor:
                 scene.sequence_editor_create()
 
-            scene.sequence_editor.sequences.new_sound("music", scene.leaf.audio_file, 0, 0)
+            soundstrip = scene.sequence_editor.sequences.new_sound("music", scene.leaf.audio_file, 0, 0)
+            scene.frame_end = soundstrip.frame_final_end
 
         return {"FINISHED"}
 
