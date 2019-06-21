@@ -1,7 +1,8 @@
 bl_info = {
     "name": "Leaf",
     "category": "Render",
-    "author": "wsmind"
+    "author": "wsmind",
+    "blender": (2, 80, 0)
 }
 
 if "bpy" in locals():

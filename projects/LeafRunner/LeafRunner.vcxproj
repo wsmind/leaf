@@ -312,9 +312,10 @@ COPY "$(SolutionDir)..\src\blender-addon\leaf\*.py" "$(SolutionDir)..\build\$(Co
 COPY "$(CUDA_PATH)\bin\cudart*.dll" "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf"
 COPY "$(SolutionDir)..\external\nvidia-texture-tools\project\vc12\$(Configuration).$(PlatformTarget)\bin\nvtt.dll" "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf"
 
-REM Deploy dist/ to blender addons (2.79 assumed)
-MKDIR "%APPDATA%\Blender Foundation\Blender\2.79\scripts\addons\leaf"
-XCOPY /E /Y "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf" "%APPDATA%\Blender Foundation\Blender\2.79\scripts\addons\leaf"
+REM Deploy dist/ to blender addons
+set BLENDER_VERSION=2.80
+MKDIR "%APPDATA%\Blender Foundation\Blender\%BLENDER_VERSION%\scripts\addons\leaf"
+XCOPY /E /Y "$(SolutionDir)..\build\$(Configuration)-$(PlatformTarget)\dist\leaf" "%APPDATA%\Blender Foundation\Blender\%BLENDER_VERSION%\scripts\addons\leaf"
 </Command>
       <Message>
       </Message>
